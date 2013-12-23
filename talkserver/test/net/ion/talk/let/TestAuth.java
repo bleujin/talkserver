@@ -46,7 +46,7 @@ public class TestAuth extends TestCase {
 			@Override
 			public Void handle(WriteSession wsession) throws Exception {
 				wsession.pathBy("/servers/bleujin").property("host", "61.250.201.157").property("port", 9000) ;
-				wsession.pathBy("/users/emanon").property("id", "admin").property("pwd", "emanon") ;
+				wsession.pathBy("/users/emanon").property("id", "emanon").property("pwd", "emanon") ;
 				return null;
 			}
 			
