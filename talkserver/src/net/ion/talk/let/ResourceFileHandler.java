@@ -56,7 +56,7 @@ public class ResourceFileHandler extends AbstractResourceHandler {
     
 
 	@Override
-	protected SimpleStaticFileHandler.IOWorker createIOWorker(HttpRequest request, HttpResponse response, HttpControl control) {
+	protected IOWorker createIOWorker(HttpRequest request, HttpResponse response, HttpControl control) {
 		return new ResourceFileHandler.FileWorker(request, response, control);
 	}
 
