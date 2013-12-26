@@ -7,31 +7,28 @@ import net.ion.talk.TalkHandler;
 import net.ion.talk.TalkMessage;
 import net.ion.talk.UserConnection;
 
-public class DebugTalkHandler implements TalkHandler{
+public class EchoHandler implements TalkHandler{
 
 	@Override
 	public void onClose(TalkEngine tengine, UserConnection uconn) {
-		Debug.line(uconn.id() + " closed") ;
 	}
 
 	@Override
 	public void onConnected(TalkEngine tengine, UserConnection uconn) {
-		Debug.line(uconn.id() + " connected") ;
 	}
 
 	@Override
 	public void onEngineStart(TalkEngine tengine) {
-		Debug.line("engine started") ;
 	}
 
 	@Override
 	public void onEngineStop(TalkEngine tengine) {
-		Debug.line("engine stopped") ;
 	}
 
 	@Override
 	public void onMessage(TalkEngine tengine, UserConnection uconn, ReadSession rsession, TalkMessage tmsg) {
-		Debug.line(tmsg.toPlainMessage() + " received") ;
+		uconn.sendMessage(tmsg.toPlainMessage()) ;
 	}
+
 
 }

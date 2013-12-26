@@ -6,8 +6,9 @@ import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.crud.RepositoryImpl;
 import net.ion.radon.core.IService;
 import net.ion.radon.core.context.OnEventObject;
+import net.ion.radon.core.context.OnOrderEventObject;
 
-public class RepositoryEntry implements OnEventObject {
+public class RepositoryEntry implements OnOrderEventObject {
 
 	private RepositoryImpl r;
 	public final static String EntryName = "repository" ;
@@ -31,6 +32,11 @@ public class RepositoryEntry implements OnEventObject {
 		} else if (event == AradonEvent.STOP){
 			r.shutdown() ;
 		}
+	}
+
+	@Override
+	public int order() {
+		return 1;
 	}
 
 	

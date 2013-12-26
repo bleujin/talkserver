@@ -23,7 +23,7 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 
-public class ScriptLet implements IServiceLet {
+public class ScriptExecLet implements IServiceLet {
 
 	@Get
 	public String helloWorld(@AnRequest InnerRequest request){

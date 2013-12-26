@@ -42,7 +42,7 @@ public class TestToonServer extends TestCase {
 			.addAttribute(RepositoryEntry.EntryName, repository)
 			.addAttribute(RhinoEntry.EntryName, rengine)
 			.sections().restSection("script")
-				.path("jscript").addUrlPattern("/{name}.{format}").matchMode(IMatchMode.STARTWITH).handler(ScriptLet.class)
+				.path("jscript").addUrlPattern("/{name}.{format}").matchMode(IMatchMode.STARTWITH).handler(ScriptExecLet.class)
                 .restSection("auth")
                 .addPreFilter(new ChallengeAuthenticator("users", verifier))
                 .path("login")

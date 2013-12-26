@@ -16,7 +16,7 @@ import net.ion.radon.core.EnumClass.IMatchMode;
 import net.ion.radon.core.config.Configuration;
 import net.ion.radon.core.config.ConfigurationBuilder;
 import net.ion.talk.let.ResourceFileHandler;
-import net.ion.talk.let.ScriptLet;
+import net.ion.talk.let.ScriptExecLet;
 
 import org.restlet.data.Method;
 
@@ -30,7 +30,7 @@ public class TestScriptLet extends TestCase {
 			.sections().restSection("aradon")
 				.addAttribute("repository", repository)
 				.addAttribute("rengine", rengine)
-				.path("jscript").addUrlPattern("/jscript/{name}.{format}").matchMode(IMatchMode.STARTWITH).handler(ScriptLet.class)
+				.path("jscript").addUrlPattern("/jscript/{name}.{format}").matchMode(IMatchMode.STARTWITH).handler(ScriptExecLet.class)
 			.build();
 		
 		Aradon aradon = Aradon.create(config);

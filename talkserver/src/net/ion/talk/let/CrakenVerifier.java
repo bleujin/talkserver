@@ -19,13 +19,15 @@ public class CrakenVerifier implements Verifier {
 		this.session = session ;
 	}
 
-	public static CrakenVerifier test(ReadSession session) throws IOException {
-		return new CrakenVerifier(session);
+	public static CrakenVerifier test(ReadSession session) throws Exception {
+		return new CrakenVerifier(session).addUser("emanon", "emanon");
 	}
 
 	@Override
 	public int verify(Request request, Response response) {
-        Debug.line(request.getChallengeResponse());
+		if (request.getChallengeResponse() == null){
+			return Verifier.RESULT_MISSING;
+		}
         String id = request.getChallengeResponse().getIdentifier() ;
         return session.exists("/users/" + id) ? Verifier.RESULT_VALID : Verifier.RESULT_INVALID;
 	}

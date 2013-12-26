@@ -3,25 +3,40 @@ package net.ion.talk;
 import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.util.ObjectId;
 
-public class TalkMessage {
-
-	private JsonObject json;
-	private static TalkMessage PLAIN_MSG = new TalkMessage(JsonObject.fromString("{script:\"print('not supported plain message')\", id='0',params:{}}")) ;
-	
-	private TalkMessage(JsonObject json) {
-		this.json = json;
-	}
+public abstract class TalkMessage {
 
 	public static TalkMessage fromJsonString(String json) {
 		try {
-			return new TalkMessage(JsonObject.fromString(json));
+			return new TalkScriptMessage(JsonObject.fromString(json));
 		} catch (IllegalStateException notjson) {
-			return PLAIN_MSG ;
+			return new PlainTalkMessage(json);
 		}
 	}
 
 	public static TalkMessage fromScript(String script) {
-		return new TalkMessage(new JsonObject().put("script", script).put("id", new ObjectId().toString()).put("params", new JsonObject())) ;
+		return new TalkScriptMessage(new JsonObject().put("script", script).put("id", new ObjectId().toString()).put("params", new JsonObject())) ;
+	}
+
+	public abstract String script() ;
+
+	public abstract String id();
+
+	public abstract JsonObject params();
+
+	public abstract String toPlainMessage() ;
+}
+
+
+class TalkScriptMessage extends TalkMessage {
+	
+	private JsonObject json;
+	
+	TalkScriptMessage(JsonObject json) {
+		this.json = json;
+	}
+
+	public static TalkMessage fromScript(String script) {
+		return new TalkScriptMessage(new JsonObject().put("script", script).put("id", new ObjectId().toString()).put("params", new JsonObject())) ;
 	}
 
 	public String script() {
@@ -39,6 +54,37 @@ public class TalkMessage {
 	public String toPlainMessage() {
 		return json.toString() ;
 	}
+	
+}
 
 
+
+class PlainTalkMessage extends TalkMessage{
+
+	private String msg;
+
+	public PlainTalkMessage(String msg) {
+		this.msg = msg ;
+	}
+
+	@Override
+	public String id() {
+		throw new UnsupportedOperationException("this plain msg") ;
+	}
+
+	@Override
+	public JsonObject params() {
+		throw new UnsupportedOperationException("this plain msg") ;
+	}
+
+	@Override
+	public String script() {
+		throw new UnsupportedOperationException("this plain msg") ;
+	}
+
+	@Override
+	public String toPlainMessage() {
+		return msg;
+	}
+	
 }
