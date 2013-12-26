@@ -2,6 +2,11 @@ package net.ion.talk;
 
 import java.util.concurrent.CountDownLatch;
 
+import net.ion.craken.node.ReadSession;
+import net.ion.craken.node.TransactionJob;
+import net.ion.craken.node.WriteSession;
+import net.ion.radon.core.security.ChallengeAuthenticator;
+import net.ion.talk.let.*;
 import org.restlet.data.Method;
 
 import net.ion.craken.aradon.bean.RepositoryEntry;
@@ -21,27 +26,30 @@ import net.ion.radon.core.Aradon;
 import net.ion.radon.core.EnumClass.IMatchMode;
 import net.ion.radon.core.config.Configuration;
 import net.ion.radon.core.config.ConfigurationBuilder;
-import net.ion.talk.let.DebugTalkHandler;
-import net.ion.talk.let.ResourceFileHandler;
-import net.ion.talk.let.ScriptLet;
-import net.ion.talk.let.ScriptTalkHandler;
 import junit.framework.TestCase;
+import org.restlet.security.Verifier;
 
 public class TestToonServer extends TestCase {
 
-	
-	public void testRun() throws Exception {
+
+    public void testRun() throws Exception {
 		RhinoEntry rengine = RhinoEntry.test() ;
 		RepositoryEntry repository = RepositoryEntry.test();
-		
+        ReadSession session = repository.login("test");
+        CrakenVerifier verifier = CrakenVerifier.test(session);
 
 		Configuration config = ConfigurationBuilder.newBuilder().aradon()
 			.addAttribute(RepositoryEntry.EntryName, repository)
 			.addAttribute(RhinoEntry.EntryName, rengine)
 			.sections().restSection("script")
 				.path("jscript").addUrlPattern("/{name}.{format}").matchMode(IMatchMode.STARTWITH).handler(ScriptLet.class)
+                .restSection("auth")
+                .addPreFilter(new ChallengeAuthenticator("users", verifier))
+                .path("login")
+                .addUrlPattern("/login").matchMode(IMatchMode.STARTWITH).handler(LoginLet.class)
 			.build();
-		
+
+
 		Aradon aradon = Aradon.create(config);
 		TalkEngine tengine = TalkEngine.create(aradon) ;
 		tengine.registerHandler(new ScriptTalkHandler()) ;
@@ -50,14 +58,16 @@ public class TestToonServer extends TestCase {
 		AradonHandler ahandler = AradonHandler.create(aradon);
 
 		Radon radon = RadonConfiguration.newBuilder(9000)
-			.add("/script/*", ahandler)
+                .add("/script/*", ahandler)
+                .add("/auth/*", ahandler)
 			.add("/websocket/{id}", tengine)
 			.add("/resource/*", new ResourceFileHandler("./resource/"))
 			.createRadon() ;
 		
 		radon.start().get() ;
-		
-		new InfinityThread().startNJoin() ;
+
+        new InfinityThread().startNJoin();
+
 		// radon.stop().get() ;
 	}
 	
@@ -71,7 +81,7 @@ public class TestToonServer extends TestCase {
 				"session.pathBy('/bleujin').toRows('name, age').toString();" ;
 		Request request = new RequestBuilder()
 			.setMethod(Method.POST)
-			.setUrl("http://61.250.201.157:9000/script/bleujin.string")
+			.setUrl("http://localhost:9000/script/bleujin.string")
 				.addParameter("name", "bleujin").addParameter("age", "20")
 				.addParameter("script", script).build();
 
@@ -85,7 +95,7 @@ public class TestToonServer extends TestCase {
 	public void testWebSocket() throws Exception {
 		NewClient client = NewClient.create();
 		final CountDownLatch cd = new CountDownLatch(1) ;
-		WebSocket ws = client.createWebSocket("ws://61.250.201.157:9000/websocket/bleujin", new WebSocketTextListener() {
+		WebSocket ws = client.createWebSocket("ws://localhost:9000/websocket/bleujin", new WebSocketTextListener() {
 			@Override
 			public void onOpen(WebSocket arg0) {
 			}
@@ -108,7 +118,7 @@ public class TestToonServer extends TestCase {
 			}
 		});
 		
-		String msg = TalkMessage.fromStript("session.pathBy('/bleujin').toRows('name, age').toString();").toPlainMessage() ;
+		String msg = TalkMessage.fromScript("session.pathBy('/bleujin').toRows('name, age').toString();").toPlainMessage() ;
 		Debug.line(msg) ;
 		ws.sendTextMessage(msg) ;
 		cd.await() ;

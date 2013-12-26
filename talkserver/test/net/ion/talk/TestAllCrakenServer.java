@@ -2,6 +2,8 @@ package net.ion.talk;
 
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import net.ion.talk.let.TestScriptLet;
+import net.ion.talk.let.TestScriptTalkHandler;
 
 public class TestAllCrakenServer extends TestCase {
 

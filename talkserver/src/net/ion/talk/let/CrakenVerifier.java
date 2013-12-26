@@ -6,6 +6,7 @@ import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
 
+import net.ion.framework.util.Debug;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.security.User;
@@ -24,14 +25,17 @@ public class CrakenVerifier implements Verifier {
 
 	@Override
 	public int verify(Request request, Response response) {
-		String id = request.getChallengeResponse().getIdentifier() ;
-		return session.exists("/users/" + id) ? Verifier.RESULT_VALID : Verifier.RESULT_INVALID;
+        Debug.line(request.getChallengeResponse());
+        String id = request.getChallengeResponse().getIdentifier() ;
+        return session.exists("/users/" + id) ? Verifier.RESULT_VALID : Verifier.RESULT_INVALID;
 	}
 
-	public CrakenVerifier addUsr(final String userId, final String pwd) throws Exception{
+	public CrakenVerifier addUser(final String userId, final String pwd) throws Exception{
 		session.tranSync(new TransactionJob<Void>() {
 			@Override
 			public Void handle(WriteSession wsession) throws Exception {
+
+
 				wsession.pathBy("/users/" + userId).property("id", userId).property("pwd", pwd) ;
 				return null;
 			}

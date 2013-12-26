@@ -20,7 +20,7 @@ public class TalkMessage {
 		}
 	}
 
-	public static TalkMessage fromStript(String script) {
+	public static TalkMessage fromScript(String script) {
 		return new TalkMessage(new JsonObject().put("script", script).put("id", new ObjectId().toString()).put("params", new JsonObject())) ;
 	}
 
