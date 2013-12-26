@@ -13,7 +13,6 @@ import net.ion.radon.core.config.Configuration;
 import net.ion.radon.core.config.ConfigurationBuilder;
 import net.ion.radon.core.security.ChallengeAuthenticator;
 import net.ion.talk.let.CrakenVerifier;
-import net.ion.talk.let.EchoHandler;
 import net.ion.talk.let.LoginLet;
 import net.ion.talk.let.ServerHandler;
 import net.ion.talk.let.TalkHandlerGroup;
@@ -37,7 +36,6 @@ public class ToonServer {
 		this.verifier = CrakenVerifier.test(session);
 		
 		TalkHandlerGroup tg = TalkHandlerGroup.create();
-		tg.addHandler(new EchoHandler()) ;
 		tg.addHandler(ServerHandler.test()) ;
 		
 		Configuration config = ConfigurationBuilder.newBuilder().aradon()

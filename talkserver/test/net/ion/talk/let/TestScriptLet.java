@@ -2,72 +2,74 @@ package net.ion.talk.let;
 
 import junit.framework.TestCase;
 import net.ion.craken.aradon.bean.RepositoryEntry;
-import net.ion.craken.aradon.bean.RhinoEntry;
-import net.ion.framework.util.Debug;
+import net.ion.craken.node.ReadSession;
+import net.ion.craken.node.TransactionJob;
+import net.ion.craken.node.WriteSession;
+import net.ion.framework.util.InfinityThread;
 import net.ion.nradon.Radon;
-import net.ion.nradon.config.RadonConfiguration;
-import net.ion.nradon.handler.aradon.AradonHandler;
-import net.ion.radon.aclient.NewClient;
-import net.ion.radon.aclient.Request;
-import net.ion.radon.aclient.RequestBuilder;
-import net.ion.radon.aclient.Response;
+import net.ion.radon.client.AradonClient;
+import net.ion.radon.client.AradonClientFactory;
 import net.ion.radon.core.Aradon;
-import net.ion.radon.core.EnumClass.IMatchMode;
+import net.ion.radon.core.EnumClass;
 import net.ion.radon.core.config.Configuration;
-import net.ion.radon.core.config.ConfigurationBuilder;
-import net.ion.talk.let.ResourceFileHandler;
-import net.ion.talk.let.ScriptExecLet;
-
+import org.restlet.Response;
 import org.restlet.data.Method;
 
-public class TestScriptLet extends TestCase {
-	
-	public void testHttpScript() throws Exception {
-		RhinoEntry rengine = RhinoEntry.test() ;
-		RepositoryEntry repository = RepositoryEntry.test();
-
-		Configuration config = ConfigurationBuilder.newBuilder().aradon()
-			.sections().restSection("aradon")
-				.addAttribute("repository", repository)
-				.addAttribute("rengine", rengine)
-				.path("jscript").addUrlPattern("/jscript/{name}.{format}").matchMode(IMatchMode.STARTWITH).handler(ScriptExecLet.class)
-			.build();
-		
-		Aradon aradon = Aradon.create(config);
-		AradonHandler ahandler = AradonHandler.create(aradon);
-
-		
-		Radon radon = RadonConfiguration.newBuilder(9000)
-			.add("/aradon/*", ahandler)
-			.add("/resource/*", new ResourceFileHandler("./resource/"))
-			.createRadon() ;
-		
-		radon.start().get() ;
+/**
+ * Author: Ryunhee Han
+ * Date: 2013. 12. 26.
+ */
+public class TestScriptLet extends TestCase{
 
 
-		NewClient client = NewClient.create();
-		
-		String script = "session.tranSync(function(wsession){" +
-				"	wsession.pathBy('/bleujin').property('name', params.asString('name')).property('age', params.asInt('age'));" +
-				"}) ;" +
-				"" +
-				"session.pathBy('/bleujin').toRows('name, age').toString();" ;
-		Request request = new RequestBuilder()
-			.setMethod(Method.POST)
-			.setUrl("http://61.250.201.157:9000/aradon/jscript/bleujin.string")
-				.addParameter("name", "bleujin").addParameter("age", "20")
-				.addParameter("script", script).build();
+    private Aradon aradon;
+    private AradonClient ac;
 
-		Response response = client.executeRequest(request).get();
-		
-		Debug.line(response.getTextBody()) ;
-		client.close() ;
-		
-		radon.stop().get() ;
-	}
-	
-	
-	
-	
-	
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+
+
+        final RepositoryEntry rentry = RepositoryEntry.test();
+        Configuration config = Configuration.newBuilder().aradon()
+                .addAttribute(RepositoryEntry.EntryName, rentry)
+                .sections().restSection("script")
+                .path("/toontalk").addUrlPattern("/{path}").matchMode(EnumClass.IMatchMode.STARTWITH).handler(ScriptLet.class).build();
+
+
+        ReadSession session = rentry.login("test");
+        session.tranSync(new TransactionJob<Void>() {
+            @Override
+            public Void handle(WriteSession wsession) throws Exception {
+                wsession.createBy("script/test");
+                wsession.createBy("script/test/child1");
+                wsession.createBy("script/test/child2");
+                return null;
+            }
+        });
+
+        aradon = Aradon.create(config);
+        aradon.startServer(9000);
+        Radon radon = aradon.toRadon(9000);
+        radon.start();
+        new InfinityThread().startNJoin();
+    }
+
+    public void testGetBasicPage() throws Exception {
+        Response response = ac.createRequest("/script/toontalk/test").handle(Method.GET);
+        assertEquals(200, response.getStatus().getCode());
+    }
+
+    public void testGetNode(){
+        Response response = ac.createRequest("/script/toontalk/testScript").handle(Method.GET);
+        assertEquals(200, response.getStatus().getCode());
+    }
+
+
+    @Override
+    public void tearDown() throws Exception {
+        aradon.stop();
+        super.tearDown();
+    }
 }
+
