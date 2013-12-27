@@ -28,29 +28,18 @@ import net.ion.radon.core.security.ChallengeAuthenticator;
 import net.ion.talk.TalkEngine;
 import net.ion.talk.ToonServer;
 
-public class TestLoginWebSocket extends TestCase {
+public class TestLoginWebSocket extends TestBaseLet {
 
-
-    private NewClient nc;
-    
-	private ToonServer tserver;
     @Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		
-		this.tserver = ToonServer.testWithLoginLet().start() ;
-
-		nc = NewClient.create() ;
+		tserver.addTalkHander(new EchoHandler())
+			.startRadon() ;
 	}
     
-    @Override
-    protected void tearDown() throws Exception {
-    	nc.close() ;
-    	tserver.stop() ;
-    	super.tearDown();
-    }
-    
     public void testLogin() throws Exception {
+    	NewClient nc = tserver.mockClient().real();
     	Realm realm = new RealmBuilder().setPrincipal("emanon").setPassword("emanon").build() ;
 		Response response = nc.prepareGet("http://61.250.201.157:9000/auth/login").setRealm(realm).execute().get();
 		

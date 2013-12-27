@@ -9,14 +9,12 @@ import net.ion.radon.core.context.OnEventObject.AradonEvent;
 import net.ion.talk.TalkEngine;
 import net.ion.talk.ToonServer;
 
-public class TestServerHandler extends TestCase {
+public class TestServerHandler extends TestBaseLet {
 
-	private ToonServer tserver;
-	private ReadSession session;
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		this.tserver = ToonServer.testWithLoginLet().start() ;
+		tserver.startRadon() ;
 	}
 	
 	
@@ -25,16 +23,7 @@ public class TestServerHandler extends TestCase {
 		assertTrue(serverHandler.registered(InetAddress.getLocalHost().getHostName())) ;
 
 		tserver.talkEngine().onStop() ;
-		
-		
-		
 		assertFalse(serverHandler.registered(InetAddress.getLocalHost().getHostName())) ;
-	}
-
-	@Override
-	protected void tearDown() throws Exception {
-		tserver.stop();
-		super.tearDown();
 	}
 	
 	public void xtestIPAddress() throws Exception {

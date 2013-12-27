@@ -28,7 +28,7 @@ public class LoginLet implements IServiceLet{
 		final String accessToken = new ObjectId().toString() ;
 		
 		RepositoryEntry rentry = context.getAttributeObject(RepositoryEntry.EntryName, RepositoryEntry.class);
-		ReadSession session = rentry.login("test");
+		ReadSession session = rentry.login();
 		
 		return session.tranSync(new TransactionJob<String>() {
 			@Override

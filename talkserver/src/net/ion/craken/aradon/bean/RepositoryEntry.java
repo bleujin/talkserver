@@ -11,17 +11,19 @@ import net.ion.radon.core.context.OnOrderEventObject;
 public class RepositoryEntry implements OnOrderEventObject {
 
 	private RepositoryImpl r;
+	private String wsName;
 	public final static String EntryName = "repository" ;
 	
-	private RepositoryEntry(RepositoryImpl r) {
+	private RepositoryEntry(RepositoryImpl r, String wsName) {
 		this.r = r ;
+		this.wsName = wsName ; 
 	}
 
 	public static RepositoryEntry test() throws IOException {
-		return new RepositoryEntry(RepositoryImpl.inmemoryCreateWithTest());
+		return new RepositoryEntry(RepositoryImpl.inmemoryCreateWithTest(), "test");
 
 	}
-	public ReadSession login(String wsName) throws IOException {
+	public ReadSession login() throws IOException {
 		return r.login(wsName);
 	}
 

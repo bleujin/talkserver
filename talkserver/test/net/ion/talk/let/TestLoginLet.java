@@ -22,46 +22,25 @@ import net.ion.talk.ToonServer;
 import org.restlet.Response;
 import org.restlet.data.Method;
 
-public class TestLoginLet extends TestCase {
-
-	private Aradon aradon;
-	private AradonClient ac;
-	private ToonServer tserver;
+public class TestLoginLet extends TestBaseLet {
 
     @Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		
-		this.tserver = ToonServer.testWithLoginLet();
-		aradon = tserver.aradon() ;
-		aradon.start() ;
-		ac = AradonClientFactory.create(aradon) ;
+		tserver.startAradon();
 	}
 	
 	public void testBasicAuth() throws Exception {
-		IAradonRequest request = ac.createRequest("/auth/login", "bleujin", "1234");
+		IAradonRequest request = tserver.mockClient().fake().createRequest("/auth/login", "bleujin", "1234");
 		assertEquals(401, request.handle(Method.GET).getStatus().getCode());
 		tserver.verifier().addUser("bleujin", "1234") ;
 		assertEquals(200, request.handle(Method.GET).getStatus().getCode());
 	}
 
 	public void testGetWebsocketURL() throws Exception {
-		IAradonRequest request = ac.createRequest("/auth/login", "emanon", "emanon");
+		IAradonRequest request = tserver.mockClient().fake().createRequest("/auth/login", "emanon", "emanon");
 		Response r = request.handle(Method.GET);
 		assertEquals(true, r.getEntityAsText().startsWith("ws://61.250.201.157:9000/websocket/emanon/")) ;
 	}
 
-	
-	public void testConnectTalkEngine() throws Exception {
-		
-	}
-	
-	
-	
-    @Override
-    public void tearDown() throws Exception {
-        aradon.stop();
-        tserver.stop() ;
-        super.tearDown();    //To change body of overridden methods use File | Settings | File Templates.
-    }
 }

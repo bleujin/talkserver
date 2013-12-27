@@ -71,7 +71,7 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 
 	public ReadSession readSession() throws IOException {
 		RepositoryEntry re = aradon.getServiceContext().getAttributeObject(RepositoryEntry.EntryName, RepositoryEntry.class);
-		return re.login("test");
+		return re.login();
 	}
 
 	public TalkEngine registerHandler(TalkHandler hanlder) {
@@ -115,7 +115,7 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 			TalkMessage tmessage = TalkMessage.fromJsonString(msg);
 
 			RepositoryEntry r = context().getAttributeObject(RepositoryEntry.EntryName, RepositoryEntry.class);
-			ReadSession rsession = r.login("test");
+			ReadSession rsession = r.login();
 
 			for (TalkHandler handler : handlers) {
 				handler.onMessage(this, found, rsession, tmessage);

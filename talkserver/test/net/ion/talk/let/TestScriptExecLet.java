@@ -15,38 +15,26 @@ import net.ion.radon.core.Aradon;
 import net.ion.radon.core.EnumClass.IMatchMode;
 import net.ion.radon.core.config.Configuration;
 import net.ion.radon.core.config.ConfigurationBuilder;
+import net.ion.talk.ToonServer;
 import net.ion.talk.let.ResourceFileHandler;
 import net.ion.talk.let.ScriptExecLet;
 
 import org.restlet.data.Method;
 
-public class TestScriptExecLet extends TestCase {
-	
+public class TestScriptExecLet extends TestBaseLet{
+
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
+		tserver.cbuilder().aradon()
+		.sections().restSection("aradon")
+		.path("jscript").addUrlPattern("/jscript/{name}.{format}").matchMode(IMatchMode.STARTWITH).handler(ScriptExecLet.class)
+		.build();
+		tserver.startRadon() ;
+	}
+		
 	public void testHttpScript() throws Exception {
-		RhinoEntry rengine = RhinoEntry.test() ;
-		RepositoryEntry repository = RepositoryEntry.test();
-
-		Configuration config = ConfigurationBuilder.newBuilder().aradon()
-			.sections().restSection("aradon")
-				.addAttribute("repository", repository)
-				.addAttribute("rengine", rengine)
-				.path("jscript").addUrlPattern("/jscript/{name}.{format}").matchMode(IMatchMode.STARTWITH).handler(ScriptExecLet.class)
-			.build();
-		
-		Aradon aradon = Aradon.create(config);
-		AradonHandler ahandler = AradonHandler.create(aradon);
-
-		
-		Radon radon = RadonConfiguration.newBuilder(9000)
-			.add("/aradon/*", ahandler)
-			.add("/resource/*", new ResourceFileHandler("./resource/"))
-			.createRadon() ;
-		
-		radon.start().get() ;
-
-
-		NewClient client = NewClient.create();
-		
+		NewClient client = tserver.mockClient().real() ;
 		String script = "session.tranSync(function(wsession){" +
 				"	wsession.pathBy('/bleujin').property('name', params.asString('name')).property('age', params.asInt('age'));" +
 				"}) ;" +
@@ -62,8 +50,6 @@ public class TestScriptExecLet extends TestCase {
 		
 		Debug.line(response.getTextBody()) ;
 		client.close() ;
-		
-		radon.stop().get() ;
 	}
 	
 	

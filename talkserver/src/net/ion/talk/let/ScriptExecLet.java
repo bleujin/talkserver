@@ -41,7 +41,7 @@ public class ScriptExecLet implements IServiceLet {
 	public Representation execute(@AnContext TreeContext context, @AnRequest InnerRequest request, @PathParam("name") String sname, @FormParam("script") String script) throws IOException{
 		
 		RepositoryEntry r = context.getAttributeObject(RepositoryEntry.EntryName, RepositoryEntry.class);
-		ReadSession rsession = r.login("test");
+		ReadSession rsession = r.login();
 		RhinoEntry rengine = context.getAttributeObject(RhinoEntry.EntryName, RhinoEntry.class);
 		RhinoScript rscript = rengine.newScript(sname).defineScript(script);
 		
