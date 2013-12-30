@@ -43,4 +43,15 @@ public class TestScriptExecLet extends TestBaseLet{
 		client.close() ;
 	}
 	
+	public void testImage() throws Exception {
+		NewClient client = tserver.mockClient().real() ;
+		String script = "session.tranSync(function(wsession){" +
+		"	wsession.pathBy('/bleujin').property('name', params.asString('name')).property('age', params.asInt('age')).property('image', params.asStrema('image')) ;" +
+		"}) ;" +
+		"" +
+		"session.pathBy('/bleujin').blob('image').toInputStream();" ;
+		
+		
+	}
+	
 }

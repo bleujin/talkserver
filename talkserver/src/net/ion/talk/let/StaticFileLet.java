@@ -7,9 +7,13 @@ import net.ion.radon.core.annotation.AnRequest;
 import net.ion.radon.core.let.InnerRequest;
 import org.apache.commons.io.FilenameUtils;
 import org.restlet.data.MediaType;
+import org.restlet.data.Status;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.OutputRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Get;
+import org.restlet.resource.ResourceException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,24 +21,23 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
- * Author: Ryunhee Han
- * Date: 2013. 12. 27.
+ * Author: Ryunhee Han Date: 2013. 12. 27.
  */
 public class StaticFileLet implements IServiceLet {
 
-    @Get
-    public InputRepresentation deliverFile(@AnRequest InnerRequest request) throws IOException {
+	@Get
+	public Representation deliverFile(@AnRequest InnerRequest request) throws IOException {
 
-        File file = new File("./talkserver/resource/" + request.getPathReference().getPath());
-        FileInputStream fis = null;
-        if (file.exists()) {
-            fis = new FileInputStream(
-                    "./talkserver/resource/" + request.getPathReference().getPath());
-            String extension = FilenameUtils.getExtension(request.getRemainPath());
-            return new InputRepresentation(fis, request.getPathService().getAradon().getMetadataService().getMediaType(extension));
-        } else {
-            return new InputRepresentation(fis, MediaType.TEXT_HTML);
-        }
-    }
+		final String resourceHome = "./talkserver/resource/";
+		
+		File file = new File(resourceHome + request.getPathReference().getPath());
+		if (file.exists()) {
+			FileInputStream fis = new FileInputStream(resourceHome + request.getPathReference().getPath());
+			String extension = FilenameUtils.getExtension(request.getRemainPath());
+			return new InputRepresentation(fis, request.getPathService().getAradon().getMetadataService().getMediaType(extension));
+		} else {
+			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND) ;
+		}
+	}
 
 }
