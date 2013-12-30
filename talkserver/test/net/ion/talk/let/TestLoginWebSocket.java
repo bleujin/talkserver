@@ -1,5 +1,6 @@
 package net.ion.talk.let;
 
+import java.net.InetAddress;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -41,7 +42,7 @@ public class TestLoginWebSocket extends TestBaseLet {
     public void testLogin() throws Exception {
     	NewClient nc = tserver.mockClient().real();
     	Realm realm = new RealmBuilder().setPrincipal("emanon").setPassword("emanon").build() ;
-		Response response = nc.prepareGet("http://61.250.201.157:9000/auth/login").setRealm(realm).execute().get();
+		Response response = nc.prepareGet("http://" + InetAddress.getLocalHost().getHostAddress() +":9000/auth/login").setRealm(realm).execute().get();
 		
 		String wsaddress = response.getTextBody();
 		

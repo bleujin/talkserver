@@ -1,16 +1,14 @@
 package net.ion.talk.let;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-
-import net.ion.bleujin.template.TestScriptTemplate;
+import com.google.common.base.Function;
 import net.ion.craken.node.ReadNode;
 import net.ion.framework.mte.Engine;
 import net.ion.framework.util.IOUtil;
 import net.ion.framework.util.MapUtil;
 
-import com.google.common.base.Function;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class ScriptTemplate implements Function<ReadNode, String> {
 

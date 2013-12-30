@@ -1,7 +1,7 @@
 package net.ion.talk.let;
 
-import net.ion.talk.ToonServer;
 import junit.framework.TestCase;
+import net.ion.talk.ToonServer;
 
 public class TestBaseLet extends TestCase{
 
@@ -15,7 +15,7 @@ public class TestBaseLet extends TestCase{
     @Override
     public void tearDown() throws Exception {
         tserver.stop() ;
-        super.tearDown();    //To change body of overridden methods use File | Settings | File Templates.
+        super.tearDown();
     }
 
 }

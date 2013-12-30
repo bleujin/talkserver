@@ -1,21 +1,13 @@
 package net.ion.talk.let;
 
-import junit.framework.TestCase;
-import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
-import net.ion.framework.util.Debug;
+import net.ion.framework.parse.gson.JsonObject;
+import net.ion.framework.parse.gson.JsonParser;
 import net.ion.framework.util.InfinityThread;
-import net.ion.framework.util.MapUtil;
-import net.ion.nradon.Radon;
 import net.ion.radon.client.AradonClient;
-import net.ion.radon.client.AradonClientFactory;
-import net.ion.radon.core.Aradon;
 import net.ion.radon.core.EnumClass;
-import net.ion.radon.core.config.Configuration;
-import net.ion.talk.ToonServer;
-
 import org.restlet.Response;
 import org.restlet.data.Method;
 
@@ -35,7 +27,10 @@ public class TestScriptLet extends TestBaseLet{
                 	.restSection("script")
                 	.path("script").addUrlPattern("/{path}").matchMode(EnumClass.IMatchMode.STARTWITH).handler(ScriptLet.class).build();
 		
-		tserver.startAradon() ;
+		//tserver.startAradon() ;
+        tserver.startRadon();
+
+        new InfinityThread().startNJoin();
     }
 
     public void testMergeScript(){
@@ -64,6 +59,7 @@ public class TestScriptLet extends TestBaseLet{
         assertTrue(response.getEntityAsText().contains("child1"));
         assertTrue(response.getEntityAsText().contains("child2"));
     }
+
 
 }
 

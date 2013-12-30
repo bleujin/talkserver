@@ -1,24 +1,18 @@
 package net.ion.talk;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.concurrent.ExecutionException;
-
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.aradon.bean.RhinoEntry;
 import net.ion.craken.node.ReadSession;
 import net.ion.nradon.Radon;
-import net.ion.radon.client.AradonClient;
 import net.ion.radon.core.Aradon;
+import net.ion.radon.core.EnumClass;
 import net.ion.radon.core.EnumClass.IMatchMode;
-import net.ion.radon.core.config.Configuration;
 import net.ion.radon.core.config.ConfigurationBuilder;
 import net.ion.radon.core.security.ChallengeAuthenticator;
-import net.ion.talk.let.CrakenVerifier;
-import net.ion.talk.let.EchoHandler;
-import net.ion.talk.let.LoginLet;
-import net.ion.talk.let.ServerHandler;
-import net.ion.talk.let.TalkHandlerGroup;
+import net.ion.talk.let.*;
+
+import java.io.FileNotFoundException;
+import java.util.concurrent.ExecutionException;
 
 public class ToonServer {
 
@@ -39,17 +33,23 @@ public class ToonServer {
 		final RepositoryEntry rentry = RepositoryEntry.test();
 		this.session = rentry.login() ;
 		this.verifier = CrakenVerifier.test(session);
-		
+
 		this.talkHandlerGroup = TalkHandlerGroup.create();
 		talkHandlerGroup.addHandler(ServerHandler.test()) ;
-		
+
 		this.cbuilder = ConfigurationBuilder.newBuilder().aradon()
 		.addAttribute(RepositoryEntry.EntryName, rentry)
 		.addAttribute(RhinoEntry.EntryName, rengine)
-		.sections().restSection("auth")
-			.addPreFilter(new ChallengeAuthenticator("users", verifier))
+		.sections()
+            .restSection("auth")
+			    .addPreFilter(new ChallengeAuthenticator("users", verifier))
 				.path("login")
 				.addUrlPattern("/login").matchMode(IMatchMode.STARTWITH).handler(LoginLet.class)
+            .restSection("aradon")
+                .path("jscript").addUrlPattern("/jscript/{name}.{format}").matchMode(IMatchMode.STARTWITH).handler(ScriptExecLet.class)
+            .restSection("static")
+                .path("static").addUrlPattern("/{path}").matchMode(EnumClass.IMatchMode.STARTWITH)
+                .handler(StaticFileLet.class)
 			.restSection("websocket")
 				.addAttribute(TalkHandlerGroup.class.getCanonicalName(), talkHandlerGroup)
 				.wspath("websocket")
@@ -58,24 +58,24 @@ public class ToonServer {
 		this.mockClient = MockClient.create(this) ;
 		return this;
 	}
-	
-	
+
+
 	public ToonServer addTalkHander(TalkHandler thandler) {
 		talkHandlerGroup.addHandler(thandler) ;
 		return this;
 	}
-	
+
 	public ConfigurationBuilder cbuilder() {
 		return cbuilder;
 	}
 
-	
+
 	public ToonServer startAradon() {
 		this.aradon = Aradon.create(cbuilder.build());
 		aradon.start() ;
 		return this ;
-	} 
-	
+	}
+
 	public ToonServer startRadon() throws InterruptedException, ExecutionException, FileNotFoundException{
 		this.aradon = Aradon.create(cbuilder.build());
 		this.radon = aradon.toRadon(9000) ;
@@ -86,7 +86,7 @@ public class ToonServer {
 	public void stop() throws InterruptedException, ExecutionException {
 		mockClient.close() ;
 		if (aradon != null) aradon.stop() ;
-		if (radon != null) 
+		if (radon != null)
 			radon.stop().get() ;
 	}
 

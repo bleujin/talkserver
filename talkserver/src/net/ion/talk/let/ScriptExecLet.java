@@ -46,8 +46,8 @@ public class ScriptExecLet implements IServiceLet {
 		RhinoScript rscript = rengine.newScript(sname).defineScript(script);
 		
 		rscript.bind("session", rsession).bind("params", ParameterMap.create(request.getFormParameter())) ;
-		String scriptResult = rscript.exec(ResponseHandler.StringMessage) ;
-		
+		String scriptResult = rscript.exec(ResponseHandler.StringMessage);
+
 		return new StringRepresentation(scriptResult) ;
 	}
 

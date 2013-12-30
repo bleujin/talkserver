@@ -19,7 +19,7 @@ public class TestServerHandler extends TestBaseLet {
 	
 	
 	public void testIsOnServer() throws Exception {
-		ServerHandler serverHandler = tserver.talkEngine().handler(ServerHandler.class); 
+		ServerHandler serverHandler = tserver.talkEngine().handler(ServerHandler.class);
 		assertTrue(serverHandler.registered(InetAddress.getLocalHost().getHostName())) ;
 
 		tserver.talkEngine().onStop() ;
