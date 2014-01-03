@@ -3,6 +3,7 @@ package net.ion.talk;
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.aradon.bean.RhinoEntry;
 import net.ion.craken.node.ReadSession;
+import net.ion.framework.util.MapUtil;
 import net.ion.nradon.Radon;
 import net.ion.radon.core.Aradon;
 import net.ion.radon.core.EnumClass;
@@ -12,24 +13,29 @@ import net.ion.radon.core.security.ChallengeAuthenticator;
 import net.ion.talk.let.*;
 
 import java.io.FileNotFoundException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class ToonServer {
 
-	public static ToonServer testWithLoginLet() throws Exception {
+    public static ToonServer testWithLoginLet() throws Exception {
 		return new ToonServer().init();
 	}
 
 	private ReadSession session;
+    private RhinoEntry rengine;
 	private CrakenVerifier verifier;
 	private Aradon aradon;
 	private Radon radon;
 	private ConfigurationBuilder cbuilder;
 	private TalkHandlerGroup talkHandlerGroup;
 	private MockClient mockClient;
+    private Map<String, Object> propertyMap = MapUtil.newMap();
 
 	private ToonServer init() throws Exception {
-		final RhinoEntry rengine = RhinoEntry.test() ;
+		rengine = RhinoEntry.test() ;
 		final RepositoryEntry rentry = RepositoryEntry.test();
 		this.session = rentry.login() ;
 		this.verifier = CrakenVerifier.test(session);
@@ -97,7 +103,7 @@ public class ToonServer {
 
 	private void checkStarted() {
 		if (aradon == null)
-			throw new IllegalStateException("not started") ;
+			throw new IllegalStateException("Aradon not started") ;
 	}
 
 	@Deprecated
@@ -106,7 +112,7 @@ public class ToonServer {
 	}
 
 	public ReadSession readSession() {
-		checkStarted() ;
+		checkStarted();
 		return session;
 	}
 
@@ -121,6 +127,24 @@ public class ToonServer {
 	}
 
 
+    public RhinoEntry rhinoEntry() {
+        return rengine;
+    }
 
+    public void addAttribute(String key, Object value){
+        propertyMap.put(key, value);
+    }
 
+    public <T> T getAttribute(String key, Class<T> clz){
+        return (T) propertyMap.get(key);
+    }
+
+    public String getHostAddress() {
+        try {
+            return InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            return "127.0.0.1";
+        }
+
+    }
 }
