@@ -3,12 +3,17 @@ package net.ion.talk.let;
 import com.google.common.base.Function;
 import net.ion.craken.node.ReadNode;
 import net.ion.framework.mte.Engine;
+import net.ion.framework.util.Debug;
 import net.ion.framework.util.IOUtil;
 import net.ion.framework.util.MapUtil;
+import net.ion.talk.script.BasicBuilder;
+import net.ion.talk.script.ListBuilder;
+import net.ion.talk.script.ResponseBuilder;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 public class ScriptTemplate implements Function<ReadNode, String> {
 
@@ -24,7 +29,8 @@ public class ScriptTemplate implements Function<ReadNode, String> {
 
 	@Override
 	public String apply(ReadNode node) {
-		try {
+
+        try {
 			InputStream input = ScriptTemplate.class.getResourceAsStream("viewscript.tpl");
 			if (input == null) throw new FileNotFoundException("viewscript.tpl") ;
 			return engine.transform(IOUtil.toStringWithClose(input), MapUtil.<String, Object> create("self", node));
@@ -32,4 +38,5 @@ public class ScriptTemplate implements Function<ReadNode, String> {
 			throw new IllegalStateException(e);
 		}
 	}
+
 }

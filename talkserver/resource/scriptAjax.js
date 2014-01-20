@@ -3,10 +3,15 @@ var addProperty = function(){
 }
 
 var execute = function(){
+
+
+
     $.ajax({
         type: "POST",
-        url: "/aradon/jscript/ajax.string",
-        data: "script=" + $("#script").val(),
+        url: "/execute/ajax.string",
+        data: {
+            script : $("#script").val()
+        },
         dataType: "html"
     }).done(function(msg){
             $("#result").html(msg);

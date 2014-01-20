@@ -16,7 +16,7 @@ public abstract class AbstractBuilder {
     protected Cache<String, Object> props = CacheBuilder.newBuilder().build() ;
     protected AbstractBuilder parent;
 
-    ListBuilder inlist(final String key) throws ExecutionException {
+    public ListBuilder inlist(final String key) throws ExecutionException {
 
 
         return (ListBuilder) props.get(key, new Callable<ListBuilder>() {
@@ -29,7 +29,7 @@ public abstract class AbstractBuilder {
         });
     }
 
-    BasicBuilder inner(final String key) throws ExecutionException {
+    public BasicBuilder inner(final String key) throws ExecutionException {
         return (BasicBuilder) props.get(key, new Callable<BasicBuilder>() {
             @Override
             public BasicBuilder call() throws Exception {

@@ -3,6 +3,7 @@ package net.ion.talk.let;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
+import net.ion.framework.util.Debug;
 import net.ion.framework.util.InfinityThread;
 import net.ion.radon.client.AradonClient;
 import net.ion.radon.core.EnumClass;
@@ -26,9 +27,8 @@ public class TestScriptLet extends TestBaseLet{
                 	.path("script").addUrlPattern("/{path}").matchMode(EnumClass.IMatchMode.STARTWITH).handler(ScriptLet.class).build();
 		
 		//tserver.startAradon() ;
-        tserver.startRadon();
+//        tserver.startRadon();
 
-        new InfinityThread().startNJoin();
     }
 
     public void testMergeScript(){
@@ -44,18 +44,21 @@ public class TestScriptLet extends TestBaseLet{
         session.tranSync(new TransactionJob<Void>() {
             @Override
             public Void handle(WriteSession wsession) throws Exception {
-                wsession.createBy("script/test").property("script", "hello");
-                wsession.createBy("script/test/child1").property("script", "ryun");
-                wsession.createBy("script/test/child2").property("script", "bleujin");
+                wsession.pathBy("script/test").property("script", "hello");
+                wsession.pathBy("script/test/child1").property("script", "ryun");
+                wsession.pathBy("script/test/child2").property("script", "bleujin");
                 return null;
             }
         });
 
     	Response response = tserver.mockClient().fake().createRequest("/script/test").handle(Method.GET);
         assertEquals(200, response.getStatus().getCode());
+        assertTrue(response.getEntityAsText().contains("script"));
         assertTrue(response.getEntityAsText().contains("hello"));
         assertTrue(response.getEntityAsText().contains("child1"));
         assertTrue(response.getEntityAsText().contains("child2"));
+
+        new InfinityThread().startNJoin();
     }
 
 

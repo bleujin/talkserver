@@ -7,7 +7,7 @@
 <body>
     <div class="form">
 	<form method="POST">
-	<textarea style='height:400px; width: 600px;' name="script" id="script">${self.property(script).stringValue()};</textarea>
+	<textarea style='height:400px; width: 600px;' name="script" id="script">${self.property(script).stringValue()}</textarea>
 	<br/ >
 	<div class="property">
 	<button type="button" id="addProperty">Add property</button>
@@ -20,8 +20,10 @@
 	    <div id="result">
 	    </div>
 	</div>
-	<div id="child>
-	<ul>${foreach self.children() child }
+	<div id="child">
+	<ul>
+	<li><a href='${self.parent().fqn()}'>${self.parent().fqn()}</a></li><br>
+	${foreach self.children() child }
 		    <li><a href='${child.fqn}'>${child.fqn}</a></li>
 	${end}</ul>
 	</div>

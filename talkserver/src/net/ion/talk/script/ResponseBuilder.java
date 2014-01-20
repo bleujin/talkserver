@@ -9,6 +9,10 @@ public class ResponseBuilder {
     private ResponseBuilder() {
     }
 
+    public static ResponseBuilder create(){
+        return new ResponseBuilder();
+    }
+
     public static BasicBuilder createBasic() {
         return new BasicBuilder();
     }

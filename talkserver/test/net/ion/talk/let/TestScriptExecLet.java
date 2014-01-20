@@ -1,11 +1,14 @@
 package net.ion.talk.let;
 
 import net.ion.craken.node.ReadSession;
+import net.ion.craken.node.TransactionJob;
+import net.ion.craken.node.WriteSession;
 import net.ion.framework.util.Debug;
 import net.ion.radon.aclient.NewClient;
 import net.ion.radon.aclient.Request;
 import net.ion.radon.aclient.RequestBuilder;
 import net.ion.radon.aclient.Response;
+import net.ion.radon.client.AradonClient;
 import net.ion.radon.core.EnumClass.IMatchMode;
 import org.restlet.data.Method;
 
@@ -27,23 +30,24 @@ public class TestScriptExecLet extends TestBaseLet {
     }
 
 
-    public void testHttpScript() throws Exception {
+    public void testAjaxScript() throws Exception {
         NewClient client = tserver.mockClient().real();
-        String script = "session.tranSync(function(wsession){" +
-                "	wsession.pathBy('/bleujin').property('name', params.asString('name')).property('age', params.asInt('age'));" +
-                "}) ;" +
-                "" +
-                "session.pathBy('/bleujin').toRows('name, age').toString();";
-        Request request = new RequestBuilder()
+        String script = "rb.createBasic().property('name','ryun').build().toString();";
+        RequestBuilder requestBuilder = new RequestBuilder()
                 .setMethod(Method.POST)
-                .setUrl("http://" + InetAddress.getLocalHost().getHostAddress() + ":9000/aradon/jscript/bleujin.string")
-                .addParameter("name", "bleujin").addParameter("age", "20")
-                .addParameter("script", script).build();
+                .addParameter("script", script);
+
+        Request request = requestBuilder.setUrl("http://" + tserver.getHostAddress() + ":9000/execute/ajax.json").build();
 
         Response response = client.executeRequest(request).get();
+        assertEquals("application/json; charset=UTF-8",response.getContentType());
+        assertEquals("{\"name\":\"ryun\"}", response.getTextBody());
 
-        Debug.line(response.getTextBody());
+        request = requestBuilder.setUrl("http://" + tserver.getHostAddress() + ":9000/execute/ajax.string").build();
+
+        response = client.executeRequest(request).get();
+        assertEquals("text/plain; charset=UTF-8",response.getContentType());
+        assertEquals("{\"name\":\"ryun\"}", response.getTextBody());
         client.close();
     }
-
 }
