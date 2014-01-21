@@ -4,13 +4,13 @@ package net.ion.talk.script;
  * Author: Ryunhee Han
  * Date: 2014. 1. 14.
  */
-public class ResponseBuilder {
+public class TalkBuilder {
 
-    private ResponseBuilder() {
+    private TalkBuilder() {
     }
 
-    public static ResponseBuilder create(){
-        return new ResponseBuilder();
+    public static TalkBuilder create(){
+        return new TalkBuilder();
     }
 
     public static BasicBuilder createBasic() {

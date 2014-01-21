@@ -8,7 +8,7 @@ import net.ion.framework.util.IOUtil;
 import net.ion.framework.util.MapUtil;
 import net.ion.talk.script.BasicBuilder;
 import net.ion.talk.script.ListBuilder;
-import net.ion.talk.script.ResponseBuilder;
+import net.ion.talk.script.TalkBuilder;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

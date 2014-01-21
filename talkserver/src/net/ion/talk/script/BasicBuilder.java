@@ -24,7 +24,7 @@ public class BasicBuilder extends AbstractBuilder {
     }
 
     @Override
-    protected JsonResponse make() {
+    protected TalkResponse make() {
 
         JsonObject obj = JsonObject.create();
 
@@ -40,6 +40,6 @@ public class BasicBuilder extends AbstractBuilder {
             }
         }
 
-        return JsonResponse.create(obj);
+        return TalkResponse.create(obj);
     }
 }

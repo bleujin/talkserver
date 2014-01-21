@@ -22,9 +22,9 @@ import net.ion.script.rhino.RhinoScript;
 import net.ion.talk.ParameterMap;
 
 import net.ion.talk.script.BasicBuilder;
-import net.ion.talk.script.JsonResponse;
+import net.ion.talk.script.TalkResponse;
 import net.ion.talk.script.ListBuilder;
-import net.ion.talk.script.ResponseBuilder;
+import net.ion.talk.script.TalkBuilder;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Get;
@@ -61,7 +61,7 @@ public class ScriptExecLet implements IServiceLet {
 
         RhinoScript rscript = rengine.newScript(spath).defineScript(script);
 
-		rscript.bind("session", rsession).bind("params", ParameterMap.create(request.getFormParameter())).bind("rb", ResponseBuilder.create());
+		rscript.bind("session", rsession).bind("params", ParameterMap.create(request.getFormParameter())).bind("rb", TalkBuilder.create());
 
 		Object scriptResult = rscript.exec(new ResponseHandler<Object>() {
             @Override

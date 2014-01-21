@@ -12,7 +12,7 @@ import java.util.concurrent.ExecutionException;
 public class TestMakeResponse extends TestCase{
 
     public void testParent() throws ExecutionException {
-        AbstractBuilder parent = ResponseBuilder.createBasic();
+        AbstractBuilder parent = TalkBuilder.createBasic();
         AbstractBuilder child = parent.inner("child");
 
         assertEquals(parent, child.parent());
@@ -20,7 +20,7 @@ public class TestMakeResponse extends TestCase{
 
     public void testRoot() throws ExecutionException {
 
-        AbstractBuilder builder = ResponseBuilder.createBasic();
+        AbstractBuilder builder = TalkBuilder.createBasic();
         AbstractBuilder root = builder.root();
         assertEquals(builder, root);
 
@@ -29,49 +29,51 @@ public class TestMakeResponse extends TestCase{
     }
 
     public void testInnerWithSameKey() throws Exception {
-        BasicBuilder bbOne = ResponseBuilder.createBasic().inner("friends");
+        BasicBuilder bbOne = TalkBuilder.createBasic().inner("friends");
         BasicBuilder bbTwo = bbOne.parent().inner("friends");
         assertEquals(bbOne, bbTwo);
     }
 
     public void testInListWithSameKey() throws ExecutionException {
 
-        ListBuilder lbOne = ResponseBuilder.createBasic().inlist("friends");
+        ListBuilder lbOne = TalkBuilder.createBasic().inlist("friends");
         ListBuilder lbTwo = lbOne.parent().inlist("friends");
         assertEquals(lbOne, lbTwo);
     }
 
     public void testArray() throws ExecutionException {
-        JsonResponse response = ResponseBuilder.createList().add("alex").build();
+        TalkResponse response = TalkBuilder.createList().add("alex").build();
         assertEquals(new JsonArray().adds("alex"), response.toJsonArray());
     }
 
     public void testObject() throws ExecutionException {
-        JsonResponse response = ResponseBuilder.createBasic().property("name", "ryun").build();
+        TalkResponse response = TalkBuilder.createBasic().property("name", "ryun").build();
         JsonObject object = JsonObject.fromString("{\"name\":\"ryun\"}");
         assertEquals(object, response.toJsonObject());
     }
 
     public void testObjectInObject() throws Exception {
-        JsonResponse response = ResponseBuilder.createBasic().property("name", "ryun").inner("friends").property("name", "joshua").build();
+        TalkResponse response = TalkBuilder.createBasic().property("name", "ryun").inner("friends").property("name", "joshua").build();
         assertEquals("ryun", response.toJsonObject().get("name").getAsString());
         assertEquals("joshua", response.toJsonObject().get("friends").getAsJsonObject().get("name").getAsString());
     }
 
     public void testArrayInObject() throws ExecutionException {
-        JsonResponse response = ResponseBuilder.createBasic().property("name", "ryun").inlist("friends").inner("name").property("name","joshua").build();
+        TalkResponse response = TalkBuilder.createBasic().property("name", "ryun").inlist("friends").inner("name").property("name","joshua").build();
         assertEquals("joshua", response.toJsonObject().get("friends").getAsJsonArray().get(0).getAsJsonObject().get("name").getAsString());
     }
 
     public void testObjectInArray() throws ExecutionException {
-        JsonResponse response = ResponseBuilder.createList().add("one").inner("inner").property("name","ryun").build();
+        TalkResponse response = TalkBuilder.createList().add("one").inner("inner").property("name","ryun").build();
         assertEquals("ryun", response.toJsonArray().get(0).getAsJsonObject().get("name").getAsString());
     }
 
     public void testArrayInArrayInObject() throws ExecutionException {
-        JsonResponse response = ResponseBuilder.createBasic().property("name", "ryun").inlist("friends").append("alex", "jinsu").inlist("best").add("joshua").build();
+        TalkResponse response = TalkBuilder.createBasic().property("name", "ryun").inlist("friends").append("alex", "jinsu").inlist("best").add("joshua").build();
         assertEquals("joshua", response.toJsonObject().get("friends").getAsJsonArray().get(0).getAsJsonArray().get(0).getAsString());
     }
+    
+    
 
 }
 

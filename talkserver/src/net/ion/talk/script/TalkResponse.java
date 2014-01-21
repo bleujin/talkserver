@@ -8,16 +8,16 @@ import net.ion.framework.parse.gson.JsonObject;
  * Author: Ryunhee Han
  * Date: 2014. 1. 14.
  */
-public class JsonResponse {
+public class TalkResponse {
 
     private JsonElement element;
 
-    private JsonResponse(JsonElement element) {
+    private TalkResponse(JsonElement element) {
         this.element = element;
     }
 
-    public static JsonResponse create(JsonElement element){
-        return new JsonResponse(element);
+    public static TalkResponse create(JsonElement element){
+        return new TalkResponse(element);
     }
 
     @Override

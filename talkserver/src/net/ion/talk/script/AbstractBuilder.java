@@ -42,11 +42,11 @@ public abstract class AbstractBuilder {
     }
 
     public AbstractBuilder root() {
-        AbstractBuilder root = this;
-        while(!root.isRoot()){
-            root = root.parent();
+        AbstractBuilder parent = this.parent();
+        while(!parent.isRoot()){
+            parent = parent.parent();
         }
-        return root;
+        return parent;
     }
 
     public AbstractBuilder parent() {
@@ -66,9 +66,9 @@ public abstract class AbstractBuilder {
     }
 
 
-    protected abstract JsonResponse make();
+    protected abstract TalkResponse make();
 
-    public JsonResponse build(){
+    public TalkResponse build(){
         return root().make();
     }
 

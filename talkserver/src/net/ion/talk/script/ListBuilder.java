@@ -33,7 +33,7 @@ public class ListBuilder extends AbstractBuilder {
     }
 
     @Override
-    protected JsonResponse make() {
+    protected TalkResponse make() {
 
         JsonArray array = new JsonArray();
 
@@ -53,6 +53,6 @@ public class ListBuilder extends AbstractBuilder {
             array.adds(entry);
         }
 
-        return JsonResponse.create(array);
+        return TalkResponse.create(array);
     }
 }
