@@ -9,16 +9,21 @@
 	<form method="POST">
 	<textarea style='height:400px; width: 600px;' name="script" id="script">${self.property(script).stringValue()}</textarea>
 	<br/ >
+        <input type="submit" value="save">
+    </form>
 	<div class="property">
-	<button type="button" id="addProperty">Add property</button>
+	    <p>Property
+	    <br/ >example) name:alex, location:Oregon, money:10000</p>
+        <textarea style='height:50px; width: 600px;' id="params"></textarea>
 	</div>
-	<input type="submit" value="save">
-	</form>
 	</div>
 	<div id="execute">
 	    <button onclick="execute();">execute</button>
-	    <div id="result">
+	    <div>
+	        <p>Result</p>
+	        <textarea style='height:50px; width: 600px;' id="result"></textarea>
 	    </div>
+
 	</div>
 	<div id="child">
 	<ul>

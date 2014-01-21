@@ -3,6 +3,7 @@ package net.ion.talk.let;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
+import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.util.Debug;
 import net.ion.radon.aclient.NewClient;
 import net.ion.radon.aclient.Request;
@@ -12,7 +13,9 @@ import net.ion.radon.client.AradonClient;
 import net.ion.radon.core.EnumClass.IMatchMode;
 import org.restlet.data.Method;
 
+import java.io.IOException;
 import java.net.InetAddress;
+import java.util.concurrent.ExecutionException;
 
 public class TestScriptExecLet extends TestBaseLet {
 
@@ -50,4 +53,34 @@ public class TestScriptExecLet extends TestBaseLet {
         assertEquals("{\"name\":\"ryun\"}", response.getTextBody());
         client.close();
     }
+
+
+    public void testAjaxScriptWithParams() throws Exception {
+        NewClient client = tserver.mockClient().real();
+        String script = "rb.createBasic()" +
+                ".property('name', params.asString('name'))" +
+                ".property('location', params.asString('location'))" +
+                ".property('money', params.asInt('money'))" +
+                ".inner('friends').property('name', params.asString('friends')).build().toString();";
+
+        RequestBuilder requestBuilder = new RequestBuilder()
+                .setMethod(Method.POST)
+                .addParameter("script", script)
+                .addParameter("name", "alex")
+                .addParameter("location", "oregon")
+                .addParameter("money", "10000")
+                .addParameter("friends","joshua");
+
+        Request request = requestBuilder.setUrl("http://" + tserver.getHostAddress() + ":9000/execute/ajax.json").build();
+        Response response = client.executeRequest(request).get();
+
+        assertEquals(200, response.getStatusCode());
+        JsonObject obj = JsonObject.fromString(response.getTextBody());
+        assertEquals("alex", obj.get("name").getAsString());
+        assertEquals("oregon", obj.get("location").getAsString());
+        assertEquals(10000, obj.get("money").getAsInt());
+        assertEquals("joshua", obj.get("friends").getAsJsonObject().get("name").getAsString());
+
+    }
+
 }

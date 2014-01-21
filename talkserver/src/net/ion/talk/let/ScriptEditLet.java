@@ -29,7 +29,7 @@ import org.restlet.resource.Post;
 /**
  * Author: Ryunhee Han Date: 2013. 12. 26.
  */
-public class ScriptLet implements IServiceLet {
+public class ScriptEditLet implements IServiceLet {
 
 	@Get
 	public StringRepresentation viewScript(@AnContext TreeContext context, @AnRequest InnerRequest request) throws IOException {

@@ -3,8 +3,6 @@ package net.ion.talk.let;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
-import net.ion.framework.util.Debug;
-import net.ion.framework.util.InfinityThread;
 import net.ion.radon.client.AradonClient;
 import net.ion.radon.core.EnumClass;
 import org.restlet.Response;
@@ -14,7 +12,7 @@ import org.restlet.data.Method;
  * Author: Ryunhee Han
  * Date: 2013. 12. 26.
  */
-public class TestScriptLet extends TestBaseLet{
+public class TestScriptEditLet extends TestBaseLet{
 
 
     @Override
@@ -24,9 +22,9 @@ public class TestScriptLet extends TestBaseLet{
         tserver.cbuilder().aradon()
                     .sections()
                 	.restSection("script")
-                	.path("script").addUrlPattern("/{path}").matchMode(EnumClass.IMatchMode.STARTWITH).handler(ScriptLet.class).build();
+                	.path("script").addUrlPattern("/{path}").matchMode(EnumClass.IMatchMode.STARTWITH).handler(ScriptEditLet.class).build();
 		
-		//tserver.startAradon() ;
+		tserver.startAradon() ;
 //        tserver.startRadon();
 
     }
@@ -58,7 +56,7 @@ public class TestScriptLet extends TestBaseLet{
         assertTrue(response.getEntityAsText().contains("child1"));
         assertTrue(response.getEntityAsText().contains("child2"));
 
-        new InfinityThread().startNJoin();
+//        new InfinityThread().startNJoin();
     }
 
 

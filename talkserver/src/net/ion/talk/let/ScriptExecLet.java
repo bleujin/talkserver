@@ -60,6 +60,7 @@ public class ScriptExecLet implements IServiceLet {
             script = rsession.pathBy("/script/"+spath).property("script").stringValue();
 
         RhinoScript rscript = rengine.newScript(spath).defineScript(script);
+
 		rscript.bind("session", rsession).bind("params", ParameterMap.create(request.getFormParameter())).bind("rb", ResponseBuilder.create());
 
 		Object scriptResult = rscript.exec(new ResponseHandler<Object>() {
