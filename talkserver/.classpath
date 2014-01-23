@@ -18,6 +18,12 @@
 	<classpathentry kind="lib" path="lib/reflib/js-14.jar"/>
 	<classpathentry kind="lib" path="lib/reflib/asm-3.3.1.jar"/>
 	<classpathentry kind="lib" path="lib/ref/craken_0.5.jar"/>
+	<classpathentry kind="lib" path="lib/reflib/gcm-server.jar"/>
+	<classpathentry kind="lib" path="lib/reflib/gcm.jar"/>
+	<classpathentry kind="lib" path="lib/reflib/JavaPNS_2.2.jar"/>
+	<classpathentry kind="lib" path="lib/reflib/log4j-1.2.14.jar"/>
+	<classpathentry kind="lib" path="lib/reflib/bcprov-jdk15-146.jar"/>
+	<classpathentry kind="lib" path="lib/reflib/json_simple-1.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
