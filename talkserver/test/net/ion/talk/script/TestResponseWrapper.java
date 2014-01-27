@@ -1,0 +1,75 @@
+package net.ion.talk.script;
+
+import com.sun.xml.internal.ws.addressing.WsaClientTube;
+
+import net.ion.craken.node.ReadNode;
+import net.ion.craken.node.TransactionJob;
+import net.ion.craken.node.WriteNode;
+import net.ion.craken.node.WriteSession;
+import net.ion.craken.node.crud.TestBaseCrud;
+import net.ion.craken.node.crud.util.TransactionJobs;
+import net.ion.framework.parse.gson.JsonArray;
+import net.ion.framework.parse.gson.JsonObject;
+import net.ion.framework.util.Debug;
+
+public class TestResponseWrapper extends TestBaseCrud{
+
+	
+	public void testFlat() throws Exception {
+		session.tranSync(new TransactionJob<Void>() {
+			@Override
+			public Void handle(WriteSession wsession) throws Exception {
+				WriteNode bleujin = wsession.pathBy("/bleujin").property("name", "bleujin").property("age", 20);
+				return null;
+			}
+		}) ;
+		
+		ReadNode bleujin = session.pathBy("/bleujin") ;
+		TalkResponse response = TalkResponseBuilder.create().newInner().property(bleujin, "name, age").property("nick", "mine").build() ;
+		// {"nick":"mine","age":20,"name":"bleujin"}
+		assertEquals("mine", response.toJsonObject().asString("nick"));
+		assertEquals("bleujin", response.toJsonObject().asString("name"));
+		assertEquals(20, response.toJsonObject().asInt("age"));
+	}
+	
+	
+	public void testArray() throws Exception {
+		session.tranSync(new TransactionJob<Void>() {
+			@Override
+			public Void handle(WriteSession wsession) throws Exception {
+				wsession.pathBy("/bleujin").append("name", "bleu", "jin", "hero") ;
+				return null;
+			}
+		}) ;
+		
+		ReadNode bleujin = session.pathBy("/bleujin") ;
+		TalkResponse response = TalkResponseBuilder.create().newInner().property(bleujin, "name[], age").build() ;
+		// {name:[bleu, jin, hero], age:null}
+		assertEquals(3, response.toJsonObject().asJsonArray("name").size());
+	}
+	
+	
+	public void testComposite() throws Exception {
+		session.tranSync(new TransactionJob<Void>() {
+			@Override
+			public Void handle(WriteSession wsession) throws Exception {
+				WriteNode bleujin = wsession.pathBy("/bleujin").property("name", "bleujin").property("age", 20);
+				bleujin.addChild("hero").property("name", "hero").property("age", 21).parent() 
+					   .addChild("jin").property("name", "jin") ;
+				return null;
+			}
+		}) ;
+
+		
+		ReadNode bleujin = session.pathBy("/bleujin") ;
+		
+		TalkResponse response = TalkResponseBuilder.create().newInner().inlist("children", bleujin.children(), "name, age").build() ;
+		assertEquals(2, response.toJsonObject().asJsonArray("children").size());
+		
+		JsonArray array = TalkResponseBuilder.create().newInlist(bleujin.children(), "name, age").build().toJsonArray() ;
+		assertEquals(2, array.size());
+	}
+	
+	
+	
+}

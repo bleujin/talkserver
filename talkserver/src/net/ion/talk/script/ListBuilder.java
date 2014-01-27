@@ -1,11 +1,16 @@
 package net.ion.talk.script;
 
+import net.ion.craken.node.ReadNode;
 import net.ion.framework.parse.gson.JsonArray;
+import net.ion.framework.parse.gson.JsonElement;
 import net.ion.framework.util.ListUtil;
+import net.ion.framework.util.StringUtil;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Author: Ryunhee Han
@@ -13,46 +18,42 @@ import java.util.Map;
  */
 public class ListBuilder extends AbstractBuilder {
 
-    private List list = ListUtil.newList();
-
-    protected ListBuilder() {
+    private List<BasicBuilder> list = ListUtil.newList();
+    private BasicBuilder parent ;
+    private BasicBuilder current ;
+    protected ListBuilder(BasicBuilder parent) {
+        this.parent = parent ;
     }
 
-    protected ListBuilder(AbstractBuilder parent) {
-        this.parent = parent;
+	public BasicBuilder parent() {
+		return parent;
+	}
+    
+    public ListBuilder next(){
+		BasicBuilder created = new BasicBuilder(this) ;
+		list.add(created) ;
+		current = created ;
+    	return this ;
+    }
+    
+    public ListBuilder property(String name, Object value){
+    	current.property(name, value) ;
+    	return this ;
     }
 
-    public ListBuilder add(Object value){
-        list.add(value);
-        return this;
-    }
+	public ListBuilder property(ReadNode node, String values) {
+		return (ListBuilder) super.property(node, values);
+	}
 
-    public ListBuilder append(Object ... values){
-        list.addAll(ListUtil.toList(values));
-        return this;
-    }
 
+    
     @Override
-    protected TalkResponse make() {
-
+    protected JsonElement makeJson() {
         JsonArray array = new JsonArray();
-
-        Iterator<Map.Entry<String, Object>> iter = props.asMap().entrySet().iterator();
-        while(iter.hasNext()){
-            Map.Entry<String, Object> entry = iter.next();
-            Object value = entry.getValue();
-            if(value instanceof AbstractBuilder){
-                array.add(((AbstractBuilder) value).make().toJsonElement());
-            }
-
+        for(BasicBuilder b : list){
+        	array.add(b.makeJson());
         }
 
-        Iterator i = list.iterator();
-        while(i.hasNext()){
-            Object entry = i.next();
-            array.adds(entry);
-        }
-
-        return TalkResponse.create(array);
+        return array;
     }
 }

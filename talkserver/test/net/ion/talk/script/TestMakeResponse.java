@@ -1,9 +1,11 @@
 package net.ion.talk.script;
 
-import junit.framework.TestCase;
-import net.ion.framework.parse.gson.*;
-
 import java.util.concurrent.ExecutionException;
+
+import junit.framework.TestCase;
+import net.ion.framework.parse.gson.JsonArray;
+import net.ion.framework.parse.gson.JsonObject;
+import net.ion.framework.parse.gson.JsonUtil;
 
 /**
  * Author: Ryunhee Han
@@ -11,67 +13,56 @@ import java.util.concurrent.ExecutionException;
  */
 public class TestMakeResponse extends TestCase{
 
-    public void testParent() throws ExecutionException {
-        AbstractBuilder parent = TalkBuilder.createBasic();
-        AbstractBuilder child = parent.inner("child");
-
-        assertEquals(parent, child.parent());
-    }
-
     public void testRoot() throws ExecutionException {
+    	TalkResponseBuilder builder = TalkResponseBuilder.create();
+        AbstractBuilder child = builder.newInner().inner("child");
 
-        AbstractBuilder builder = TalkBuilder.createBasic();
-        AbstractBuilder root = builder.root();
-        assertEquals(builder, root);
+        assertEquals(true, child.parent().isRoot());
+    }
+    
+    public void testMakeFlat() throws Exception {
+    	// {"age":20,"name":"bleujin"}
+		TalkResponse response = TalkResponseBuilder.create().newInner().property("name", "bleujin").property("age", 20).build() ;
+		JsonObject json = response.toJsonObject() ;
+		
+		assertEquals("bleujin", json.asString("name")) ;
+		assertEquals(20, json.asInt("age")) ;
+	}
+    
+    public void testArray() throws Exception {
+    	// [{"age":20,"name":"bleujin"},{"name":"hero"}]
+		TalkResponse response = TalkResponseBuilder.create().newInlist().property("name", "bleujin").property("age", 20).next().property("name", "hero").build() ;
+		JsonArray json = response.toJsonArray() ;
+		
+		assertEquals("bleujin", json.toArray()[0].getAsJsonObject().asString("name") ) ;
+		assertEquals("hero", json.toArray()[1].getAsJsonObject().asString("name") ) ;
+	}
+    
+    public void testComposite() throws Exception {
+    	// {"age":20,"name":"bleujin", "children":[{"name":"jin", "age":15}, {"name":"hero"}]}
+    	
+    	TalkResponse response = TalkResponseBuilder.create().newInner().property("name", "bleujin").property("age", 20)
+    				.inlist("children").property("name", "jin").property("age", 15).next().property("name", "hero").build() ;
+    	
+    	String exp1 = response.toJsonElement().toString() ;
+    	
+    	response = TalkResponseBuilder.create().newInner().property("name", "bleujin").property("age", 20)
+				.inlist("children").property("name", "jin").property("age", 15).parent().inlist("children").property("name", "hero").build() ;
 
-        AbstractBuilder inner = builder.inner("inner");
-        assertEquals(root, inner.root());
+    	String exp2 = response.toJsonElement().toString() ;
+    	assertEquals(exp1, exp2);
     }
 
-    public void testInnerWithSameKey() throws Exception {
-        BasicBuilder bbOne = TalkBuilder.createBasic().inner("friends");
-        BasicBuilder bbTwo = bbOne.parent().inner("friends");
-        assertEquals(bbOne, bbTwo);
-    }
-
-    public void testInListWithSameKey() throws ExecutionException {
-
-        ListBuilder lbOne = TalkBuilder.createBasic().inlist("friends");
-        ListBuilder lbTwo = lbOne.parent().inlist("friends");
-        assertEquals(lbOne, lbTwo);
-    }
-
-    public void testArray() throws ExecutionException {
-        TalkResponse response = TalkBuilder.createList().add("alex").build();
-        assertEquals(new JsonArray().adds("alex"), response.toJsonArray());
-    }
-
-    public void testObject() throws ExecutionException {
-        TalkResponse response = TalkBuilder.createBasic().property("name", "ryun").build();
-        JsonObject object = JsonObject.fromString("{\"name\":\"ryun\"}");
-        assertEquals(object, response.toJsonObject());
-    }
-
-    public void testObjectInObject() throws Exception {
-        TalkResponse response = TalkBuilder.createBasic().property("name", "ryun").inner("friends").property("name", "joshua").build();
-        assertEquals("ryun", response.toJsonObject().get("name").getAsString());
-        assertEquals("joshua", response.toJsonObject().get("friends").getAsJsonObject().get("name").getAsString());
-    }
-
-    public void testArrayInObject() throws ExecutionException {
-        TalkResponse response = TalkBuilder.createBasic().property("name", "ryun").inlist("friends").inner("name").property("name","joshua").build();
-        assertEquals("joshua", response.toJsonObject().get("friends").getAsJsonArray().get(0).getAsJsonObject().get("name").getAsString());
-    }
-
-    public void testObjectInArray() throws ExecutionException {
-        TalkResponse response = TalkBuilder.createList().add("one").inner("inner").property("name","ryun").build();
-        assertEquals("ryun", response.toJsonArray().get(0).getAsJsonObject().get("name").getAsString());
-    }
-
-    public void testArrayInArrayInObject() throws ExecutionException {
-        TalkResponse response = TalkBuilder.createBasic().property("name", "ryun").inlist("friends").append("alex", "jinsu").inlist("best").add("joshua").build();
-        assertEquals("joshua", response.toJsonObject().get("friends").getAsJsonArray().get(0).getAsJsonArray().get(0).getAsString());
-    }
+    
+    public void testInInner() throws Exception {
+    	// {name:bleujin, age:21, bf:{name:jin, age:20}}
+    	TalkResponse response = TalkResponseBuilder.create().newInner().property("name", "bleujin").property("age", "21")
+    		.inner("bf").property("name", "jin").property("age", 20).build() ;
+    	
+    	assertEquals(20, JsonUtil.findSimpleObject(response.toJsonObject(), "bf.age")) ;
+	}
+    
+    
     
     
 

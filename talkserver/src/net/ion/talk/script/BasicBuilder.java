@@ -1,45 +1,82 @@
 package net.ion.talk.script;
 
-import net.ion.framework.parse.gson.JsonObject;
+import java.util.Map.Entry;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
-import java.util.Iterator;
-import java.util.Map;
+import net.ion.craken.node.ReadNode;
+import net.ion.craken.node.crud.ReadChildren;
+import net.ion.framework.parse.gson.JsonElement;
+import net.ion.framework.parse.gson.JsonObject;
+import net.ion.framework.util.ObjectUtil;
+import net.ion.framework.util.StringUtil;
 
 /**
- * Author: Ryunhee Han
- * Date: 2014. 1. 14.
+ * Author: Ryunhee Han Date: 2014. 1. 14.
  */
 public class BasicBuilder extends AbstractBuilder {
 
-    protected BasicBuilder() {
-    }
+	private AbstractBuilder parent;
 
-    public BasicBuilder(AbstractBuilder parent) {
-        this.parent = parent;
-    }
+	protected BasicBuilder(AbstractBuilder parent) {
+		this.parent = parent;
+	}
 
-    public BasicBuilder property(String key, Object value) {
-        props.put(key, value);
-        return this;
-    }
+	public AbstractBuilder parent() {
+		return parent;
+	}
 
-    @Override
-    protected TalkResponse make() {
+	public BasicBuilder property(String name, Object value) {
+		props().put(name, value);
+		return this;
+	}
 
-        JsonObject obj = JsonObject.create();
+	public BasicBuilder property(ReadNode node, String values) {
+		return (BasicBuilder) super.property(node, values);
+	}
 
-        Iterator<Map.Entry<String, Object>> iter = props.asMap().entrySet().iterator();
-        while(iter.hasNext()){
-            Map.Entry<String, Object> entry = iter.next();
-            String key = entry.getKey();
-            Object value = entry.getValue();
-            if(value instanceof AbstractBuilder){
-                obj.put(key, ((AbstractBuilder) value).make().toJsonElement());
-            }else{
-                obj.put(key, value);
-            }
-        }
+	public ListBuilder inlist(final String name) {
+		try {
+			ListBuilder result = (ListBuilder) props().get(name, new Callable<ListBuilder>() {
+				@Override
+				public ListBuilder call() {
+					ListBuilder lb = new ListBuilder(BasicBuilder.this);
+					props().put(name, lb);
+					return lb;
+				}
+			});
+			return result.next();
+		} catch (ExecutionException ex) {
+			throw new IllegalStateException(ex);
+		}
+	}
 
-        return TalkResponse.create(obj);
-    }
+	public AbstractBuilder inlist(String name, Iterable<ReadNode> nodes, String values) {
+		for (ReadNode node : nodes) {
+			inlist(name).property(node, values);
+		}
+
+		return this;
+	}
+
+	protected JsonElement makeJson() {
+		JsonObject json = JsonObject.create();
+
+		for (Entry<String, Object> entry : props().asMap().entrySet()) {
+			String name = entry.getKey();
+			Object value = entry.getValue();
+			if (value instanceof ListBuilder) {
+				json.put(name, ((ListBuilder) value).makeJson());
+			} else if (value instanceof BasicBuilder) {
+				json.put(name, ((BasicBuilder) value).makeJson());
+			} else if (value == ObjectUtil.NULL) {
+				json.put(name, null) ;
+			} else {
+				json.put(name, value);
+			}
+		}
+
+		return json;
+	}
+
 }

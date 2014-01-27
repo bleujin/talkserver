@@ -1,8 +1,11 @@
 package net.ion.talk.script;
 
+import com.google.common.base.Function;
+
 import net.ion.framework.parse.gson.JsonArray;
 import net.ion.framework.parse.gson.JsonElement;
 import net.ion.framework.parse.gson.JsonObject;
+import net.ion.framework.util.Debug;
 
 /**
  * Author: Ryunhee Han
@@ -11,7 +14,26 @@ import net.ion.framework.parse.gson.JsonObject;
 public class TalkResponse {
 
     private JsonElement element;
-
+    public static Function<JsonElement, JsonObject> FnJsonObject = new Function<JsonElement, JsonObject>(){
+    	@Override
+    	public JsonObject apply(JsonElement ele) {
+    		return ele.getAsJsonObject();
+    	}
+    };
+    public static Function<JsonElement, JsonArray> FnJsonArray = new Function<JsonElement, JsonArray>(){
+    	@Override
+    	public JsonArray apply(JsonElement ele) {
+    		return ele.getAsJsonArray();
+    	}
+    };
+    public static Function<JsonElement, Void> FnDebug = new Function<JsonElement, Void>(){
+    	@Override
+    	public Void apply(JsonElement ele) {
+    		Debug.debug(ele);
+    		return null ;
+    	}
+    };
+    
     private TalkResponse(JsonElement element) {
         this.element = element;
     }
@@ -25,15 +47,24 @@ public class TalkResponse {
         return element.toString();
     }
 
-    public JsonObject toJsonObject() {
-        return (JsonObject) element;
-    }
-
-    public JsonArray toJsonArray(){
-        return (JsonArray) element;
-    }
-
     public JsonElement toJsonElement(){
         return element;
     }
+    
+    
+    public <T> T transformer(Function<JsonElement, T> fn) {
+    	return fn.apply(element) ;
+    }
+
+	public JsonObject toJsonObject() {
+		return transformer(FnJsonObject);
+	}
+
+	public JsonArray toJsonArray() {
+		return transformer(FnJsonArray);
+	}
+
+	public void debugString() {
+		transformer(FnDebug) ;
+	}
 }
