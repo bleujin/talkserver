@@ -18,7 +18,7 @@ public class GCMSender {
         return new GCMSender(apiKey);
     }
 
-    public GoogleMessage newMessage(String token) {
+    public GoogleMessage sendTo(String token) {
         return GoogleMessage.create(token, this);
     }
 

@@ -25,7 +25,6 @@ public class MessageIDTest extends TestCase {
         }
 
         int actual = generated.size();
-
-        System.out.printf("%.2f", (float)(actual/total));
+        assertEquals(1.0f, (float)(actual/total));
     }
 }

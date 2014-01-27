@@ -25,11 +25,11 @@ public class SenderConfig {
     }
 
     public static SenderConfig createTest() {
-        return newBuilder().appleConfig("./resource/keystore/toontalk.p12", "toontalk", true).googleConfig("AIzaSyCB3YWgx-2ECRJ0sHIlcMvrb6gOfRIQo88").build();
+        return newBuilder().appleConfig("./talkserver/resource/keystore/toontalk.p12", "toontalk", true).googleConfig("AIzaSyCB3YWgx-2ECRJ0sHIlcMvrb6gOfRIQo88").build();
     }
 
     public static SenderConfig createRetryTestConfig(int retryCount) {
-        return newBuilder().appleConfig("./resource/keystore/toontalk.p12", "toontalk", true)
+        return newBuilder().appleConfig("./talkserver/resource/keystore/toontalk.p12", "toontalk", true)
                 .googleConfig("AIzaSyCB3YWgx-2ECRJ0sHIlcMvrb6gOfRIQo88")
                 .retryAttempts(retryCount)
                 .build();

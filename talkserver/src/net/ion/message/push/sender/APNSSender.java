@@ -26,7 +26,7 @@ public class APNSSender {
         return PushResponse.from(results.get(0));
     }
 
-    public AppleMessage newMessage(String token) {
+    public AppleMessage sendTo(String token) {
         return new AppleMessage(this, token);
     }
 }

@@ -41,7 +41,6 @@ public class SMSSenderTest extends TestCase {
     public void testInternationalSender_init() {
         SMSConfig config = new SMSConfig().newInternational();
 
-
         assertTrue(StringUtil.isNotBlank(config.getDeptCode()));
         assertTrue(StringUtil.isNotBlank(config.getUserCode()));
         assertTrue(StringUtil.isNotBlank(config.getHandlerURL()));

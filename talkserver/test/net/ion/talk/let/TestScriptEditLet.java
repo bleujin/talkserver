@@ -3,10 +3,16 @@ package net.ion.talk.let;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
+import net.ion.framework.util.InfinityThread;
+import net.ion.framework.util.ListUtil;
+import net.ion.framework.util.MapUtil;
 import net.ion.radon.client.AradonClient;
 import net.ion.radon.core.EnumClass;
 import org.restlet.Response;
 import org.restlet.data.Method;
+
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * Author: Ryunhee Han
@@ -24,8 +30,8 @@ public class TestScriptEditLet extends TestBaseLet{
                 	.restSection("script")
                 	.path("script").addUrlPattern("/{path}").matchMode(EnumClass.IMatchMode.STARTWITH).handler(ScriptEditLet.class).build();
 		
-		tserver.startAradon() ;
-//        tserver.startRadon();
+//		tserver.startAradon() ;
+        tserver.startRadon();
 
     }
 
@@ -56,9 +62,14 @@ public class TestScriptEditLet extends TestBaseLet{
         assertTrue(response.getEntityAsText().contains("child1"));
         assertTrue(response.getEntityAsText().contains("child2"));
 
-//        new InfinityThread().startNJoin();
+        new InfinityThread().startNJoin();
     }
 
 
+
+    public void testName() throws Exception {
+
+
+    }
 }
 

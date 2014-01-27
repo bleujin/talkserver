@@ -43,7 +43,7 @@ public class Sender {
         return sender;
     }
 
-    public PushMessage createMessage(String... receivers) {
+    public PushMessage sendTo(String... receivers) {
         return new PushMessage(this, receivers);
     }
 
@@ -99,12 +99,12 @@ public class Sender {
                 PushResponse response = null;
 
                 if (strategy.vender(receiver).isApple()) {
-                    response = apnsSender.newMessage(token)
+                    response = apnsSender.sendTo(token)
                             .message(pushMessage.getMessage())
                             .badge(strategy.getBadge())
                             .sound(strategy.getSound()).push();
                 } else if (strategy.vender(receiver).isGoogle()) {
-                    response = gcmSender.newMessage(token)
+                    response = gcmSender.sendTo(token)
                             .message(pushMessage.getMessage())
                             .delayWhenIdle(strategy.getDelayWhenIdle())
                             .timeToLive(strategy.getTimeToLive())

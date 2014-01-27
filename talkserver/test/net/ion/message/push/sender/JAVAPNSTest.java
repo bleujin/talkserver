@@ -14,46 +14,36 @@ import javapns.notification.Payload;
 import javapns.notification.PushNotificationManager;
 import javapns.notification.PushNotificationPayload;
 import javapns.notification.PushedNotification;
-import junit.framework.TestCase;
 
 import org.json.JSONException;
 
-public class JAVAPNSTest extends TestCase{
-
-    String keystore = "./resource/keystore/toontalk.p12";
-    String password = "toontalk";
-    String deviceToken = "a7303190e155b41450e7ce0d7262114b3fa4d2fb2081da2f9786356e973114e8";
+public class JAVAPNSTest extends BaseTest{
 
     private PushedNotification sendPayload(Payload payload) throws KeystoreException, CommunicationException, InvalidDeviceTokenFormatException {
 
         PushNotificationManager pushManager = new PushNotificationManager();
 
         try {
-            AppleNotificationServer server = new AppleNotificationServerBasicImpl(keystore, password, true);
+            AppleNotificationServer server = new AppleNotificationServerBasicImpl(KEY_STORE_PATH, PASSWORD, true);
             pushManager.initializeConnection(server);
 
-            BasicDevice device = new BasicDevice(deviceToken);
-
+            BasicDevice device = new BasicDevice(APPLE_DEVICE_TOKEN);
             BasicDevice.validateTokenFormat(device.getToken());
             PushedNotification notification = pushManager.sendNotification(device, payload, true);
 
             return notification;
-
         } finally {
             pushManager.stopConnection();
         }
     }
 
     public void testSendTest() throws InvalidDeviceTokenFormatException, CommunicationException, KeystoreException {
-
         PushedNotification pushedNotification = sendPayload(PushNotificationPayload.test());
         printPushedNotification(pushedNotification);
-
     }
 
     public void testFeedback() throws CommunicationException, KeystoreException {
-        List<Device> deviceList = Push.feedback(keystore, password, true);
-
+        List<Device> deviceList = Push.feedback(KEY_STORE_PATH, PASSWORD, true);
         for (Device device : deviceList) {
             System.out.println(device.getToken());
         }
@@ -73,5 +63,4 @@ public class JAVAPNSTest extends TestCase{
     private void printPushedNotification(PushedNotification pushed) {
         System.out.println("  " + pushed.toString());
     }
-
 }
