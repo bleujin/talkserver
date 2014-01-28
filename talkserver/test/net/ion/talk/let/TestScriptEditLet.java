@@ -28,7 +28,7 @@ public class TestScriptEditLet extends TestBaseLet{
         tserver.cbuilder().aradon()
                     .sections()
                 	.restSection("script")
-                	.path("script").addUrlPattern("/{path}").matchMode(EnumClass.IMatchMode.STARTWITH).handler(ScriptEditLet.class).build();
+                	.path("script").addUrlPattern("/").matchMode(EnumClass.IMatchMode.STARTWITH).handler(ScriptEditLet.class).build();
 		
 //		tserver.startAradon() ;
         tserver.startRadon();
