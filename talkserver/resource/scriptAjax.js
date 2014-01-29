@@ -1,8 +1,24 @@
 var execute = function(){
 
 
-    var json = JSON.parse("{}");
-    json.script = $("#script").val();
+//    var data = JSON.parse("{}");
+//    data.script = $("#script").val();
+//
+//    if($("#params").val().trim().length != 0){
+//        var params = $("#params").val().split(",");
+//
+//        params.map(function(entry){
+//            var entry_split = entry.split(":");
+//            var key = entry_split[0];
+//            var value = entry_split[1];
+//            data[key.trim()] = value.trim();
+//        });
+//    }
+
+    var data = "";
+
+    data += "script=" + $("#script").val();
+
 
     if($("#params").val().trim().length != 0){
         var params = $("#params").val().split(",");
@@ -11,15 +27,15 @@ var execute = function(){
             var entry_split = entry.split(":");
             var key = entry_split[0];
             var value = entry_split[1];
-            json[key.trim()] = value.trim();
+            data += "&" + key.trim() + "=" + value.trim();
         });
     }
 
 
     $.ajax({
         type: "POST",
-        url: "/execute/ajax.string",
-        data: json,
+        url: "/execute/ajax.json",
+        data: data,
         dataType: "html"
     }).done(function(msg){
             $("#result").html(msg);

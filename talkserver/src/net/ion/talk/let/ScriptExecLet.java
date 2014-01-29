@@ -1,13 +1,18 @@
 package net.ion.talk.let;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.util.Map.Entry;
 import java.util.StringTokenizer;
 
 import com.google.common.base.Splitter;
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.aradon.bean.RhinoEntry;
+import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.ReadSession;
+import net.ion.framework.parse.gson.JsonElement;
 import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.util.Debug;
 import net.ion.framework.util.StringUtil;
@@ -28,6 +33,8 @@ import net.ion.talk.script.BasicBuilder;
 import net.ion.talk.script.TalkResponse;
 import net.ion.talk.script.ListBuilder;
 import net.ion.talk.script.TalkResponseBuilder;
+import org.mozilla.javascript.NativeJavaObject;
+import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Get;
@@ -59,7 +66,7 @@ public class ScriptExecLet implements IServiceLet {
         String format = splitPath[1];
 
         String script;
-        if(spath.equals("ajax"))
+        if(spath.equals("/ajax"))
             script = request.getFormParameter().get("script").toString();
         else
             script = rsession.pathBy("/script"+spath).property("script").stringValue();
@@ -68,10 +75,13 @@ public class ScriptExecLet implements IServiceLet {
 
 		rscript.bind("session", rsession).bind("params", ParameterMap.create(request.getFormParameter())).bind("rb", TalkResponseBuilder.create());
 
-		Object scriptResult = rscript.exec(new ResponseHandler<Object>() {
+		Object result = rscript.exec(new ResponseHandler<Object>() {
             @Override
             public Object onSuccess(RhinoScript script, Object rtnValue, long elapsedTime) {
-                return rtnValue;
+                if(rtnValue instanceof NativeJavaObject)
+                    return ((NativeJavaObject)rtnValue).unwrap();
+                else
+                    return rtnValue;
             }
 
             @Override
@@ -80,10 +90,12 @@ public class ScriptExecLet implements IServiceLet {
             }
         });
 
-        if(format.equals("json"))
-            return new JsonObjectRepresentation(scriptResult.toString()) ;
+        if(result instanceof JsonElement)
+            return new JsonObjectRepresentation(result);
+        else if(result instanceof InputStream)
+            return new InputRepresentation((InputStream) result);
         else
-            return new StringRepresentation(scriptResult.toString());
+            return new StringRepresentation(result.toString());
 	}
 
 }

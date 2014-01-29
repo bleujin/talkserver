@@ -37,9 +37,10 @@ public class TestExpression extends TestBaseCrud{
 		
 		
 		Parser<MyProjection> parser = ExpressionParser.projections(MyProjection.class) ;
+
 		MyProjection sp = TerminalParser.parse(parser, "name as Name, substring(case when manager.age > 20 then 'high' else 'lower' end, 2) mname, manager.[loc] as loc");
 		
-		
+
 		List<Map<String, Object>> list = sp.mapList(ListUtil.toList(dev)) ;
 		
 		Debug.line(list); 

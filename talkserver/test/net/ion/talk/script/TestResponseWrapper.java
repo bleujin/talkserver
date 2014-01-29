@@ -75,7 +75,5 @@ public class TestResponseWrapper extends TestBaseCrud{
 		JsonArray array = newBuilder.newInlist(bleujin.children(), "name, age").build().toJsonArray() ;
 		assertEquals(2, array.size());
 	}
-	
-	
-	
+
 }
