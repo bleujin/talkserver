@@ -2,12 +2,15 @@ package net.ion.talk.let;
 
 import java.io.IOException;
 import java.util.Map.Entry;
+import java.util.StringTokenizer;
 
+import com.google.common.base.Splitter;
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.aradon.bean.RhinoEntry;
 import net.ion.craken.node.ReadSession;
 import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.util.Debug;
+import net.ion.framework.util.StringUtil;
 import net.ion.nradon.let.IServiceLet;
 import net.ion.radon.core.TreeContext;
 import net.ion.radon.core.annotation.AnContext;
@@ -45,19 +48,21 @@ public class ScriptExecLet implements IServiceLet {
 	}
 	
 	@Post
-	public Representation execute(@AnContext TreeContext context, @AnRequest InnerRequest request,
-                                  @PathParam("path") String spath, @PathParam("format") String format) throws IOException{
+	public Representation execute(@AnContext TreeContext context, @AnRequest InnerRequest request) throws IOException{
 
         RepositoryEntry r = context.getAttributeObject(RepositoryEntry.EntryName, RepositoryEntry.class);
         ReadSession rsession = r.login();
         RhinoEntry rengine = context.getAttributeObject(RhinoEntry.EntryName, RhinoEntry.class);
 
+        String[] splitPath = StringUtil.split(request.getPathReference().getPath(), ".");
+        String spath = splitPath[0];
+        String format = splitPath[1];
 
         String script;
         if(spath.equals("ajax"))
             script = request.getFormParameter().get("script").toString();
         else
-            script = rsession.pathBy("/script/"+spath).property("script").stringValue();
+            script = rsession.pathBy("/script"+spath).property("script").stringValue();
 
         RhinoScript rscript = rengine.newScript(spath).defineScript(script);
 

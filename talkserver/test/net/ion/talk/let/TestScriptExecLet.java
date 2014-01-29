@@ -26,7 +26,7 @@ public class TestScriptExecLet extends TestBaseLet {
         super.setUp();
         tserver.cbuilder().aradon()
                 .sections().restSection("execute")
-                .path("execute").addUrlPattern("/{path}.{format}").matchMode(IMatchMode.STARTWITH).handler(ScriptExecLet.class)
+                .path("execute").addUrlPattern("/").matchMode(IMatchMode.STARTWITH).handler(ScriptExecLet.class)
                 .build();
         tserver.startRadon();
         session = tserver.readSession();
@@ -35,7 +35,7 @@ public class TestScriptExecLet extends TestBaseLet {
 
     public void testAjaxScript() throws Exception {
         NewClient client = tserver.mockClient().real();
-        String script = "rb.createBasic().property('name','ryun').build().toString();";
+        String script = "rb.create().property('name','ryun').build().toString();";
         RequestBuilder requestBuilder = new RequestBuilder()
                 .setMethod(Method.POST)
                 .addParameter("script", script);
@@ -57,7 +57,7 @@ public class TestScriptExecLet extends TestBaseLet {
 
     public void testAjaxScriptWithParams() throws Exception {
         NewClient client = tserver.mockClient().real();
-        String script = "rb.createBasic()" +
+        String script = "rb.create()" +
                 ".property('name', params.asString('name'))" +
                 ".property('location', params.asString('location'))" +
                 ".property('money', params.asInt('money'))" +
