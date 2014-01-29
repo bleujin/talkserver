@@ -31,11 +31,12 @@ public abstract class AbstractBuilder {
                 return basic;
             }
         });
-
     }
     
 	public AbstractBuilder property(ReadNode node, String values) {
 		String[] cols = StringUtil.split(values, ",") ;
+		
+		
 		
 		for(String col : cols){
 			String propId = StringUtil.trim(col) ;

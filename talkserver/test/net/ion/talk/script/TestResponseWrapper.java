@@ -14,6 +14,12 @@ import net.ion.framework.util.Debug;
 
 public class TestResponseWrapper extends TestBaseCrud{
 
+	private TalkResponseBuilder newBuilder;
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
+		this.newBuilder = TalkResponseBuilder.create() ;
+	}
 	
 	public void testFlat() throws Exception {
 		session.tranSync(new TransactionJob<Void>() {
@@ -25,7 +31,7 @@ public class TestResponseWrapper extends TestBaseCrud{
 		}) ;
 		
 		ReadNode bleujin = session.pathBy("/bleujin") ;
-		TalkResponse response = TalkResponseBuilder.create().newInner().property(bleujin, "name, age").property("nick", "mine").build() ;
+		TalkResponse response = newBuilder.newInner().property(bleujin, "name, age").property("nick", "mine").build() ;
 		// {"nick":"mine","age":20,"name":"bleujin"}
 		assertEquals("mine", response.toJsonObject().asString("nick"));
 		assertEquals("bleujin", response.toJsonObject().asString("name"));
@@ -43,7 +49,7 @@ public class TestResponseWrapper extends TestBaseCrud{
 		}) ;
 		
 		ReadNode bleujin = session.pathBy("/bleujin") ;
-		TalkResponse response = TalkResponseBuilder.create().newInner().property(bleujin, "name[], age").build() ;
+		TalkResponse response = newBuilder.newInner().property(bleujin, "name[], age").build() ;
 		// {name:[bleu, jin, hero], age:null}
 		assertEquals(3, response.toJsonObject().asJsonArray("name").size());
 	}
@@ -63,10 +69,10 @@ public class TestResponseWrapper extends TestBaseCrud{
 		
 		ReadNode bleujin = session.pathBy("/bleujin") ;
 		
-		TalkResponse response = TalkResponseBuilder.create().newInner().inlist("children", bleujin.children(), "name, age").build() ;
+		TalkResponse response = newBuilder.newInner().inlist("children", bleujin.children(), "name, age").build() ;
 		assertEquals(2, response.toJsonObject().asJsonArray("children").size());
 		
-		JsonArray array = TalkResponseBuilder.create().newInlist(bleujin.children(), "name, age").build().toJsonArray() ;
+		JsonArray array = newBuilder.newInlist(bleujin.children(), "name, age").build().toJsonArray() ;
 		assertEquals(2, array.size());
 	}
 	
