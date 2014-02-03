@@ -32,7 +32,7 @@ public class TestStaticFileLet extends TestBaseLet{
     public void testFileExist() throws Exception {
         NewClient nc = tserver.mockClient().real();
         Response response = nc.prepareGet("http://" + InetAddress.getLocalHost().getHostAddress() + ":9000/static/jquery-1.10.2.min.js").execute().get();
-        FileInputStream fis = new FileInputStream("./talkserver/resource/jquery-1.10.2.min.js");
+        FileInputStream fis = new FileInputStream("./resource/jquery-1.10.2.min.js");
         assertEquals(fis.getChannel().size(), response.getBodyAsBytes().length);
     }
 

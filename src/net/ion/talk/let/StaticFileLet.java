@@ -28,7 +28,7 @@ public class StaticFileLet implements IServiceLet {
 	@Get
 	public Representation deliverFile(@AnRequest InnerRequest request) throws IOException {
 
-		final String resourceHome = "./talkserver/resource/";
+		final String resourceHome = "./resource/";
 		
 		File file = new File(resourceHome + request.getPathReference().getPath());
 		if (file.exists()) {
