@@ -39,7 +39,9 @@ public class TestStaticFileLet extends TestBaseLet{
     public void testFileNotExist() throws IOException, ExecutionException, InterruptedException {
         NewClient nc = tserver.mockClient().real();
         Response response = nc.prepareGet("http://" + InetAddress.getLocalHost().getHostAddress() + ":9000/static/notFound").execute().get();
-        assertEquals(500, response.getStatusCode());
+        assertEquals(404, response.getStatusCode());
     }
+
+
 
 }

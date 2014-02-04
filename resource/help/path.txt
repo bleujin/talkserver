@@ -3,9 +3,25 @@
 	stateMessage:잠수탐, gcmId:uj3ndianmodojf, serviceCondition:activated, id:idhan2001@gmail.com,
 	@friends:[users/{userId}], @items:[/stores/{itemId}]
 
+/users/{userId}/connection
+    property{
+        isConnected: true,
+        server:emanon
+    }
 
 /rooms/{roomId}/members/{memberId}
 			   /messages/{messageId}
 			   property:{message:HelloWorld, @sender:/users/bleujin, requestId:01124, state:smile, @character:/chars/{charId}}
 
-/notifys/{notifyId}	
+/notifies/{userId}
+    property{
+        lastNotifyId: 1
+    }
+
+/notifies/{userId}/{notifyId}
+    property{
+        delegateServer:emanon
+        createdAt:1391476940865
+        messageId:
+        roomId:1
+    }

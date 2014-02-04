@@ -90,12 +90,15 @@ public class ScriptExecLet implements IServiceLet {
             }
         });
 
-        if(result instanceof JsonElement)
+        Debug.line(result);
+
+        if(format.equals("json")){
             return new JsonObjectRepresentation(result);
-        else if(result instanceof InputStream)
-            return new InputRepresentation((InputStream) result);
-        else
+        }else if(format.equals("string")){
             return new StringRepresentation(result.toString());
+        }else{
+            return new InputRepresentation((InputStream) result);
+        }
 	}
 
 }

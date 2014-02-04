@@ -58,7 +58,7 @@ public class TestParameterMap extends TestCase {
 	public void testMultiPartType() throws Exception {
 		
 		Response response = client.preparePut("http://61.250.201.157:8999/test/param")
-			.addBodyPart(new StringPart("string", "?�녕"))
+			.addBodyPart(new StringPart("string", "안녕"))
 			.addBodyPart(new StringPart("int", "1"))
 			.addBodyPart(new StringPart("long", "1"))
 			.addBodyPart(new FilePart("file", new File("./resource/testScript.js")))

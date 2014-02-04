@@ -3,6 +3,7 @@ package net.ion.talk;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import net.ion.craken.node.ReadSession;
+import net.ion.framework.util.Debug;
 import net.ion.nradon.WebSocketConnection;
 
 public class TestTalkEngine extends TestCase {
@@ -53,7 +54,8 @@ class DummyHandler implements TalkHandler {
 
 	@Override
 	public void onMessage(TalkEngine tengine, UserConnection uconn, ReadSession rsession, TalkMessage tmessage) {
-		Assert.assertEquals("bleujin", uconn.id()) ;
+        Debug.line(tengine, uconn, rsession, tmessage);
+        Assert.assertEquals("bleujin", uconn.id()) ;
 	}
 
 	@Override

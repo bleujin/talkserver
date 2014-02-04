@@ -18,6 +18,7 @@ public class TestScriptTalkHandler extends TestCase {
 		this.engine = TalkEngine.test() ;
 		final ScriptTalkHandler handler = new ScriptTalkHandler();
 		engine.registerHandler(handler) ;
+        engine.readSession();
 	}
 	
 	@Override

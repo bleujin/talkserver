@@ -35,17 +35,18 @@ public class TestScriptExecLet extends TestBaseLet {
 
     public void testAjaxScript() throws Exception {
         NewClient client = tserver.mockClient().real();
-        String script = "rb.create().property('name','ryun').build().toString();";
+        String script = "rb.create().newInner().property('name','ryun').build().toJsonObject();";
         RequestBuilder requestBuilder = new RequestBuilder()
                 .setMethod(Method.POST)
                 .addParameter("script", script);
 
-        Request request = requestBuilder.setUrl("http://" + tserver.getHostAddress() + ":9000/execute/ajax.json").build();
+        Request request = requestBuilder.setUrl("http://" + tserver.getHostAddress() + ":9000/execute/ajax.json" +
+                "").build();
 
         Response response = client.executeRequest(request).get();
         assertEquals("application/json; charset=UTF-8",response.getContentType());
         assertEquals("{\"name\":\"ryun\"}", response.getTextBody());
-
+//
         request = requestBuilder.setUrl("http://" + tserver.getHostAddress() + ":9000/execute/ajax.string").build();
 
         response = client.executeRequest(request).get();
@@ -57,11 +58,11 @@ public class TestScriptExecLet extends TestBaseLet {
 
     public void testAjaxScriptWithParams() throws Exception {
         NewClient client = tserver.mockClient().real();
-        String script = "rb.create()" +
+        String script = "rb.create().newInner()" +
                 ".property('name', params.asString('name'))" +
                 ".property('location', params.asString('location'))" +
                 ".property('money', params.asInt('money'))" +
-                ".inner('friends').property('name', params.asString('friends')).build().toString();";
+                ".inner('friends').property('name', params.asString('friends')).build().toJsonObject();";
 
         RequestBuilder requestBuilder = new RequestBuilder()
                 .setMethod(Method.POST)
@@ -75,6 +76,8 @@ public class TestScriptExecLet extends TestBaseLet {
         Response response = client.executeRequest(request).get();
 
         assertEquals(200, response.getStatusCode());
+
+        assertEquals("application/json; charset=UTF-8", response.getContentType());
         JsonObject obj = JsonObject.fromString(response.getTextBody());
         assertEquals("alex", obj.get("name").getAsString());
         assertEquals("oregon", obj.get("location").getAsString());

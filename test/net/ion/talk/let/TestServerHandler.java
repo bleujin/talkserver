@@ -33,5 +33,9 @@ public class TestServerHandler extends TestBaseLet {
 		InetAddress address = InetAddress.getLocalHost();
 		Debug.line(address.getHostName()) ;
 	}
-	
+
+    @Override
+    public void tearDown() throws Exception {
+        super.tearDown();    //To change body of overridden methods use File | Settings | File Templates.
+    }
 }

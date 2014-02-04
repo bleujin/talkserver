@@ -17,7 +17,7 @@ var execute = function(){
 
     var data = "";
 
-    data += "script=" + $("#script").val();
+    data += "script=" + encodeURIComponent($("#script").val());
 
 
     if($("#params").val().trim().length != 0){

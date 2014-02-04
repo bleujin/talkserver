@@ -3,6 +3,7 @@ package net.ion.talk.let;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
+import net.ion.craken.node.crud.RepositoryImpl;
 import net.ion.framework.util.InfinityThread;
 import net.ion.framework.util.ListUtil;
 import net.ion.framework.util.MapUtil;
@@ -63,13 +64,6 @@ public class TestScriptEditLet extends TestBaseLet{
         assertTrue(response.getEntityAsText().contains("child2"));
 
         new InfinityThread().startNJoin();
-    }
-
-
-
-    public void testName() throws Exception {
-
-
     }
 }
 
