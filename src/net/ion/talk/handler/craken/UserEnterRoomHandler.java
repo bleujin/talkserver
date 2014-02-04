@@ -1,5 +1,8 @@
 package net.ion.talk.handler.craken;
 
+import java.util.Iterator;
+import java.util.Map;
+
 import net.ion.craken.listener.CDDHandler;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
@@ -7,13 +10,10 @@ import net.ion.craken.node.WriteSession;
 import net.ion.craken.tree.PropertyId;
 import net.ion.craken.tree.PropertyValue;
 import net.ion.craken.tree.TreeNodeKey;
-import net.ion.framework.util.Debug;
+
 import org.infinispan.atomic.AtomicMap;
 import org.infinispan.notifications.cachelistener.event.CacheEntryModifiedEvent;
-
-import java.util.Iterator;
-import java.util.Map;
-import java.util.UUID;
+import org.infinispan.notifications.cachelistener.event.CacheEntryRemovedEvent;
 
 /**
  * Created with IntelliJ IDEA.
@@ -35,7 +35,7 @@ public class UserEnterRoomHandler implements CDDHandler {
     }
 
     @Override
-    public TransactionJob<Void> nextTran(final Map<String, String> resolveMap, CacheEntryModifiedEvent<TreeNodeKey, AtomicMap<PropertyId, PropertyValue>> event) {
+    public TransactionJob<Void> modified(final Map<String, String> resolveMap, CacheEntryModifiedEvent<TreeNodeKey, AtomicMap<PropertyId, PropertyValue>> event) {
 
         final String roomId = resolveMap.get("roomId");
         return new TransactionJob<Void>() {
@@ -57,4 +57,9 @@ public class UserEnterRoomHandler implements CDDHandler {
             }
         };
     }
+
+	@Override
+	public TransactionJob<Void> deleted(Map<String, String> resolveMap, CacheEntryRemovedEvent<TreeNodeKey, AtomicMap<PropertyId, PropertyValue>> event) {
+		return null;
+	}
 }

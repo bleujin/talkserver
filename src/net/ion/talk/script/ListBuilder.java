@@ -1,6 +1,7 @@
 package net.ion.talk.script;
 
 import net.ion.craken.node.ReadNode;
+import net.ion.craken.node.crud.ReadChildren;
 import net.ion.framework.parse.gson.JsonArray;
 import net.ion.framework.parse.gson.JsonElement;
 import net.ion.framework.util.ListUtil;
@@ -46,6 +47,16 @@ public class ListBuilder extends AbstractBuilder {
 	}
 
 
+	public AbstractBuilder property(Iterable<ReadNode> nodes, String values) {
+		Iterator<ReadNode> iter = nodes.iterator() ;
+		while(iter.hasNext()){
+			ReadNode node = iter.next() ;
+			property(node, values) ;
+			if (iter.hasNext()) next() ;
+		}
+		return this;
+	}
+
     
     @Override
     protected JsonElement makeJson() {
@@ -56,4 +67,5 @@ public class ListBuilder extends AbstractBuilder {
 
         return array;
     }
+
 }
