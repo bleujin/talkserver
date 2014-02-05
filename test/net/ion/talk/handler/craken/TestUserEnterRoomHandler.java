@@ -2,9 +2,6 @@ package net.ion.talk.handler.craken;
 
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
-import net.ion.framework.util.InfinityThread;
-
-import java.util.concurrent.CountDownLatch;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,7 +15,7 @@ public class TestUserEnterRoomHandler extends TestCrakenHandlerBase{
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        rsession.workspace().cddm().add(new UserEnterRoomHandler(rsession));
+        rsession.workspace().cddm().add(new UserEnterRoomHandler());
     }
 
     public void testUserIn() throws Exception {

@@ -11,17 +11,17 @@
 
 /rooms/{roomId}/members/{memberId}
 			   /messages/{messageId}
-			   property:{message:HelloWorld, @sender:/users/bleujin, requestId:01124, state:smile, @character:/chars/{charId}}
+			   property:{message:HelloWorld, @sender:/users/bleujin, requestId:01124, createdAt:1391476940865, state:smile, @character:/chars/{charId}}
 
 /notifies/{userId}
     property{
         lastNotifyId: 1
     }
 
-/notifies/{userId}/{notifyId}
+/notifies/{userId}/{userId}/{notifyId}
     property{
         delegateServer:emanon
         createdAt:1391476940865
-        messageId:
-        roomId:1
+        @message:/rooms/{roomId}/members/{memberId}
+        @roomId:/rooms/{roomId}
     }

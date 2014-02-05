@@ -1,8 +1,7 @@
 package net.ion.message.push.sender.strategy;
 
-import junit.framework.TestCase;
 import net.ion.message.push.sender.BaseTest;
-import net.ion.message.push.sender.Vendor;
+import net.ion.message.push.sender.Vender;
 
 public class TestStrategies extends BaseTest{
 
@@ -34,8 +33,8 @@ public class TestStrategies extends BaseTest{
 			}
 
 			@Override
-			public Vendor vender(String targetId) {
-				return Vendor.APPLE;
+			public Vender vender(String targetId) {
+				return Vender.APPLE;
 			}
 
 			@Override
@@ -79,8 +78,8 @@ public class TestStrategies extends BaseTest{
 			}
 
 			@Override
-			public Vendor vender(String targetId) {
-				return Vendor.GOOGLE;
+			public Vender vender(String targetId) {
+				return Vender.GOOGLE;
 			}
 
 			@Override

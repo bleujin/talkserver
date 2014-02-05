@@ -1,6 +1,6 @@
 package net.ion.message.push.sender.strategy;
 
-import net.ion.message.push.sender.Vendor;
+import net.ion.message.push.sender.Vender;
 
 public interface PushStrategy {
 
@@ -11,7 +11,7 @@ public interface PushStrategy {
     public String getCollapseKey();
     public boolean getDelayWhenIdle();
 
-    public Vendor vender(String targetId) ;
+    public Vender vender(String targetId) ;
     public String deviceId(String targetId) ;
 
 }

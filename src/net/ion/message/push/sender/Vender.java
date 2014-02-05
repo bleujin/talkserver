@@ -1,6 +1,6 @@
 package net.ion.message.push.sender;
 
-public enum Vendor {
+public enum Vender {
 
     APPLE, GOOGLE;
 

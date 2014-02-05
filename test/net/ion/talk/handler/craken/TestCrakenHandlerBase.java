@@ -14,12 +14,14 @@ import net.ion.craken.node.ReadSession;
 public class TestCrakenHandlerBase extends TestCase{
 
     protected ReadSession rsession;
+    protected ReadSession csession;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
         RepositoryEntry repoEntry = RepositoryEntry.test();
         rsession = repoEntry.login();
+        csession = repoEntry.login();
     }
 
     @Override

@@ -1,137 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="eebff3d3-c0d0-4791-8090-3f97fee0f001" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/.classpath" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/.gitignore" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/.project" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/.settings/org.eclipse.core.resources.prefs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/.settings/org.eclipse.jdt.core.prefs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/.settings/org.eclipse.jdt.ui.prefs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/lib/ref/aclient_0.3.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/lib/ref/aradon_0.9.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/lib/ref/craken_0.5.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/lib/ref/iframework_2.3.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/lib/ref/isearcher_4.4.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/lib/reflib/JavaPNS_2.2.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/lib/reflib/asm-3.3.1.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/lib/reflib/bcprov-jdk15-146.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/lib/reflib/cglib-nodep-2.2.3.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/lib/reflib/common_apache_fat.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/lib/reflib/commons-configuration-1.6.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/lib/reflib/gcm-server.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/lib/reflib/gcm.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/lib/reflib/guava-jdk5-13.0.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/lib/reflib/infinispan521_fat.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/lib/reflib/js-14.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/lib/reflib/json_simple-1.1.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/lib/reflib/log4j-1.2.14.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/lib/reflib/netty-3.4.6.Final.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/lib/reflib/rest_fat.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/lib/reflib/search440_fat.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/lib/reflib/search_util_fat.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/resource/env.rhino.1.2.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/resource/help/path.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/resource/jquery-1.10.2.min.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/resource/jquery-1.10.2.min.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/resource/keystore/toontalk.p12" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/resource/keystore/toontalk_push_dev.p12" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/resource/scriptAjax.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/resource/testScript.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/craken/aradon/bean/RepositoryEntry.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/craken/aradon/bean/RhinoEntry.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/message/push/TODO.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/message/push/message/apns/AppleMessage.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/message/push/message/google/GoogleMessage.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/message/push/sender/APNSSender.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/message/push/sender/GCMSender.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/message/push/sender/PushMessage.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/message/push/sender/PushResponse.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/message/push/sender/Sender.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/message/push/sender/SenderConfig.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/message/push/sender/Vendor.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/message/push/sender/handler/BeforeSendHandler.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/message/push/sender/handler/DefaultResponseHandler.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/message/push/sender/handler/ResponseHandler.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/message/push/sender/strategy/PushStrategy.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/message/push/sender/strategy/TimePrintResponseHandler.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/message/push/sender/util/TokenResolver.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/message/sms/message/PhoneMessage.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/message/sms/message/Validator.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/message/sms/response/MessagingResponse.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/message/sms/response/ResponseHandler.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/message/sms/response/SMSResponse.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/message/sms/sender/SMSConfig.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/message/sms/sender/SMSSender.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/message/sms/util/MessageID.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/talk/AbsTest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/talk/MockClient.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/talk/ParameterMap.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/talk/TalkEngine.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/talk/TalkHandler.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/talk/TalkMessage.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/talk/TalkWebSocketResource.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/talk/ToonServer.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/talk/UserConnection.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/talk/let/CrakenVerifier.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/talk/let/LoginLet.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/talk/let/ResourceFileHandler.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/talk/let/ScriptEditLet.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/talk/let/ScriptExecLet.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/talk/let/ScriptTalkHandler.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/talk/let/ScriptTemplate.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/talk/let/ServerHandler.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/talk/let/StaticFileLet.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/talk/let/TalkHandlerGroup.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/talk/let/viewscript.tpl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/talk/script/AbstractBuilder.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/talk/script/BasicBuilder.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/talk/script/ListBuilder.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/talk/script/TalkResponse.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/src/net/ion/talk/script/TalkResponseBuilder.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/bleujin/template/TestScriptTemplate.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/message/push/sender/APNSSenderTest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/message/push/sender/BaseTest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/message/push/sender/GCMSenderTest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/message/push/sender/GCMTest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/message/push/sender/JAVAPNSTest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/message/push/sender/SenderTest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/message/push/sender/strategy/TestStrategies.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/message/sms/callback/ConsoleCallbackLet.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/message/sms/message/PhoneMessageTest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/message/sms/original/Message.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/message/sms/original/Message_Common.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/message/sms/original/Test.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/message/sms/sender/SMSSenderTest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/message/sms/util/MessageIDTest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/message/sms/util/SimpleJavaTest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/message/sms/util/TestAradonServer.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/talk/FakeConnection.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/talk/TestAllCrakenServer.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/talk/TestCrakenServer.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/talk/TestParameterMap.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/talk/TestTalkEngine.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/talk/TestToonServer.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/talk/engine/TestScriptTalkHandler.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/talk/let/DebugTalkHandler.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/talk/let/EchoHandler.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/talk/let/TestAllLet.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/talk/let/TestBaseLet.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/talk/let/TestLoginLet.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/talk/let/TestLoginWebSocket.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/talk/let/TestParameterLet.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/talk/let/TestScriptEditLet.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/talk/let/TestScriptExecLet.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/talk/let/TestServerHandler.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/talk/let/TestStaticFileLet.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/talk/script/TestExpression.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/talk/script/TestMakeResponse.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/talkserver/test/net/ion/talk/script/TestResponseWrapper.java" afterPath="" />
+    <list default="true" id="eebff3d3-c0d0-4791-8090-3f97fee0f001" name="Default" comment="Add: Mess">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/test/net/ion/talk/handler/craken/TestUserMessageHandler.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/net/ion/talk/handler/craken/UserUserMessageHandler.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/net/ion/message/push/sender/Vendor.java" afterPath="$PROJECT_DIR$/src/net/ion/message/push/sender/Vender.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/net/ion/message/push/sender/BaseTest.java" afterPath="$PROJECT_DIR$/test/net/ion/message/push/sender/BaseTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/net/ion/message/push/sender/GCMSenderTest.java" afterPath="$PROJECT_DIR$/test/net/ion/message/push/sender/GCMSenderTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/net/ion/message/push/sender/strategy/PushStrategy.java" afterPath="$PROJECT_DIR$/src/net/ion/message/push/sender/strategy/PushStrategy.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/net/ion/message/push/sender/SenderConfig.java" afterPath="$PROJECT_DIR$/src/net/ion/message/push/sender/SenderConfig.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/net/ion/message/push/sender/SenderTest.java" afterPath="$PROJECT_DIR$/test/net/ion/message/push/sender/SenderTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/net/ion/talk/handler/craken/TestCrakenHandlerBase.java" afterPath="$PROJECT_DIR$/test/net/ion/talk/handler/craken/TestCrakenHandlerBase.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/net/ion/message/push/sender/strategy/TestStrategies.java" afterPath="$PROJECT_DIR$/test/net/ion/message/push/sender/strategy/TestStrategies.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/net/ion/talk/handler/craken/TestUserEnterRoomHandler.java" afterPath="$PROJECT_DIR$/test/net/ion/talk/handler/craken/TestUserEnterRoomHandler.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/net/ion/talk/handler/craken/UserEnterRoomHandler.java" afterPath="$PROJECT_DIR$/src/net/ion/talk/handler/craken/UserEnterRoomHandler.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/resource/help/path.txt" afterPath="$PROJECT_DIR$/resource/help/path.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="talkserver.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391391437754" ignored="false" />
-    <file path="/a.dummy" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391391941491" ignored="false" />
+    <file path="/Dummy.txt" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391562884843" ignored="false" />
+    <file path="/a.dummy" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391503572183" ignored="false" />
+    <file path="/TestScriptEditLet.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391406365194" ignored="false" />
+    <file path="/ScriptExecLet.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391403190093" ignored="false" />
+    <file path="/TestAradonRepresentation.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391403014414" ignored="false" />
+    <file path="/TestScriptExecLet.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391403520867" ignored="false" />
+    <file path="/fragment.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391507598305" ignored="false" />
+    <file path="/TestServerHandler.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391403700769" ignored="false" />
+    <file path="/TestParameterLet.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391403766410" ignored="false" />
+    <file path="/TestScriptTalkHandler.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391404109145" ignored="false" />
+    <file path="/.gitignore" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391489769253" ignored="false" />
+    <file path="/TestTalkEngine.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391416642853" ignored="false" />
+    <file path="/jgroups-udp.xml" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391406332852" ignored="false" />
+    <file path="/TestToonServerNew.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391409024560" ignored="false" />
+    <file path="/Overridden Method Body.txt.ft" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391408568566" ignored="false" />
+    <file path="/New Method Body.txt.ft" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391408576325" ignored="false" />
+    <file path="/Implemented Method Body.txt.ft" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391408600613" ignored="false" />
+    <file path="/Catch Statement Body.txt.ft" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391408605893" ignored="false" />
+    <file path="/Dynamic Method Body.txt.ft" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391408614221" ignored="false" />
+    <file path="/TestUserConnection.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391409317972" ignored="false" />
+    <file path="/UserConnectListener.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391409464581" ignored="false" />
+    <file path="/path.txt" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391499724973" ignored="false" />
+    <file path="/TestBasicListener.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391412087793" ignored="false" />
+    <file path="/UserConnectionHandler.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391421764183" ignored="false" />
+    <file path="/TestBasicHandler.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391415686711" ignored="false" />
+    <file path="/TestConnectionHandler.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391419463464" ignored="false" />
+    <file path="/TalkEngine.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391417594278" ignored="false" />
+    <file path="/TestUserConnectionHandler.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391421877467" ignored="false" />
+    <file path="/TestUserEnterRoom.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391475005147" ignored="false" />
+    <file path="/UserEnterRoomHandler.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391506935152" ignored="false" />
+    <file path="/TestCrakenHandlerBase.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391507443634" ignored="false" />
+    <file path="/TestUserEnterRoomHandler.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391488709083" ignored="false" />
+    <file path="/scriptAjax.js" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391491083481" ignored="false" />
+    <file path="/TestUserSendMessageHandler.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391494870271" ignored="false" />
+    <file path="/UserSendMessageHandler.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391499933553" ignored="false" />
+    <file path="/TestMessagePushHandler.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391499742813" ignored="false" />
+    <file path="/MessagePushHandler.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391506074358" ignored="false" />
+    <file path="/GCMSenderTest.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391501984289" ignored="false" />
+    <file path="/MessageSendHandler.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391561672263" ignored="false" />
+    <file path="/SenderTest.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391505231176" ignored="false" />
+    <file path="/TestMessageSendHandler.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391562800481" ignored="false" />
+    <file path="/PushMessage.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391506186398" ignored="false" />
+    <file path="/PushBase.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391562595277" ignored="false" />
+    <file path="/TestHandler.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391562616814" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -146,6 +79,7 @@
     <disable_hints />
   </component>
   <component name="DebuggerManager">
+    <ui_properties default_suspend_policy="SuspendAll" default_condition_enabled="true" />
     <breakpoint_any default_suspend_policy="SuspendAll" default_condition_enabled="true">
       <breakpoint>
         <option name="NOTIFY_CAUGHT" value="true" />
@@ -182,9 +116,45 @@
         <option name="LOG_MESSAGE" value="" />
       </breakpoint>
     </breakpoint_any>
-    <ui_properties default_suspend_policy="SuspendAll" default_condition_enabled="true" />
     <breakpoint_rules />
     <ui_properties />
+  </component>
+  <component name="DockManager">
+    <window id="1">
+      <content type="file-editors">
+        <state>
+          <leaf>
+            <file leaf-file-name="CDDHandler.java" pinned="false" current="false" current-in-tab="false">
+              <entry file="file://$PROJECT_DIR$/../craken/src/net/ion/craken/listener/CDDHandler.java">
+                <provider selected="true" editor-type-id="text-editor">
+                  <state line="18" column="1" selection-start="639" selection-end="639" vertical-scroll-proportion="0.0">
+                    <folding />
+                  </state>
+                </provider>
+              </entry>
+            </file>
+            <file leaf-file-name="TestTalkEngine.java" pinned="false" current="false" current-in-tab="false">
+              <entry file="file://$PROJECT_DIR$/test/net/ion/talk/TestTalkEngine.java">
+                <provider selected="true" editor-type-id="text-editor">
+                  <state line="37" column="67" selection-start="955" selection-end="955" vertical-scroll-proportion="0.0">
+                    <folding />
+                  </state>
+                </provider>
+              </entry>
+            </file>
+            <file leaf-file-name="path.txt" pinned="false" current="false" current-in-tab="true">
+              <entry file="file://$PROJECT_DIR$/resource/help/path.txt">
+                <provider selected="true" editor-type-id="text-editor">
+                  <state line="26" column="5" selection-start="824" selection-end="824" vertical-scroll-proportion="0.4362416">
+                    <folding />
+                  </state>
+                </provider>
+              </entry>
+            </file>
+          </leaf>
+        </state>
+      </content>
+    </window>
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FavoritesManager">
@@ -192,30 +162,76 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="TestScriptEditLet.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test/net/ion/talk/let/TestScriptEditLet.java">
+      <file leaf-file-name="UserConnectionHandler.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/net/ion/talk/handler/engine/UserConnectionHandler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="48" column="53" selection-start="1566" selection-end="1566" vertical-scroll-proportion="0.0">
+            <state line="60" column="0" selection-start="1935" selection-end="1935" vertical-scroll-proportion="0.0">
               <folding>
-                <element signature="e#1924#1925#0" expanded="true" />
+                <element signature="imports" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TestStaticFileLet.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test/net/ion/talk/let/TestStaticFileLet.java">
+      <file leaf-file-name="TestUserMessageHandler.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/test/net/ion/talk/handler/craken/TestUserMessageHandler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="34" column="53" selection-start="1076" selection-end="1076" vertical-scroll-proportion="0.0">
-              <folding />
+            <state line="45" column="41" selection-start="1506" selection-end="1506" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="StaticFileLet.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/net/ion/talk/let/StaticFileLet.java">
+      <file leaf-file-name="TestUserConnectionHandler.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/test/net/ion/talk/handler/engine/TestUserConnectionHandler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="30" column="39" selection-start="995" selection-end="995" vertical-scroll-proportion="0.28301886">
+            <state line="29" column="5" selection-start="843" selection-end="843" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TestUserEnterRoomHandler.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/test/net/ion/talk/handler/craken/TestUserEnterRoomHandler.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="24" column="33" selection-start="740" selection-end="740" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="UserUserMessageHandler.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/net/ion/talk/handler/craken/UserUserMessageHandler.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="52" column="17" selection-start="2162" selection-end="2162" vertical-scroll-proportion="0.72096777">
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="UserEnterRoomHandler.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/net/ion/talk/handler/craken/UserEnterRoomHandler.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="38" column="46" selection-start="1122" selection-end="1122" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="PushStrategy.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/net/ion/message/push/sender/strategy/PushStrategy.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="17" column="0" selection-start="383" selection-end="383" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -239,15 +255,54 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/test/net/ion/talk/let/TestStaticFileLet.java" />
-        <option value="$PROJECT_DIR$/src/net/ion/talk/let/StaticFileLet.java" />
+        <option value="$PROJECT_DIR$/test/net/ion/talk/handler/craken/TestMessagePushHandler.java" />
+        <option value="$PROJECT_DIR$/src/net/ion/talk/handler/craken/UserSendMessageHandler.java" />
+        <option value="$PROJECT_DIR$/test/net/ion/message/push/sender/BaseTest.java" />
+        <option value="$PROJECT_DIR$/test/net/ion/message/push/sender/GCMSenderTest.java" />
+        <option value="$PROJECT_DIR$/src/net/ion/talk/handler/craken/MessagePushHandler.java" />
+        <option value="$PROJECT_DIR$/src/net/ion/talk/handler/craken/UserUserMessageHandler.java" />
+        <option value="$PROJECT_DIR$/test/net/ion/message/push/sender/SenderTest.java" />
+        <option value="$PROJECT_DIR$/src/net/ion/message/push/sender/SenderConfig.java" />
+        <option value="$PROJECT_DIR$/src/net/ion/message/push/sender/PushMessage.java" />
+        <option value="$PROJECT_DIR$/test/net/ion/talk/handler/craken/TestCrakenHandlerBase.java" />
+        <option value="$PROJECT_DIR$/test/net/ion/talk/handler/craken/TestUserEnterRoomHandler.java" />
+        <option value="$PROJECT_DIR$/src/net/ion/talk/handler/craken/UserEnterRoomHandler.java" />
+        <option value="$PROJECT_DIR$/src/net/ion/talk/handler/craken/TestHandler.java" />
+        <option value="$PROJECT_DIR$/src/net/ion/talk/handler/craken/PushBase.java" />
+        <option value="$PROJECT_DIR$/src/net/ion/talk/handler/craken/MessageSendHandler.java" />
+        <option value="$PROJECT_DIR$/test/net/ion/talk/handler/craken/TestMessageSendHandler.java" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
     <option name="y" value="22" />
     <option name="width" value="1920" />
-    <option name="height" value="978" />
+    <option name="height" value="1054" />
+  </component>
+  <component name="ProjectInspectionProfilesVisibleTreeState">
+    <entry key="Project Default">
+      <profile-state>
+        <expanded-state>
+          <State>
+            <id />
+          </State>
+          <State>
+            <id>General</id>
+          </State>
+          <State>
+            <id>XPath</id>
+          </State>
+          <State>
+            <id>XSLT</id>
+          </State>
+        </expanded-state>
+        <selected-state>
+          <State>
+            <id>Abstraction issues</id>
+          </State>
+        </selected-state>
+      </profile-state>
+    </entry>
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -341,55 +396,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="script" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="talkserver" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="talkserver" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="test" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ion" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="talk" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="let" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="talkserver" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="talkserver" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="test" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ion" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="talk" />
+              <option name="myItemId" value="handler" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -414,6 +421,114 @@
               <option name="myItemId" value="ion" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="talk" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="handler" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="craken" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="talkserver" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="talkserver" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ion" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="talkserver" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="talkserver" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ion" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="message" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="talkserver" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="talkserver" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ion" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="message" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sender" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="talkserver" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="talkserver" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ion" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="message" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sender" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="strategy" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -434,6 +549,66 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="talk" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="talkserver" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="talkserver" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ion" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="talk" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="handler" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="engine" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="talkserver" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="talkserver" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ion" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="talk" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="handler" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="craken" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -476,36 +651,215 @@
               <option name="myItemId" value="ion" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bean" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="talkserver" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="talkserver" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="resource" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="talkserver" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="craken" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
+    <property name="project.structure.last.edited" value="Modules" />
     <property name="GoToFile.includeJavaFiles" value="false" />
+    <property name="OverrideImplement.combined" value="true" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="options.splitter.main.proportions" value="0.3" />
+    <property name="MemberChooser.sorted" value="false" />
+    <property name="recentsLimit" value="5" />
+    <property name="options.lastSelected" value="preferences.sourceCode" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/lib/reflib/cglib-nodep-2.2.3.jar!/" />
+    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="recentsLimit" value="5" />
-    <property name="MemberChooser.sorted" value="false" />
     <property name="MemberChooser.showClasses" value="true" />
+    <property name="FullScreen" value="false" />
     <property name="GoToClass.includeLibraries" value="false" />
+    <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
     <property name="dynamic.classpath" value="false" />
-    <property name="MemberChooser.copyJavadoc" value="false" />
   </component>
-  <component name="RunManager" selected="JUnit.TestScriptEditLet.testViewScript">
-    <configuration default="false" name="TestScriptEditLet.testViewScript" type="JUnit" factoryName="JUnit" temporary="true">
+  <component name="RecentsManager">
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="net.ion.talk.handler.craken" />
+      <recent name="net.ion.talk.listener" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="net.ion.talk.handler.engine" />
+      <recent name="net.ion.talk.handler.craken" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/lib/reflib" />
+    </key>
+  </component>
+  <component name="RunManager" selected="JUnit.TestMessageSendHandler.testSend">
+    <configuration default="false" name="SenderTest.testGcm_async" type="JUnit" factoryName="JUnit" temporary="true">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
         <pattern>
-          <option name="PATTERN" value="net.ion.talk.let.*" />
+          <option name="PATTERN" value="net.ion.message.push.sender.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
       <module name="talkserver" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PACKAGE_NAME" value="net.ion.talk.let" />
-      <option name="MAIN_CLASS_NAME" value="net.ion.talk.let.TestScriptEditLet" />
-      <option name="METHOD_NAME" value="testViewScript" />
+      <option name="PACKAGE_NAME" value="net.ion.message.push.sender" />
+      <option name="MAIN_CLASS_NAME" value="net.ion.message.push.sender.SenderTest" />
+      <option name="METHOD_NAME" value="testGcm_async" />
+      <option name="TEST_OBJECT" value="method" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="moduleWithDependencies" />
+      </option>
+      <envs />
+      <patterns />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="" />
+        <option name="TRANSPORT" value="0" />
+        <option name="LOCAL" value="true" />
+      </RunnerSettings>
+      <ConfigurationWrapper RunnerId="Debug" />
+      <method />
+    </configuration>
+    <configuration default="false" name="GCMSenderTest.testFirst" type="JUnit" factoryName="JUnit" temporary="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="net.ion.message.push.sender.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <module name="talkserver" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="net.ion.message.push.sender" />
+      <option name="MAIN_CLASS_NAME" value="net.ion.message.push.sender.GCMSenderTest" />
+      <option name="METHOD_NAME" value="testFirst" />
+      <option name="TEST_OBJECT" value="method" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="moduleWithDependencies" />
+      </option>
+      <envs />
+      <patterns />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="" />
+        <option name="TRANSPORT" value="0" />
+        <option name="LOCAL" value="true" />
+      </RunnerSettings>
+      <ConfigurationWrapper RunnerId="Debug" />
+      <method />
+    </configuration>
+    <configuration default="false" name="GCMSenderTest.testResponse" type="JUnit" factoryName="JUnit" temporary="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="net.ion.message.push.sender.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <module name="talkserver" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="net.ion.message.push.sender" />
+      <option name="MAIN_CLASS_NAME" value="net.ion.message.push.sender.GCMSenderTest" />
+      <option name="METHOD_NAME" value="testResponse" />
+      <option name="TEST_OBJECT" value="method" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="moduleWithDependencies" />
+      </option>
+      <envs />
+      <patterns />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="" />
+        <option name="TRANSPORT" value="0" />
+        <option name="LOCAL" value="true" />
+      </RunnerSettings>
+      <ConfigurationWrapper RunnerId="Debug" />
+      <method />
+    </configuration>
+    <configuration default="false" name="TestMessageSendHandler.testSend" type="JUnit" factoryName="JUnit" temporary="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="net.ion.talk.handler.craken.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <module name="talkserver" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="net.ion.talk.handler.craken" />
+      <option name="MAIN_CLASS_NAME" value="net.ion.talk.handler.craken.TestMessageSendHandler" />
+      <option name="METHOD_NAME" value="testSend" />
+      <option name="TEST_OBJECT" value="method" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="moduleWithDependencies" />
+      </option>
+      <envs />
+      <patterns />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="" />
+        <option name="TRANSPORT" value="0" />
+        <option name="LOCAL" value="true" />
+      </RunnerSettings>
+      <ConfigurationWrapper RunnerId="Debug" />
+      <method />
+    </configuration>
+    <configuration default="false" name="TestUserEnterRoomHandler.testUserIn" type="JUnit" factoryName="JUnit" temporary="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="net.ion.talk.handler.craken.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <module name="talkserver" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="net.ion.talk.handler.craken" />
+      <option name="MAIN_CLASS_NAME" value="net.ion.talk.handler.craken.TestUserEnterRoomHandler" />
+      <option name="METHOD_NAME" value="testUserIn" />
       <option name="TEST_OBJECT" value="method" />
       <option name="VM_PARAMETERS" value="-ea" />
       <option name="PARAMETERS" />
@@ -539,6 +893,19 @@
       <option name="PORT" value="5005" />
       <method />
     </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <method />
+    </configuration>
     <configuration default="true" type="TestNG" factoryName="TestNG">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
       <module name="" />
@@ -565,19 +932,6 @@
       <envs />
       <properties />
       <listeners />
-      <method />
-    </configuration>
-    <configuration default="true" type="Applet" factoryName="Applet">
-      <module name="" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="HTML_FILE_NAME" />
-      <option name="HTML_USED" value="false" />
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <option name="VM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
       <method />
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
@@ -616,12 +970,20 @@
       <patterns />
       <method />
     </configuration>
-    <list size="1">
-      <item index="0" class="java.lang.String" itemvalue="JUnit.TestScriptEditLet.testViewScript" />
+    <list size="5">
+      <item index="0" class="java.lang.String" itemvalue="JUnit.SenderTest.testGcm_async" />
+      <item index="1" class="java.lang.String" itemvalue="JUnit.GCMSenderTest.testFirst" />
+      <item index="2" class="java.lang.String" itemvalue="JUnit.GCMSenderTest.testResponse" />
+      <item index="3" class="java.lang.String" itemvalue="JUnit.TestMessageSendHandler.testSend" />
+      <item index="4" class="java.lang.String" itemvalue="JUnit.TestUserEnterRoomHandler.testUserIn" />
     </list>
     <recent_temporary>
-      <list size="1">
-        <item index="0" class="java.lang.String" itemvalue="JUnit.TestScriptEditLet.testViewScript" />
+      <list size="5">
+        <item index="0" class="java.lang.String" itemvalue="JUnit.TestMessageSendHandler.testSend" />
+        <item index="1" class="java.lang.String" itemvalue="JUnit.TestUserEnterRoomHandler.testUserIn" />
+        <item index="2" class="java.lang.String" itemvalue="JUnit.GCMSenderTest.testFirst" />
+        <item index="3" class="java.lang.String" itemvalue="JUnit.GCMSenderTest.testResponse" />
+        <item index="4" class="java.lang.String" itemvalue="JUnit.SenderTest.testGcm_async" />
       </list>
     </recent_temporary>
     <configuration name="&lt;template&gt;" type="WebApp" default="true" selected="false">
@@ -630,43 +992,77 @@
     </configuration>
   </component>
   <component name="ShelveChangesManager" show_recycled="false" />
+  <component name="SvnConfiguration" maxAnnotateRevisions="500" myUseAcceleration="nothing" myAutoUpdateAfterCommit="false" cleanupOnStartRun="false" SSL_PROTOCOLS="sslv3">
+    <option name="USER" value="" />
+    <option name="PASSWORD" value="" />
+    <option name="mySSHConnectionTimeout" value="30000" />
+    <option name="mySSHReadTimeout" value="30000" />
+    <option name="LAST_MERGED_REVISION" />
+    <option name="MERGE_DRY_RUN" value="false" />
+    <option name="MERGE_DIFF_USE_ANCESTRY" value="true" />
+    <option name="UPDATE_LOCK_ON_DEMAND" value="false" />
+    <option name="IGNORE_SPACES_IN_MERGE" value="false" />
+    <option name="CHECK_NESTED_FOR_QUICK_MERGE" value="false" />
+    <option name="IGNORE_SPACES_IN_ANNOTATE" value="true" />
+    <option name="SHOW_MERGE_SOURCES_IN_ANNOTATE" value="true" />
+    <option name="FORCE_UPDATE" value="false" />
+    <option name="IGNORE_EXTERNALS" value="false" />
+    <myIsUseDefaultProxy>false</myIsUseDefaultProxy>
+  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="eebff3d3-c0d0-4791-8090-3f97fee0f001" name="Default" comment="" />
       <created>1391391432411</created>
       <updated>1391391432411</updated>
     </task>
+    <task id="LOCAL-00001" summary="update gitignore">
+      <created>1391489828512</created>
+      <updated>1391489828512</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Add craken Handler">
+      <created>1391489882294</created>
+      <updated>1391489882294</updated>
+    </task>
+    <task id="LOCAL-00003" summary="fix scriptAjax.js escape character">
+      <created>1391490441991</created>
+      <updated>1391490441991</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Add craken Handler">
+      <created>1391490628882</created>
+      <updated>1391490628882</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="22" width="1920" height="978" extended-state="0" />
-    <editor active="false" />
+    <frame x="0" y="22" width="1920" height="1054" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32941177" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32846716" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.22610722" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298122" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="CDI" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.30620986" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32869378" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32762313" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="CDI" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2470651" sideWeight="0.77389276" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18943436" sideWeight="0.69379014" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32929516" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
     </layout>
   </component>
   <component name="VcsContentAnnotationSettings">
@@ -711,7 +1107,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add craken Handler" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -725,6 +1121,9 @@
     <option name="UPDATE_FILTER_BY_SCOPE" value="false" />
     <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
     <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
+    <MESSAGE value="update gitignore" />
+    <MESSAGE value="fix scriptAjax.js escape character" />
+    <MESSAGE value="Add craken Handler" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -734,29 +1133,191 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/test/net/ion/talk/let/TestScriptEditLet.java">
+    <entry file="file://$PROJECT_DIR$/src/net/ion/message/push/sender/SenderConfig.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="48" column="53" selection-start="1566" selection-end="1566" vertical-scroll-proportion="0.0">
+        <state line="66" column="0" selection-start="1774" selection-end="1774" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/net/ion/message/push/sender/PushMessage.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="36" column="0" selection-start="1096" selection-end="1096" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/net/ion/message/push/sender/Sender.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="68" column="0" selection-start="2220" selection-end="2220" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/net/ion/talk/handler/craken/TestCrakenHandlerBase.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="24" column="5" selection-start="667" selection-end="667" vertical-scroll-proportion="0.0">
           <folding>
-            <element signature="e#1924#1925#0" expanded="true" />
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test/net/ion/talk/let/TestStaticFileLet.java">
+    <entry file="file://$PROJECT_DIR$/test/net/ion/talk/handler/engine/TestUserConnectionHandler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="34" column="53" selection-start="1076" selection-end="1076" vertical-scroll-proportion="0.0">
+        <state line="29" column="5" selection-start="843" selection-end="843" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/net/ion/message/push/sender/strategy/PushStrategy.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="17" column="0" selection-start="383" selection-end="383" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/net/ion/talk/let/StaticFileLet.java">
+    <entry file="file://$PROJECT_DIR$/src/net/ion/talk/handler/engine/UserConnectionHandler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="30" column="39" selection-start="995" selection-end="995" vertical-scroll-proportion="0.28301886">
+        <state line="60" column="0" selection-start="1935" selection-end="1935" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/net/ion/talk/handler/craken/UserEnterRoomHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="38" column="46" selection-start="1122" selection-end="1122" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/net/ion/talk/handler/craken/TestUserEnterRoomHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="24" column="33" selection-start="740" selection-end="740" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/resource/help/path.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="26" column="5" selection-start="824" selection-end="824" vertical-scroll-proportion="0.4362416">
           <folding />
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/test/net/ion/talk/handler/craken/TestUserMessageHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="45" column="41" selection-start="1506" selection-end="1506" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/net/ion/talk/handler/craken/UserUserMessageHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="52" column="17" selection-start="2162" selection-end="2162" vertical-scroll-proportion="0.72096777">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ArtifactsStructureConfigurable.UI">
+        <settings>
+          <artifact-editor />
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="FacetStructureConfigurable.UI">
+        <settings>
+          <last-edited>No facets are configured</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="GlobalLibrariesConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="JdkListConfigurable.UI">
+        <settings>
+          <last-edited>1.6</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ModuleStructureConfigurable.UI">
+        <settings>
+          <last-edited>talkserver</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectJDKs.UI">
+        <settings>
+          <last-edited>1.6</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectLibrariesConfigurable.UI">
+        <settings>
+          <last-edited>org.simpleframework</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
   </component>
 </project>
 
