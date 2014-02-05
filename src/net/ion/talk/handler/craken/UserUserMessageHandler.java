@@ -10,6 +10,7 @@ import net.ion.craken.tree.TreeNodeKey;
 import net.ion.framework.util.Debug;
 import org.infinispan.atomic.AtomicMap;
 import org.infinispan.notifications.cachelistener.event.CacheEntryModifiedEvent;
+import org.infinispan.notifications.cachelistener.event.CacheEntryRemovedEvent;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -28,7 +29,12 @@ public class UserUserMessageHandler implements CDDHandler {
     }
 
     @Override
-    public TransactionJob<Void> nextTran(Map<String, String> resolveMap, CacheEntryModifiedEvent<TreeNodeKey, AtomicMap<PropertyId, PropertyValue>> event) {
+    public TransactionJob<Void> deleted(Map<String, String> resolveMap, CacheEntryRemovedEvent<TreeNodeKey, AtomicMap<PropertyId, PropertyValue>> event) {
+        return null;
+    }
+
+    @Override
+    public TransactionJob<Void> modified(Map<String, String> resolveMap, CacheEntryModifiedEvent<TreeNodeKey, AtomicMap<PropertyId, PropertyValue>> event) {
 
         final String roomId = resolveMap.get("roomId");
         final String messageId = resolveMap.get("messageId");
