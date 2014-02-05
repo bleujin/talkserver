@@ -3,14 +3,25 @@ package net.ion.talk.script;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
+import net.ion.craken.expression.ExpressionParser;
+import net.ion.craken.expression.Projection;
+import net.ion.craken.expression.SetComparable;
+import net.ion.craken.expression.TerminalParser;
+import net.ion.craken.expression.ValueObject;
 import net.ion.craken.node.ReadNode;
 import net.ion.framework.parse.gson.JsonElement;
+import net.ion.framework.util.ListUtil;
+import net.ion.framework.util.MapUtil;
 import net.ion.framework.util.ObjectUtil;
 import net.ion.framework.util.StringUtil;
+import net.ion.rosetta.Parser;
 
 /**
  * Author: Ryunhee Han
@@ -19,6 +30,7 @@ import net.ion.framework.util.StringUtil;
 public abstract class AbstractBuilder {
 
     private Cache<String, Object> props = CacheBuilder.newBuilder().build() ;
+    private Parser<MyProjection> parser = ExpressionParser.projections2(MyProjection.class) ;
     protected AbstractBuilder(){
     }
     
@@ -34,20 +46,15 @@ public abstract class AbstractBuilder {
     }
     
 	public AbstractBuilder property(ReadNode node, String values) {
-		String[] cols = StringUtil.split(values, ",") ;
-		
-		
-		
-		for(String col : cols){
-			String propId = StringUtil.trim(col) ;
-			if (propId.endsWith("[]")) {
-				String propExpr = StringUtil.substringBeforeLast(propId, "[]");
-				Set set = node.extendProperty(propExpr).asSet() ;
-				property(propExpr, set.toArray()) ;
-			} else {
-				Object propValue = node.extendProperty(propId).value();
-				property(propId, ObjectUtil.coalesce(propValue, ObjectUtil.NULL)) ;
+		MyProjection sp = TerminalParser.parse(parser, values);
+		Map<String, Object> map = sp.map(node) ;
+
+		for(Entry<String, Object> entry : map.entrySet()){
+			Object value = entry.getValue();
+			if (value instanceof SetComparable) {
+				value = ((SetComparable)value).asSet() ;
 			}
+			property(entry.getKey(), ObjectUtil.coalesce(value, ObjectUtil.NULL)) ;
 		}
 		
 		return this;
@@ -80,4 +87,32 @@ public abstract class AbstractBuilder {
         return TalkResponse.create(root().makeJson());
     }
 
+}
+
+
+class MyProjection extends ValueObject {
+	private List<Projection> projections;
+
+	public MyProjection (List<Projection> projections) {
+		this.projections = projections;
+	}
+	
+	public Map<String, Object> map(ReadNode node){
+		Map<String, Object> map = MapUtil.newMap() ;
+		for (Projection p : projections) {
+			map.put(p.label(), p.value(node)) ;
+		}
+		return map ;
+	}
+	
+	
+	public List<Map<String, Object>> mapList(Iterable<ReadNode> nodes){
+		List<Map<String, Object>> result = ListUtil.newList() ;
+		for (ReadNode node : nodes) {
+			result.add(map(node)) ;
+		}
+		return result ;
+	} 
+	
+	
 }
