@@ -24,7 +24,7 @@ public class TestWebSocketTalkMessageHandler extends TestCase {
 
     public void setUp() throws Exception {
 
-        tengine = TalkEngine.test().registerHandler(new WebSocketTalkMessageHandler()).startForTest();
+        tengine = TalkEngine.test().registerHandler(new WebSocketMessageHandler()).startForTest();
         rsession = tengine.readSession();
         ryun = FakeConnection.create("ryun");
 

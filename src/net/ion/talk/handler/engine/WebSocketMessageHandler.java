@@ -20,7 +20,7 @@ import java.io.IOException;
  * Time: 오후 3:55
  * To change this template use File | Settings | File Templates.
  */
-public class WebSocketTalkMessageHandler implements TalkHandler {
+public class WebSocketMessageHandler implements TalkHandler {
 
     RhinoEntry rengine;
 

@@ -10,7 +10,7 @@ import net.ion.craken.node.WriteSession;
  * Time: 오후 6:26
  * To change this template use File | Settings | File Templates.
  */
-public class TestUserEnterRoomHandler extends TestCrakenHandlerBase{
+public class TestUserInAndOutRoomHandler extends TestCrakenHandlerBase{
 
     @Override
     public void setUp() throws Exception {

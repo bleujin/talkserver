@@ -5,7 +5,7 @@ import net.ion.framework.util.InfinityThread;
 import net.ion.talk.handler.craken.TalkMessageHandler;
 import net.ion.talk.handler.craken.UserInAndOutRoomHandler;
 import net.ion.talk.handler.engine.UserConnectionHandler;
-import net.ion.talk.handler.engine.WebSocketTalkMessageHandler;
+import net.ion.talk.handler.engine.WebSocketMessageHandler;
 import net.ion.talk.let.TestBaseLet;
 
 /**
@@ -21,7 +21,7 @@ public class TestToonServerNew extends TestBaseLet{
 
     public void testRunInfinite() throws Exception {
         tserver.addTalkHander(new UserConnectionHandler())
-                .addTalkHander(new WebSocketTalkMessageHandler());
+                .addTalkHander(new WebSocketMessageHandler());
         tserver.cbuilder().build();
         tserver.startRadon();
         ReadSession rsession = tserver.readSession();
