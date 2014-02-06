@@ -15,7 +15,7 @@ public class TestUserEnterRoomHandler extends TestCrakenHandlerBase{
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        rsession.workspace().cddm().add(new UserEnterRoomHandler());
+        rsession.workspace().cddm().add(new UserInAndOutRoomHandler());
     }
 
     public void testUserIn() throws Exception {

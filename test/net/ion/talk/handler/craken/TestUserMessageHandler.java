@@ -16,7 +16,7 @@ public class TestUserMessageHandler extends TestCrakenHandlerBase{
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        rsession.workspace().cddm().add(new UserUserMessageHandler());
+        rsession.workspace().cddm().add(new TalkMessageHandler());
     }
 
     public void testSendMessage() throws Exception {

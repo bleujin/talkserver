@@ -16,7 +16,9 @@ import net.ion.talk.let.*;
 import java.io.FileNotFoundException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Calendar;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 
 public class ToonServer {
@@ -68,6 +70,10 @@ public class ToonServer {
 		return this;
 	}
 
+    public static long GMTTime(){
+        TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
+        return Calendar.getInstance().getTime().getTime();
+    }
 
 	public ToonServer addTalkHander(TalkHandler thandler) {
 		talkHandlerGroup.addHandler(thandler) ;
@@ -150,4 +156,5 @@ public class ToonServer {
         }
 
     }
+
 }

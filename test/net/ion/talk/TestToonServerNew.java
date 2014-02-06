@@ -1,11 +1,9 @@
 package net.ion.talk;
 
-import net.ion.craken.aradon.bean.RhinoEntry;
 import net.ion.craken.node.ReadSession;
 import net.ion.framework.util.InfinityThread;
-import net.ion.talk.handler.craken.UserEnterRoomHandler;
-import net.ion.talk.handler.craken.UserUserMessageHandler;
-import net.ion.talk.handler.engine.ServerHandler;
+import net.ion.talk.handler.craken.TalkMessageHandler;
+import net.ion.talk.handler.craken.UserInAndOutRoomHandler;
 import net.ion.talk.handler.engine.UserConnectionHandler;
 import net.ion.talk.handler.engine.WebSocketTalkMessageHandler;
 import net.ion.talk.let.TestBaseLet;
@@ -32,9 +30,10 @@ public class TestToonServerNew extends TestBaseLet{
 
         tserver.mockClient();
 
-        rsession.workspace().cddm().add(new UserEnterRoomHandler());
-        rsession.workspace().cddm().add(new UserUserMessageHandler());
+        rsession.workspace().cddm().add(new UserInAndOutRoomHandler());
+        rsession.workspace().cddm().add(new TalkMessageHandler());
 
         new InfinityThread().startNJoin();
     }
+
 }

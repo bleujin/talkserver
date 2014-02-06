@@ -1,32 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="eebff3d3-c0d0-4791-8090-3f97fee0f001" name="Default" comment="Re Implement: UserEnterRoomHandler, UserMessageHandler&#10;">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/test/net/ion/talk/handler/engine/TestWebSocketTalkMessageHandler.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/net/ion/talk/handler/engine/WebSocketTalkMessageHandler.java" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/net/ion/talk/let/ScriptTalkHandler.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/test/net/ion/talk/engine/TestScriptTalkHandler.java" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/net/ion/talk/let/ServerHandler.java" afterPath="$PROJECT_DIR$/src/net/ion/talk/handler/engine/ServerHandler.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/net/ion/talk/script/BasicBuilder.java" afterPath="$PROJECT_DIR$/src/net/ion/talk/script/BasicBuilder.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/net/ion/talk/TalkEngine.java" afterPath="$PROJECT_DIR$/src/net/ion/talk/TalkEngine.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/net/ion/talk/TalkMessage.java" afterPath="$PROJECT_DIR$/src/net/ion/talk/TalkMessage.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/net/ion/talk/TestAllCrakenServer.java" afterPath="$PROJECT_DIR$/test/net/ion/talk/TestAllCrakenServer.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/net/ion/talk/handler/craken/TestCrakenHandlerBase.java" afterPath="$PROJECT_DIR$/test/net/ion/talk/handler/craken/TestCrakenHandlerBase.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/net/ion/talk/script/TestExpression.java" afterPath="$PROJECT_DIR$/test/net/ion/talk/script/TestExpression.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/net/ion/talk/let/TestServerHandler.java" afterPath="$PROJECT_DIR$/test/net/ion/talk/let/TestServerHandler.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/net/ion/talk/TestTalkEngine.java" afterPath="$PROJECT_DIR$/test/net/ion/talk/TestTalkEngine.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/net/ion/talk/TestToonServer.java" afterPath="$PROJECT_DIR$/test/net/ion/talk/TestToonServer.java" />
+    <list default="true" id="eebff3d3-c0d0-4791-8090-3f97fee0f001" name="Default" comment="modify handler's unique notifyId,">
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/net/ion/talk/handler/craken/UserEnterRoomHandler.java" afterPath="$PROJECT_DIR$/src/net/ion/talk/handler/craken/UserInAndOutRoomHandler.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/net/ion/talk/handler/craken/UserUserMessageHandler.java" afterPath="$PROJECT_DIR$/src/net/ion/talk/handler/craken/TalkMessageHandler.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../craken/src/net/ion/craken/simple/SimpleEntry.java" afterPath="$PROJECT_DIR$/../craken/src/net/ion/craken/simple/SimpleEntry.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/net/ion/talk/TestToonServerNew.java" afterPath="$PROJECT_DIR$/test/net/ion/talk/TestToonServerNew.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/net/ion/talk/handler/engine/TestUserConnectionHandler.java" afterPath="$PROJECT_DIR$/test/net/ion/talk/handler/engine/TestUserConnectionHandler.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/net/ion/talk/handler/craken/TestUserEnterRoomHandler.java" afterPath="$PROJECT_DIR$/test/net/ion/talk/handler/craken/TestUserEnterRoomHandler.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/net/ion/talk/handler/craken/TestUserMessageHandler.java" afterPath="$PROJECT_DIR$/test/net/ion/talk/handler/craken/TestUserMessageHandler.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../craken/test/net/ion/craken/node/crud/TestWriteSession.java" afterPath="$PROJECT_DIR$/../craken/test/net/ion/craken/node/crud/TestWriteSession.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/net/ion/talk/ToonServer.java" afterPath="$PROJECT_DIR$/src/net/ion/talk/ToonServer.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/net/ion/talk/handler/engine/UserConnectionHandler.java" afterPath="$PROJECT_DIR$/src/net/ion/talk/handler/engine/UserConnectionHandler.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/net/ion/talk/handler/craken/UserEnterRoomHandler.java" afterPath="$PROJECT_DIR$/src/net/ion/talk/handler/craken/UserEnterRoomHandler.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="talkserver.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391651575107" ignored="false" />
+    <file path="/Dummy.txt" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391670939246" ignored="false" />
     <file path="/a.dummy" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391566269533" ignored="false" />
     <file path="/TestScriptEditLet.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391406365194" ignored="false" />
     <file path="/ScriptExecLet.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391403190093" ignored="false" />
@@ -39,7 +27,7 @@
     <file path="/.gitignore" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391489769253" ignored="false" />
     <file path="/TestTalkEngine.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391416642853" ignored="false" />
     <file path="/jgroups-udp.xml" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391406332852" ignored="false" />
-    <file path="/TestToonServerNew.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391592887370" ignored="false" />
+    <file path="/TestToonServerNew.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391670982968" ignored="false" />
     <file path="/Overridden Method Body.txt.ft" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391408568566" ignored="false" />
     <file path="/New Method Body.txt.ft" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391408576325" ignored="false" />
     <file path="/Implemented Method Body.txt.ft" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391408600613" ignored="false" />
@@ -74,15 +62,20 @@
     <file path="/TestWebSocketMessage.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391587486720" ignored="false" />
     <file path="/TestLoginLet.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391564417104" ignored="false" />
     <file path="/ServerHandler.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391566457890" ignored="false" />
-    <file path="/ToonServer.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391566617141" ignored="false" />
-    <file path="/TestToonServer.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391574159390" ignored="false" />
+    <file path="/ToonServer.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391669718831" ignored="false" />
+    <file path="/TestToonServer.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391669642198" ignored="false" />
     <file path="/RhinoEntry.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391578432223" ignored="false" />
-    <file path="/TalkMessageHandler.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391590750903" ignored="false" />
+    <file path="/TalkMessageHandler.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391670027743" ignored="false" />
     <file path="/BasicBuilder.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391591163687" ignored="false" />
     <file path="/TestWebSocketTalkMessageHandler.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391651248714" ignored="false" />
     <file path="/WebSocketTalkMessageHandler.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391650126502" ignored="false" />
     <file path="/TalkHandler.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391593227566" ignored="false" />
     <file path="/TalkMessage.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391648425221" ignored="false" />
+    <file path="/UserInAndOutRoomHandler.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391670148313" ignored="false" />
+    <file path="/TestJson.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391671087641" ignored="false" />
+    <file path="/TestWriter.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391671183543" ignored="false" />
+    <file path="/TestWriteSession.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391671569684" ignored="false" />
+    <file path="/SimpleEntry.java" changelist="eebff3d3-c0d0-4791-8090-3f97fee0f001" time="1391671476538" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -151,10 +144,10 @@
                 </provider>
               </entry>
             </file>
-            <file leaf-file-name="TestTalkEngine.java" pinned="false" current="false" current-in-tab="true">
+            <file leaf-file-name="TestTalkEngine.java" pinned="false" current="false" current-in-tab="false">
               <entry file="file://$PROJECT_DIR$/test/net/ion/talk/TestTalkEngine.java">
                 <provider selected="true" editor-type-id="text-editor">
-                  <state line="25" column="4" selection-start="614" selection-end="614" vertical-scroll-proportion="0.35234898">
+                  <state line="47" column="0" selection-start="1166" selection-end="1166" vertical-scroll-proportion="0.0">
                     <folding />
                   </state>
                 </provider>
@@ -164,6 +157,15 @@
               <entry file="file://$PROJECT_DIR$/resource/help/path.txt">
                 <provider selected="true" editor-type-id="text-editor">
                   <state line="26" column="5" selection-start="824" selection-end="824" vertical-scroll-proportion="0.0">
+                    <folding />
+                  </state>
+                </provider>
+              </entry>
+            </file>
+            <file leaf-file-name="UserInAndOutRoomHandler.java" pinned="false" current="true" current-in-tab="true">
+              <entry file="file://$PROJECT_DIR$/src/net/ion/talk/handler/craken/UserInAndOutRoomHandler.java">
+                <provider selected="true" editor-type-id="text-editor">
+                  <state line="51" column="42" selection-start="1873" selection-end="1873" vertical-scroll-proportion="0.11744966">
                     <folding />
                   </state>
                 </provider>
@@ -180,10 +182,46 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="WebSocketTalkMessageHandler.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/net/ion/talk/handler/engine/WebSocketTalkMessageHandler.java">
+      <file leaf-file-name="TestUserMessageHandler.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/test/net/ion/talk/handler/craken/TestUserMessageHandler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="93" column="27" selection-start="3298" selection-end="3298" vertical-scroll-proportion="0.0">
+            <state line="13" column="13" selection-start="329" selection-end="329" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TestJson.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../craken/test/net/ion/bleujin/TestJson.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="12" column="13" selection-start="371" selection-end="371" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TestUserEnterRoomHandler.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/test/net/ion/talk/handler/craken/TestUserEnterRoomHandler.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="12" column="13" selection-start="292" selection-end="292" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="SimpleEntry.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../craken/src/net/ion/craken/simple/SimpleEntry.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="43" column="16" selection-start="964" selection-end="964" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TalkMessageHandler.java" pinned="false" current="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/net/ion/talk/handler/craken/TalkMessageHandler.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="57" column="90" selection-start="2114" selection-end="2133" vertical-scroll-proportion="0.35836178">
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -191,86 +229,52 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TestWebSocketTalkMessageHandler.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test/net/ion/talk/handler/engine/TestWebSocketTalkMessageHandler.java">
+      <file leaf-file-name="TestCreate.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../craken/test/net/ion/bleujin/TestCreate.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="27" column="41" selection-start="823" selection-end="823" vertical-scroll-proportion="0.0">
+            <state line="88" column="75" selection-start="3517" selection-end="3517" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TestAllNode.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../craken/test/net/ion/craken/node/TestAllNode.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="10" column="13" selection-start="367" selection-end="367" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TestIndexWriteConfig.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../craken/test/net/ion/craken/node/TestIndexWriteConfig.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="6" column="13" selection-start="162" selection-end="162" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TestWriteSession.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../craken/test/net/ion/craken/node/crud/TestWriteSession.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="145" column="26" selection-start="4238" selection-end="4238" vertical-scroll-proportion="0.0">
               <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="docComment;class#TestWebSocketTalkMessageHandler#0" expanded="false" />
+                <element signature="e#3959#4208#0" expanded="true" />
+                <element signature="e#4197#4198#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TestUserConnectionHandler.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test/net/ion/talk/handler/engine/TestUserConnectionHandler.java">
+      <file leaf-file-name="TestCrakenHandlerBase.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/test/net/ion/talk/handler/craken/TestCrakenHandlerBase.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="26" column="83" selection-start="775" selection-end="775" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TestToonServerNew.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/test/net/ion/talk/TestToonServerNew.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="27" column="29" selection-start="936" selection-end="936" vertical-scroll-proportion="0.49479166">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TalkEngine.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/net/ion/talk/TalkEngine.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="186" column="0" selection-start="5192" selection-end="5192" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="BasicBuilder.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/net/ion/talk/script/BasicBuilder.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="29" column="0" selection-start="740" selection-end="740" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="UserConnection.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/net/ion/talk/UserConnection.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="9" column="13" selection-start="224" selection-end="224" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ToonServer.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/net/ion/talk/ToonServer.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="108" column="67" selection-start="3536" selection-end="3536" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TestToonServer.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test/net/ion/talk/TestToonServer.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="81" column="0" selection-start="3075" selection-end="3075" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="StringUtils.class" pinned="false" current="false" current-in-tab="false">
-        <entry file="jar://$PROJECT_DIR$/lib/reflib/common_apache_fat.jar!/org/apache/commons/lang/StringUtils.class">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="363" column="26" selection-start="18231" selection-end="18231" vertical-scroll-proportion="-7.28">
-              <folding />
+            <state line="13" column="13" selection-start="332" selection-end="332" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -293,22 +297,22 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/test/net/ion/talk/handler/engine/TestWebSocketMessageHandler.java" />
-        <option value="$PROJECT_DIR$/src/net/ion/talk/handler/engine/ServerHandler.java" />
-        <option value="$PROJECT_DIR$/src/net/ion/talk/handler/craken/UserEnterRoomHandler.java" />
-        <option value="$PROJECT_DIR$/test/net/ion/talk/TestToonServer.java" />
-        <option value="$PROJECT_DIR$/test/net/ion/talk/TestAllCrakenServer.java" />
-        <option value="$PROJECT_DIR$/test/net/ion/talk/handler/craken/TestUserEnterRoomHandler.java" />
-        <option value="$PROJECT_DIR$/test/net/ion/talk/engine/TestScriptTalkHandler.java" />
-        <option value="$PROJECT_DIR$/src/net/ion/talk/ToonServer.java" />
         <option value="$PROJECT_DIR$/src/net/ion/talk/TalkHandler.java" />
         <option value="$PROJECT_DIR$/src/net/ion/talk/handler/engine/UserConnectionHandler.java" />
-        <option value="$PROJECT_DIR$/test/net/ion/talk/TestToonServerNew.java" />
         <option value="$PROJECT_DIR$/src/net/ion/talk/TalkMessage.java" />
         <option value="$PROJECT_DIR$/src/net/ion/talk/handler/engine/WebSocketTalkMessageHandler.java" />
         <option value="$PROJECT_DIR$/test/net/ion/talk/handler/engine/TestWebSocketTalkMessageHandler.java" />
         <option value="$PROJECT_DIR$/test/net/ion/talk/handler/engine/TestUserConnectionHandler.java" />
         <option value="$PROJECT_DIR$/src/net/ion/talk/TalkEngine.java" />
+        <option value="$PROJECT_DIR$/test/net/ion/talk/TestToonServer.java" />
+        <option value="$PROJECT_DIR$/src/net/ion/talk/ToonServer.java" />
+        <option value="$PROJECT_DIR$/src/net/ion/talk/handler/craken/TalkMessageHandler.java" />
+        <option value="$PROJECT_DIR$/src/net/ion/talk/handler/craken/UserInAndOutRoomHandler.java" />
+        <option value="$PROJECT_DIR$/test/net/ion/talk/TestToonServerNew.java" />
+        <option value="$PROJECT_DIR$/../craken/test/net/ion/craken/node/TestWriter.java" />
+        <option value="$PROJECT_DIR$/../craken/test/net/ion/bleujin/TestJson.java" />
+        <option value="$PROJECT_DIR$/../craken/src/net/ion/craken/simple/SimpleEntry.java" />
+        <option value="$PROJECT_DIR$/../craken/test/net/ion/craken/node/crud/TestWriteSession.java" />
       </list>
     </option>
   </component>
@@ -434,6 +438,32 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="TestTalkEngine.java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.ClassesTreeStructureProvider$PsiClassOwnerTreeNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="talkserver" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="talkserver" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ion" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="talk" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="TestCrakenServer.java" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.ClassesTreeStructureProvider$PsiClassOwnerTreeNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -922,8 +952,26 @@
               <option name="myItemId" value="ion" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
+          </PATH>
+          <PATH>
             <PATH_ELEMENT>
-              <option name="myItemId" value="script" />
+              <option name="myItemId" value="talkserver" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="craken" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ion" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="craken" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -945,11 +993,11 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="script" />
+              <option name="myItemId" value="craken" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="rhino" />
+              <option name="myItemId" value="node" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -970,96 +1018,16 @@
               <option name="myItemId" value="ion" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="talkserver" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="craken" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
+              <option name="myItemId" value="node" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="ion" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="rhino" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="talkserver" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="craken" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ion" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="rhino" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="RhinoResponse.java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.ClassesTreeStructureProvider$PsiClassOwnerTreeNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="talkserver" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="craken" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ion" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="rhino" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="RhinoEngine.java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.ClassesTreeStructureProvider$PsiClassOwnerTreeNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="talkserver" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="craken" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ion" />
+              <option name="myItemId" value="crud" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -1118,7 +1086,7 @@
       <recent name="net.ion.talk.handler.craken" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.TestToonServerNew">
+  <component name="RunManager" selected="JUnit.TestWriteSession.testBoolean">
     <configuration default="false" name="TestWebSocketTalkMessageHandler" type="JUnit" factoryName="JUnit" temporary="true">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
         <pattern>
@@ -1133,70 +1101,6 @@
       <option name="MAIN_CLASS_NAME" value="net.ion.talk.handler.engine.TestWebSocketTalkMessageHandler" />
       <option name="METHOD_NAME" />
       <option name="TEST_OBJECT" value="class" />
-      <option name="VM_PARAMETERS" value="-ea" />
-      <option name="PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="moduleWithDependencies" />
-      </option>
-      <envs />
-      <patterns />
-      <RunnerSettings RunnerId="Debug">
-        <option name="DEBUG_PORT" value="" />
-        <option name="TRANSPORT" value="0" />
-        <option name="LOCAL" value="true" />
-      </RunnerSettings>
-      <ConfigurationWrapper RunnerId="Debug" />
-      <method />
-    </configuration>
-    <configuration default="false" name="TestToonServerNew.testRunInfinite" type="JUnit" factoryName="JUnit" temporary="true">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
-        <pattern>
-          <option name="PATTERN" value="net.ion.talk.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <module name="talkserver" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PACKAGE_NAME" value="net.ion.talk" />
-      <option name="MAIN_CLASS_NAME" value="net.ion.talk.TestToonServerNew" />
-      <option name="METHOD_NAME" value="testRunInfinite" />
-      <option name="TEST_OBJECT" value="method" />
-      <option name="VM_PARAMETERS" value="-ea" />
-      <option name="PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="moduleWithDependencies" />
-      </option>
-      <envs />
-      <patterns />
-      <RunnerSettings RunnerId="Debug">
-        <option name="DEBUG_PORT" value="" />
-        <option name="TRANSPORT" value="0" />
-        <option name="LOCAL" value="true" />
-      </RunnerSettings>
-      <ConfigurationWrapper RunnerId="Debug" />
-      <method />
-    </configuration>
-    <configuration default="false" name="TestWebSocketTalkMessageHandler.testInvalidJson" type="JUnit" factoryName="JUnit" temporary="true">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
-        <pattern>
-          <option name="PATTERN" value="net.ion.talk.handler.engine.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <module name="talkserver" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PACKAGE_NAME" value="net.ion.talk.handler.engine" />
-      <option name="MAIN_CLASS_NAME" value="net.ion.talk.handler.engine.TestWebSocketTalkMessageHandler" />
-      <option name="METHOD_NAME" value="testInvalidJson" />
-      <option name="TEST_OBJECT" value="method" />
       <option name="VM_PARAMETERS" value="-ea" />
       <option name="PARAMETERS" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
@@ -1261,6 +1165,70 @@
       <option name="MAIN_CLASS_NAME" value="net.ion.talk.TestToonServerNew" />
       <option name="METHOD_NAME" />
       <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="moduleWithDependencies" />
+      </option>
+      <envs />
+      <patterns />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="" />
+        <option name="TRANSPORT" value="0" />
+        <option name="LOCAL" value="true" />
+      </RunnerSettings>
+      <ConfigurationWrapper RunnerId="Debug" />
+      <method />
+    </configuration>
+    <configuration default="false" name="TestToonServerNew.testName" type="JUnit" factoryName="JUnit" temporary="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="net.ion.talk.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <module name="talkserver" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="net.ion.talk" />
+      <option name="MAIN_CLASS_NAME" value="net.ion.talk.TestToonServerNew" />
+      <option name="METHOD_NAME" value="testName" />
+      <option name="TEST_OBJECT" value="method" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="moduleWithDependencies" />
+      </option>
+      <envs />
+      <patterns />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="" />
+        <option name="TRANSPORT" value="0" />
+        <option name="LOCAL" value="true" />
+      </RunnerSettings>
+      <ConfigurationWrapper RunnerId="Debug" />
+      <method />
+    </configuration>
+    <configuration default="false" name="TestWriteSession.testBoolean" type="JUnit" factoryName="JUnit" temporary="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="net.ion.craken.node.crud.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <module name="craken" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="net.ion.craken.node.crud" />
+      <option name="MAIN_CLASS_NAME" value="net.ion.craken.node.crud.TestWriteSession" />
+      <option name="METHOD_NAME" value="testBoolean" />
+      <option name="TEST_OBJECT" value="method" />
       <option name="VM_PARAMETERS" value="-ea" />
       <option name="PARAMETERS" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
@@ -1372,18 +1340,18 @@
     </configuration>
     <list size="5">
       <item index="0" class="java.lang.String" itemvalue="JUnit.TestWebSocketTalkMessageHandler" />
-      <item index="1" class="java.lang.String" itemvalue="JUnit.TestToonServerNew.testRunInfinite" />
-      <item index="2" class="java.lang.String" itemvalue="JUnit.TestWebSocketTalkMessageHandler.testInvalidJson" />
-      <item index="3" class="java.lang.String" itemvalue="JUnit.TestWebSocketTalkMessageHandler.testSuceessSendMessage" />
-      <item index="4" class="java.lang.String" itemvalue="JUnit.TestToonServerNew" />
+      <item index="1" class="java.lang.String" itemvalue="JUnit.TestWebSocketTalkMessageHandler.testSuceessSendMessage" />
+      <item index="2" class="java.lang.String" itemvalue="JUnit.TestToonServerNew" />
+      <item index="3" class="java.lang.String" itemvalue="JUnit.TestToonServerNew.testName" />
+      <item index="4" class="java.lang.String" itemvalue="JUnit.TestWriteSession.testBoolean" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="JUnit.TestToonServerNew" />
-        <item index="1" class="java.lang.String" itemvalue="JUnit.TestWebSocketTalkMessageHandler.testSuceessSendMessage" />
-        <item index="2" class="java.lang.String" itemvalue="JUnit.TestWebSocketTalkMessageHandler" />
-        <item index="3" class="java.lang.String" itemvalue="JUnit.TestWebSocketTalkMessageHandler.testInvalidJson" />
-        <item index="4" class="java.lang.String" itemvalue="JUnit.TestToonServerNew.testRunInfinite" />
+        <item index="0" class="java.lang.String" itemvalue="JUnit.TestWriteSession.testBoolean" />
+        <item index="1" class="java.lang.String" itemvalue="JUnit.TestToonServerNew.testName" />
+        <item index="2" class="java.lang.String" itemvalue="JUnit.TestToonServerNew" />
+        <item index="3" class="java.lang.String" itemvalue="JUnit.TestWebSocketTalkMessageHandler.testSuceessSendMessage" />
+        <item index="4" class="java.lang.String" itemvalue="JUnit.TestWebSocketTalkMessageHandler" />
       </list>
     </recent_temporary>
     <configuration name="&lt;template&gt;" type="WebApp" default="true" selected="false">
@@ -1435,7 +1403,11 @@
       <created>1391563667038</created>
       <updated>1391563667038</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Add: WebSocketTalkMessageHandler&#10;Update: BasicBuilder put with JsonElement&#10;">
+      <created>1391651729311</created>
+      <updated>1391651729311</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -1448,12 +1420,12 @@
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32762313" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.31798714" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.31798714" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32869378" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.28479657" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32762313" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="CDI" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -1461,7 +1433,7 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2561366" sideWeight="0.6713062" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2561366" sideWeight="0.68201286" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32929516" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -1511,7 +1483,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Re Implement: UserEnterRoomHandler, UserMessageHandler&#10;" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add: WebSocketTalkMessageHandler&#10;Update: BasicBuilder put with JsonElement&#10;" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -1529,6 +1501,7 @@
     <MESSAGE value="fix scriptAjax.js escape character" />
     <MESSAGE value="Add craken Handler" />
     <MESSAGE value="Re Implement: UserEnterRoomHandler, UserMessageHandler&#10;" />
+    <MESSAGE value="Add: WebSocketTalkMessageHandler&#10;Update: BasicBuilder put with JsonElement&#10;" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -1538,119 +1511,121 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://$PROJECT_DIR$/lib/ref/iframework_2.3.jar!/net/ion/framework/parse/gson/JsonObject.class">
+    <entry file="file://$PROJECT_DIR$/../craken/test/net/ion/bleujin/TestTopN.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="47" column="28" selection-start="2303" selection-end="2303" vertical-scroll-proportion="-7.48">
+        <state line="10" column="13" selection-start="250" selection-end="250" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/net/ion/talk/TalkMessage.java">
+    <entry file="file://$PROJECT_DIR$/../craken/test/net/ion/bleujin/TestOptional.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="42" column="0" selection-start="1073" selection-end="1073" vertical-scroll-proportion="0.0">
+        <state line="10" column="13" selection-start="226" selection-end="226" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$PROJECT_DIR$/lib/ref/craken_0.5.jar!/net/ion/craken/node/AbstractReadSession.class">
+    <entry file="file://$PROJECT_DIR$/../craken/test/net/ion/bleujin/TestMR.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="14" column="40" selection-start="649" selection-end="649" vertical-scroll-proportion="-7.28">
+        <state line="21" column="13" selection-start="791" selection-end="791" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$PROJECT_DIR$/lib/reflib/guava-jdk5-13.0.jar!/com/google/common/base/Preconditions.class">
+    <entry file="file://$PROJECT_DIR$/../craken/test/net/ion/bleujin/TestGeneric.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="18" column="23" selection-start="822" selection-end="822" vertical-scroll-proportion="-7.64">
+        <state line="21" column="5" selection-start="572" selection-end="572" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$PROJECT_DIR$/lib/reflib/guava-jdk5-13.0.jar!/com/google/common/base/Splitter.class">
+    <entry file="file://$PROJECT_DIR$/../craken/test/net/ion/craken/node/TestWriter.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="50" selection-start="1365" selection-end="1365" vertical-scroll-proportion="-7.48">
+        <state line="27" column="4" selection-start="681" selection-end="681" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$PROJECT_DIR$/lib/ref/craken_0.5.jar!/net/ion/craken/tree/Fqn.class">
+    <entry file="file://$PROJECT_DIR$/../craken/test/net/ion/craken/node/TestAllNode.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="42" column="42" selection-start="2121" selection-end="2121" vertical-scroll-proportion="-7.48">
+        <state line="10" column="13" selection-start="367" selection-end="367" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$PROJECT_DIR$/lib/reflib/common_apache_fat.jar!/org/apache/commons/lang/StringUtils.class">
+    <entry file="file://$PROJECT_DIR$/../craken/test/net/ion/craken/node/TestIndexWriteConfig.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="363" column="26" selection-start="18231" selection-end="18231" vertical-scroll-proportion="-7.28">
+        <state line="6" column="13" selection-start="162" selection-end="162" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/net/ion/talk/handler/engine/WebSocketTalkMessageHandler.java">
+    <entry file="file://$PROJECT_DIR$/../craken/test/net/ion/bleujin/TestCreate.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="93" column="27" selection-start="3298" selection-end="3298" vertical-scroll-proportion="0.0">
+        <state line="88" column="75" selection-start="3517" selection-end="3517" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../craken/test/net/ion/bleujin/TestJson.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="12" column="13" selection-start="371" selection-end="371" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../craken/src/net/ion/craken/simple/SimpleEntry.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="43" column="16" selection-start="964" selection-end="964" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/net/ion/talk/handler/craken/TestUserEnterRoomHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="12" column="13" selection-start="292" selection-end="292" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/net/ion/talk/handler/craken/TestUserMessageHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="13" column="13" selection-start="329" selection-end="329" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../craken/test/net/ion/craken/node/crud/TestWriteSession.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="145" column="26" selection-start="4238" selection-end="4238" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="e#3959#4208#0" expanded="true" />
+            <element signature="e#4197#4198#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/net/ion/talk/handler/craken/TestCrakenHandlerBase.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="13" column="13" selection-start="332" selection-end="332" vertical-scroll-proportion="0.0">
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test/net/ion/talk/handler/engine/TestWebSocketTalkMessageHandler.java">
+    <entry file="file://$PROJECT_DIR$/src/net/ion/talk/handler/craken/TalkMessageHandler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="41" selection-start="823" selection-end="823" vertical-scroll-proportion="0.0">
+        <state line="57" column="90" selection-start="2114" selection-end="2133" vertical-scroll-proportion="0.35836178">
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="docComment;class#TestWebSocketTalkMessageHandler#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/net/ion/talk/script/BasicBuilder.java">
+    <entry file="file://$PROJECT_DIR$/src/net/ion/talk/handler/craken/UserInAndOutRoomHandler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="29" column="0" selection-start="740" selection-end="740" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/net/ion/talk/handler/engine/TestUserConnectionHandler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="26" column="83" selection-start="775" selection-end="775" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/net/ion/talk/TalkEngine.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="186" column="0" selection-start="5192" selection-end="5192" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/net/ion/talk/TestToonServer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="81" column="0" selection-start="3075" selection-end="3075" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/net/ion/talk/ToonServer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="108" column="67" selection-start="3536" selection-end="3536" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/net/ion/talk/UserConnection.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="13" selection-start="224" selection-end="224" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/net/ion/talk/TestToonServerNew.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="29" selection-start="936" selection-end="936" vertical-scroll-proportion="0.49479166">
+        <state line="51" column="42" selection-start="1873" selection-end="1873" vertical-scroll-proportion="0.11744966">
           <folding />
         </state>
       </provider>
