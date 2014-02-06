@@ -55,10 +55,13 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 		aradon.getServiceContext().putAttribute(RepositoryEntry.EntryName, RepositoryEntry.test());
 		aradon.getServiceContext().putAttribute(RhinoEntry.EntryName, RhinoEntry.test());
 		final TalkEngine result = TalkEngine.create(aradon);
-
-		aradon.start();
 		return result;
 	}
+
+    public TalkEngine startForTest() throws Exception{
+        aradon.start();
+        return this;
+    }
 
 	public void onInit(SectionService parent, TreeContext context, WSPathConfiguration wsconfig) {
 		super.onInit(parent, context, wsconfig);
@@ -73,6 +76,10 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 		RepositoryEntry re = aradon.getServiceContext().getAttributeObject(RepositoryEntry.EntryName, RepositoryEntry.class);
 		return re.login();
 	}
+
+    public RhinoEntry rhinoEntry(){
+        return aradon.getServiceContext().getAttributeObject(RhinoEntry.EntryName, RhinoEntry.class);
+    }
 
 	public TalkEngine registerHandler(TalkHandler hanlder) {
 		handlers.add(hanlder);
@@ -167,7 +174,7 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 	}
 
 	// Only test
-	void stop() {
+	public void stopForTest() {
 		aradon.stop();
 	}
 

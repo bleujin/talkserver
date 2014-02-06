@@ -48,7 +48,6 @@ public class TestToonServer extends TestCase {
 
 		Aradon aradon = Aradon.create(config);
 		TalkEngine tengine = TalkEngine.create(aradon) ;
-		tengine.registerHandler(new ScriptTalkHandler()) ;
 		tengine.registerHandler(new DebugTalkHandler()) ;
 		
 		AradonHandler ahandler = AradonHandler.create(aradon);

@@ -31,6 +31,11 @@ public class BasicBuilder extends AbstractBuilder {
 		return this;
 	}
 
+    public BasicBuilder property(String name, JsonElement value){
+        props().put(name, value);
+        return this;
+    }
+
 	public BasicBuilder property(ReadNode node, String values) {
 		return (BasicBuilder) super.property(node, values);
 	}

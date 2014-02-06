@@ -10,6 +10,7 @@ import net.ion.radon.core.EnumClass;
 import net.ion.radon.core.EnumClass.IMatchMode;
 import net.ion.radon.core.config.ConfigurationBuilder;
 import net.ion.radon.core.security.ChallengeAuthenticator;
+import net.ion.talk.handler.engine.ServerHandler;
 import net.ion.talk.let.*;
 
 import java.io.FileNotFoundException;

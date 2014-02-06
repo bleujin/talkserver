@@ -20,7 +20,7 @@ public class TestTalkEngine extends TestCase {
 	
 	@Override
 	protected void tearDown() throws Exception {
-		engine.stop() ;
+		engine.stopForTest() ;
 		super.tearDown();
 	}
 	

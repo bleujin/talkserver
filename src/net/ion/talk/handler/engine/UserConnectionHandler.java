@@ -21,10 +21,6 @@ public class UserConnectionHandler implements TalkHandler {
 
     private ReadSession rsession;
 
-    public UserConnectionHandler(ReadSession rsession) {
-        this.rsession = rsession;
-    }
-
     @Override
     public void onConnected(TalkEngine tengine, final UserConnection uconn) {
         try {
@@ -61,6 +57,7 @@ public class UserConnectionHandler implements TalkHandler {
 
     @Override
     public void onEngineStart(TalkEngine tengine) throws IOException {
+        this.rsession = tengine.readSession();
     }
 
     @Override

@@ -8,7 +8,7 @@ public abstract class TalkMessage {
 	public static TalkMessage fromJsonString(String json) {
 		try {
 			return new TalkScriptMessage(JsonObject.fromString(json));
-		} catch (IllegalStateException notjson) {
+		} catch (Exception notJson) {
 			return new PlainTalkMessage(json);
 		}
 	}

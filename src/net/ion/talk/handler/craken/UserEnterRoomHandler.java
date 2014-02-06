@@ -23,11 +23,6 @@ import java.util.Map;
  * To change this template use File | Settings | File Templates.
  */
 public class UserEnterRoomHandler implements CDDHandler {
-    private final ReadSession rsession;
-
-    public UserEnterRoomHandler(ReadSession rsession) {
-        this.rsession = rsession;
-    }
 
     @Override
     public String pathPattern() {
@@ -60,6 +55,25 @@ public class UserEnterRoomHandler implements CDDHandler {
 
     @Override
     public TransactionJob<Void> deleted(Map<String, String> resolveMap, CacheEntryRemovedEvent<TreeNodeKey, AtomicMap<PropertyId, PropertyValue>> event) {
-        return null;
+
+        final String roomId = resolveMap.get("roomId");
+        return new TransactionJob<Void>() {
+            @Override
+            public Void handle(WriteSession wsession) throws Exception {
+                Iterator<String> iter = wsession.pathBy("/rooms/" + roomId + "/members").childrenNames().iterator();
+                while(iter.hasNext()){
+                    String userId = iter.next();
+                    int newNotifyId = wsession.pathBy("/notifies/" + userId).property("lastNotifyId").intValue(0)+1;
+                    wsession.pathBy("/notifies/" + userId).property("lastNotifyId", newNotifyId);
+                    wsession.pathBy("/notifies/" + userId).addChild(String.valueOf(newNotifyId))
+                            .property("delegateServer", wsession.workspace().repository().memberId())
+                            .property("createdAt", System.currentTimeMillis())
+                                    //will define message
+                            .property("messageId", userId + "exit!" + roomId)
+                            .property("roomId", roomId);
+                }
+                return null;
+            }
+        };
     }
 }

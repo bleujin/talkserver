@@ -1,15 +1,13 @@
-package net.ion.talk.let;
+package net.ion.talk.handler.engine;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.apache.ecs.xhtml.p;
-
-import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
+import net.ion.framework.util.Debug;
 import net.ion.talk.TalkEngine;
 import net.ion.talk.TalkHandler;
 import net.ion.talk.TalkMessage;
@@ -53,7 +51,7 @@ public class ServerHandler implements TalkHandler {
 	public void onEngineStart(TalkEngine tengine) throws IOException {
 		try {
 			this.session = tengine.readSession();
-			
+
 			session.tranSync(new TransactionJob<Void>() {
 				@Override
 				public Void handle(WriteSession wsession) throws Exception {
@@ -89,8 +87,7 @@ public class ServerHandler implements TalkHandler {
 
 	@Override
 	public void onMessage(TalkEngine tengine, UserConnection uconn, ReadSession rsession, TalkMessage tmsg) {
-
-	}
+    }
 
 	public String hostName() {
 		return hostName;

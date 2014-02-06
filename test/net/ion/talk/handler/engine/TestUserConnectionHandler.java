@@ -24,9 +24,8 @@ public class TestUserConnectionHandler extends TestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        engine = TalkEngine.test();
+        engine = TalkEngine.test().registerHandler(new UserConnectionHandler()).startForTest();
         rsession = engine.readSession();
-        engine.registerHandler(new UserConnectionHandler(rsession));
     }
 
     @Override

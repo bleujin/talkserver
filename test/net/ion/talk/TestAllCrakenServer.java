@@ -2,7 +2,6 @@ package net.ion.talk;
 
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import net.ion.talk.engine.TestScriptTalkHandler;
 import net.ion.talk.let.TestScriptExecLet;
 
 public class TestAllCrakenServer extends TestCase {
@@ -14,7 +13,6 @@ public class TestAllCrakenServer extends TestCase {
 		result.addTestSuite(TestTalkEngine.class) ;
 
 		result.addTestSuite(TestScriptExecLet.class) ;
-		result.addTestSuite(TestScriptTalkHandler.class) ;
 		return result ;
 	}
 }
