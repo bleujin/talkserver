@@ -74,6 +74,20 @@ public class TestResponseWrapper extends TestBaseCrud{
 		
 		JsonArray array = newBuilder.newInlist(bleujin.children(), "name, age").build().toJsonArray() ;
 		assertEquals(2, array.size());
+
+		array = newBuilder.newInlist(bleujin.refs("friends"), "name, age").build().toJsonArray() ;
+		assertEquals(0, array.size());
+		
+		session.tranSync(new TransactionJob<Void>() {
+			@Override
+			public Void handle(WriteSession wsession) throws Exception {
+				WriteNode bleujin = wsession.pathBy("/bleujin").property("name", "bleujin").property("age", 20).refTos("friends", "/bleujin/hero", "/bleujin/jin");
+				return null;
+			}
+		}) ;
+		array = newBuilder.newInlist(bleujin.refs("friends"), "name, age").build().toJsonArray() ;
+		assertEquals(2, array.size());
+	
 	}
 
 }
