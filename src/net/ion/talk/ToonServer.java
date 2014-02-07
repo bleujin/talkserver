@@ -17,6 +17,7 @@ import java.io.FileNotFoundException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
@@ -71,8 +72,7 @@ public class ToonServer {
 	}
 
     public static long GMTTime(){
-        TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
-        return Calendar.getInstance().getTime().getTime();
+    	return new GregorianCalendar().getTime().getTime() ;
     }
 
 	public ToonServer addTalkHander(TalkHandler thandler) {
