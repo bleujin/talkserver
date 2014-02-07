@@ -49,7 +49,7 @@ public class TestResponseWrapper extends TestBaseCrud{
 		}) ;
 		
 		ReadNode bleujin = session.pathBy("/bleujin") ;
-		TalkResponse response = newBuilder.newInner().property(bleujin, "name[], age").build() ;
+		TalkResponse response = newBuilder.newInner().property(bleujin, "[name] as name, age").build() ;
 		// {name:[bleu, jin, hero], age:null}
 		assertEquals(3, response.toJsonObject().asJsonArray("name").size());
 	}
