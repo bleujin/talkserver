@@ -1,4 +1,4 @@
-package net.ion.talk.script;
+package net.ion.talk.responsebuilder;
 
 import java.util.concurrent.ExecutionException;
 
@@ -6,6 +6,9 @@ import junit.framework.TestCase;
 import net.ion.framework.parse.gson.JsonArray;
 import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.parse.gson.JsonUtil;
+import net.ion.talk.responsebuilder.AbstractBuilder;
+import net.ion.talk.responsebuilder.TalkResponse;
+import net.ion.talk.responsebuilder.TalkResponseBuilder;
 
 /**
  * Author: Ryunhee Han

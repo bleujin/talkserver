@@ -1,16 +1,13 @@
-package net.ion.talk.script;
-
-import com.sun.xml.internal.ws.addressing.WsaClientTube;
+package net.ion.talk.responsebuilder;
 
 import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteNode;
 import net.ion.craken.node.WriteSession;
 import net.ion.craken.node.crud.TestBaseCrud;
-import net.ion.craken.node.crud.util.TransactionJobs;
 import net.ion.framework.parse.gson.JsonArray;
-import net.ion.framework.parse.gson.JsonObject;
-import net.ion.framework.util.Debug;
+import net.ion.talk.responsebuilder.TalkResponse;
+import net.ion.talk.responsebuilder.TalkResponseBuilder;
 
 public class TestResponseWrapper extends TestBaseCrud{
 

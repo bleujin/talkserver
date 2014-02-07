@@ -39,10 +39,10 @@ public class ToonServer {
     private Map<String, Object> propertyMap = MapUtil.newMap();
 
 	private ToonServer init() throws Exception {
-		rengine = RhinoEntry.test() ;
 		final RepositoryEntry rentry = RepositoryEntry.test();
 		this.session = rentry.login() ;
 		this.verifier = CrakenVerifier.test(session);
+        this.rengine = RhinoEntry.test(session);
 
 		this.talkHandlerGroup = TalkHandlerGroup.create();
 		talkHandlerGroup.addHandler(ServerHandler.test()) ;

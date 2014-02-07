@@ -18,6 +18,7 @@ import net.ion.radon.core.annotation.FormParam;
 import net.ion.radon.core.let.InnerRequest;
 import net.ion.radon.core.let.MultiValueMap;
 
+import net.ion.talk.ToonServer;
 import org.restlet.Response;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
@@ -45,7 +46,7 @@ public class ScriptEditLet implements IServiceLet {
 	
 	@Delete
 	public String deleteScript(@AnContext TreeContext context, @AnRequest InnerRequest request, @AnResponse Response response) throws Exception{
-		RepositoryEntry rentry = context.getAttributeObject(RepositoryEntry.EntryName, RepositoryEntry.class);
+        RepositoryEntry rentry = context.getAttributeObject(RepositoryEntry.EntryName, RepositoryEntry.class);
 		final String requestPath = "/script" + request.getPathReference().getPath();
 		ReadSession session = rentry.login();
 

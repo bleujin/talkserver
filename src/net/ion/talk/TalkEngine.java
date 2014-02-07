@@ -54,9 +54,10 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 	}
 
 	public static TalkEngine test() throws Exception {
+        RepositoryEntry repo = RepositoryEntry.test();
 		Aradon aradon = Aradon.create();
-		aradon.getServiceContext().putAttribute(RepositoryEntry.EntryName, RepositoryEntry.test());
-		aradon.getServiceContext().putAttribute(RhinoEntry.EntryName, RhinoEntry.test());
+		aradon.getServiceContext().putAttribute(RepositoryEntry.EntryName, repo);
+		aradon.getServiceContext().putAttribute(RhinoEntry.EntryName, RhinoEntry.test(repo.login()));
 		final TalkEngine result = TalkEngine.create(aradon);
 		return result;
 	}

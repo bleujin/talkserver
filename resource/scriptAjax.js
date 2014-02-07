@@ -14,8 +14,8 @@ var execute = function(){
 //            data[key.trim()] = value.trim();
 //        });
 //    }
-
-    var data = "";
+    var time = new Date().getTime();
+    var data = "id=ajax|" + time + "&";
 
     data += "script=" + encodeURIComponent($("#script").val());
 
@@ -33,7 +33,7 @@ var execute = function(){
 
     $.ajax({
         type: "POST",
-        url: "/execute/ajax.json",
+        url: "/execute/ajax.string",
         data: data,
         dataType: "html"
     }).done(function(msg){

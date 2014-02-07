@@ -1,4 +1,4 @@
-package net.ion.talk.script;
+package net.ion.talk.responsebuilder;
 
 import com.google.common.base.Function;
 

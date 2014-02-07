@@ -1,4 +1,4 @@
-package net.ion.talk.script;
+package net.ion.talk.responsebuilder;
 
 import net.ion.craken.expression.ExpressionParser;
 import net.ion.craken.expression.TerminalParser;
@@ -11,6 +11,9 @@ import net.ion.framework.parse.gson.JsonArray;
 import net.ion.framework.parse.gson.JsonNull;
 import net.ion.framework.util.Debug;
 import net.ion.rosetta.Parser;
+import net.ion.talk.responsebuilder.MyProjection;
+import net.ion.talk.responsebuilder.TalkResponse;
+import net.ion.talk.responsebuilder.TalkResponseBuilder;
 
 import java.util.Map;
 

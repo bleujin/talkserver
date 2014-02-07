@@ -29,10 +29,10 @@ public class TestToonServer extends TestCase {
 
 
     public void testRun() throws Exception {
-		RhinoEntry rengine = RhinoEntry.test() ;
 		RepositoryEntry repository = RepositoryEntry.test();
         ReadSession session = repository.login();
         CrakenVerifier verifier = CrakenVerifier.test(session);
+        RhinoEntry rengine = RhinoEntry.test(session) ;
 
 		Configuration config = ConfigurationBuilder.newBuilder().aradon()
 			.addAttribute(RepositoryEntry.EntryName, repository)
