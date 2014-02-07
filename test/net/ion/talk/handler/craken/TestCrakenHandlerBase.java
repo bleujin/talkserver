@@ -24,7 +24,7 @@ public class TestCrakenHandlerBase extends TestCase{
 
     @Override
     public void tearDown() throws Exception {
-
+        rsession.workspace().repository().shutdown();
         super.tearDown();
     }
 }

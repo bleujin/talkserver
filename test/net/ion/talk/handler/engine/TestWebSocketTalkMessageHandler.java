@@ -59,13 +59,6 @@ public class TestWebSocketTalkMessageHandler extends TestCase {
         assertEquals("userInfo", JsonObject.fromString(ryun.recentMsg()).asString("id"));
     }
 
-    public void testNotFoundScriptMessage(){
-        tengine.onOpen(ryun);
-        tengine.onMessage(ryun, "{\"script\":\"/Not/Found/Script\"}");
-        assertEquals("failure", JsonObject.fromString(ryun.recentMsg()).asString("status"));
-
-    }
-
     public void testNotFoundIdMessage() throws Exception {
         tengine.onOpen(ryun);
         tengine.onMessage(ryun, "{\"script\":\"/script/users/info\"}");

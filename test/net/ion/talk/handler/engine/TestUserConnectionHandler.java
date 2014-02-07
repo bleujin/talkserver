@@ -30,20 +30,18 @@ public class TestUserConnectionHandler extends TestCase {
 
     @Override
     public void tearDown() throws Exception {
-        engine.onStop();
+        engine.stopForTest();
         super.tearDown();
     }
 
     public void testUserInAndOut() throws Exception {
 
         engine.onOpen(ryun);
-        ReadNode node = rsession.ghostBy("/users/"+ryun.getString("id")+"/connection");
-        assertEquals(true, node.property("isConnected").value());
-        assertEquals(rsession.workspace().repository().memberId(), node.property("server").stringValue());
+        assertTrue(rsession.exists("/connection/"+ryun.getString("id")));
+        assertEquals(rsession.workspace().repository().memberId(), rsession.pathBy("/connection/"+ryun.getString("id")).property("server").stringValue());
 
         engine.onClose(ryun);
-        assertEquals(false, node.property("isConnected").value());
-        assertEquals("none", node.property("server").stringValue());
+        assertFalse(rsession.exists("/connection/"+ryun.getString("id")));
     }
 
 }

@@ -7,7 +7,9 @@ import java.util.logging.Logger;
 
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.aradon.bean.RhinoEntry;
+import net.ion.craken.node.ISession;
 import net.ion.craken.node.ReadSession;
+import net.ion.craken.node.WriteSession;
 import net.ion.framework.logging.LogBroker;
 import net.ion.framework.util.ListUtil;
 import net.ion.framework.util.MapUtil;
@@ -24,7 +26,8 @@ import net.ion.talk.let.TalkHandlerGroup;
 
 public class TalkEngine extends AbstractWebSocketResource implements OnOrderEventObject {
 
-	public enum DisConnectReason {
+
+    public enum DisConnectReason {
 		DOPPLE, CLIENT, TIMEOUT;
 	}
 

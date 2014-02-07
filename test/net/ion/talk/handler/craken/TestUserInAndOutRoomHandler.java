@@ -1,7 +1,12 @@
 package net.ion.talk.handler.craken;
 
+import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
+import net.ion.framework.util.Debug;
+import net.ion.framework.util.ListUtil;
+
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,33 +17,55 @@ import net.ion.craken.node.WriteSession;
  */
 public class TestUserInAndOutRoomHandler extends TestCrakenHandlerBase{
 
+    private List<String> users;
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
         rsession.workspace().cddm().add(new UserInAndOutRoomHandler());
-    }
 
-    public void testUserIn() throws Exception {
-        rsession.tranSync(new TransactionJob<Object>() {
-            @Override
-            public Object handle(WriteSession wsession) throws Exception {
-                wsession.pathBy("/rooms/1/members/ryun");
-                return null;
-            }
-        });
+        users = ListUtil.newList();
+        users.add("ryun");
+        users.add("alex");
 
-        rsession.tranSync(new TransactionJob<Object>() {
-            @Override
-            public Object handle(WriteSession wsession) throws Exception {
-                wsession.pathBy("/rooms/1/members/alex");
-                return null;
-            }
-        });
+        for(final String user : users){
+            rsession.tranSync(new TransactionJob<Object>() {
+                @Override
+                public Object handle(WriteSession wsession) throws Exception {
+                    wsession.pathBy("/rooms/1/members/"+user);
+                    return null;
+                }
+            });
+        }
 
         Thread.sleep(100);
-        assertEquals(1, rsession.pathBy("/notifies/alex").children().toList().size());
-        assertEquals(2, rsession.pathBy("/notifies/ryun").children().toList().size());
+    }
 
+    public void testUserIn() {
+
+        assertEquals(2, rsession.pathBy("/rooms/1/messages/").children().toList().size());
+
+        for(ReadNode node : rsession.pathBy("/rooms/1/messages/").children().toList()){
+            String user = node.ref("sender").fqn().name();
+            users.remove(user);
+        }
+
+        assertEquals(0, users.size());
+
+    }
+
+    public void testUserOut() throws Exception {
+        for(final String user : users){
+            rsession.tranSync(new TransactionJob<Object>() {
+                @Override
+                public Object handle(WriteSession wsession) throws Exception {
+                    wsession.pathBy("/rooms/1/members/"+user).removeSelf();
+                    return null;
+                }
+            });
+        }
+        assertEquals(4, rsession.pathBy("/rooms/1/messages/").children().toList().size());
+        assertFalse(rsession.pathBy("/rooms/1/members").children().hasNext());
     }
 
 }
