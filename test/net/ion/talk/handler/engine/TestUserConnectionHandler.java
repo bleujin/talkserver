@@ -37,11 +37,11 @@ public class TestUserConnectionHandler extends TestCase {
     public void testUserInAndOut() throws Exception {
 
         engine.onOpen(ryun);
-        assertTrue(rsession.exists("/connections/"+ryun.getString("id")));
-        assertEquals(rsession.workspace().repository().memberId(), rsession.pathBy("/connections/"+ryun.getString("id")).property("server").stringValue());
+        assertTrue(rsession.exists("/connection/"+ryun.getString("id")));
+        assertEquals(rsession.workspace().repository().memberId(), rsession.pathBy("/connection/"+ryun.getString("id")).property("server").stringValue());
 
         engine.onClose(ryun);
-        assertFalse(rsession.exists("/connections/"+ryun.getString("id")));
+        assertFalse(rsession.exists("/connection/"+ryun.getString("id")));
     }
 
 }

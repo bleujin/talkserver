@@ -50,17 +50,8 @@ public class RhinoEntry implements OnEventObject {
     }
 
     public Object executePath(String scriptId, String scriptPath, ParameterMap params){
-        try {
-            String script = getValidatedScript(scriptPath);
-            return executeScript(scriptId, script, params);
-        }  catch (IllegalArgumentException e1) {
-            e1.printStackTrace();
-            return TalkResponseBuilder.makeResponse(e1);
-
-        } catch (UnsupportedOperationException e2){
-            e2.printStackTrace();
-            return TalkResponseBuilder.makeResponse(e2);
-        }
+        String script = getValidatedScript(scriptPath);
+        return executeScript(scriptId, script, params);
     }
 
     public Object executeScript(String scriptId, String script, ParameterMap params){

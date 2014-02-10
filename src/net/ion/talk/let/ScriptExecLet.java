@@ -55,12 +55,16 @@ public class ScriptExecLet implements IServiceLet {
             throw new ResourceException(400);
         }
 
-
-        if(spath.equals("/ajax")){
-            String script = request.getFormParameter().get("script").toString();
-            result = rengine.executeScript(scriptId, script, ParameterMap.create(request.getFormParameter()));
-        }else
-            result = rengine.executePath(scriptId, "/script"+spath, ParameterMap.create(request.getFormParameter()));
+        try {
+            if(spath.equals("/ajax")){
+                String script = request.getFormParameter().get("script").toString();
+                result = rengine.executeScript(scriptId, script, ParameterMap.create(request.getFormParameter()));
+            }else
+                result = rengine.executePath(scriptId, "/script"+spath, ParameterMap.create(request.getFormParameter()));
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            result = TalkResponseBuilder.makeResponse(e);
+        }
 
         if(format.equals("json"))
             return new JsonObjectRepresentation(result);
