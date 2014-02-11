@@ -26,7 +26,7 @@ public class TestUserMessageHandler extends TestCrakenHandlerBase{
             @Override
             public Object handle(WriteSession wsession) throws Exception {
 
-                wsession.pathBy("/connection/ryun").property("server", wsession.workspace().repository().memberId());
+                wsession.pathBy("/connections/ryun").property("server", wsession.workspace().repository().memberId());
 
                 wsession.pathBy("/rooms/1/members/ryun");
                 wsession.pathBy("/rooms/1/members/alex");

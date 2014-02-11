@@ -21,11 +21,15 @@ import net.ion.radon.core.config.Configuration;
 import net.ion.radon.core.config.ConfigurationBuilder;
 import net.ion.radon.core.security.ChallengeAuthenticator;
 import net.ion.talk.let.*;
+import net.ion.talk.util.NetworkUtil;
 import org.restlet.data.Method;
 
 import java.util.concurrent.CountDownLatch;
 
 public class TestToonServer extends TestCase {
+
+
+    private TalkEngine tengine;
 
 
     public void testRun() throws Exception {
@@ -47,7 +51,7 @@ public class TestToonServer extends TestCase {
 
 
 		Aradon aradon = Aradon.create(config);
-		TalkEngine tengine = TalkEngine.create(aradon) ;
+		tengine = TalkEngine.create(aradon) ;
 		tengine.registerHandler(new DebugTalkHandler()) ;
 		
 		AradonHandler ahandler = AradonHandler.create(aradon);
@@ -61,7 +65,7 @@ public class TestToonServer extends TestCase {
 		
 		radon.start().get() ;
 
-        new InfinityThread().startNJoin();
+//        new InfinityThread().startNJoin();
 
 		// radon.stop().get() ;
 	}
@@ -90,7 +94,7 @@ public class TestToonServer extends TestCase {
 	public void testWebSocket() throws Exception {
 		NewClient client = NewClient.create();
 		final CountDownLatch cd = new CountDownLatch(1) ;
-		WebSocket ws = client.createWebSocket("ws://localhost:9000/websocket/bleujin", new WebSocketTextListener() {
+		WebSocket ws = client.createWebSocket(NetworkUtil.getHostAddressWithProtocol("ws") + ":9000/websocket/bleujin", new WebSocketTextListener() {
 			@Override
 			public void onOpen(WebSocket arg0) {
 			}
@@ -120,6 +124,11 @@ public class TestToonServer extends TestCase {
 		
 		client.close();
 	}
-	
-	
+
+
+    @Override
+    public void tearDown() throws Exception {
+        tengine.stopForTest();
+        super.tearDown();
+    }
 }

@@ -68,8 +68,8 @@ public class TalkMessageHandler implements CDDHandler {
 
     protected String getDelegateServer(String userId, ISession session) {
 
-        if(session.exists("/connection/" + userId))
-            return session.pathBy("/connection/" + userId).property("server").stringValue();
+        if(session.exists("/connections/" + userId))
+            return session.pathBy("/connections/" + userId).property("server").stringValue();
         else
             return session.workspace().repository().memberId();
     }

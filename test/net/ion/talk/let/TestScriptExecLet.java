@@ -5,10 +5,7 @@ import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
 import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.util.Debug;
-import net.ion.radon.aclient.NewClient;
-import net.ion.radon.aclient.Request;
-import net.ion.radon.aclient.RequestBuilder;
-import net.ion.radon.aclient.Response;
+import net.ion.radon.aclient.*;
 import net.ion.radon.client.AradonClient;
 import net.ion.radon.core.EnumClass.IMatchMode;
 import org.restlet.data.Method;
@@ -44,14 +41,17 @@ public class TestScriptExecLet extends TestBaseLet {
                 "").build();
 
         Response response = client.executeRequest(request).get();
+        assertEquals(200, response.getStatusCode());
         assertEquals("application/json; charset=UTF-8",response.getContentType());
-        assertEquals("{\"name\":\"ryun\"}", response.getTextBody());
-//
+        JsonObject obj = JsonObject.fromString(response.getTextBody()).asJsonObject("result");
+        assertEquals("ryun", obj.asString("name"));
+
         request = requestBuilder.setUrl("http://" + tserver.getHostAddress() + ":9000/execute/ajax.string").build();
 
         response = client.executeRequest(request).get();
         assertEquals("text/plain; charset=UTF-8",response.getContentType());
-        assertEquals("{\"name\":\"ryun\"}", response.getTextBody());
+        obj = JsonObject.fromString(response.getTextBody()).asJsonObject("result");
+        assertEquals("ryun", obj.asString("name"));
         client.close();
     }
 
@@ -78,10 +78,10 @@ public class TestScriptExecLet extends TestBaseLet {
         assertEquals(200, response.getStatusCode());
 
         assertEquals("application/json; charset=UTF-8", response.getContentType());
-        JsonObject obj = JsonObject.fromString(response.getTextBody());
+        JsonObject obj = JsonObject.fromString(response.getTextBody()).asJsonObject("result");
         assertEquals("alex", obj.get("name").getAsString());
         assertEquals("oregon", obj.get("location").getAsString());
-        assertEquals(10000, obj.get("money").getAsInt());
+        assertEquals(10000.0, obj.get("money").getAsDouble());
         assertEquals("joshua", obj.get("friends").getAsJsonObject().get("name").getAsString());
 
     }

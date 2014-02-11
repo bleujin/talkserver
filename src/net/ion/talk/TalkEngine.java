@@ -67,6 +67,12 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
         return this;
     }
 
+    // Only test
+    public void stopForTest() {
+        aradon.stop();
+        onEvent(AradonEvent.STOP, null) ;
+    }
+
 	public void onInit(SectionService parent, TreeContext context, WSPathConfiguration wsconfig) {
 		super.onInit(parent, context, wsconfig);
 		this.aradon = parent.getAradon();
@@ -171,15 +177,12 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 				for (TalkHandler handler : handlers) {
 					handler.onEngineStop(this);
 				}
+                RepositoryEntry r = context().getAttributeObject(RepositoryEntry.EntryName, RepositoryEntry.class);
+                r.onEvent(AradonEvent.STOP, service);
 			}
 		} catch (Exception ex) {
 			throw new IllegalStateException(ex);
 		}
-	}
-
-	// Only test
-	public void stopForTest() {
-		aradon.stop();
 	}
 
 	public <T extends TalkHandler> T handler(Class<T> clz) {

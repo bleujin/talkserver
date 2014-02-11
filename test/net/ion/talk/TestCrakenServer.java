@@ -41,7 +41,7 @@ public class TestCrakenServer extends TestCase {
 
 		radon.start().get();
 
-		new InfinityThread().startNJoin();
+//		new InfinityThread().startNJoin();
 	}
 
 	

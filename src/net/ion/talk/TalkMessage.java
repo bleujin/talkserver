@@ -1,6 +1,7 @@
 package net.ion.talk;
 
 import net.ion.framework.parse.gson.JsonObject;
+import net.ion.framework.util.Debug;
 import net.ion.framework.util.ObjectId;
 
 public abstract class TalkMessage {
@@ -44,7 +45,9 @@ class TalkScriptMessage extends TalkMessage {
 	}
 
 	public String id() {
-		return json.asString("id");
+        //It will be create scriptId from server or client.
+        return new ObjectId().toString();
+//        return json.asString("id");
 	}
 
 	public JsonObject params() {

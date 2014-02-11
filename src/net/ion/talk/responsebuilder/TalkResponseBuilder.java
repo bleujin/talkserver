@@ -35,7 +35,7 @@ public class TalkResponseBuilder {
     public static String makeResponse(String id, Object result) {
         BasicBuilder response = TalkResponseBuilder.create().newInner()
                 .property("createAt", ToonServer.GMTTime())
-                .property("id", id)
+//                .property("id", id)
                 .property("result", result);
 
         if (result instanceof Throwable)

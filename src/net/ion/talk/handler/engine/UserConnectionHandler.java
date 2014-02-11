@@ -27,7 +27,7 @@ public class UserConnectionHandler implements TalkHandler {
             rsession.tranSync(new TransactionJob<Void>() {
                 @Override
                 public Void handle(WriteSession wsession) throws Exception {
-                    wsession.pathBy("/connection/"+uconn.id())
+                    wsession.pathBy("/connections/"+uconn.id())
                             .refTo("user","/users/"+uconn.id())
                                 .property("server", rsession.workspace().repository().memberId());
                     return null;
@@ -44,7 +44,7 @@ public class UserConnectionHandler implements TalkHandler {
             rsession.tranSync(new TransactionJob<Void>() {
                 @Override
                 public Void handle(WriteSession wsession) throws Exception {
-                    wsession.pathBy("/connection/"+uconn.id()).removeSelf();
+                    wsession.pathBy("/connections/"+uconn.id()).removeSelf();
                     return null;
                 }
             });

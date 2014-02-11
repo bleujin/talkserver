@@ -7,6 +7,7 @@ import java.util.concurrent.ExecutionException;
 import net.ion.craken.node.ReadNode;
 import net.ion.framework.parse.gson.JsonElement;
 import net.ion.framework.parse.gson.JsonObject;
+import net.ion.framework.util.Debug;
 import net.ion.framework.util.ObjectUtil;
 
 /**
@@ -68,14 +69,17 @@ public class BasicBuilder extends AbstractBuilder {
 		for (Entry<String, Object> entry : props().asMap().entrySet()) {
 			String name = entry.getKey();
 			Object value = entry.getValue();
-			if (value instanceof ListBuilder) {
+            Debug.line(name, value, value.getClass().getName());
+            if (value instanceof ListBuilder) {
 				json.put(name, ((ListBuilder) value).makeJson());
 			} else if (value instanceof BasicBuilder) {
 				json.put(name, ((BasicBuilder) value).makeJson());
 			} else if (value == ObjectUtil.NULL) {
 				json.put(name, null) ;
+            } else if (value instanceof JsonElement) {
+                json.put(name, value);
 			} else {
-				json.put(name, value);
+				json.put(name, value.toString());
 			}
 		}
 

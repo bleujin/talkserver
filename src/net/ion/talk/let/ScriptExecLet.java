@@ -8,6 +8,7 @@ import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.aradon.bean.RhinoEntry;
 import net.ion.craken.node.ReadSession;
 import net.ion.framework.util.Debug;
+import net.ion.framework.util.ObjectId;
 import net.ion.framework.util.StringUtil;
 import net.ion.nradon.let.IServiceLet;
 import net.ion.radon.aclient.Response;
@@ -25,6 +26,7 @@ import net.ion.talk.ParameterMap;
 import net.ion.talk.ToonServer;
 import net.ion.talk.responsebuilder.TalkResponseBuilder;
 import org.mozilla.javascript.NativeJavaObject;
+import org.restlet.data.Status;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
@@ -42,34 +44,46 @@ public class ScriptExecLet implements IServiceLet {
         String format;
         String scriptId;
         Object result;
+
         try {
             String[] splitPath = StringUtil.split(request.getPathReference().getPath(), ".");
             spath = splitPath[0];
             format = splitPath[1];
-            scriptId = request.getFormParameter().get("id").toString();
+
+            //It will be create scriptId from server or client.
+            scriptId = new ObjectId().toString();
+//            scriptId = request.getFormParameter().get("id").toString();
         } catch (ArrayIndexOutOfBoundsException e1){
             e1.printStackTrace();
-            throw new ResourceException(400);
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
         } catch (NullPointerException e2){
             e2.printStackTrace();
-            throw new ResourceException(400);
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
         }
 
         try {
             if(spath.equals("/ajax")){
                 String script = request.getFormParameter().get("script").toString();
                 result = rengine.executeScript(scriptId, script, ParameterMap.create(request.getFormParameter()));
-            }else
+            }else{
                 result = rengine.executePath(scriptId, "/script"+spath, ParameterMap.create(request.getFormParameter()));
+            }
+
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
-            result = TalkResponseBuilder.makeResponse(e);
+            if(format.equals("json"))
+                return new JsonObjectRepresentation(TalkResponseBuilder.makeResponse(e));
+            else if(format.equals("string"))
+                return new StringRepresentation(TalkResponseBuilder.makeResponse(e).toString());
+            else
+                return new JsonObjectRepresentation(TalkResponseBuilder.makeResponse(e));
+
         }
 
         if(format.equals("json"))
-            return new JsonObjectRepresentation(result);
+            return new JsonObjectRepresentation(TalkResponseBuilder.makeResponse(scriptId, result));
         else if(format.equals("string"))
-            return new StringRepresentation(result.toString());
+            return new StringRepresentation(TalkResponseBuilder.makeResponse(scriptId, result).toString());
         else
             return new InputRepresentation((InputStream) result);
 

@@ -53,6 +53,10 @@ public class WebSocketMessageHandler implements TalkHandler {
             response = TalkResponseBuilder.makeResponse(e2);
             e2.printStackTrace();
 
+        }  catch (NullPointerException e3){
+            response = TalkResponseBuilder.makeResponse(e3);
+            e3.printStackTrace();
+
         } finally {
             uconn.sendMessage(response);
 

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
+import net.ion.talk.util.NetworkUtil;
 import org.restlet.data.Method;
 import org.restlet.resource.Post;
 import org.restlet.resource.Put;
@@ -51,13 +52,14 @@ public class TestParameterMap extends TestCase {
 	}
 	
 	public void testParamType() throws Exception {
-		Response response = client.preparePost("http://61.250.201.157:8999/test/param").addParameter("string", "?�녕").addParameter("int", "1").addParameter("long", "1").execute().get();
+
+		Response response = client.preparePost(NetworkUtil.getHostAddressWithProtocol("http") + ":8999/test/param").addParameter("string", "?�녕").addParameter("int", "1").addParameter("long", "1").execute().get();
 		assertEquals("ok", response.getTextBody()) ;
 	}
 	
 	public void testMultiPartType() throws Exception {
 		
-		Response response = client.preparePut("http://61.250.201.157:8999/test/param")
+		Response response = client.preparePut(NetworkUtil.getHostAddressWithProtocol("http") + ":8999/test/param")
 			.addBodyPart(new StringPart("string", "안녕"))
 			.addBodyPart(new StringPart("int", "1"))
 			.addBodyPart(new StringPart("long", "1"))
@@ -70,7 +72,7 @@ public class TestParameterMap extends TestCase {
 	
 
 	public void xtestParamsType() throws Exception {
-//		Response response = client.preparePost("http://61.250.201.157:8999/test/params")
+//		Response response = client.preparePost(NetworkUtil.getHostAddressWithProtocol("Http") + ":8999/test/params")
 //			.addBodyPart(new StringPart("string", "?�녕"))
 //			.addBodyPart(new StringPart("string", "?�녕1"))
 //			.addBodyPart(new StringPart("int", "1")).addBodyPart(new StringPart("int", "2"))
@@ -79,7 +81,7 @@ public class TestParameterMap extends TestCase {
 //			.execute().get();
 		
 		final Request request = new RequestBuilder()	
-			.setUrl("http://61.250.201.157:8999/test/params").setMethod(Method.POST)
+			.setUrl(NetworkUtil.getHostAddressWithProtocol("http") + ":8999/test/params").setMethod(Method.POST)
 			.addParameter("string", "안녕").addParameter("string", "안녕2").build();
 		Debug.line(request.getParams()) ;
 
