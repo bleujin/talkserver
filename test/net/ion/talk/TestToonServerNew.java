@@ -24,6 +24,7 @@ public class TestToonServerNew extends TestBaseLet{
         tserver.addTalkHander(new UserConnectionHandler())
                 .addTalkHander(new WebSocketMessageHandler())
                 .addTalkHander(notiHandler);
+
         tserver.cbuilder().build();
         tserver.startRadon();
 

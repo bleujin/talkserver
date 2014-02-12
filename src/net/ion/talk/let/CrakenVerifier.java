@@ -25,20 +25,25 @@ public class CrakenVerifier implements Verifier {
 
 	@Override
 	public int verify(Request request, Response response) {
+
 		if (request.getChallengeResponse() == null){
 			return Verifier.RESULT_MISSING;
 		}
         String id = request.getChallengeResponse().getIdentifier() ;
-        return session.exists("/users/" + id) ? Verifier.RESULT_VALID : Verifier.RESULT_INVALID;
+        String pushId = String.valueOf(request.getChallengeResponse().getSecret());
+        if(!session.exists("/users/" + id))
+            return Verifier.RESULT_INVALID;
+        if(!session.pathBy("/users/" + id).property("pushId").stringValue().equals(pushId))
+            return Verifier.RESULT_INVALID;
+
+        return Verifier.RESULT_VALID;
 	}
 
-	public CrakenVerifier addUser(final String userId, final String pwd) throws Exception{
+	public CrakenVerifier addUser(final String userId, final String pushId) throws Exception{
 		session.tranSync(new TransactionJob<Void>() {
 			@Override
 			public Void handle(WriteSession wsession) throws Exception {
-
-
-				wsession.pathBy("/users/" + userId).property("id", userId).property("pwd", pwd) ;
+				wsession.pathBy("/users/" + userId).property("pushId", pushId) ;
 				return null;
 			}
 		}) ;
