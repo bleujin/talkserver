@@ -69,7 +69,6 @@ public class BasicBuilder extends AbstractBuilder {
 		for (Entry<String, Object> entry : props().asMap().entrySet()) {
 			String name = entry.getKey();
 			Object value = entry.getValue();
-            Debug.line(name, value, value.getClass().getName());
             if (value instanceof ListBuilder) {
 				json.put(name, ((ListBuilder) value).makeJson());
 			} else if (value instanceof BasicBuilder) {

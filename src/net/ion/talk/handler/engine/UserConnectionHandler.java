@@ -29,7 +29,7 @@ public class UserConnectionHandler implements TalkHandler {
                 public Void handle(WriteSession wsession) throws Exception {
                     wsession.pathBy("/connections/"+uconn.id())
                             .refTo("user","/users/"+uconn.id())
-                                .property("server", rsession.workspace().repository().memberId());
+                                .property("delegateServer", rsession.workspace().repository().memberId());
                     return null;
                 }
             });

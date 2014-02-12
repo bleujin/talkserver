@@ -26,7 +26,6 @@ import net.ion.talk.let.TalkHandlerGroup;
 
 public class TalkEngine extends AbstractWebSocketResource implements OnOrderEventObject {
 
-
     public enum DisConnectReason {
 		DOPPLE, CLIENT, TIMEOUT;
 	}
@@ -200,6 +199,18 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 	public int order() {
 		return 2;
 	}
+
+    public boolean isUserExist(String id){
+        return connManger().contains(id);
+    }
+
+    public UserConnection getUserConnection(String id){
+        return connManger().findBy(id);
+    }
+
+    public UserConnection getUserConnection(WebSocketConnection wconn){
+        return connManger().findBy(wconn);
+    }
 }
 
 class ConnManager {
@@ -233,6 +244,10 @@ class ConnManager {
 		uconn.close(this, reason);
 		return uconn;
 	}
+
+    public boolean contains(String id){
+        return conns.containsKey(id);
+    }
 
 	public boolean contains(WebSocketConnection conn) {
 		return conns.containsValue(conn);
