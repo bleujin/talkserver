@@ -3,6 +3,7 @@ package net.ion.talk.handler.engine;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
+import net.ion.framework.util.Debug;
 import net.ion.talk.TalkEngine;
 import net.ion.talk.TalkHandler;
 import net.ion.talk.TalkMessage;
@@ -23,6 +24,13 @@ public class UserConnectionHandler implements TalkHandler {
 
     @Override
     public void onConnected(TalkEngine tengine, final UserConnection uconn) {
+
+        String accessToken = rsession.pathBy("/users/" + uconn.id()).property("accessToken").stringValue();
+        if(!accessToken.equals(uconn.accessToken())){
+            uconn.close();
+        }
+
+
         try {
             rsession.tranSync(new TransactionJob<Void>() {
                 @Override
@@ -30,11 +38,12 @@ public class UserConnectionHandler implements TalkHandler {
                     wsession.pathBy("/connections/"+uconn.id())
                             .refTo("user","/users/"+uconn.id())
                                 .property("delegateServer", rsession.workspace().repository().memberId());
+                    wsession.pathBy("/users/"+uconn.id()).property("accessToken", "");
                     return null;
                 }
             });
         } catch (Exception e) {
-            e.printStackTrace();
+              e.printStackTrace();
         }
     }
 

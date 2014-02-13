@@ -39,7 +39,7 @@ public class LoginLet implements IServiceLet{
         String wsUri = session.tranSync(new TransactionJob<String>() {
             @Override
             public String handle(WriteSession wsession) throws Exception {
-                wsession.pathBy("/users/" + userId).property("accesstoken", accessToken);
+                wsession.pathBy("/users/" + userId).property("accessToken", accessToken);
 
                 List<WriteNode> list = wsession.pathBy("/servers").children().toList();
                 Collections.shuffle(list);
@@ -49,6 +49,6 @@ public class LoginLet implements IServiceLet{
         });
 
         return new StringRepresentation(wsUri);
-		
+
 	}
 }

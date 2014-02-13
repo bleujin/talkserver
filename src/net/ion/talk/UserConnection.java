@@ -23,6 +23,14 @@ public class UserConnection {
 	public String id(){
 		return inner.getString("id") ;
 	}
+
+    public String accessToken(){
+        return inner.getString("accessToken");
+    }
+
+    public void close(){
+        inner.close();
+    }
 	
 	public String asString(String key){
 		return ObjectUtil.toString(inner.data(key)) ;
@@ -60,7 +68,7 @@ public class UserConnection {
 	}
 	
 	public String toString(){
-		return "UserConnection[" + id() + "]" ;
+		return "UserConnection[" + id() + "/" + accessToken() + "]" ;
 	}
 
 }

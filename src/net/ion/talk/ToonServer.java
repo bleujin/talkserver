@@ -65,7 +65,7 @@ public class ToonServer {
 			.restSection("websocket")
 				.addAttribute(TalkHandlerGroup.class.getCanonicalName(), talkHandlerGroup)
 				.wspath("websocket")
-				.addUrlPattern("/{id}/{token}").handler(TalkEngine.class).toBuilder() ;
+				.addUrlPattern("/{id}/{accessToken}").handler(TalkEngine.class).toBuilder() ;
 
 		this.mockClient = MockClient.create(this) ;
 		return this;
