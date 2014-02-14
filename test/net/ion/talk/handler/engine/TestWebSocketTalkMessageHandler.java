@@ -51,12 +51,13 @@ public class TestWebSocketTalkMessageHandler extends TestCase {
     public void testSuceessSendMessage() throws Exception {
         tengine.onOpen(ryun);
         tengine.onMessage(ryun, "{\"script\":\"/users/register\", \"id\":\"userRegister\",\"params\":{\"userId\":\"ryun\", \"phone\":\"0101234568\",\"nickname\":\"ryuneeee\",\"pushId\":\"lolem ipsum pushId\",\"deviceOS\":\"android\",\"friends\":[\"alex\",\"lucy\"]}}");
-        assertEquals("success", JsonObject.fromString(ryun.recentMsg()).asString("status"));
-//        assertEquals("userRegister", JsonObject.fromString(ryun.recentMsg()).asString("id"));
+        try{
+            ryun.recentMsg();
+            fail();
+        }catch (Exception e){
 
-        tengine.onMessage(ryun, "{\"script\":\"/users/info\", \"id\":\"userInfo\", \"params\":{\"userId\":\"ryun\"}}");
-        assertEquals("success", JsonObject.fromString(ryun.recentMsg()).asString("status"));
-//        assertEquals("userInfo", JsonObject.fromString(ryun.recentMsg()).asString("id"));
+        }
+
     }
 
     public void testNotFoundIdMessage() throws Exception {

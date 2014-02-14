@@ -3,6 +3,7 @@ package net.ion.talk.handler.engine;
 import net.ion.craken.aradon.bean.RhinoEntry;
 import net.ion.craken.node.ReadSession;
 import net.ion.framework.parse.gson.JsonObject;
+import net.ion.framework.util.Debug;
 import net.ion.framework.util.StringUtil;
 import net.ion.script.rhino.RhinoScript;
 import net.ion.talk.*;
@@ -35,30 +36,33 @@ public class WebSocketMessageHandler implements TalkHandler {
 
         String response = null;
         ParameterMap params;
-        try{
+        Object scriptResult = null;
+        try {
 
-            if(tmsg.params()!=null)
+            if (tmsg.params() != null)
                 params = ParameterMap.create(tmsg.params());
             else
                 params = null;
 
-            Object scriptResult = rengine.executePath(tmsg.id(), "/script/"+tmsg.script(), params);
+            scriptResult = rengine.executePath(tmsg.id(), "/script/" + tmsg.script(), params);
             response = TalkResponseBuilder.makeResponse(tmsg.id(), scriptResult);
 
         } catch (IllegalArgumentException e1) {
             response = TalkResponseBuilder.makeResponse(e1);
             e1.printStackTrace();
 
-        } catch (UnsupportedOperationException e2){
+        } catch (UnsupportedOperationException e2) {
             response = TalkResponseBuilder.makeResponse(e2);
             e2.printStackTrace();
 
-        }  catch (NullPointerException e3){
+        } catch (NullPointerException e3) {
             response = TalkResponseBuilder.makeResponse(e3);
             e3.printStackTrace();
 
         } finally {
-            uconn.sendMessage(response);
+            if(!JsonObject.fromString(response).asString("result").equals("undefined")){
+                uconn.sendMessage(response);
+            }
 
         }
 
