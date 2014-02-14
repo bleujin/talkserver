@@ -64,7 +64,7 @@ public class NotificationSendHandler implements CDDHandler, TalkHandler {
             public Void handle(WriteSession wsession) throws Exception {
 
                 boolean isConnected = tengine.isUserExist(userId);
-                boolean delegateIsMime = wsession.pathBy("/connections/"+userId).property("delegateServer").stringValue()
+                boolean delegateIsMime = wsession.pathBy("/users/"+userId).property("delegateServer").stringValue()
                         .equals(wsession.workspace().repository().memberId());
 
                 if(isConnected && delegateIsMime){

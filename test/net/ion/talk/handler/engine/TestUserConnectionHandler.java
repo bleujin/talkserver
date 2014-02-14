@@ -3,6 +3,8 @@ package net.ion.talk.handler.engine;
 import junit.framework.TestCase;
 import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.ReadSession;
+import net.ion.craken.node.TransactionJob;
+import net.ion.craken.node.WriteSession;
 import net.ion.nradon.WebSocketConnection;
 import net.ion.talk.FakeConnection;
 import net.ion.talk.TalkEngine;
@@ -26,6 +28,16 @@ public class TestUserConnectionHandler extends TestCase {
         super.setUp();
         engine = TalkEngine.test().registerHandler(new UserConnectionHandler()).startForTest();
         rsession = engine.readSession();
+
+        rsession.tranSync(new TransactionJob<Object>() {
+            @Override
+            public Object handle(WriteSession wsession) throws Exception {
+
+                wsession.pathBy("/users/ryun");
+                return null;
+            }
+        });
+
     }
 
     @Override
@@ -38,7 +50,7 @@ public class TestUserConnectionHandler extends TestCase {
 
         engine.onOpen(ryun);
         assertTrue(rsession.exists("/connections/"+ryun.getString("id")));
-        assertEquals(rsession.workspace().repository().memberId(), rsession.pathBy("/connections/"+ryun.getString("id")).property("server").stringValue());
+        assertEquals(rsession.workspace().repository().memberId(), rsession.pathBy("/users/"+ryun.getString("id")).property("delegateServer").stringValue());
 
         engine.onClose(ryun);
         assertFalse(rsession.exists("/connections/"+ryun.getString("id")));

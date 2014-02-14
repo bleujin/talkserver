@@ -36,8 +36,8 @@ public class UserConnectionHandler implements TalkHandler {
                 @Override
                 public Void handle(WriteSession wsession) throws Exception {
                     wsession.pathBy("/connections/"+uconn.id())
-                            .refTo("user","/users/"+uconn.id())
-                                .property("delegateServer", rsession.workspace().repository().memberId());
+                            .refTo("user","/users/"+uconn.id());
+                    wsession.pathBy("/users/"+uconn.id()).property("delegateServer", rsession.workspace().repository().memberId());
                     wsession.pathBy("/users/"+uconn.id()).property("accessToken", "");
                     return null;
                 }
