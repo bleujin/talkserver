@@ -42,7 +42,7 @@ public class WebSocketMessageHandler implements TalkHandler {
             else
                 params = null;
 
-            Object scriptResult = rengine.executePath(tmsg.id(), tmsg.script(), params);
+            Object scriptResult = rengine.executePath(tmsg.id(), "/script/"+tmsg.script(), params);
             response = TalkResponseBuilder.makeResponse(tmsg.id(), scriptResult);
 
         } catch (IllegalArgumentException e1) {
