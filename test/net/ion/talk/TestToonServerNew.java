@@ -1,6 +1,7 @@
 package net.ion.talk;
 
 import net.ion.craken.node.ReadSession;
+import net.ion.framework.util.Debug;
 import net.ion.framework.util.InfinityThread;
 import net.ion.talk.handler.craken.NotificationSendHandler;
 import net.ion.talk.handler.craken.TalkMessageHandler;
@@ -37,6 +38,8 @@ public class TestToonServerNew extends TestBaseLet{
         rsession.workspace().cddm().add(new UserInAndOutRoomHandler());
         rsession.workspace().cddm().add(new TalkMessageHandler());
         rsession.workspace().cddm().add(notiHandler);
+
+        Debug.line("serverStarted");
 
 
         new InfinityThread().startNJoin();

@@ -3,14 +3,11 @@ package net.ion.talk.handler.craken;
 import net.ion.craken.listener.CDDHandler;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
-import net.ion.craken.node.WriteNode;
 import net.ion.craken.node.WriteSession;
 import net.ion.craken.tree.PropertyId;
 import net.ion.craken.tree.PropertyValue;
 import net.ion.craken.tree.TreeNodeKey;
 import net.ion.framework.parse.gson.JsonObject;
-import net.ion.framework.util.Debug;
-import net.ion.message.push.sender.Sender;
 import net.ion.message.push.sender.SenderConfig;
 import net.ion.message.push.sender.Vender;
 import net.ion.message.push.sender.strategy.PushStrategy;
@@ -23,7 +20,6 @@ import org.infinispan.notifications.cachelistener.event.CacheEntryRemovedEvent;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**

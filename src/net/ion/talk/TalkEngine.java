@@ -7,9 +7,7 @@ import java.util.logging.Logger;
 
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.aradon.bean.RhinoEntry;
-import net.ion.craken.node.ISession;
 import net.ion.craken.node.ReadSession;
-import net.ion.craken.node.WriteSession;
 import net.ion.framework.logging.LogBroker;
 import net.ion.framework.util.ListUtil;
 import net.ion.framework.util.MapUtil;
@@ -20,11 +18,12 @@ import net.ion.radon.core.IService;
 import net.ion.radon.core.SectionService;
 import net.ion.radon.core.TreeContext;
 import net.ion.radon.core.config.WSPathConfiguration;
-import net.ion.radon.core.context.OnEventObject;
 import net.ion.radon.core.context.OnOrderEventObject;
+import net.ion.talk.bot.BotManager;
 import net.ion.talk.let.TalkHandlerGroup;
 
 public class TalkEngine extends AbstractWebSocketResource implements OnOrderEventObject {
+
 
     public enum DisConnectReason {
 		DOPPLE, CLIENT, TIMEOUT;
@@ -211,6 +210,12 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
     public UserConnection getUserConnection(WebSocketConnection wconn){
         return connManger().findBy(wconn);
     }
+
+    public BotManager botManager() {
+        return null;
+    }
+
+
 }
 
 class ConnManager {
