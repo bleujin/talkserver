@@ -50,7 +50,7 @@ public class RhinoEntry implements OnEventObject {
     }
 
     public Object executePath(String scriptId, String scriptPath, ParameterMap params){
-        String script = getValidatedScript(scriptPath);
+        String script = getValidatedScript("/script/"+scriptPath);
         return executeScript(scriptId, script, params);
     }
 
