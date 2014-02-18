@@ -5,11 +5,12 @@ import junit.framework.TestCase;
 import net.ion.craken.node.ReadSession;
 import net.ion.framework.util.Debug;
 import net.ion.nradon.WebSocketConnection;
+import net.ion.talk.TalkEngine.Reason;
 
 public class TestTalkEngine extends TestCase {
 
 	private TalkEngine engine;
-	WebSocketConnection bleujin = FakeConnection.create("bleujin");
+	WebSocketConnection bleujin = FakeWebSocketConnection.create("bleujin");
 
 	@Override
 	protected void setUp() throws Exception {
@@ -59,8 +60,9 @@ class DummyHandler implements TalkHandler {
 	}
 
 	@Override
-	public void onConnected(TalkEngine tengine, UserConnection uconn) {
+	public Reason onConnected(TalkEngine tengine, UserConnection uconn) {
 		Assert.assertEquals("bleujin", uconn.id()) ;
+		return Reason.OK ;
 	}
 
 	@Override

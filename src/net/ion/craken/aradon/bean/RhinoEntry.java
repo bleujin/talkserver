@@ -17,16 +17,14 @@ import org.mozilla.javascript.NativeJavaObject;
 public class RhinoEntry implements OnEventObject {
 
 	private RhinoEngine rengine;
-    private ReadSession rsession;
 	public final static String EntryName = "rengine";
 
-	private RhinoEntry(RhinoEngine rengine, ReadSession rsession) {
+	private RhinoEntry(RhinoEngine rengine) {
 		this.rengine = rengine;
-        this.rsession = rsession;
 	}
 
-	public final static RhinoEntry test(ReadSession rsession) throws IOException {
-		return new RhinoEntry(RhinoEngine.create(), rsession);
+	public final static RhinoEntry test() throws IOException {
+		return new RhinoEntry(RhinoEngine.create());
 	}
 
 	@Override
@@ -42,19 +40,19 @@ public class RhinoEntry implements OnEventObject {
 		return rengine.newScript(sname);
 	}
 
-    private String getValidatedScript(String scriptPath){
+    private String getValidatedScript(ReadSession rsession, String scriptPath){
         if(rsession.exists(scriptPath))
             return rsession.pathBy(scriptPath).property("script").stringValue();
         else
             throw new IllegalArgumentException("cannot found script in craken path:" + scriptPath);
     }
 
-    public Object executePath(String scriptId, String scriptPath, ParameterMap params){
-        String script = getValidatedScript(scriptPath);
-        return executeScript(scriptId, script, params);
+    public Object executePath(ReadSession rsession, String scriptId, String scriptPath, ParameterMap params){
+        String script = getValidatedScript(rsession, scriptPath);
+        return executeScript(rsession, scriptId, script, params);
     }
 
-    public Object executeScript(String scriptId, String script, ParameterMap params){
+    public Object executeScript(ReadSession rsession, String scriptId, String script, ParameterMap params){
 
         if(StringUtil.isEmpty(scriptId))
             throw new IllegalArgumentException("Required messageId!");
@@ -68,12 +66,12 @@ public class RhinoEntry implements OnEventObject {
         else
             rscript.bind("params", params);
 
-        return execute(rscript);
+        return execute(rsession, rscript);
     }
 
 
 
-    private Object execute(RhinoScript rscript) {
+    private Object execute(ReadSession rsession, RhinoScript rscript) {
 
         rscript.bind("session", rsession)
                 .bind("rb", TalkResponseBuilder.create());

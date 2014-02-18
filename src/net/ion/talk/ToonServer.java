@@ -14,6 +14,7 @@ import net.ion.talk.handler.engine.ServerHandler;
 import net.ion.talk.let.*;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Calendar;
@@ -28,7 +29,6 @@ public class ToonServer {
 		return new ToonServer().init();
 	}
 
-	private ReadSession session;
     private RhinoEntry rengine;
 	private CrakenVerifier verifier;
 	private Aradon aradon;
@@ -37,12 +37,12 @@ public class ToonServer {
 	private TalkHandlerGroup talkHandlerGroup;
 	private MockClient mockClient;
     private Map<String, Object> propertyMap = MapUtil.newMap();
+	private RepositoryEntry rentry;
 
 	private ToonServer init() throws Exception {
-		final RepositoryEntry rentry = RepositoryEntry.test();
-		this.session = rentry.login() ;
-		this.verifier = CrakenVerifier.test(session);
-        this.rengine = RhinoEntry.test(session);
+		this.rentry = RepositoryEntry.test();
+		this.verifier = CrakenVerifier.test(rentry.login());
+        this.rengine = RhinoEntry.test();
 
 		this.talkHandlerGroup = TalkHandlerGroup.create();
 		talkHandlerGroup.addHandler(ServerHandler.test()) ;
@@ -120,9 +120,9 @@ public class ToonServer {
 		return verifier;
 	}
 
-	public ReadSession readSession() {
+	public ReadSession readSession() throws IOException {
 		checkStarted();
-		return session;
+		return rentry.login();
 	}
 
 	public TalkEngine talkEngine() {

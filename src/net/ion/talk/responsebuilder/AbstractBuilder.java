@@ -6,6 +6,7 @@ import com.google.common.cache.CacheBuilder;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
@@ -15,6 +16,7 @@ import net.ion.craken.expression.SetComparable;
 import net.ion.craken.expression.TerminalParser;
 import net.ion.craken.expression.ValueObject;
 import net.ion.craken.node.ReadNode;
+import net.ion.framework.parse.gson.JsonArray;
 import net.ion.framework.parse.gson.JsonElement;
 import net.ion.framework.util.ListUtil;
 import net.ion.framework.util.MapUtil;
@@ -50,9 +52,11 @@ public abstract class AbstractBuilder {
 		for(Entry<String, Object> entry : map.entrySet()){
 			Object value = entry.getValue();
 			if (value instanceof SetComparable) {
-				value = ((SetComparable)value).asSet() ;
+				Object[] vals = ((SetComparable)value).asArray() ;
+				property(entry.getKey(), new JsonArray().adds(vals)) ;
+			} else {
+				property(entry.getKey(), ObjectUtil.coalesce(value, ObjectUtil.NULL)) ;
 			}
-			property(entry.getKey(), ObjectUtil.coalesce(value, ObjectUtil.NULL)) ;
 		}
 		
 		return this;

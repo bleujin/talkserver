@@ -25,7 +25,7 @@ public class SenderConfig {
     }
 
     public static SenderConfig createTest() {
-        return newBuilder().appleConfig("./talkserver/resource/keystore/toontalk.p12", "toontalk", true).googleConfig("AIzaSyBC_YDd2WfKy_K3T7r5PQo3M_dMfg5k5WA").build();
+        return newBuilder().appleConfig("./resource/keystore/toontalk.p12", "toontalk", true).googleConfig("AIzaSyBC_YDd2WfKy_K3T7r5PQo3M_dMfg5k5WA").build();
     }
 
     public static SenderConfig createRetryTestConfig(int retryCount) {

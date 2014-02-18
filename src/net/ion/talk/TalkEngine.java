@@ -13,6 +13,7 @@ import net.ion.craken.node.WriteSession;
 import net.ion.framework.logging.LogBroker;
 import net.ion.framework.util.ListUtil;
 import net.ion.framework.util.MapUtil;
+import net.ion.message.push.sender.Sender;
 import net.ion.nradon.AbstractWebSocketResource;
 import net.ion.nradon.WebSocketConnection;
 import net.ion.radon.core.Aradon;
@@ -23,20 +24,27 @@ import net.ion.radon.core.config.WSPathConfiguration;
 import net.ion.radon.core.context.OnEventObject;
 import net.ion.radon.core.context.OnOrderEventObject;
 import net.ion.talk.let.TalkHandlerGroup;
+import net.ion.talk.responsebuilder.TalkResponse;
+import net.ion.talk.responsebuilder.TalkResponseBuilder;
 
 public class TalkEngine extends AbstractWebSocketResource implements OnOrderEventObject {
 
-    public enum DisConnectReason {
-		DOPPLE, CLIENT, TIMEOUT;
+	public enum Reason {
+		OK, NOTALLOW, DOPPLE, TIMEOUT, CLIENT, INTERNAL;
 	}
 
-	private ConnManager cmanger = ConnManager.create();
+	private ConnManager cmanger= ConnManager.create();
 	private List<TalkHandler> handlers = ListUtil.newList();
 
 	private Aradon aradon;
 	private Logger logger = LogBroker.getLogger(TalkEngine.class);
 
-	private TalkEngine(Aradon aradon) {
+	
+	private TalkEngine(){
+		// called by aradon reflection
+	}
+	
+	protected TalkEngine(Aradon aradon) {
 		if (aradon == null)
 			throw new IllegalStateException("aradon is null");
 
@@ -44,33 +52,29 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 		aradon.getServiceContext().putAttribute(TalkEngine.class.getCanonicalName(), this);
 	}
 
-	public TalkEngine() {
-		;
-	}
-
 	public static TalkEngine create(Aradon aradon) {
 		return new TalkEngine(aradon);
 	}
-
+	
 	public static TalkEngine test() throws Exception {
-        RepositoryEntry repo = RepositoryEntry.test();
+		RepositoryEntry repo = RepositoryEntry.test();
 		Aradon aradon = Aradon.create();
 		aradon.getServiceContext().putAttribute(RepositoryEntry.EntryName, repo);
-		aradon.getServiceContext().putAttribute(RhinoEntry.EntryName, RhinoEntry.test(repo.login()));
+		aradon.getServiceContext().putAttribute(RhinoEntry.EntryName, RhinoEntry.test());
 		final TalkEngine result = TalkEngine.create(aradon);
 		return result;
 	}
 
-    public TalkEngine startForTest() throws Exception{
-        aradon.start();
-        return this;
-    }
+	public TalkEngine startForTest() throws Exception {
+		aradon.start();
+		return this;
+	}
 
-    // Only test
-    public void stopForTest() {
-        aradon.stop();
-        onEvent(AradonEvent.STOP, null) ;
-    }
+	// Only test
+	public void stopForTest() {
+		aradon.stop();
+		onEvent(AradonEvent.STOP, null);
+	}
 
 	public void onInit(SectionService parent, TreeContext context, WSPathConfiguration wsconfig) {
 		super.onInit(parent, context, wsconfig);
@@ -86,9 +90,9 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 		return re.login();
 	}
 
-    public RhinoEntry rhinoEntry(){
-        return aradon.getServiceContext().getAttributeObject(RhinoEntry.EntryName, RhinoEntry.class);
-    }
+	public RhinoEntry rhinoEntry() {
+		return aradon.getServiceContext().getAttributeObject(RhinoEntry.EntryName, RhinoEntry.class);
+	}
 
 	public TalkEngine registerHandler(TalkHandler hanlder) {
 		handlers.add(hanlder);
@@ -110,7 +114,11 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 		cmanger.add(created);
 
 		for (TalkHandler handler : handlers) {
-			handler.onConnected(this, created);
+			Reason reason = handler.onConnected(this, created);
+			if (reason != Reason.OK) {
+				cmanger.remove(created, reason) ;
+				break ;
+			}
 		}
 	}
 
@@ -120,7 +128,7 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 		for (TalkHandler handler : handlers) {
 			handler.onClose(this, found);
 		}
-		cmanger.remove(found, DisConnectReason.CLIENT);
+		cmanger.remove(found, Reason.CLIENT);
 	}
 
 	@Override
@@ -161,10 +169,10 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 	}
 
 	@Override
-	public void onStop(){
-		onEvent(AradonEvent.STOP, null) ;
+	public void onStop() {
+		onEvent(AradonEvent.STOP, null);
 	}
-	
+
 	@Override
 	public void onEvent(AradonEvent event, IService service) {
 		try {
@@ -176,8 +184,8 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 				for (TalkHandler handler : handlers) {
 					handler.onEngineStop(this);
 				}
-                RepositoryEntry r = context().getAttributeObject(RepositoryEntry.EntryName, RepositoryEntry.class);
-                r.onEvent(AradonEvent.STOP, service);
+				RepositoryEntry r = context().getAttributeObject(RepositoryEntry.EntryName, RepositoryEntry.class);
+				r.onEvent(AradonEvent.STOP, service);
 			}
 		} catch (Exception ex) {
 			throw new IllegalStateException(ex);
@@ -186,9 +194,10 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 
 	public <T extends TalkHandler> T handler(Class<T> clz) {
 		for (TalkHandler handler : handlers) {
-			if (clz.isInstance(handler)) return clz.cast(handler) ;
+			if (clz.isInstance(handler))
+				return clz.cast(handler);
 		}
-		throw new IllegalArgumentException() ;
+		throw new IllegalArgumentException();
 	}
 
 	public Logger getLogger() {
@@ -200,17 +209,26 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 		return 2;
 	}
 
-    public boolean isUserExist(String id){
-        return connManger().contains(id);
-    }
+	public void remove(UserConnection uconn, Reason reason) {
+		connManger().remove(uconn, reason);
+	}
 
-    public UserConnection getUserConnection(String id){
-        return connManger().findBy(id);
-    }
+	public boolean existUser(String id) {
+		return connManger().contains(id);
+	}
 
-    public UserConnection getUserConnection(WebSocketConnection wconn){
-        return connManger().findBy(wconn);
-    }
+	public UserConnection findConnection(String id) {
+		return connManger().findBy(id);
+	}
+
+	public void sendMessage(String userId, Sender sender, TalkResponse tresponse) {
+		UserConnection uconn = findConnection(userId);
+		if (uconn != null) {
+			uconn.sendMessage(tresponse.talkMessage());
+		} else {
+			sender.sendTo(userId).sendAsync(tresponse.pushMessage());
+		}
+	}
 }
 
 class ConnManager {
@@ -235,19 +253,19 @@ class ConnManager {
 	public UserConnection add(UserConnection uconn) {
 		UserConnection existConn = conns.put(uconn.id(), uconn);
 		if (existConn != null)
-			existConn.close(this, TalkEngine.DisConnectReason.DOPPLE);
+			existConn.close(TalkEngine.Reason.DOPPLE);
 		return uconn;
 	}
 
-	public UserConnection remove(UserConnection uconn, TalkEngine.DisConnectReason reason) {
+	public UserConnection remove(UserConnection uconn, TalkEngine.Reason reason) {
 		conns.remove(uconn.id());
-		uconn.close(this, reason);
+		uconn.close(reason);
 		return uconn;
 	}
 
-    public boolean contains(String id){
-        return conns.containsKey(id);
-    }
+	public boolean contains(String id) {
+		return conns.containsKey(id);
+	}
 
 	public boolean contains(WebSocketConnection conn) {
 		return conns.containsValue(conn);

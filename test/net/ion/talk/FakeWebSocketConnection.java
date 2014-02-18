@@ -13,13 +13,13 @@ import net.ion.nradon.WebSocketConnection;
 
 import org.jboss.netty.channel.ChannelFuture;
 
-public class FakeConnection implements WebSocketConnection {
+public class FakeWebSocketConnection implements WebSocketConnection {
 
 	private Map<String, Object> datas = MapUtil.newMap() ;
 	private List<String> received = ListUtil.newList() ;
 
-	public static FakeConnection create(String id) {
-		final FakeConnection result = new FakeConnection();
+	public static FakeWebSocketConnection create(String id) {
+		final FakeWebSocketConnection result = new FakeWebSocketConnection();
 		result.data("id", id);
 		return result ;
 	}

@@ -5,7 +5,7 @@ import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
 import net.ion.framework.parse.gson.JsonObject;
-import net.ion.talk.FakeConnection;
+import net.ion.talk.FakeWebSocketConnection;
 import net.ion.talk.TalkEngine;
 
 /**
@@ -20,13 +20,13 @@ public class TestWebSocketTalkMessageHandler extends TestCase {
 
     private TalkEngine tengine;
     private ReadSession rsession;
-    private FakeConnection ryun;
+    private FakeWebSocketConnection ryun;
 
     public void setUp() throws Exception {
 
         tengine = TalkEngine.test().registerHandler(new WebSocketMessageHandler()).startForTest();
         rsession = tengine.readSession();
-        ryun = FakeConnection.create("ryun");
+        ryun = FakeWebSocketConnection.create("ryun");
 
 
         rsession.tranSync(new TransactionJob<Object>() {

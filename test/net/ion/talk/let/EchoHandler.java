@@ -6,6 +6,7 @@ import net.ion.talk.TalkEngine;
 import net.ion.talk.TalkHandler;
 import net.ion.talk.TalkMessage;
 import net.ion.talk.UserConnection;
+import net.ion.talk.TalkEngine.Reason;
 
 public class EchoHandler implements TalkHandler{
 
@@ -14,7 +15,8 @@ public class EchoHandler implements TalkHandler{
 	}
 
 	@Override
-	public void onConnected(TalkEngine tengine, UserConnection uconn) {
+	public Reason onConnected(TalkEngine tengine, UserConnection uconn) {
+		return Reason.OK ;
 	}
 
 	@Override

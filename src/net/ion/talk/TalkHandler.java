@@ -3,10 +3,11 @@ package net.ion.talk;
 import java.io.IOException;
 
 import net.ion.craken.node.ReadSession;
+import net.ion.talk.TalkEngine.Reason;
 
 public interface TalkHandler {
 
-	void onConnected(TalkEngine tengine, UserConnection uconn);
+	Reason onConnected(TalkEngine tengine, UserConnection uconn) ;
 
 	void onClose(TalkEngine tengine, UserConnection uconn);
 
