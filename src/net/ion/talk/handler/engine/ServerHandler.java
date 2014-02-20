@@ -9,6 +9,7 @@ import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
 import net.ion.framework.util.Debug;
 import net.ion.talk.TalkEngine;
+import net.ion.talk.TalkEngine.Reason;
 import net.ion.talk.TalkHandler;
 import net.ion.talk.TalkMessage;
 import net.ion.talk.UserConnection;
@@ -42,9 +43,8 @@ public class ServerHandler implements TalkHandler {
 	}
 
 	@Override
-	public void onConnected(TalkEngine tengine, UserConnection uconn) {
-		// TODO Auto-generated method stub
-
+	public Reason onConnected(TalkEngine tengine, UserConnection uconn) {
+		return Reason.OK ;
 	}
 
 	@Override

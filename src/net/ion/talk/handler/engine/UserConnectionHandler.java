@@ -1,16 +1,16 @@
 package net.ion.talk.handler.engine;
 
+import java.io.IOException;
+
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
-import net.ion.framework.util.Debug;
 import net.ion.talk.TalkEngine;
+import net.ion.talk.TalkEngine.Reason;
 import net.ion.talk.TalkHandler;
 import net.ion.talk.TalkMessage;
 import net.ion.talk.UserConnection;
-
-import java.io.IOException;
-
+import net.ion.talk.bean.Const.User;
 /**
  * Created with IntelliJ IDEA.
  * User: Ryun
@@ -23,28 +23,27 @@ public class UserConnectionHandler implements TalkHandler {
     private ReadSession rsession;
 
     @Override
-    public void onConnected(TalkEngine tengine, final UserConnection uconn) {
+    public Reason onConnected(TalkEngine tengine, final UserConnection uconn) {
 
-        String accessToken = rsession.pathBy("/users/" + uconn.id()).property("accessToken").stringValue();
-        if(!accessToken.equals(uconn.accessToken())){
-            uconn.close();
+        if (! uconn.isAllowUser(rsession.pathBy("/users/" + uconn.id()).property(User.AccessToken).stringValue())){
+        	return Reason.NOTALLOW;
         }
-
 
         try {
-            rsession.tranSync(new TransactionJob<Void>() {
-                @Override
-                public Void handle(WriteSession wsession) throws Exception {
-                    wsession.pathBy("/connections/"+uconn.id())
-                            .refTo("user","/users/"+uconn.id());
-                    wsession.pathBy("/users/"+uconn.id()).property("delegateServer", rsession.workspace().repository().memberId());
-                    wsession.pathBy("/users/"+uconn.id()).property("accessToken", "");
-                    return null;
-                }
-            });
-        } catch (Exception e) {
-              e.printStackTrace();
-        }
+			rsession.tranSync(new TransactionJob<Void>() {
+			    @Override
+			    public Void handle(WriteSession wsession) {
+			        wsession.pathBy("/connections/"+uconn.id())
+			                .refTo("user","/users/"+uconn.id());
+			        wsession.pathBy("/users/"+uconn.id()).property(User.DelegateServer, rsession.workspace().repository().memberId());
+			        wsession.pathBy("/users/"+uconn.id()).unset(User.AccessToken);
+			        return null;
+			    }
+			});
+		} catch (Exception e) {
+			return Reason.INTERNAL ;
+		}
+        return Reason.OK ;
     }
 
     @Override

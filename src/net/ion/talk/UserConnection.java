@@ -5,13 +5,13 @@ import java.util.Map;
 
 import net.ion.framework.util.ObjectUtil;
 import net.ion.nradon.WebSocketConnection;
-import net.ion.talk.TalkEngine.DisConnectReason;
+import net.ion.talk.TalkEngine.Reason;
 
 public class UserConnection {
 
 	private WebSocketConnection inner;
 
-	private UserConnection(WebSocketConnection inner) {
+	protected UserConnection(WebSocketConnection inner) {
 		this.inner = inner ;
 	}
 
@@ -28,10 +28,6 @@ public class UserConnection {
         return inner.getString("accessToken");
     }
 
-    public void close(){
-        inner.close();
-    }
-	
 	public String asString(String key){
 		return ObjectUtil.toString(inner.data(key)) ;
 	}
@@ -48,8 +44,7 @@ public class UserConnection {
 		inner.send(message) ;
 	}
 
-	void close(ConnManager cmanager, DisConnectReason reason) {
-		
+	void close(Reason reason) {
 		inner.close() ;
 	}
 
@@ -70,5 +65,9 @@ public class UserConnection {
 	public String toString(){
 		return "UserConnection[" + id() + "/" + accessToken() + "]" ;
 	}
+
+	public boolean isAllowUser(String accessToken) {
+        return accessToken().equals(accessToken);
+    }
 
 }

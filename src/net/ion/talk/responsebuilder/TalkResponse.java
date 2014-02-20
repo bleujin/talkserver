@@ -42,6 +42,15 @@ public class TalkResponse {
         return new TalkResponse(element);
     }
 
+    public String talkMessage(){
+    	return toJsonObject().toString() ;
+    }
+
+	public String pushMessage() {
+		return toString();
+	}
+
+    
     @Override
     public String toString() {
         return element.toString();
@@ -67,4 +76,5 @@ public class TalkResponse {
 	public void debugString() {
 		transformer(FnDebug) ;
 	}
+
 }

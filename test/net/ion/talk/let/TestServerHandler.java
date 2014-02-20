@@ -18,8 +18,8 @@ public class TestServerHandler extends TestBaseLet {
 		ServerHandler serverHandler = tserver.talkEngine().handler(ServerHandler.class);
 		assertTrue(serverHandler.registered(InetAddress.getLocalHost().getHostName())) ;
 
-		tserver.talkEngine().onStop() ;
-		assertFalse(serverHandler.registered(InetAddress.getLocalHost().getHostName())) ;
+//		tserver.talkEngine().onStop() ;
+//		assertFalse(serverHandler.registered(InetAddress.getLocalHost().getHostName())) ;
 	}
 	
 	public void xtestIPAddress() throws Exception {

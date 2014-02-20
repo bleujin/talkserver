@@ -1,4 +1,4 @@
-package net.ion.talk;
+package net.ion.talk.deploy;
 
 import java.io.File;
 import java.io.IOException;

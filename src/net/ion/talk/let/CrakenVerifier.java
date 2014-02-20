@@ -39,7 +39,8 @@ public class CrakenVerifier implements Verifier {
         return Verifier.RESULT_VALID;
 	}
 
-	public CrakenVerifier addUser(final String userId, final String pushId) throws Exception{
+	// Only Use Test
+	CrakenVerifier addUser(final String userId, final String pushId) throws Exception{
 		session.tranSync(new TransactionJob<Void>() {
 			@Override
 			public Void handle(WriteSession wsession) throws Exception {

@@ -7,6 +7,7 @@ import net.ion.framework.util.Debug;
 import net.ion.framework.util.StringUtil;
 import net.ion.script.rhino.RhinoScript;
 import net.ion.talk.*;
+import net.ion.talk.TalkEngine.Reason;
 import net.ion.talk.responsebuilder.BasicBuilder;
 import net.ion.talk.responsebuilder.TalkResponseBuilder;
 
@@ -24,7 +25,8 @@ public class WebSocketMessageHandler implements TalkHandler {
     RhinoEntry rengine;
 
     @Override
-    public void onConnected(TalkEngine tengine, UserConnection uconn) {
+    public Reason onConnected(TalkEngine tengine, UserConnection uconn) {
+		return Reason.OK ;
     }
 
     @Override
@@ -44,7 +46,7 @@ public class WebSocketMessageHandler implements TalkHandler {
             else
                 params = null;
 
-            scriptResult = rengine.executePath(tmsg.id(), "/script/" + tmsg.script(), params);
+            scriptResult = rengine.executePath(rsession, tmsg.id(), "/script/" + tmsg.script(), params);
             response = TalkResponseBuilder.makeResponse(tmsg.id(), scriptResult);
 
         } catch (IllegalArgumentException e1) {

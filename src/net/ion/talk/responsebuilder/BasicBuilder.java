@@ -26,6 +26,7 @@ public class BasicBuilder extends AbstractBuilder {
 	}
 
 	public BasicBuilder property(String name, Object value) {
+		
 		props().put(name, value);
 		return this;
 	}
@@ -78,7 +79,7 @@ public class BasicBuilder extends AbstractBuilder {
             } else if (value instanceof JsonElement) {
                 json.put(name, value);
 			} else {
-				json.put(name, value.toString());
+				json.put(name, value);
 			}
 		}
 

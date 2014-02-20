@@ -27,6 +27,10 @@ public class RepositoryEntry implements OnOrderEventObject {
 		return r.login(wsName);
 	}
 
+	public void shutdown(){
+		r.shutdown() ;
+	}
+	
 	@Override
 	public void onEvent(AradonEvent event, IService service) {
 		if (event == AradonEvent.START){

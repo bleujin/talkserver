@@ -18,14 +18,10 @@ public class Sender {
     private ExecutorService es;
     private BeforeSendHandler beforeHandler;
 
-    private Sender(PushStrategy strategy, ExecutorService es, SenderConfig config) {
+    protected Sender(PushStrategy strategy, ExecutorService es, SenderConfig config) {
         this.strategy = strategy;
         this.es = es;
         this.config = config;
-    }
-
-    private Sender() {
-
     }
 
     public static Sender create(PushStrategy strategy, ExecutorService es, SenderConfig provider) {
@@ -33,10 +29,7 @@ public class Sender {
     }
 
     public static Sender create(SenderConfig config, PushStrategy strategy) {
-        Sender sender = new Sender();
-        sender.config = config;
-        sender.strategy = strategy;
-        sender.es = config.getExecutorService();
+        Sender sender = new Sender(strategy, config.getExecutorService(), config);
         sender.gcmSender = GCMSender.create(config.getGoogleAPIKey());
         sender.apnsSender = APNSSender.create(config.getApnsKeyStore(), config.getApnsPassword(), config.isApnsIsProduction());
 

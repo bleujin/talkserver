@@ -6,7 +6,7 @@ import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
 import net.ion.nradon.WebSocketConnection;
-import net.ion.talk.FakeConnection;
+import net.ion.talk.FakeWebSocketConnection;
 import net.ion.talk.TalkEngine;
 
 /**
@@ -19,7 +19,7 @@ import net.ion.talk.TalkEngine;
 public class TestUserConnectionHandler extends TestCase {
 
 
-    private WebSocketConnection ryun = FakeConnection.create("ryun");
+    private WebSocketConnection ryun = FakeWebSocketConnection.create("ryun");
     private ReadSession rsession;
     private TalkEngine engine;
 

@@ -24,9 +24,7 @@ public class TestUserInAndOutRoomHandler extends TestCrakenHandlerBase{
         super.setUp();
         rsession.workspace().cddm().add(new UserInAndOutRoomHandler());
 
-        users = ListUtil.newList();
-        users.add("ryun");
-        users.add("alex");
+        users = ListUtil.syncList("ryun", "alex");
 
         for(final String user : users){
             rsession.tranSync(new TransactionJob<Object>() {
@@ -37,8 +35,13 @@ public class TestUserInAndOutRoomHandler extends TestCrakenHandlerBase{
                 }
             });
         }
-
-        Thread.sleep(100);
+//
+//        Thread.sleep(100);
+    }
+    
+    @Override
+    public void tearDown() throws Exception {
+    	super.tearDown();
     }
 
     public void testUserIn() {

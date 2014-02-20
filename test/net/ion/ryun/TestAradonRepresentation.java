@@ -3,6 +3,7 @@ package net.ion.ryun;
 import junit.framework.TestCase;
 import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.util.Debug;
+import net.ion.nradon.Radon;
 import net.ion.nradon.let.IServiceLet;
 import net.ion.radon.aclient.NewClient;
 import net.ion.radon.client.AradonClient;
@@ -12,6 +13,7 @@ import net.ion.radon.core.annotation.AnRequest;
 import net.ion.radon.core.let.InnerRequest;
 import net.ion.radon.core.representation.JsonObjectRepresentation;
 import net.ion.radon.util.AradonTester;
+
 import org.restlet.Response;
 import org.restlet.data.Method;
 import org.restlet.representation.Representation;
@@ -29,7 +31,7 @@ public class TestAradonRepresentation extends TestCase implements IServiceLet{
     public void testResponse() throws Exception {
 
         Aradon aradon = AradonTester.create().register("test", "/{string}",  TestAradonRepresentation.class).getAradon();
-        aradon.startServer(9000);
+        Radon radon = aradon.toRadon(9000).start().get();
 
         AradonClient ac = AradonClientFactory.create(aradon);
         Response response = ac.createRequest("/test/one").handle(Method.GET);
@@ -42,6 +44,7 @@ public class TestAradonRepresentation extends TestCase implements IServiceLet{
         assertEquals(200, ncResponse.getStatusCode());
         assertEquals("application/json; charset=UTF-8", ncResponse.getContentType());
 
+        radon.stop().get() ;
 
     }
 

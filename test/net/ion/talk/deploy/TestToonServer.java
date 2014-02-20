@@ -1,4 +1,4 @@
-package net.ion.talk;
+package net.ion.talk.deploy;
 
 import junit.framework.TestCase;
 import net.ion.craken.aradon.bean.RepositoryEntry;
@@ -20,8 +20,11 @@ import net.ion.radon.core.EnumClass.IMatchMode;
 import net.ion.radon.core.config.Configuration;
 import net.ion.radon.core.config.ConfigurationBuilder;
 import net.ion.radon.core.security.ChallengeAuthenticator;
+import net.ion.talk.TalkEngine;
+import net.ion.talk.TalkMessage;
 import net.ion.talk.let.*;
 import net.ion.talk.util.NetworkUtil;
+
 import org.restlet.data.Method;
 
 import java.util.concurrent.CountDownLatch;
@@ -36,7 +39,7 @@ public class TestToonServer extends TestCase {
 		RepositoryEntry repository = RepositoryEntry.test();
         ReadSession session = repository.login();
         CrakenVerifier verifier = CrakenVerifier.test(session);
-        RhinoEntry rengine = RhinoEntry.test(session) ;
+        RhinoEntry rengine = RhinoEntry.test() ;
 
 		Configuration config = ConfigurationBuilder.newBuilder().aradon()
 			.addAttribute(RepositoryEntry.EntryName, repository)

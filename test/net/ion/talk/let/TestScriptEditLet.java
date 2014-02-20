@@ -63,7 +63,7 @@ public class TestScriptEditLet extends TestBaseLet{
         assertTrue(response.getEntityAsText().contains("child1"));
         assertTrue(response.getEntityAsText().contains("child2"));
 
-        new InfinityThread().startNJoin();
+//        new InfinityThread().startNJoin();
     }
 }
 

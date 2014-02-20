@@ -9,7 +9,7 @@ import net.ion.framework.util.Debug;
 import net.ion.framework.util.InfinityThread;
 import net.ion.framework.util.ObjectId;
 import net.ion.nradon.WebSocketConnection;
-import net.ion.talk.FakeConnection;
+import net.ion.talk.FakeWebSocketConnection;
 import net.ion.talk.TalkEngine;
 import net.ion.talk.ToonServer;
 import net.ion.talk.handler.engine.UserConnectionHandler;
@@ -28,17 +28,17 @@ public class TestNotificationSendHandler extends TestCase{
             "G7sKFrq3PhGC3w8mk36gQxKo53zaBLGm3lMDxjIJuZl9L10u2UaLx" +
             "CZfOpvz2U81CeipH5GVMBlQ5wO-2KmeDZgwh6nlBnFQbhDIMgIYlY";
 
-    NotificationSendHandler notiHandler = new NotificationSendHandler();
-    private FakeConnection user = FakeConnection.create("ryun");
+    private FakeWebSocketConnection user = FakeWebSocketConnection.create("ryun");
     private ReadSession rsession;
     private TalkEngine engine;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        engine = TalkEngine.test().registerHandler(new UserConnectionHandler()).registerHandler(notiHandler).startForTest();
+        engine = TalkEngine.test().registerHandler(new UserConnectionHandler()).startForTest();
         rsession = engine.readSession();
-        rsession.workspace().cddm().add(notiHandler);
+        NotificationListener notiHandler = new NotificationListener(engine, NotifyStrategy.createSender(engine.readSession()));
+        rsession.workspace().addListener(notiHandler);
 
         rsession.tranSync(new TransactionJob<Object>() {
             @Override

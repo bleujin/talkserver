@@ -26,6 +26,7 @@ public class ScriptExecLet implements IServiceLet {
 	@Post
 	public Representation execute(@AnContext TreeContext context, @AnRequest InnerRequest request) throws IOException{
         RhinoEntry rengine = context.getAttributeObject(RhinoEntry.EntryName, RhinoEntry.class);
+        RepositoryEntry rentry = context.getAttributeObject(RepositoryEntry.EntryName, RepositoryEntry.class) ;
 
         String spath;
         String format;
@@ -51,9 +52,9 @@ public class ScriptExecLet implements IServiceLet {
         try {
             if(spath.equals("/ajax")){
                 String script = request.getFormParameter().get("script").toString();
-                result = rengine.executeScript(scriptId, script, ParameterMap.create(request.getFormParameter()));
+                result = rengine.executeScript(rentry.login(), scriptId, script, ParameterMap.create(request.getFormParameter()));
             }else{
-                result = rengine.executePath(scriptId, "/script"+spath, ParameterMap.create(request.getFormParameter()));
+                result = rengine.executePath(rentry.login(), scriptId, "/script"+spath, ParameterMap.create(request.getFormParameter()));
             }
 
         } catch (IllegalArgumentException e) {
