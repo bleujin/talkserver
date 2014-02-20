@@ -1,42 +1,42 @@
 package net.ion.talk.bot;
 
-import net.ion.framework.util.Debug;
+import net.ion.framework.parse.gson.JsonObject;
 
 /**
  * Created with IntelliJ IDEA.
  * User: Ryun
- * Date: 2014. 2. 14.
- * Time: 오후 5:45
+ * Date: 2014. 2. 19.
+ * Time: 오후 2:26
  * To change this template use File | Settings | File Templates.
  */
-public class EchoBot implements Bot {
+public class EchoBot implements Bot{
     @Override
     public String id() {
-        return "EchoBot";
+        return "echoBot";
     }
 
     @Override
-    public String onInvited(String roomId) {
-        return "Everybody Hello! I'm Echo Bot!";
+    public JsonObject onInvited(String roomId) {
+        return null;
     }
 
     @Override
-    public String onEnterUser(String roomId, String userId) {
-        return "Hello! " + userId;
+    public JsonObject onExit(String roomId) {
+        return null;
     }
 
     @Override
-    public String onExitUser(String roomId, String userId) {
-        return "Bye! " + userId;
+    public JsonObject onUserEnter(String roomId, String userId) {
+        return null;
     }
 
     @Override
-    public String onExit(String roomId) {
-        return "Everybody Bye!";
+    public JsonObject onUserExit(String roomId, String userId) {
+        return null;
     }
 
     @Override
-    public String onMessage(String message, String sender) {
-        return message;
+    public JsonObject onMessage(String roomId, String sender, String message) {
+        return null;
     }
 }

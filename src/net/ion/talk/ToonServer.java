@@ -10,19 +10,20 @@ import net.ion.radon.core.EnumClass;
 import net.ion.radon.core.EnumClass.IMatchMode;
 import net.ion.radon.core.config.ConfigurationBuilder;
 import net.ion.radon.core.security.ChallengeAuthenticator;
+import net.ion.talk.bot.BotManager;
+import net.ion.talk.bot.BotSender;
 import net.ion.talk.handler.engine.ServerHandler;
 import net.ion.talk.let.*;
 
 import java.io.FileNotFoundException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 
 public class ToonServer {
+
 
     public static ToonServer testWithLoginLet() throws Exception {
 		return new ToonServer().init();
@@ -45,7 +46,8 @@ public class ToonServer {
         this.rengine = RhinoEntry.test(session);
 
 		this.talkHandlerGroup = TalkHandlerGroup.create();
-		talkHandlerGroup.addHandler(ServerHandler.test()) ;
+		talkHandlerGroup.addHandler(ServerHandler.test());
+
 
 		this.cbuilder = ConfigurationBuilder.newBuilder().aradon()
 		.addAttribute(RepositoryEntry.EntryName, rentry)
@@ -62,6 +64,8 @@ public class ToonServer {
             .restSection("static")
                 .path("static").addUrlPattern("/{path}").matchMode(EnumClass.IMatchMode.STARTWITH)
                 .handler(StaticFileLet.class)
+            .restSection("bot")
+                .path("bot").addUrlPattern("/{botId}/{event}").handler(EmbedBotLet.class)
 			.restSection("websocket")
 				.addAttribute(TalkHandlerGroup.class.getCanonicalName(), talkHandlerGroup)
 				.wspath("websocket")

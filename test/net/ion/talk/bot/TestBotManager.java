@@ -5,53 +5,24 @@ import junit.framework.TestCase;
 /**
  * Created with IntelliJ IDEA.
  * User: Ryun
- * Date: 2014. 2. 14.
- * Time: 오전 10:22
+ * Date: 2014. 2. 19.
+ * Time: 오후 2:24
  * To change this template use File | Settings | File Templates.
  */
-public class TestBotManager extends TestCase{
+public class TestBotManager extends TestCase {
+
 
     private BotManager botManager;
-    private EchoBot echoBot;
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        echoBot = new EchoBot();
+    public void testRegisterAndUnregister() throws Exception {
+
         botManager = BotManager.create();
+        Bot echoBot = new EchoBot();
+
         botManager.registerBot(echoBot);
-    }
+        assertEquals(echoBot, botManager.getBot("echoBot"));
 
-    public void testRegisterAndUnRegister() throws Exception {
-        assertEquals(echoBot, botManager.findBy(echoBot.id()));
-        botManager.unRegisterBot(echoBot);
-        assertNull(botManager.findBy(echoBot.id()));
-    }
-
-    public void testOnInvited(){
-        String response = botManager.onMessage(echoBot.id(), "ROOM|1|ENTER|EchoBot", "sender");
-        assertEquals(response, "Everybody Hello! I'm Echo Bot!");
-
-    }
-
-    public void testEnterUser(){
-        String response = botManager.onMessage(echoBot.id(), "ROOM|1|ENTER|ryuneeee", "ryuneeee");
-        assertEquals(response, "Hello! ryuneeee");
-    }
-
-    public void testExitUser() throws Exception {
-        String response = botManager.onMessage(echoBot.id(), "ROOM|1|EXIT|ryuneeee", "ryuneeee");
-        assertEquals(response, "Bye! ryuneeee");
-    }
-
-    public void testOnExit() throws Exception {
-        String response = botManager.onMessage(echoBot.id(), "ROOM|1|EXIT|EchoBot", "sender");
-        assertEquals(response, "Everybody Bye!");
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        botManager.unRegisterBot(echoBot);
-        super.tearDown();
+        botManager.unregisterBot(echoBot);
+        assertNull(botManager.getBot("echoBot"));
     }
 }

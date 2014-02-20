@@ -56,12 +56,15 @@ public class TalkMessageHandler implements CDDHandler, TalkHandler {
 
                     //ifBot
                     if(wsession.pathBy("/users/"+userId).property("isBot").stringValue().equals("true")){
+
+                        WriteNode bot = wsession.pathBy("/users/" + userId);
                         WriteNode messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + messageId);
-                        String message = messageNode.property("message").stringValue();
+                        String requestURL = bot.property("restURL").stringValue();
                         String sender = messageNode.property("sender").stringValue();
+                        String message = messageNode.property("message").stringValue();
+
+                        tengine.botSender().sendMessage(userId, requestURL, sender, roomId, message);
                         //"userId" variable is botId
-                        tengine.botManager().onMessage(userId, message, sender);
-                        continue;
                     }
 
                     String randomID = new ObjectId().toString();

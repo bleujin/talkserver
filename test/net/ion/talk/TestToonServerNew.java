@@ -20,11 +20,14 @@ import net.ion.talk.let.TestBaseLet;
 public class TestToonServerNew extends TestBaseLet{
 
     NotificationSendHandler notiHandler = new NotificationSendHandler();
+    TalkMessageHandler talkMessageHandler = new TalkMessageHandler();
 
     public void testRunInfinite() throws Exception {
         tserver.addTalkHander(new UserConnectionHandler())
                 .addTalkHander(new WebSocketMessageHandler())
+                .addTalkHander(talkMessageHandler)
                 .addTalkHander(notiHandler);
+
 
         tserver.cbuilder().build();
         tserver.startRadon();
@@ -35,8 +38,9 @@ public class TestToonServerNew extends TestBaseLet{
 
         tserver.mockClient();
 
+
         rsession.workspace().cddm().add(new UserInAndOutRoomHandler());
-        rsession.workspace().cddm().add(new TalkMessageHandler());
+        rsession.workspace().cddm().add(talkMessageHandler);
         rsession.workspace().cddm().add(notiHandler);
 
         Debug.line("serverStarted");
