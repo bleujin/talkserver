@@ -39,6 +39,7 @@ public class ToonServer {
 	private MockClient mockClient;
     private Map<String, Object> propertyMap = MapUtil.newMap();
 	private RepositoryEntry rentry;
+    private BotSender botSender;
 
 	private ToonServer init() throws Exception {
 		this.rentry = RepositoryEntry.test();
@@ -47,6 +48,7 @@ public class ToonServer {
 
 		this.talkHandlerGroup = TalkHandlerGroup.create();
 		talkHandlerGroup.addHandler(ServerHandler.test());
+        botSender = BotSender.create();
 
 
 		this.cbuilder = ConfigurationBuilder.newBuilder().aradon()
@@ -103,6 +105,7 @@ public class ToonServer {
 	}
 
 	public void stop() throws InterruptedException, ExecutionException {
+        botSender.stop();
 		mockClient.close() ;
 		if (aradon != null) aradon.stop() ;
 		if (radon != null)
@@ -133,6 +136,10 @@ public class ToonServer {
 		checkStarted() ;
 		return aradon.getServiceContext().getAttributeObject(TalkEngine.class.getCanonicalName(), TalkEngine.class) ;
 	}
+
+    public BotSender botSender(){
+        return botSender;
+    }
 
 
 	public MockClient mockClient() {

@@ -7,6 +7,7 @@ import net.ion.craken.tree.PropertyValue;
 import net.ion.craken.tree.TreeNodeKey;
 import net.ion.framework.util.ObjectId;
 import net.ion.talk.*;
+import net.ion.talk.bot.BotSender;
 import org.infinispan.atomic.AtomicMap;
 import org.infinispan.notifications.cachelistener.event.CacheEntryModifiedEvent;
 import org.infinispan.notifications.cachelistener.event.CacheEntryRemovedEvent;
@@ -22,9 +23,13 @@ import java.util.Map;
  * Time: 오후 2:44
  * To change this template use File | Settings | File Templates.
  */
-public class TalkMessageHandler implements CDDHandler, TalkHandler {
+public class TalkMessageHandler implements CDDHandler {
 
-    private TalkEngine tengine;
+    private BotSender botSender;
+
+    public TalkMessageHandler(BotSender botSender) {
+        this.botSender = botSender;
+    }
 
     @Override
     public String pathPattern() {
@@ -63,7 +68,7 @@ public class TalkMessageHandler implements CDDHandler, TalkHandler {
                         String sender = messageNode.property("sender").stringValue();
                         String message = messageNode.property("message").stringValue();
 
-                        tengine.botSender().sendMessage(userId, requestURL, sender, roomId, message);
+                        botSender.sendMessage(userId, requestURL, sender, roomId, message);
                         //"userId" variable is botId
                     }
 
@@ -93,25 +98,4 @@ public class TalkMessageHandler implements CDDHandler, TalkHandler {
             return session.workspace().repository().memberId();
     }
 
-
-    @Override
-    public void onConnected(TalkEngine tengine, UserConnection uconn) {
-    }
-
-    @Override
-    public void onClose(TalkEngine tengine, UserConnection uconn) {
-    }
-
-    @Override
-    public void onMessage(TalkEngine tengine, UserConnection uconn, ReadSession rsession, TalkMessage tmsg) {
-    }
-
-    @Override
-    public void onEngineStart(TalkEngine tengine) throws IOException {
-        this.tengine = tengine;
-    }
-
-    @Override
-    public void onEngineStop(TalkEngine tengine) {
-    }
 }

@@ -35,8 +35,6 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 	private ConnManager cmanger= ConnManager.create();
 	private List<TalkHandler> handlers = ListUtil.newList();
 	private Aradon aradon;
-    private BotSender botSender;
-    private BotManager botManager;
 	private Logger logger = LogBroker.getLogger(TalkEngine.class);
 
 	
@@ -78,9 +76,7 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 	public void onInit(SectionService parent, TreeContext context, WSPathConfiguration wsconfig) {
 		super.onInit(parent, context, wsconfig);
 		this.aradon = parent.getAradon();
-        this.botSender = BotSender.create();
-        this.botManager = BotManager.create();
-        aradon.getServiceContext().putAttribute(BotManager.class.getCanonicalName(), botManager);
+        aradon.getServiceContext().putAttribute(BotManager.class.getCanonicalName(), BotManager.create());
         aradon.getServiceContext().putAttribute(TalkEngine.class.getCanonicalName(), this);
 		TalkHandlerGroup hg = context.getAttributeObject(TalkHandlerGroup.class.getCanonicalName(), TalkHandlerGroup.class);
 		hg.set(this);
@@ -188,7 +184,6 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 				}
                 RepositoryEntry r = context().getAttributeObject(RepositoryEntry.EntryName, RepositoryEntry.class);
                 r.onEvent(AradonEvent.STOP, service);
-                botSender.stop();
 			}
 		} catch (Exception ex) {
 			throw new IllegalStateException(ex);
@@ -227,15 +222,6 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
     public UserConnection getUserConnection(WebSocketConnection wconn){
         return connManger().findBy(wconn);
     }
-
-    public BotManager botManager(){
-        return botManager;
-    }
-
-    public BotSender botSender(){
-        return botSender;
-    }
-
 
 	public void sendMessage(String userId, Sender sender, TalkResponse tresponse) {
 		UserConnection uconn = findConnection(userId);
