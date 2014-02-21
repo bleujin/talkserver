@@ -3,7 +3,6 @@ package net.ion.talk.handler.craken;
 import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
-import net.ion.framework.util.Debug;
 
 /**
  * Created with IntelliJ IDEA.

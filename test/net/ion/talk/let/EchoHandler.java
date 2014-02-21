@@ -1,9 +1,8 @@
 package net.ion.talk.let;
 
 import net.ion.craken.node.ReadSession;
-import net.ion.framework.util.Debug;
 import net.ion.talk.TalkEngine;
-import net.ion.talk.TalkHandler;
+import net.ion.talk.handler.TalkHandler;
 import net.ion.talk.TalkMessage;
 import net.ion.talk.UserConnection;
 import net.ion.talk.TalkEngine.Reason;

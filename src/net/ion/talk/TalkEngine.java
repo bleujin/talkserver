@@ -14,21 +14,22 @@ import net.ion.framework.util.MapUtil;
 import net.ion.message.push.sender.Sender;
 import net.ion.nradon.AbstractWebSocketResource;
 import net.ion.nradon.WebSocketConnection;
+import net.ion.radon.aclient.NewClient;
 import net.ion.radon.core.Aradon;
 import net.ion.radon.core.IService;
 import net.ion.radon.core.SectionService;
 import net.ion.radon.core.TreeContext;
 import net.ion.radon.core.config.WSPathConfiguration;
 import net.ion.radon.core.context.OnOrderEventObject;
-import net.ion.talk.bot.BotManager;
-import net.ion.talk.bot.BotSender;
-import net.ion.talk.let.TalkHandlerGroup;
+import net.ion.talk.account.AccountManager;
+import net.ion.talk.handler.TalkHandler;
+import net.ion.talk.handler.TalkHandlerGroup;
+import net.ion.talk.handler.craken.NotifyStrategy;
 import net.ion.talk.responsebuilder.TalkResponse;
-import net.ion.talk.responsebuilder.TalkResponseBuilder;
 
 public class TalkEngine extends AbstractWebSocketResource implements OnOrderEventObject {
 
-	public enum Reason {
+    public enum Reason {
 		OK, NOTALLOW, DOPPLE, TIMEOUT, CLIENT, INTERNAL;
 	}
 
@@ -76,9 +77,13 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 	public void onInit(SectionService parent, TreeContext context, WSPathConfiguration wsconfig) {
 		super.onInit(parent, context, wsconfig);
 		this.aradon = parent.getAradon();
-        aradon.getServiceContext().putAttribute(BotManager.class.getCanonicalName(), BotManager.create());
         aradon.getServiceContext().putAttribute(TalkEngine.class.getCanonicalName(), this);
-		TalkHandlerGroup hg = context.getAttributeObject(TalkHandlerGroup.class.getCanonicalName(), TalkHandlerGroup.class);
+        try {
+            aradon.getServiceContext().putAttribute(AccountManager.class.getCanonicalName(), new AccountManager(this, NotifyStrategy.createSender(readSession())));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        TalkHandlerGroup hg = context.getAttributeObject(TalkHandlerGroup.class.getCanonicalName(), TalkHandlerGroup.class);
 		hg.set(this);
 
 	}
@@ -184,7 +189,11 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 				}
                 RepositoryEntry r = context().getAttributeObject(RepositoryEntry.EntryName, RepositoryEntry.class);
                 r.onEvent(AradonEvent.STOP, service);
+                NewClient nc = context().getAttributeObject(NewClient.class.getCanonicalName(), NewClient.class);
+                if(nc!=null)
+                    nc.close();
 			}
+
 		} catch (Exception ex) {
 			throw new IllegalStateException(ex);
 		}

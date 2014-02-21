@@ -1,10 +1,9 @@
-package net.ion.talk.let;
+package net.ion.talk.handler;
 
 import java.util.Set;
 
 import net.ion.framework.util.SetUtil;
 import net.ion.talk.TalkEngine;
-import net.ion.talk.TalkHandler;
 
 public class TalkHandlerGroup {
 
@@ -13,8 +12,9 @@ public class TalkHandlerGroup {
 		return new TalkHandlerGroup();
 	}
 
-	public void addHandler(TalkHandler thandler) {
+	public TalkHandlerGroup addHandler(TalkHandler thandler) {
 		handlers.add(thandler) ;
+        return this;
 	}
 
 	public void set(TalkEngine engine) {

@@ -8,8 +8,10 @@ import net.ion.craken.node.Workspace;
 import net.ion.craken.tree.PropertyId;
 import net.ion.craken.tree.PropertyValue;
 import net.ion.craken.tree.TreeNodeKey;
+import net.ion.framework.util.Debug;
 import net.ion.message.push.sender.Sender;
 import net.ion.talk.TalkEngine;
+import net.ion.talk.account.AccountManager;
 import net.ion.talk.bean.Const.User;
 import net.ion.talk.responsebuilder.TalkResponse;
 import net.ion.talk.responsebuilder.TalkResponseBuilder;
@@ -23,16 +25,14 @@ import org.infinispan.notifications.cachelistener.event.CacheEntryModifiedEvent;
  * Created with IntelliJ IDEA. User: Ryun Date: 2014. 2. 11. Time: 오후 2:08 To change this template use File | Settings | File Templates.
  */
 
-@Listener
+@Listener(sync=false)
 public class NotificationListener implements WorkspaceListener{
 
-	private TalkEngine tengine;
-	private Sender sender;
+    private AccountManager am;
 	private String memberId;
 
-	public NotificationListener(TalkEngine tengine, Sender sender) throws IOException {
-		this.tengine = tengine;
-		this.sender = sender;
+	public NotificationListener(AccountManager am) throws IOException {
+        this.am = am;
 	}
 
 	@CacheEntryModified
@@ -53,7 +53,7 @@ public class NotificationListener implements WorkspaceListener{
 			
 			if(pvalue != null && pvalue.stringValue().equals(this.memberId)){
 				TalkResponse tresponse = TalkResponseBuilder.create().newInner().property("notifyId", notifyId).build() ;
-				tengine.sendMessage(userId, sender, tresponse) ;
+                am.newAccount(userId).onMessage(tresponse);
 			}
 		}
 				
