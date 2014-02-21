@@ -7,12 +7,11 @@ import net.ion.craken.tree.PropertyValue;
 import net.ion.craken.tree.TreeNodeKey;
 import net.ion.framework.util.ObjectId;
 import net.ion.talk.*;
-import net.ion.talk.bot.BotSender;
+import net.ion.talk.account.AccountManager;
 import org.infinispan.atomic.AtomicMap;
 import org.infinispan.notifications.cachelistener.event.CacheEntryModifiedEvent;
 import org.infinispan.notifications.cachelistener.event.CacheEntryRemovedEvent;
 
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -25,10 +24,7 @@ import java.util.Map;
  */
 public class TalkMessageHandler implements CDDHandler {
 
-    private BotSender botSender;
-
-    public TalkMessageHandler(BotSender botSender) {
-        this.botSender = botSender;
+    public TalkMessageHandler() {
     }
 
     @Override
@@ -57,23 +53,7 @@ public class TalkMessageHandler implements CDDHandler {
 
                 while(iter.hasNext()){
                     String userId = iter.next();
-
-
-                    //ifBot
-                    if(wsession.pathBy("/users/"+userId).property("isBot").stringValue().equals("true")){
-
-                        WriteNode bot = wsession.pathBy("/users/" + userId);
-                        WriteNode messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + messageId);
-                        String requestURL = bot.property("restURL").stringValue();
-                        String sender = messageNode.property("sender").stringValue();
-                        String message = messageNode.property("message").stringValue();
-
-                        botSender.sendMessage(userId, requestURL, sender, roomId, message);
-                        //"userId" variable is botId
-                    }
-
                     String randomID = new ObjectId().toString();
-
 
                     //write
                     wsession.pathBy("/notifies/" + userId).property("lastNotifyId", randomID)

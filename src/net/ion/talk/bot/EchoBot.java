@@ -9,7 +9,7 @@ import net.ion.framework.parse.gson.JsonObject;
  * Time: 오후 2:26
  * To change this template use File | Settings | File Templates.
  */
-public class EchoBot implements Bot{
+public class EchoBot implements EmbedBot {
     @Override
     public String id() {
         return "echoBot";

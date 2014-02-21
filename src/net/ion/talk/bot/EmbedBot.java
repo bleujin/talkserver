@@ -9,7 +9,7 @@ import net.ion.framework.parse.gson.JsonObject;
  * Time: 오후 2:26
  * To change this template use File | Settings | File Templates.
  */
-public interface Bot {
+public interface EmbedBot {
     String id();
 
     JsonObject onInvited(String roomId);

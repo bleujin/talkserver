@@ -1,5 +1,6 @@
 package net.ion.talk.let;
 
+import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.aradon.bean.RhinoEntry;
 import net.ion.framework.util.ObjectId;
 import net.ion.framework.util.StringUtil;

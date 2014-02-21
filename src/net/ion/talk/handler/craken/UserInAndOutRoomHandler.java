@@ -40,7 +40,7 @@ public class UserInAndOutRoomHandler implements CDDHandler {
 
                     wsession.pathBy("/rooms/" + roomId + "/messages/")
                             .addChild(randomID)
-                                .property("message", "ROOM|"+ roomId + "|ENTER|" + userId)
+                                .property("message", "ROOM#"+ roomId + "|ENTER|" + userId)
                                 .property("status", "smile")
                                 .refTo("sender", "/users/" + userId);
 
@@ -63,7 +63,7 @@ public class UserInAndOutRoomHandler implements CDDHandler {
                     //will define message
                     wsession.pathBy("/rooms/"+roomId+"/messages/")
                             .addChild(randomID)
-                            .property("message", "ROOM|"+ roomId + "|EXIT|" + userId)
+                            .property("message", "ROOM#"+ roomId + "|EXIT|" + userId)
                             .property("status", "smile")
                             .refTo("sender", "/users/"+userId);
                 return null;

@@ -6,6 +6,7 @@ import net.ion.craken.node.ReadSession;
 import net.ion.framework.util.Debug;
 import net.ion.nradon.WebSocketConnection;
 import net.ion.talk.TalkEngine.Reason;
+import net.ion.talk.handler.TalkHandler;
 
 public class TestTalkEngine extends TestCase {
 

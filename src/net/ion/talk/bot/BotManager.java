@@ -13,21 +13,21 @@ import java.util.Map;
  */
 public class BotManager {
 
-    private Map<String, Bot> botMap = MapUtil.newMap();
+    private Map<String, EmbedBot> botMap = MapUtil.newMap();
 
     public static BotManager create() {
         return new BotManager();
     }
 
-    public void registerBot(Bot bot) {
+    public void registerBot(EmbedBot bot) {
         botMap.put(bot.id(), bot);
     }
 
-    public void unregisterBot(Bot bot) {
+    public void unregisterBot(EmbedBot bot) {
         botMap.remove(bot.id());
     }
 
-    public Bot getBot(String id) {
+    public EmbedBot getBot(String id) {
         return botMap.get(id);
     }
 }

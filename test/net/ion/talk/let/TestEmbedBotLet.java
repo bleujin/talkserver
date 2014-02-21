@@ -1,7 +1,7 @@
 package net.ion.talk.let;
 
 import net.ion.framework.parse.gson.JsonObject;
-import net.ion.talk.bot.Bot;
+import net.ion.talk.bot.EmbedBot;
 import net.ion.talk.bot.BotManager;
 import org.restlet.Response;
 import org.restlet.data.Method;
@@ -22,7 +22,8 @@ public class TestEmbedBotLet extends TestBaseLet {
     public void setUp() throws Exception {
         super.setUp();
         tserver.startRadon();
-        botManager = tserver.talkEngine().botManager();
+        botManager = BotManager.create();
+        tserver.talkEngine().context().putAttribute(BotManager.class.getCanonicalName(), botManager);
     }
 
     @Override
@@ -33,8 +34,9 @@ public class TestEmbedBotLet extends TestBaseLet {
 
     public void testFakeBot() throws Exception {
 
-        Bot fakeBot = new FakeBot();
+        EmbedBot fakeBot = new FakeBot();
         botManager.registerBot(fakeBot);
+
 
 
         Response response = tserver.mockClient().fake().createRequest("/bot/fakeBot/onInvited")
@@ -61,7 +63,7 @@ public class TestEmbedBotLet extends TestBaseLet {
 
     public void testInvalidEvent(){
 
-        Bot fakeBot = new FakeBot();
+        EmbedBot fakeBot = new FakeBot();
         botManager.registerBot(fakeBot);
 
 
@@ -76,7 +78,7 @@ public class TestEmbedBotLet extends TestBaseLet {
 
     public void testInvalidParameter(){
 
-        Bot fakeBot = new FakeBot();
+        EmbedBot fakeBot = new FakeBot();
         botManager.registerBot(fakeBot);
 
         Response response = tserver.mockClient().fake().createRequest("/bot/fakeBot/onInvited")
@@ -87,7 +89,7 @@ public class TestEmbedBotLet extends TestBaseLet {
     }
 
 
-    private class FakeBot implements Bot {
+    private class FakeBot implements EmbedBot {
         @Override
         public String id() {
             return "fakeBot";

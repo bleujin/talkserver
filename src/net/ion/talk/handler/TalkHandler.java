@@ -1,9 +1,12 @@
-package net.ion.talk;
+package net.ion.talk.handler;
 
 import java.io.IOException;
 
 import net.ion.craken.node.ReadSession;
+import net.ion.talk.TalkEngine;
 import net.ion.talk.TalkEngine.Reason;
+import net.ion.talk.TalkMessage;
+import net.ion.talk.UserConnection;
 
 public interface TalkHandler {
 

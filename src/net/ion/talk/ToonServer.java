@@ -4,15 +4,17 @@ import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.aradon.bean.RhinoEntry;
 import net.ion.craken.node.ReadSession;
 import net.ion.framework.util.MapUtil;
+import net.ion.message.push.sender.Sender;
 import net.ion.nradon.Radon;
 import net.ion.radon.core.Aradon;
 import net.ion.radon.core.EnumClass;
 import net.ion.radon.core.EnumClass.IMatchMode;
 import net.ion.radon.core.config.ConfigurationBuilder;
 import net.ion.radon.core.security.ChallengeAuthenticator;
-import net.ion.talk.bot.BotManager;
-import net.ion.talk.bot.BotSender;
-import net.ion.talk.handler.engine.ServerHandler;
+import net.ion.talk.account.AccountManager;
+import net.ion.talk.handler.TalkHandler;
+import net.ion.talk.handler.TalkHandlerGroup;
+import net.ion.talk.handler.craken.NotifyStrategy;
 import net.ion.talk.let.*;
 
 import java.io.FileNotFoundException;
@@ -26,30 +28,26 @@ import java.util.concurrent.ExecutionException;
 public class ToonServer {
 
 
+
     public static ToonServer testWithLoginLet() throws Exception {
 		return new ToonServer().init();
 	}
 
     private RhinoEntry rengine;
+    private RepositoryEntry rentry;
 	private CrakenVerifier verifier;
 	private Aradon aradon;
 	private Radon radon;
 	private ConfigurationBuilder cbuilder;
-	private TalkHandlerGroup talkHandlerGroup;
+    private TalkHandlerGroup talkHandlerGroup;
 	private MockClient mockClient;
     private Map<String, Object> propertyMap = MapUtil.newMap();
-	private RepositoryEntry rentry;
-    private BotSender botSender;
 
 	private ToonServer init() throws Exception {
 		this.rentry = RepositoryEntry.test();
 		this.verifier = CrakenVerifier.test(rentry.login());
         this.rengine = RhinoEntry.test();
-
 		this.talkHandlerGroup = TalkHandlerGroup.create();
-		talkHandlerGroup.addHandler(ServerHandler.test());
-        botSender = BotSender.create();
-
 
 		this.cbuilder = ConfigurationBuilder.newBuilder().aradon()
 		.addAttribute(RepositoryEntry.EntryName, rentry)
@@ -105,7 +103,6 @@ public class ToonServer {
 	}
 
 	public void stop() throws InterruptedException, ExecutionException {
-        botSender.stop();
 		mockClient.close() ;
 		if (aradon != null) aradon.stop() ;
 		if (radon != null)
@@ -136,11 +133,6 @@ public class ToonServer {
 		checkStarted() ;
 		return aradon.getServiceContext().getAttributeObject(TalkEngine.class.getCanonicalName(), TalkEngine.class) ;
 	}
-
-    public BotSender botSender(){
-        return botSender;
-    }
-
 
 	public MockClient mockClient() {
 		return mockClient;
