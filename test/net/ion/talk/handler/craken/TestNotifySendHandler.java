@@ -10,7 +10,9 @@ package net.ion.talk.handler.craken;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import net.ion.craken.node.AbstractReadSession;
@@ -43,6 +45,8 @@ public class TestNotifySendHandler extends TestCase {
     private FakeTalkEngine tengine;
     private FakeSender sender;
     private String memberId;
+    private CountDownLatch latch;
+    private ExecutorService es = Executors.newSingleThreadExecutor();
 
     @Override
     public void setUp() throws Exception {
@@ -55,9 +59,7 @@ public class TestNotifySendHandler extends TestCase {
         NotificationListener handler = new NotificationListener(new AccountManager(tengine, sender));
         rsession.workspace().addListener(handler) ;
         memberId = rsession.workspace().repository().memberId() ;
-
-
-
+        latch = new CountDownLatch(1);
     }
 
     private void writeNotify(final String memberId) throws Exception {
@@ -76,11 +78,11 @@ public class TestNotifySendHandler extends TestCase {
                 return null;
             }
         });
-        Thread.sleep(1000);
     }
 
     public void testDisconnected() throws Exception {
         writeNotify(memberId);
+        latch.await();
         String pushReceived = sender.sendeds.get("bleujin").received() ;
         assertEquals("{\"notifyId\":\"1234\"}", pushReceived);
     }
@@ -96,6 +98,7 @@ public class TestNotifySendHandler extends TestCase {
         });
 
         writeNotify(memberId);
+        latch.await();
         FakeUserConnection bleujin = tengine.findConnection("bleujin") ;
         String msg = bleujin.receivedMessage() ;
         assertEquals("{\"notifyId\":\"1234\"}", msg);
@@ -104,85 +107,90 @@ public class TestNotifySendHandler extends TestCase {
 
     @Override
     public void tearDown() throws Exception {
+        es.shutdown();
         rsession.workspace().repository().shutdown();
         super.tearDown();
     }
+
+    class FakeTalkEngine extends TalkEngine{
+
+        private final ReadSession rsession;
+        private final Aradon aradon;
+        public Map<String, FakeUserConnection> users = MapUtil.newMap() ;
+        public FakeTalkEngine(Aradon aradon, ReadSession rsession) throws Exception{
+            super(aradon) ;
+            this.aradon = aradon;
+            aradon.getServiceContext().putAttribute(Sender.class.getCanonicalName(), Sender.class);
+            this.rsession = rsession;
+        }
+
+        public FakeUserConnection findConnection(String userId){
+            return users.get(userId) ;
+        }
+
+        @Override
+        public ReadSession readSession() throws IOException {
+            return rsession;
+        }
+
+        @Override
+        public void sendMessage(String userId, Sender sender, TalkResponse tresponse){
+            super.sendMessage(userId, sender, tresponse);
+        }
+    }
+
+    class FakeUserConnection extends UserConnection {
+        private String received;
+        protected FakeUserConnection(WebSocketConnection inner) {
+            super(inner);
+        }
+
+        public String receivedMessage() {
+            return received;
+        }
+
+        public void sendMessage(String message) {
+            this.received = message ;
+            latch.countDown();
+        }
+    }
+
+    class FakeSender extends Sender{
+
+        public Map<String, FakePushMessage> sendeds = MapUtil.newMap() ;
+        protected FakeSender() {
+            super(null, null, null);
+        }
+
+        @Override
+        public FakePushMessage sendTo(String... receiver) {
+            FakePushMessage result = new FakePushMessage(this, receiver) ;
+            sendeds.put(StringUtil.join(receiver), result) ;
+            return result ;
+        }
+
+    }
+
+    class FakePushMessage extends PushMessage{
+        private String received;
+
+        public FakePushMessage(Sender sender, String[] receivers) {
+            super(sender, receivers);
+        }
+
+        @Override
+        public Future<List<PushResponse>> sendAsync(String message) {
+            this.received = message ;
+            latch.countDown();
+            return null ;
+        }
+
+        public String received(){
+            return received ;
+        }
+
+    }
 }
 
 
-class FakeTalkEngine extends TalkEngine{
 
-    private final ReadSession rsession;
-    private final Aradon aradon;
-    public Map<String, FakeUserConnection> users = MapUtil.newMap() ;
-    public FakeTalkEngine(Aradon aradon, ReadSession rsession) throws Exception{
-        super(aradon) ;
-        this.aradon = aradon;
-        aradon.getServiceContext().putAttribute(Sender.class.getCanonicalName(), Sender.class);
-        this.rsession = rsession;
-    }
-
-    public FakeUserConnection findConnection(String userId){
-        return users.get(userId) ;
-    }
-
-    @Override
-    public ReadSession readSession() throws IOException {
-        return rsession;
-    }
-
-    @Override
-    public void sendMessage(String userId, Sender sender, TalkResponse tresponse){
-        super.sendMessage(userId, sender, tresponse);
-    }
-}
-
-class FakeUserConnection extends UserConnection {
-    private String received;
-    protected FakeUserConnection(WebSocketConnection inner) {
-        super(inner);
-    }
-
-    public String receivedMessage() {
-        return received;
-    }
-
-    public void sendMessage(String message) {
-        this.received = message ;
-    }
-}
-
-class FakeSender extends Sender{
-
-    public Map<String, FakePushMessage> sendeds = MapUtil.newMap() ;
-    protected FakeSender() {
-        super(null, null, null);
-    }
-
-    @Override
-    public FakePushMessage sendTo(String... receiver) {
-        FakePushMessage result = new FakePushMessage(this, receiver) ;
-        sendeds.put(StringUtil.join(receiver), result) ;
-        return result ;
-    }
-
-}
-
-class FakePushMessage extends PushMessage{
-    private String received;
-
-    public FakePushMessage(Sender sender, String[] receivers) {
-        super(sender, receivers);
-    }
-
-    @Override
-    public Future<List<PushResponse>> sendAsync(String message) {
-        this.received = message ;
-        return null ;
-    }
-
-    public String received(){
-        return received ;
-    }
-
-}

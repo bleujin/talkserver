@@ -107,6 +107,7 @@ public class ToonServer {
 		if (aradon != null) aradon.stop() ;
 		if (radon != null)
 			radon.stop().get() ;
+        rentry.shutdown();
 	}
 
 	public Aradon aradon() {

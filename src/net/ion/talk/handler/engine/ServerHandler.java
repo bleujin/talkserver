@@ -7,6 +7,7 @@ import java.net.UnknownHostException;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
+import net.ion.framework.util.Debug;
 import net.ion.talk.TalkEngine;
 import net.ion.talk.TalkEngine.Reason;
 import net.ion.talk.handler.TalkHandler;
@@ -37,7 +38,7 @@ public class ServerHandler implements TalkHandler {
 
 	@Override
 	public void onClose(TalkEngine tengine, UserConnection uconn) {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub1`
 
 	}
 
@@ -54,7 +55,7 @@ public class ServerHandler implements TalkHandler {
 			session.tranSync(new TransactionJob<Void>() {
 				@Override
 				public Void handle(WriteSession wsession) throws Exception {
-					wsession.pathBy("/servers/" + hostName).property("host", serverHost).property("port", port);
+                    wsession.pathBy("/servers/" + hostName).property("host", serverHost).property("port", port);
 					return null;
 				}
 			});
@@ -71,7 +72,7 @@ public class ServerHandler implements TalkHandler {
 	@Override
 	public void onEngineStop(TalkEngine tengine) {
 		try {
-			session.tranSync(new TransactionJob<Void>() {
+			this.session.tranSync(new TransactionJob<Void>() {
 				@Override
 				public Void handle(WriteSession wsession) throws Exception {
 					wsession.pathBy("/servers/" + hostName).removeSelf() ;

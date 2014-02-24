@@ -22,7 +22,7 @@ public class TestTalkEngine extends TestCase {
 	
 	@Override
 	protected void tearDown() throws Exception {
-		engine.stopForTest() ;
+        engine.onStop();
 		super.tearDown();
 	}
 	
@@ -33,16 +33,16 @@ public class TestTalkEngine extends TestCase {
 	}
 	
 	
-	public void testConnectionManger() throws Exception {
+	public void testConnectionManger() {
 		engine.onOpen(bleujin) ;
 
 		assertTrue(engine.connManger().findBy(bleujin) != null) ;
 		assertTrue(engine.connManger().findBy("bleujin") != null) ;
+        engine.onMessage(bleujin, "hello") ;
 		engine.onClose(bleujin) ;
 		assertTrue(engine.connManger().findBy(bleujin) == null) ;
 		assertTrue(engine.connManger().findBy("bleujin") == null) ;
-	}
-
+    }
 	
 }
 

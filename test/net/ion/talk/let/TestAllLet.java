@@ -2,6 +2,7 @@ package net.ion.talk.let;
 
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import net.ion.talk.handler.engine.TestServerHandler;
 
 public class TestAllLet extends TestCase {
 
