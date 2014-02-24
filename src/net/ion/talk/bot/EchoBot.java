@@ -10,6 +10,9 @@ import net.ion.framework.parse.gson.JsonObject;
  * To change this template use File | Settings | File Templates.
  */
 public class EchoBot implements EmbedBot {
+
+
+
     @Override
     public String id() {
         return "echoBot";
@@ -17,8 +20,11 @@ public class EchoBot implements EmbedBot {
 
     @Override
     public JsonObject onInvited(String roomId) {
+
         return null;
     }
+
+
 
     @Override
     public JsonObject onExit(String roomId) {

@@ -21,7 +21,7 @@ public abstract class Account {
         ConnectedUser, DisconnectedUser, NotFoundUser, Bot
     }
 
-    public abstract Object onMessage(TalkResponse response);
+    public abstract Object onMessage(TalkResponse response) throws IOException, ExecutionException, InterruptedException;
 
     public Type type(){
         return type;

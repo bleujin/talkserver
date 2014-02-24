@@ -25,6 +25,7 @@ import net.ion.talk.responsebuilder.TalkResponseBuilder;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /**
@@ -103,7 +104,7 @@ public class TestAccount extends TestCase{
         assertEquals("{}", received);
     }
 
-    public void testNotFoundUser(){
+    public void testNotFoundUser() throws InterruptedException, ExecutionException, IOException {
         TalkResponse response = TalkResponseBuilder.create().newInner().build();
         assertNull(notFoundUser.onMessage(response));
     }

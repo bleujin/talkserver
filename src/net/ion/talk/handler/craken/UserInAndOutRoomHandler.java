@@ -6,7 +6,11 @@ import net.ion.craken.node.WriteSession;
 import net.ion.craken.tree.PropertyId;
 import net.ion.craken.tree.PropertyValue;
 import net.ion.craken.tree.TreeNodeKey;
+import net.ion.framework.parse.gson.JsonElement;
 import net.ion.framework.util.ObjectId;
+import net.ion.framework.util.StringUtil;
+import net.ion.talk.bean.Const;
+import net.ion.talk.responsebuilder.TalkResponseBuilder;
 import org.infinispan.atomic.AtomicMap;
 import org.infinispan.notifications.cachelistener.event.CacheEntryModifiedEvent;
 import org.infinispan.notifications.cachelistener.event.CacheEntryRemovedEvent;
@@ -30,19 +34,24 @@ public class UserInAndOutRoomHandler implements CDDHandler {
     @Override
     public TransactionJob<Void> modified(Map<String, String> resolveMap, CacheEntryModifiedEvent<TreeNodeKey, AtomicMap<PropertyId, PropertyValue>> event) {
 
-        final String roomId = resolveMap.get("roomId");
-        final String userId = resolveMap.get("userId");
+        final String roomId = resolveMap.get(Const.Room.RoomId);
+        final String userId = resolveMap.get(Const.User.UserId);
+
         return new TransactionJob<Void>() {
             @Override
             public Void handle(WriteSession wsession) throws Exception {
 
-                    String randomID = new ObjectId().toString();
+                String randomID = new ObjectId().toString();
 
-                    wsession.pathBy("/rooms/" + roomId + "/messages/")
-                            .addChild(randomID)
-                                .property("message", "ROOM#"+ roomId + "|ENTER|" + userId)
-                                .property("status", "smile")
-                                .refTo("sender", "/users/" + userId);
+
+                PropertyValue pValue = wsession.pathBy("/users/" + userId).property("requestURL");
+                String event = (pValue == PropertyValue.NotFound) ? Const.Event.onUserEnter : Const.Event.onInvited;
+
+                wsession.pathBy("/rooms/" + roomId + "/messages/")
+                        .addChild(randomID)
+                        .property(Const.Message.Event, event)
+                        .property(Const.Room.RoomId, roomId)
+                        .refTo(Const.Message.Sender, "/users/" + userId);
 
                 return null;
             }
@@ -52,20 +61,24 @@ public class UserInAndOutRoomHandler implements CDDHandler {
     @Override
     public TransactionJob<Void> deleted(Map<String, String> resolveMap, CacheEntryRemovedEvent<TreeNodeKey, AtomicMap<PropertyId, PropertyValue>> event) {
 
-        final String roomId = resolveMap.get("roomId");
-        final String userId = resolveMap.get("userId");
+        final String roomId = resolveMap.get(Const.Room.RoomId);
+        final String userId = resolveMap.get(Const.User.UserId);
         return new TransactionJob<Void>() {
             @Override
             public Void handle(WriteSession wsession) throws Exception {
 
-                    String randomID = new ObjectId().toString();
+                String randomID = new ObjectId().toString();
 
-                    //will define message
-                    wsession.pathBy("/rooms/"+roomId+"/messages/")
-                            .addChild(randomID)
-                            .property("message", "ROOM#"+ roomId + "|EXIT|" + userId)
-                            .property("status", "smile")
-                            .refTo("sender", "/users/"+userId);
+
+                PropertyValue pValue = wsession.pathBy("/users/" + userId).property("requestURL");
+                String event = (pValue == PropertyValue.NotFound) ? Const.Event.onUserExit : Const.Event.onExit;
+
+                //will define message
+                wsession.pathBy("/rooms/" + roomId + "/messages/")
+                        .addChild(randomID)
+                        .property(Const.Message.Event, event)
+                        .property(Const.Room.RoomId, roomId)
+                        .refTo(Const.Message.Sender, "/users/" + userId);
                 return null;
             }
         };

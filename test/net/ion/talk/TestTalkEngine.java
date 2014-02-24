@@ -31,7 +31,7 @@ public class TestTalkEngine extends TestCase {
 		engine.onMessage(bleujin, "hello") ;
 		engine.onClose(bleujin) ;
 	}
-	
+
 	
 	public void testConnectionManger() {
 		engine.onOpen(bleujin) ;

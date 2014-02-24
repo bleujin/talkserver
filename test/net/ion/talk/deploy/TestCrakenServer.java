@@ -41,10 +41,13 @@ public class TestCrakenServer extends TestCase {
 
 		radon.start().get();
 
+        r.shutdown();
+        radon.stop();
+
 //		new InfinityThread().startNJoin();
 	}
 
-	
+
 	private static class ScriptWebSocket implements WebSocketHandler {
 		private List<WebSocketConnection> connections = new CopyOnWriteArrayList<WebSocketConnection>();
 		private final RhinoEngine rengine;

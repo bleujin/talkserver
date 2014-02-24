@@ -8,6 +8,7 @@ import net.ion.craken.tree.TreeNodeKey;
 import net.ion.framework.util.ObjectId;
 import net.ion.talk.*;
 import net.ion.talk.account.AccountManager;
+import net.ion.talk.bean.Const;
 import org.infinispan.atomic.AtomicMap;
 import org.infinispan.notifications.cachelistener.event.CacheEntryModifiedEvent;
 import org.infinispan.notifications.cachelistener.event.CacheEntryRemovedEvent;
@@ -56,13 +57,14 @@ public class TalkMessageHandler implements CDDHandler {
                     String randomID = new ObjectId().toString();
 
                     //write
+                    wsession.pathBy("message", "/rooms/" + roomId + "/messages/" + messageId).property(Const.Event.onMessage);
+
                     wsession.pathBy("/notifies/" + userId).property("lastNotifyId", randomID)
                             .addChild(randomID)
                                 .property("delegateServer", getDelegateServer(userId, wsession))
                                 .property("createdAt", ToonServer.GMTTime())
                                 .refTo("message", "/rooms/" + roomId + "/messages/" + messageId)
                                 .refTo("roomId", "/rooms/" + roomId);
-
 
                 }
                 return null;

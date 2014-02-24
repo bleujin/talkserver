@@ -8,6 +8,7 @@ import net.ion.craken.node.WriteSession;
 import net.ion.nradon.WebSocketConnection;
 import net.ion.talk.FakeWebSocketConnection;
 import net.ion.talk.TalkEngine;
+import net.ion.talk.bean.Const;
 
 /**
  * Created with IntelliJ IDEA.
@@ -32,8 +33,8 @@ public class TestUserConnectionHandler extends TestCase {
         rsession.tranSync(new TransactionJob<Object>() {
             @Override
             public Object handle(WriteSession wsession) throws Exception {
-
-                wsession.pathBy("/users/ryun");
+                ryun.data("accessToken", "testToken");
+                wsession.pathBy("/users/ryun").property(Const.User.AccessToken, "testToken");
                 return null;
             }
         });

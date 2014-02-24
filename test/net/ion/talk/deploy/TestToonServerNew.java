@@ -36,7 +36,7 @@ public class TestToonServerNew extends TestBaseLet{
         rsession.workspace().cddm().add(new TalkMessageHandler());
         rsession.workspace().addListener(new NotificationListener(new AccountManager(tserver.talkEngine(), NotifyStrategy.createSender(rsession)))) ;
         
-        new InfinityThread().startNJoin();
+//        new InfinityThread().startNJoin();
     }
 
 }

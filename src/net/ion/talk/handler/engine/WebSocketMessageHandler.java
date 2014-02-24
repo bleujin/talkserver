@@ -59,7 +59,7 @@ public class WebSocketMessageHandler implements TalkHandler {
             e3.printStackTrace();
 
         } finally {
-            if(!JsonObject.fromString(response).asString("result").equals("undefined")){
+            if(!JsonObject.fromString(response).get("result").toString().equals("\"undefined\"")){
                 uconn.sendMessage(response);
             }
 

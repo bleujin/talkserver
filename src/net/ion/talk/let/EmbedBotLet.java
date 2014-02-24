@@ -5,6 +5,7 @@ import net.ion.nradon.let.IServiceLet;
 import net.ion.radon.core.TreeContext;
 import net.ion.radon.core.annotation.AnContext;
 import net.ion.radon.core.annotation.AnRequest;
+import net.ion.radon.core.annotation.FormBean;
 import net.ion.radon.core.let.InnerRequest;
 import net.ion.radon.core.representation.JsonObjectRepresentation;
 import net.ion.talk.bot.EmbedBot;
@@ -24,41 +25,68 @@ import org.restlet.resource.ResourceException;
  */
 public class EmbedBotLet implements IServiceLet{
 
-    private static final String onInvited = "onInvited";
-    private static final String onExit = "onExit";
-    private static final String onUserEnter= "onUserEnter";
-    private static final String onUserExit= "onUserExit";
-    private static final String onMessage= "onMessage";
+    private enum Event {
+        onInvited {
+            @Override
+            protected void call(EmbedBot bot, MessageBean message) {
+                bot.onInvited(message.roomId);
+            }
+        },
+        onExit{
+            @Override
+            protected void call(EmbedBot bot, MessageBean message) {
+                bot.onExit(message.roomId);
+            }
+        },
+        onUserEnter{
+            @Override
+            protected void call(EmbedBot bot, MessageBean message) {
+                bot.onUserEnter(message.roomId, message.userId);
+            }
+        },
+        onUserExit{
+            @Override
+            protected void call(EmbedBot bot, MessageBean message) {
+                bot.onUserExit(message.roomId, message.userId);
+            }
+        },
+        onMessage{
+            @Override
+            protected void call(EmbedBot bot, MessageBean message) {
+                bot.onMessage(message.roomId, message.sender, message.message);
+            }
+        };
+
+        protected abstract void call(EmbedBot bot, MessageBean message);
+    }
 
     @Post
-    public Representation post(@AnContext TreeContext context, @AnRequest InnerRequest request){
+    public Representation post(@AnContext TreeContext context, @AnRequest InnerRequest request, @FormBean MessageBean messageBean){
         BotManager botManager = context.getAttributeObject(BotManager.class.getCanonicalName(), BotManager.class);
 
-        String botId = request.getAttribute("botId");
-        String event = request.getAttribute("event");
-        String sender = request.getParameter("sender");
-        String roomId = request.getParameter("roomId");
-        String message = request.getParameter("message");
-
-        EmbedBot bot = botManager.getBot(botId);
-        if(bot==null || event==null || sender==null || roomId==null || message==null)
+        EmbedBot bot = botManager.getBot(messageBean.userId);
+        if(bot==null || messageBean.event==null || messageBean.sender==null || messageBean.roomId==null || messageBean.message==null)
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
 
-        if(event.equals(onInvited))
-            bot.onInvited(roomId);
-        else if(event.equals(onExit))
-            bot.onExit(roomId);
-        else if(event.equals(onUserEnter))
-            bot.onUserEnter(roomId, sender);
-        else if(event.equals(onUserExit))
-            bot.onUserExit(roomId, sender);
-        else if(event.equals(onMessage))
-            bot.onMessage(roomId, sender, message);
-        else
+        try {
+            Event.valueOf(messageBean.event).call(bot, messageBean);
+        } catch (IllegalArgumentException e) {
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
+        }
+
 
         JsonObject response = TalkResponseBuilder.create().newInner().property("status", "OK").build().toJsonObject();
-
         return new JsonObjectRepresentation(response);
     }
+
+
+    class MessageBean{
+        private String userId;
+        private String event;
+        private String sender;
+        private String roomId;
+        private String message;
+    }
+
+
 }

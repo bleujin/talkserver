@@ -11,11 +11,12 @@ public class TestAllLet extends TestCase {
 		
 		result.addTestSuite(TestLoginLet.class) ;
 		result.addTestSuite(TestLoginWebSocket.class) ;
-
         result.addTestSuite(TestScriptEditLet.class) ;
         result.addTestSuite(TestScriptExecLet.class) ;
 		result.addTestSuite(TestServerHandler.class) ;
 		result.addTestSuite(TestScriptExecLet.class) ;
+        result.addTestSuite(TestStaticFileLet.class);
+        result.addTestSuite(TestEmbedBotLet.class);
 		
 		
 		return result ;
