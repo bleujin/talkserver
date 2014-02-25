@@ -28,6 +28,7 @@ import java.util.concurrent.ExecutionException;
 public class Bot extends Account {
     private final NewClient newClient;
     private ReadSession session;
+
     public Bot(String userId, ReadSession session, NewClient newClient) {
         super(userId, Type.Bot);
         this.newClient = newClient;

@@ -11,11 +11,12 @@ import net.ion.framework.parse.gson.JsonObject;
  */
 public interface EmbedBot {
     String id();
+    String requestURL();
 
-    JsonObject onInvited(String roomId);
-    JsonObject onExit(String roomId);
-    JsonObject onUserEnter(String roomId, String userId);
-    JsonObject onUserExit(String roomId, String userId);
-    JsonObject onMessage(String roomId, String sender, String message);
+    String onInvited(String roomId);
+    String onExit(String roomId);
+    String onUserEnter(String roomId, String userId);
+    String onUserExit(String roomId, String userId);
+    String onMessage(String roomId, String sender, String message);
 
 }

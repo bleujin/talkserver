@@ -24,7 +24,7 @@ public class TestEmbedBotLet extends TestBaseLet {
     public void setUp() throws Exception {
         super.setUp();
         tserver.startRadon();
-        botManager = BotManager.create();
+        botManager = BotManager.create(tserver.readSession());
         tserver.talkEngine().context().putAttribute(BotManager.class.getCanonicalName(), botManager);
     }
 
@@ -67,7 +67,7 @@ public class TestEmbedBotLet extends TestBaseLet {
         assertEquals(Status.CLIENT_ERROR_BAD_REQUEST.getCode(), response.getStatus().getCode());
     }
 
-    public void testInvalidEvent(){
+    public void testInvalidEvent() throws Exception {
 
         EmbedBot fakeBot = new FakeBot();
         botManager.registerBot(fakeBot);
@@ -83,7 +83,7 @@ public class TestEmbedBotLet extends TestBaseLet {
         assertEquals(Status.CLIENT_ERROR_BAD_REQUEST.getCode(), response.getStatus().getCode());
     }
 
-    public void testInvalidParameter(){
+    public void testInvalidParameter() throws Exception {
 
         EmbedBot fakeBot = new FakeBot();
         botManager.registerBot(fakeBot);
@@ -99,33 +99,42 @@ public class TestEmbedBotLet extends TestBaseLet {
 
 
     private class FakeBot implements EmbedBot {
+
+        private String id = "fakeBot";
+        private String requestURL = "http://localhost:9000/bot";
+
         @Override
         public String id() {
-            return "fakeBot";
+            return id;
         }
 
         @Override
-        public JsonObject onInvited(String roomId) {
+        public String requestURL() {
+            return requestURL;
+        }
+
+        @Override
+        public String onInvited(String roomId) {
             return null;
         }
 
         @Override
-        public JsonObject onExit(String roomId) {
+        public String onExit(String roomId) {
             return null;
         }
 
         @Override
-        public JsonObject onUserEnter(String roomId, String userId) {
+        public String onUserEnter(String roomId, String userId) {
             return null;
         }
 
         @Override
-        public JsonObject onUserExit(String roomId, String userId) {
+        public String onUserExit(String roomId, String userId) {
             return null;
         }
 
         @Override
-        public JsonObject onMessage(String roomId, String sender, String message) {
+        public String onMessage(String roomId, String sender, String message) {
             return null;
         }
     }

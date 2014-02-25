@@ -22,6 +22,7 @@ public class Const {
         public static final String Message = "message";
         public static final String Sender = "sender";
         public static final String NotifyId = "notifyId";
+        public static final String Receivers = "receivers";
     }
 
     public static class Room {

@@ -5,6 +5,7 @@ import net.ion.craken.node.*;
 import net.ion.craken.tree.PropertyId;
 import net.ion.craken.tree.PropertyValue;
 import net.ion.craken.tree.TreeNodeKey;
+import net.ion.framework.util.Debug;
 import net.ion.framework.util.ObjectId;
 import net.ion.talk.*;
 import net.ion.talk.account.AccountManager;
@@ -15,6 +16,7 @@ import org.infinispan.notifications.cachelistener.event.CacheEntryRemovedEvent;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -39,32 +41,30 @@ public class TalkMessageHandler implements CDDHandler {
     }
 
     @Override
-    public TransactionJob<Void> modified(Map<String, String> resolveMap, CacheEntryModifiedEvent<TreeNodeKey, AtomicMap<PropertyId, PropertyValue>> event) {
+    public TransactionJob<Void> modified(Map<String, String> resolveMap, final CacheEntryModifiedEvent<TreeNodeKey, AtomicMap<PropertyId, PropertyValue>> event) {
 
         final String roomId = resolveMap.get("roomId");
         final String messageId = resolveMap.get("messageId");
-
+        final PropertyValue receivers = event.getValue().get(PropertyId.fromIdString(Const.Message.Receivers));
 
         return new TransactionJob<Void>() {
             @Override
             public Void handle(WriteSession wsession) throws Exception {
 
                 Iterator<String> iter = wsession.pathBy("/rooms/" + roomId + "/members").childrenNames().iterator();
-
-
                 while(iter.hasNext()){
                     String userId = iter.next();
+                    if(receivers!=null && !receivers.asSet().contains(userId))
+                        continue;
+
+
                     String randomID = new ObjectId().toString();
-
-                    //write
-                    wsession.pathBy("message", "/rooms/" + roomId + "/messages/" + messageId).property(Const.Event.onMessage);
-
                     wsession.pathBy("/notifies/" + userId).property("lastNotifyId", randomID)
                             .addChild(randomID)
                                 .property("delegateServer", getDelegateServer(userId, wsession))
                                 .property("createdAt", ToonServer.GMTTime())
-                                .refTo("message", "/rooms/" + roomId + "/messages/" + messageId)
-                                .refTo("roomId", "/rooms/" + roomId);
+                                .refTo(Const.Message.Message, "/rooms/" + roomId + "/messages/" + messageId)
+                                .refTo(Const.Room.RoomId, "/rooms/" + roomId);
 
                 }
                 return null;

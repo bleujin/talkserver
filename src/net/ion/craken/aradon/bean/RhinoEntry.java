@@ -1,6 +1,7 @@
 package net.ion.craken.aradon.bean;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 import net.ion.craken.node.ReadSession;
 import net.ion.framework.parse.gson.JsonObject;
@@ -26,6 +27,14 @@ public class RhinoEntry implements OnEventObject {
 	public final static RhinoEntry test() throws IOException {
 		return new RhinoEntry(RhinoEngine.create());
 	}
+
+    public void startForTest() throws ExecutionException, InterruptedException {
+        rengine.start().get();
+    }
+
+    public void stopForTest(){
+        rengine.shutdown();
+    }
 
 	@Override
 	public void onEvent(AradonEvent event, IService service) {
