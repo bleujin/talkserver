@@ -2,6 +2,7 @@ package net.ion.talk.handler.craken;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import net.ion.craken.listener.WorkspaceListener;
 import net.ion.craken.node.Workspace;
@@ -53,8 +54,16 @@ public class NotificationListener implements WorkspaceListener{
 			
 			if(pvalue != null && pvalue.stringValue().equals(this.memberId)){
 				TalkResponse tresponse = TalkResponseBuilder.create().newInner().property("notifyId", notifyId).build() ;
-                am.newAccount(userId).onMessage(tresponse);
-			}
+                try {
+                    am.newAccount(userId).onMessage(tresponse);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 		}
 				
 	}

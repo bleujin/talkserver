@@ -65,7 +65,7 @@ public class ToonServer {
                 .path("static").addUrlPattern("/{path}").matchMode(EnumClass.IMatchMode.STARTWITH)
                 .handler(StaticFileLet.class)
             .restSection("bot")
-                .path("bot").addUrlPattern("/{botId}/{event}").handler(EmbedBotLet.class)
+                .path("bot").addUrlPattern("").matchMode(IMatchMode.STARTWITH).handler(EmbedBotLet.class)
 			.restSection("websocket")
 				.addAttribute(TalkHandlerGroup.class.getCanonicalName(), talkHandlerGroup)
 				.wspath("websocket")
@@ -107,6 +107,7 @@ public class ToonServer {
 		if (aradon != null) aradon.stop() ;
 		if (radon != null)
 			radon.stop().get() ;
+        rentry.shutdown();
 	}
 
 	public Aradon aradon() {

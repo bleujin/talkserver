@@ -37,6 +37,14 @@ public class TestLoginWebSocket extends TestBaseLet {
 		
 		tserver.addTalkHander(new EchoHandler())
 			.startRadon() ;
+
+        tserver.readSession().tranSync(new TransactionJob<Object>() {
+            @Override
+            public Object handle(WriteSession wsession) throws Exception {
+                wsession.pathBy("/servers/" + wsession.workspace().repository()).property("host", InetAddress.getLocalHost().getHostAddress()).property("port", 9000);
+                return null;
+            }
+        });
 	}
     
     public void testLogin() throws Exception {

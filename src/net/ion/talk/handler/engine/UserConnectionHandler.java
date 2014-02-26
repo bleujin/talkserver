@@ -5,6 +5,7 @@ import java.io.IOException;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
+import net.ion.framework.util.Debug;
 import net.ion.talk.TalkEngine;
 import net.ion.talk.TalkEngine.Reason;
 import net.ion.talk.handler.TalkHandler;
@@ -36,7 +37,7 @@ public class UserConnectionHandler implements TalkHandler {
 			        wsession.pathBy("/connections/"+uconn.id())
 			                .refTo("user","/users/"+uconn.id());
 			        wsession.pathBy("/users/"+uconn.id()).property(User.DelegateServer, rsession.workspace().repository().memberId());
-			        wsession.pathBy("/users/"+uconn.id()).unset(User.AccessToken);
+                    wsession.pathBy("/users/"+uconn.id()).unset(User.AccessToken);
 			        return null;
 			    }
 			});

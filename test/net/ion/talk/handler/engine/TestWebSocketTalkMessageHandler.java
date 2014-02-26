@@ -5,6 +5,7 @@ import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
 import net.ion.framework.parse.gson.JsonObject;
+import net.ion.framework.util.Debug;
 import net.ion.talk.FakeWebSocketConnection;
 import net.ion.talk.TalkEngine;
 
@@ -30,8 +31,11 @@ public class TestWebSocketTalkMessageHandler extends TestCase {
 
 
         rsession.tranSync(new TransactionJob<Object>() {
+
             @Override
             public Object handle(WriteSession wsession) throws Exception {
+                wsession.pathBy("/users/ryun").property("accessToken", "testToken");
+
                 wsession.pathBy("/script/users/register").property("script", "session.tranSync(function(wsession){\n" +
                         "  wsession.pathBy(\"/users/\" + params.asString(\"userId\"))\n" +
                         "    .property(\"phone\",params.asString(\"phone\"))\n" +
@@ -45,6 +49,9 @@ public class TestWebSocketTalkMessageHandler extends TestCase {
                 return null;
             }
         });
+
+
+        ryun.data("accessToken", "testToken");
     }
 
 
@@ -52,7 +59,7 @@ public class TestWebSocketTalkMessageHandler extends TestCase {
         tengine.onOpen(ryun);
         tengine.onMessage(ryun, "{\"script\":\"/users/register\", \"id\":\"userRegister\",\"params\":{\"userId\":\"ryun\", \"phone\":\"0101234568\",\"nickname\":\"ryuneeee\",\"pushId\":\"lolem ipsum pushId\",\"deviceOS\":\"android\",\"friends\":[\"alex\",\"lucy\"]}}");
         try{
-            ryun.recentMsg();
+            Debug.line(ryun.recentMsg());
             fail();
         }catch (Exception e){
 
@@ -60,10 +67,12 @@ public class TestWebSocketTalkMessageHandler extends TestCase {
 
     }
 
-    public void testNotFoundIdMessage() throws Exception {
+    public void testInvalidParams() throws Exception {
         tengine.onOpen(ryun);
+
         tengine.onMessage(ryun, "{\"script\":\"/users/info\"}");
-        assertEquals("failure", JsonObject.fromString(ryun.recentMsg()).asString("status"));
+        Debug.line(ryun.recentMsg());
+        assertEquals("success", JsonObject.fromString(ryun.recentMsg()).asString("status"));
 
     }
 

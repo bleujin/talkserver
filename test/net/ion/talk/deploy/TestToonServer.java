@@ -70,31 +70,10 @@ public class TestToonServer extends TestCase {
 
 //        new InfinityThread().startNJoin();
 
-		// radon.stop().get() ;
+		radon.stop().get() ;
 	}
 	
-	public void testHttpScript() throws Exception {
-		NewClient client = NewClient.create();
-		
-		String script = "session.tranSync(function(wsession){" +
-				"	wsession.pathBy('/bleujin').property('name', params.asString('name')).property('age', params.asInt('age'));" +
-				"}) ;" +
-				"" +
-				"session.pathBy('/bleujin').toRows('name, age').toString();" ;
-		Request request = new RequestBuilder()
-			.setMethod(Method.POST)
-			.setUrl("http://localhost:9000/script/bleujin.string")
-				.addParameter("name", "bleujin").addParameter("age", "20")
-				.addParameter("script", script).build();
-
-		Response response = client.executeRequest(request).get();
-		Debug.line(response.getTextBody()) ;
-		
-		client.close() ;
-	}
-	
-	
-	public void testWebSocket() throws Exception {
+	public void xtestWebSocket() throws Exception {
 		NewClient client = NewClient.create();
 		final CountDownLatch cd = new CountDownLatch(1) ;
 		WebSocket ws = client.createWebSocket(NetworkUtil.getHostAddressWithProtocol("ws") + ":9000/websocket/bleujin", new WebSocketTextListener() {

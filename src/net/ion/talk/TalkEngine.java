@@ -38,11 +38,11 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 	private Aradon aradon;
 	private Logger logger = LogBroker.getLogger(TalkEngine.class);
 
-	
+
 	private TalkEngine(){
 		// called by aradon reflection
 	}
-	
+
 	protected TalkEngine(Aradon aradon) {
 		if (aradon == null)
 			throw new IllegalStateException("aradon is null");
@@ -53,7 +53,7 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 	public static TalkEngine create(Aradon aradon) {
 		return new TalkEngine(aradon);
 	}
-	
+
 	public static TalkEngine test() throws Exception {
 		RepositoryEntry repo = RepositoryEntry.test();
 		Aradon aradon = Aradon.create();
@@ -70,8 +70,7 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 
 	// Only test
 	public void stopForTest() {
-		aradon.stop();
-		onEvent(AradonEvent.STOP, null);
+        onEvent(AradonEvent.STOP, null);
 	}
 
 	public void onInit(SectionService parent, TreeContext context, WSPathConfiguration wsconfig) {
