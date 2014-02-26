@@ -26,51 +26,66 @@ public class EchoBot implements EmbedBot {
     }
 
     @Override
-    public String onInvited(String roomId) {
-        return "session.tranSync(function(wsession){\n" +
-                "   wsession.pathBy(\"/rooms/"+roomId+"/messages/"+ new ObjectId().toString() +"\")\n" +
-                ".property(\"message\",\"Hello! I'm, EchoBot!\")\n" +
-                ".property(\"sender\",\""+id()+"\")\n" +
-                ".property(\"clientScript\",\"client.room().message(args.message)\")\n" +
-                ".property(\"requestId\",\""+ new ObjectId().toString() +"\");\n" +
-                "});\n";
+    public String onEnter(String roomId, String userId) {
+
+        //if bot
+        if(id().equals(userId)){
+            return "session.tranSync(function(wsession){\n" +
+                    "   wsession.pathBy('/rooms/"+roomId+"/messages/"+ new ObjectId().toString() +"\")\n" +
+                    ".property(\"message\",\"Hello! I'm EchoBot\")\n" +
+                    ".property(\"sender\",\""+id()+"\")\n" +
+                    ".property(\"clientScript\",\"client.room().message(args.message)\")\n" +
+                    ".property(\"requestId\",\""+ new ObjectId().toString() +"\");\n" +
+                    "});\n";
+        }else{
+            return "session.tranSync(function(wsession){\n" +
+                    "   wsession.pathBy(\"/rooms/"+roomId+"/messages/"+ new ObjectId().toString() +"\")\n" +
+                    ".property(\"message\",\"Hello! "+userId+"\")\n" +
+                    ".property(\"sender\",\""+id()+"\")\n" +
+                    ".property(\"clientScript\",\"client.room().message(args.message)\")\n" +
+                    ".property(\"requestId\",\""+ new ObjectId().toString() +"\");\n" +
+                    "});\n";
+        }
+
+
     }
 
     @Override
-    public String onExit(String roomId) {
-        return "session.tranSync(function(wsession){\n" +
-                "   wsession.pathBy(\"/rooms/"+roomId+"/messages/"+ new ObjectId().toString() +"\")\n" +
-                ".property(\"message\",\"Bye~\")\n" +
-                ".property(\"sender\",\""+id()+"\")\n" +
-                ".property(\"clientScript\",\"client.room().message(args.message)\")\n" +
-                ".property(\"requestId\",\""+ new ObjectId().toString() +"\");\n" +
-                "});\n";
-    }
+    public String onExit(String roomId, String userId) {
+        //if bot
+        if(id().equals(userId)){
+            return "session.tranSync(function(wsession){\n" +
+                    "   wsession.pathBy(\"/rooms/"+roomId+"/messages/"+ new ObjectId().toString() +"\")\n" +
+                    ".property(\"message\",\"Bye! "+userId+"\")\n" +
+                    ".property(\"sender\",\""+id()+"\")\n" +
+                    ".property(\"clientScript\",\"client.room().message(args.message)\")\n" +
+                    ".property(\"requestId\",\""+ new ObjectId().toString() +"\");\n" +
+                    "});\n";
+        }else{
+            return "session.tranSync(function(wsession){\n" +
+                    "   wsession.pathBy(\"/rooms/"+roomId+"/messages/"+ new ObjectId().toString() +"\")\n" +
+                    ".property(\"message\",\"Bye! "+userId+"\")\n" +
+                    ".property(\"sender\",\""+id()+"\")\n" +
+                    ".property(\"clientScript\",\"client.room().message(args.message)\")\n" +
+                    ".property(\"requestId\",\""+ new ObjectId().toString() +"\");\n" +
+                    "});\n";
+        }
 
-    @Override
-    public String onUserEnter(String roomId, String userId) {
-        return "session.tranSync(function(wsession){\n" +
-                "   wsession.pathBy(\"/rooms/"+roomId+"/messages/"+ new ObjectId().toString() +"\")\n" +
-                ".property(\"message\",\"Hello! "+userId+"\")\n" +
-                ".property(\"sender\",\""+id()+"\")\n" +
-                ".property(\"clientScript\",\"client.room().message(args.message)\")\n" +
-                ".property(\"requestId\",\""+ new ObjectId().toString() +"\");\n" +
-                "});\n";
-    }
 
-    @Override
-    public String onUserExit(String roomId, String userId) {
-        return "session.tranSync(function(wsession){\n" +
-                "   wsession.pathBy(\"/rooms/"+roomId+"/messages/"+ new ObjectId().toString() +"\")\n" +
-                ".property(\"message\",\"Bye! "+userId+"\")\n" +
-                ".property(\"sender\",\""+id()+"\")\n" +
-                ".property(\"clientScript\",\"client.room().message(args.message)\")\n" +
-                ".property(\"requestId\",\""+ new ObjectId().toString() +"\");\n" +
-                "});\n";
     }
 
     @Override
     public String onMessage(String roomId, String sender, String message) {
+
+        if(message.equals("도움말"))
+            return "session.tranSync(function(wsession){\n" +
+                    "   wsession.pathBy(\"/rooms/"+roomId+"/messages/"+ new ObjectId().toString() +"\")\n" +
+                    ".property(\"message\",\""+message+"\")\n" +
+                    ".property(\"sender\",\""+id()+"\")\n" +
+                    ".property(\"clientScript\",\"client.room().message(args.message)\")\n" +
+                    ".property(\"requestId\",\""+ new ObjectId().toString() +"\");\n" +
+                    "});\n";
+
         return "session.tranSync(function(wsession){\n" +
                 "   wsession.pathBy(\"/rooms/"+roomId+"/messages/"+ new ObjectId().toString() +"\")\n" +
                 ".property(\"message\",\""+message+"\")\n" +
@@ -79,4 +94,5 @@ public class EchoBot implements EmbedBot {
                 ".property(\"requestId\",\""+ new ObjectId().toString() +"\");\n" +
                 "});\n";
     }
+
 }

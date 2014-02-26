@@ -43,14 +43,13 @@ public class TestEmbedBotLet extends TestBaseLet {
 
         Response response = tserver.mockClient().fake().createRequest("/bot")
                 .addParameter(Const.User.UserId, "fakeBot")
-                .addParameter(Const.Message.Event, Const.Event.onInvited)
+                .addParameter(Const.Message.Event, Const.Event.onEnter)
                 .addParameter(Const.Message.Sender, "ryuneeee")
                 .addParameter(Const.Room.RoomId, "1")
                 .addParameter(Const.Message.Message, "HelloWorld!").handle(Method.POST);
 
         tserver.mockClient().close();
         assertEquals(Status.SUCCESS_OK.getCode(), response.getStatus().getCode());
-        assertEquals("{\"status\":\"OK\"}", response.getEntityAsText());
 
     }
 
@@ -58,7 +57,7 @@ public class TestEmbedBotLet extends TestBaseLet {
 
         Response response = tserver.mockClient().fake().createRequest("/bot")
                 .addParameter(Const.User.UserId, "notFoundBot")
-                .addParameter(Const.Message.Event, Const.Event.onInvited)
+                .addParameter(Const.Message.Event, Const.Event.onEnter)
                 .addParameter(Const.Message.Sender, "ryuneeee")
                 .addParameter(Const.Room.RoomId, "1")
                 .addParameter(Const.Message.Message, "HelloWorld!").handle(Method.POST);
@@ -80,7 +79,8 @@ public class TestEmbedBotLet extends TestBaseLet {
                 .addParameter(Const.Room.RoomId, "1")
                 .addParameter(Const.Message.Message, "HelloWorld!").handle(Method.POST);
         tserver.mockClient().close();
-        assertEquals(Status.CLIENT_ERROR_BAD_REQUEST.getCode(), response.getStatus().getCode());
+//        assertEquals(Status.CLIENT_ERROR_BAD_REQUEST.getCode(), response.getStatus().getCode());
+        assertEquals("failure", JsonObject.fromString(response.getEntityAsText()).asString("status"));
     }
 
     public void testInvalidParameter() throws Exception {
@@ -90,7 +90,7 @@ public class TestEmbedBotLet extends TestBaseLet {
 
         Response response = tserver.mockClient().fake().createRequest("/bot")
                 .addParameter(Const.User.UserId, "fakeBot")
-                .addParameter(Const.Message.Event, Const.Event.onInvited)
+                .addParameter(Const.Message.Event, Const.Event.onEnter)
                 .addParameter("Invalid", "Parameter").handle(Method.POST);
 
         tserver.mockClient().close();
@@ -114,22 +114,12 @@ public class TestEmbedBotLet extends TestBaseLet {
         }
 
         @Override
-        public String onInvited(String roomId) {
+        public String onEnter(String roomId, String userId) {
             return null;
         }
 
         @Override
-        public String onExit(String roomId) {
-            return null;
-        }
-
-        @Override
-        public String onUserEnter(String roomId, String userId) {
-            return null;
-        }
-
-        @Override
-        public String onUserExit(String roomId, String userId) {
+        public String onExit(String roomId, String userId) {
             return null;
         }
 

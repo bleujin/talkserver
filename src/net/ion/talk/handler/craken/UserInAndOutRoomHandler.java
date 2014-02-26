@@ -43,13 +43,10 @@ public class UserInAndOutRoomHandler implements CDDHandler {
 
                 String randomID = new ObjectId().toString();
 
-
-                PropertyValue pValue = wsession.pathBy("/users/" + userId).property("requestURL");
-                String event = (pValue == PropertyValue.NotFound) ? Const.Event.onUserEnter : Const.Event.onInvited;
-
                 wsession.pathBy("/rooms/" + roomId + "/messages/")
                         .addChild(randomID)
-                        .property(Const.Message.Event, event)
+                        .property(Const.Message.Event, Const.Event.onEnter)
+                        .property(Const.Message.Sender, userId)
                         .property(Const.Room.RoomId, roomId)
                         .refTo(Const.Message.Sender, "/users/" + userId);
 
@@ -69,15 +66,12 @@ public class UserInAndOutRoomHandler implements CDDHandler {
 
                 String randomID = new ObjectId().toString();
 
-
-                PropertyValue pValue = wsession.pathBy("/users/" + userId).property("requestURL");
-                String event = (pValue == PropertyValue.NotFound) ? Const.Event.onUserExit : Const.Event.onExit;
-
                 //will define message
                 wsession.pathBy("/rooms/" + roomId + "/messages/")
                         .addChild(randomID)
-                        .property(Const.Message.Event, event)
+                        .property(Const.Message.Event, Const.Event.onExit)
                         .property(Const.Room.RoomId, roomId)
+                        .property(Const.Message.Sender, userId)
                         .refTo(Const.Message.Sender, "/users/" + userId);
                 return null;
             }

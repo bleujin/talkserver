@@ -30,10 +30,8 @@ public class Const {
     }
 
     public static class Event {
-        public static final String onInvited = "onInvited";
+        public static final String onEnter = "onEnter";
         public static final String onExit = "onExit";
-        public static final String onUserEnter= "onUserEnter";
-        public static final String onUserExit= "onUserExit";
         public static final String onMessage= "onMessage";
     }
 

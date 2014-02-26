@@ -13,10 +13,8 @@ public interface EmbedBot {
     String id();
     String requestURL();
 
-    String onInvited(String roomId);
-    String onExit(String roomId);
-    String onUserEnter(String roomId, String userId);
-    String onUserExit(String roomId, String userId);
+    String onEnter(String roomId, String userId);
+    String onExit(String roomId, String userId);
     String onMessage(String roomId, String sender, String message);
 
 }

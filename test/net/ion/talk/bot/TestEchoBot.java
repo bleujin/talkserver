@@ -33,30 +33,16 @@ public class TestEchoBot extends TestCase{
         echoBot = new EchoBot();
     }
 
-    public void testOnInvited() throws Exception {
-        String script = echoBot.onInvited("test");
-        rengine.executeScript(rsession, new ObjectId().toString(), script, null);
-        ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().next();
-        assertEquals("Hello! I'm, EchoBot!", messageNode.property(Const.Message.Message).stringValue());
-    }
 
-    public void testOnExit() throws Exception {
-        String script = echoBot.onExit("test");
-        rengine.executeScript(rsession, new ObjectId().toString(), script, null);
-        ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().next();
-        assertEquals("Bye~", messageNode.property(Const.Message.Message).stringValue());
-
-    }
-
-    public void testOnUserEnter() throws Exception {
-        String script = echoBot.onUserEnter("test", "ryun");
+    public void testOnEnter() throws Exception {
+        String script = echoBot.onEnter("test", "ryun");
         rengine.executeScript(rsession, new ObjectId().toString(), script, null);
         ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().next();
         assertEquals("Hello! ryun", messageNode.property(Const.Message.Message).stringValue());
     }
 
-    public void testOnUserExit() throws Exception {
-        String script = echoBot.onUserExit("test", "ryun");
+    public void testOnExit() throws Exception {
+        String script = echoBot.onExit("test", "ryun");
         rengine.executeScript(rsession, new ObjectId().toString(), script, null);
         ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().next();
         assertEquals("Bye! ryun", messageNode.property(Const.Message.Message).stringValue());
