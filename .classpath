@@ -24,6 +24,7 @@
 	<classpathentry kind="lib" path="lib/reflib/bcprov-jdk15-146.jar"/>
 	<classpathentry kind="lib" path="lib/reflib/json_simple-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/reflib/cglib-nodep-2.2.3.jar"/>
+	<classpathentry kind="lib" path="lib/reflib/mail_fat.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="lib" path="lib/ref/craken_0.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
