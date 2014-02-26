@@ -22,6 +22,7 @@ import net.ion.radon.core.TreeContext;
 import net.ion.radon.core.config.WSPathConfiguration;
 import net.ion.radon.core.context.OnOrderEventObject;
 import net.ion.talk.account.AccountManager;
+import net.ion.talk.bot.BotManager;
 import net.ion.talk.handler.TalkHandler;
 import net.ion.talk.handler.TalkHandlerGroup;
 import net.ion.talk.handler.craken.NotifyStrategy;
@@ -78,6 +79,7 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 		this.aradon = parent.getAradon();
         aradon.getServiceContext().putAttribute(TalkEngine.class.getCanonicalName(), this);
         try {
+            aradon.getServiceContext().putAttribute(BotManager.class.getCanonicalName(), BotManager.create(readSession()));
             aradon.getServiceContext().putAttribute(AccountManager.class.getCanonicalName(), new AccountManager(this, NotifyStrategy.createSender(readSession())));
         } catch (IOException e) {
             e.printStackTrace();
