@@ -1,4 +1,4 @@
-package net.ion.bleujin;
+package net.ion.framework.mail;
 
 import java.util.concurrent.Executors;
 
@@ -44,8 +44,6 @@ public class TestMailer extends TestCase {
 	}
 
 	public void testReceiveMail() throws Exception {
-		Debug.line(userPwd);
-		
 		Mailer mailer = MailConfigBuilder.create().receiveConfig().server("smtp.i-on.net").mailUserId("bleujin@i-on.net").mailUserPwd(userPwd).protocol(Protocol.POP3).buildConfig().confirmValidOfReceiveMailConfig().createMailer();
 
 		mailer.unreadMessage(MessageHandler.PRINTER);
