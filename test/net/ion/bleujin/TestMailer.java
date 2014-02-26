@@ -14,17 +14,23 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import org.apache.commons.lang.SystemUtils;
+import org.apache.lucene.analysis.kr.utils.StringUtil;
+
 import junit.framework.TestCase;
 import net.ion.framework.mail.MailConfigBuilder;
 import net.ion.framework.mail.Mailer;
 import net.ion.framework.mail.MessageCreater;
 import net.ion.framework.mail.MessageHandler;
 import net.ion.framework.mail.ReceiveConfigBuilder.Protocol;
+import net.ion.framework.util.Debug;
 
 public class TestMailer extends TestCase {
 
+	private String userPwd = StringUtil.defaultIfEmpty(System.getProperty("mail.password"), "notdefine") ;
+	
 	public void testSendMail() throws Exception {
-		Mailer mailer = MailConfigBuilder.create().sendConfig().server("smtp.i-on.net").mailUserId("bleujin@i-on.net").mailUserPwd("bleujin7").buildConfig().confirmValidOfSendMailConfig().createMailer();
+		Mailer mailer = MailConfigBuilder.create().sendConfig().server("smtp.i-on.net").mailUserId("bleujin@i-on.net").mailUserPwd(userPwd).buildConfig().confirmValidOfSendMailConfig().createMailer();
 
 		mailer.sendMail(new MessageCreater() {
 			@Override
@@ -38,13 +44,15 @@ public class TestMailer extends TestCase {
 	}
 
 	public void testReceiveMail() throws Exception {
-		Mailer mailer = MailConfigBuilder.create().receiveConfig().server("smtp.i-on.net").mailUserId("bleujin@i-on.net").mailUserPwd("bleujin7").protocol(Protocol.POP3).buildConfig().confirmValidOfReceiveMailConfig().createMailer();
+		Debug.line(userPwd);
+		
+		Mailer mailer = MailConfigBuilder.create().receiveConfig().server("smtp.i-on.net").mailUserId("bleujin@i-on.net").mailUserPwd(userPwd).protocol(Protocol.POP3).buildConfig().confirmValidOfReceiveMailConfig().createMailer();
 
 		mailer.unreadMessage(MessageHandler.PRINTER);
 	}
 
 	public void testAttachFile() throws Exception {
-		Mailer mailer = MailConfigBuilder.create().sendConfig().server("smtp.i-on.net").mailUserId("bleujin@i-on.net").mailUserPwd("bleujin7").buildConfig().confirmValidOfSendMailConfig().createMailer();
+		Mailer mailer = MailConfigBuilder.create().sendConfig().server("smtp.i-on.net").mailUserId("bleujin@i-on.net").mailUserPwd(userPwd).buildConfig().confirmValidOfSendMailConfig().createMailer();
 
 		mailer.sendMail(new MessageCreater() {
 			@Override
@@ -71,7 +79,7 @@ public class TestMailer extends TestCase {
 	}
 
 	public void testAsync() throws Exception {
-		Mailer mailer = MailConfigBuilder.create().sendConfig().server("smtp.i-on.net").mailUserId("bleujin@i-on.net").mailUserPwd("bleujin7").buildConfig().confirmValidOfSendMailConfig().createMailer().executors(Executors.newSingleThreadExecutor());
+		Mailer mailer = MailConfigBuilder.create().sendConfig().server("smtp.i-on.net").mailUserId("bleujin@i-on.net").mailUserPwd(userPwd).buildConfig().confirmValidOfSendMailConfig().createMailer().executors(Executors.newSingleThreadExecutor());
 
 		mailer.sendMail(new MessageCreater() {
 			@Override
