@@ -9,6 +9,7 @@ import net.ion.talk.handler.craken.NotificationListener;
 import net.ion.talk.handler.craken.NotifyStrategy;
 import net.ion.talk.handler.craken.TalkMessageHandler;
 import net.ion.talk.handler.craken.UserInAndOutRoomHandler;
+import net.ion.talk.handler.engine.ServerHandler;
 import net.ion.talk.handler.engine.UserConnectionHandler;
 import net.ion.talk.handler.engine.WebSocketMessageHandler;
 import net.ion.talk.let.TestBaseLet;
@@ -24,6 +25,7 @@ public class TestToonServerNew extends TestBaseLet{
 
     public void testRunInfinite() throws Exception {
         tserver.addTalkHander(new UserConnectionHandler())
+                .addTalkHander(ServerHandler.test())
                 .addTalkHander(new WebSocketMessageHandler());
 
         tserver.cbuilder().build();
