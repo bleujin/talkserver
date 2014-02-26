@@ -46,8 +46,8 @@ public class UserInAndOutRoomHandler implements CDDHandler {
                 wsession.pathBy("/rooms/" + roomId + "/messages/")
                         .addChild(randomID)
                         .property(Const.Message.Event, Const.Event.onEnter)
-                        .property(Const.Message.Sender, userId)
                         .property(Const.Room.RoomId, roomId)
+                        .property(Const.Message.Message, userId + "님이 입장하셨습니다.")
                         .refTo(Const.Message.Sender, "/users/" + userId);
 
                 return null;
@@ -71,7 +71,7 @@ public class UserInAndOutRoomHandler implements CDDHandler {
                         .addChild(randomID)
                         .property(Const.Message.Event, Const.Event.onExit)
                         .property(Const.Room.RoomId, roomId)
-                        .property(Const.Message.Sender, userId)
+                        .property(Const.Message.Message, userId + "님이 퇴장하셨습니다.")
                         .refTo(Const.Message.Sender, "/users/" + userId);
                 return null;
             }
