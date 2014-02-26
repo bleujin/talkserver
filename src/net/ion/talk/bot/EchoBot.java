@@ -107,38 +107,20 @@ public class EchoBot implements EmbedBot {
 
     @Override
     public String onMessage(String roomId, String sender, String message) {
-
-//        if(message.equals("도움말"))
-//            return MessageFormat.format("var memberList = session.pathBy('/rooms/{0}/members').childrenNames().toArray();\n" +
-//                    "\n" +
-//                    "session.tranSync(function(wsession){\n" +
-//                    "\tvar messageNode = wsession.pathBy('/rooms/{0}/messages/{2}')\n" +
-//                    "\t.property('message', '도움말입니다. \"반응 3초\", \"반응 5초\"라고 하면 유저별로 3초, 5초 후에 반응합니다.')\n" +
-//                    "\t.property('sender', '{1}')\n" +
-//                    "\t.property('clientScript', 'client.room().message(args.message)')\n" +
-//                    "\t.property('requestId', '{2}')\n" +
-//                    "\n" +
-//                    "\tfor(i in memberList){\n" +
-//                    "\t\tif(memberList[i] != '{1}')\n" +
-//                    "\t\t\tmessageNode.append('receivers', memberList[i]);\n" +
-//                    "\t}\n" +
-//                    "});", roomId, id(), new ObjectId().toString());
-//
-//        return MessageFormat.format("var memberList = session.pathBy('/rooms/{0}/members').childrenNames().toArray();\n" +
-//                "\n" +
-//                "session.tranSync(function(wsession){\n" +
-//                "\tvar messageNode = wsession.pathBy('/rooms/{0}/messages/{2}')\n" +
-//                "\t.property('message', 'bye! {3}')\n" +
-//                "\t.property('sender', '{1}')\n" +
-//                "\t.property('clientScript', 'client.room().message(args.message)')\n" +
-//                "\t.property('requestId', '{2}')\n" +
-//                "\n" +
-//                "\tfor(i in memberList){\n" +
-//                "\t\tif(memberList[i] != '{1}')\n" +
-//                "\t\t\tmessageNode.append('receivers', memberList[i]);\n" +
-//                "\t}\n" +
-//                "});", roomId, id(), new ObjectId().toString(), sender);
-        return null;
+        return String.format("var memberList = session.pathBy('/rooms/%s/members').childrenNames().toArray();\n" +
+                "\n" +
+                "session.tranSync(function(wsession){\n" +
+                "\tvar messageNode = wsession.pathBy('/rooms/%s/messages/%s')\n" +
+                "\t.property('message', '%s')\n" +
+                "\t.property('sender', '%s')\n" +
+                "\t.property('clientScript', 'client.room().message(args.message)')\n" +
+                "\t.property('requestId', '%s')\n" +
+                "\n" +
+                "\tfor(i in memberList){\n" +
+                "\t\tif(memberList[i] != '%s')\n" +
+                "\t\t\tmessageNode.append('receivers', memberList[i]);\n" +
+                "\t}\n" +
+                "});", roomId, roomId, new ObjectId().toString(), message, id(), new ObjectId().toString(), id());
     }
 
 }
