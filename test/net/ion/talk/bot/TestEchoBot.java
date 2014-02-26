@@ -5,6 +5,8 @@ import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.aradon.bean.RhinoEntry;
 import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.ReadSession;
+import net.ion.craken.node.TransactionJob;
+import net.ion.craken.node.WriteSession;
 import net.ion.framework.util.ObjectId;
 import net.ion.radon.core.context.OnEventObject;
 import net.ion.talk.bean.Const;
@@ -31,6 +33,17 @@ public class TestEchoBot extends TestCase{
         rengine.startForTest();
         rsession = rentry.login();
         echoBot = new EchoBot();
+
+
+        rsession.tranSync(new TransactionJob<Object>() {
+            @Override
+            public Object handle(WriteSession wsession) throws Exception {
+                wsession.pathBy("/rooms/test/members/ryun");
+                wsession.pathBy("/rooms/test/members/alex");
+                wsession.pathBy("/rooms/test/members/echoBot");
+                return null;
+            }
+        });
     }
 
 
