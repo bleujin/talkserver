@@ -48,14 +48,15 @@ public class Bot extends Account {
     private NewClient.BoundRequestBuilder buildRequest(TalkResponse response) {
 
         String requestURL = session.pathBy("/users/" + accountId()).property(Const.Bot.RequestURL).stringValue();
-        ReadNode message = getMessageByNotifyId(response.toJsonObject().asString(Const.Message.NotifyId));
+        ReadNode messageNode = getMessageByNotifyId(response.toJsonObject().asString(Const.Message.NotifyId));
 
         NewClient.BoundRequestBuilder builder = newClient.preparePost(requestURL);
-        builder.addParameter(Const.Message.Event, message.property(Const.Message.Event).stringValue())
-                .addParameter(Const.Message.Sender, message.property(Const.Message.Sender).stringValue())
+        builder.addParameter(Const.Message.Event, messageNode.property(Const.Message.Event).stringValue())
+                .addParameter(Const.Message.Sender, messageNode.property(Const.Message.Sender).stringValue())
+                .addParameter(Const.User.UserId, messageNode.property(Const.User.UserId).stringValue())
                 .addParameter(Const.Bot.BotId, accountId())
-                .addParameter(Const.Message.Message, message.property(Const.Message.Message).stringValue())
-                .addParameter(Const.Room.RoomId, message.property(Const.Room.RoomId).stringValue());
+                .addParameter(Const.Message.Message, messageNode.property(Const.Message.Message).stringValue())
+                .addParameter(Const.Room.RoomId, messageNode.parent().parent().fqn().name());
         return builder;
     }
 
@@ -64,5 +65,8 @@ public class Bot extends Account {
         ReadNode messageNode = notifyNode.ref(Const.Message.Message);
         return messageNode;
     }
+
+
+
 
 }

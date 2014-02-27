@@ -3,10 +3,13 @@ package net.ion.talk.deploy;
 import net.ion.craken.node.ReadSession;
 import net.ion.framework.util.InfinityThread;
 import net.ion.talk.account.AccountManager;
+import net.ion.talk.bot.BotManager;
+import net.ion.talk.bot.EchoBot;
 import net.ion.talk.handler.craken.NotificationListener;
 import net.ion.talk.handler.craken.NotifyStrategy;
 import net.ion.talk.handler.craken.TalkMessageHandler;
 import net.ion.talk.handler.craken.UserInAndOutRoomHandler;
+import net.ion.talk.handler.engine.ServerHandler;
 import net.ion.talk.handler.engine.UserConnectionHandler;
 import net.ion.talk.handler.engine.WebSocketMessageHandler;
 import net.ion.talk.let.TestBaseLet;
@@ -22,8 +25,8 @@ public class TestToonServerNew extends TestBaseLet{
 
     public void testRunInfinite() throws Exception {
         tserver.addTalkHander(new UserConnectionHandler())
+                .addTalkHander(ServerHandler.test())
                 .addTalkHander(new WebSocketMessageHandler());
-
 
         tserver.cbuilder().build();
         tserver.startRadon();
@@ -35,6 +38,10 @@ public class TestToonServerNew extends TestBaseLet{
         rsession.workspace().cddm().add(new UserInAndOutRoomHandler());
         rsession.workspace().cddm().add(new TalkMessageHandler());
         rsession.workspace().addListener(new NotificationListener(new AccountManager(tserver.talkEngine(), NotifyStrategy.createSender(rsession)))) ;
+
+
+        BotManager botManager = tserver.talkEngine().getServiceContext().getAttributeObject(BotManager.class.getCanonicalName(), BotManager.class);
+        botManager.registerBot(new EchoBot(tserver.readSession()));
         
 //        new InfinityThread().startNJoin();
     }

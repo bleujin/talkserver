@@ -24,6 +24,8 @@ public class Const {
         public static final String Sender = "sender";
         public static final String NotifyId = "notifyId";
         public static final String Receivers = "receivers";
+        public static final String ClientScript = "clientScript";
+        public static final String RequestId = "requestId";
     }
 
     public static class Room {

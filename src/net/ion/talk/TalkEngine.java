@@ -14,6 +14,7 @@ import net.ion.framework.util.MapUtil;
 import net.ion.message.push.sender.Sender;
 import net.ion.nradon.AbstractWebSocketResource;
 import net.ion.nradon.WebSocketConnection;
+import net.ion.radon.aclient.ClientConfig;
 import net.ion.radon.aclient.NewClient;
 import net.ion.radon.core.Aradon;
 import net.ion.radon.core.IService;
@@ -22,6 +23,7 @@ import net.ion.radon.core.TreeContext;
 import net.ion.radon.core.config.WSPathConfiguration;
 import net.ion.radon.core.context.OnOrderEventObject;
 import net.ion.talk.account.AccountManager;
+import net.ion.talk.bot.BotManager;
 import net.ion.talk.handler.TalkHandler;
 import net.ion.talk.handler.TalkHandlerGroup;
 import net.ion.talk.handler.craken.NotifyStrategy;
@@ -77,7 +79,11 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 		super.onInit(parent, context, wsconfig);
 		this.aradon = parent.getAradon();
         aradon.getServiceContext().putAttribute(TalkEngine.class.getCanonicalName(), this);
+        NewClient nc = NewClient.create(ClientConfig.newBuilder().setMaxRequestRetry(5).setMaxRequestRetry(2).build());
+        aradon.getServiceContext().putAttribute(NewClient.class.getCanonicalName(), nc);
         try {
+
+            aradon.getServiceContext().putAttribute(BotManager.class.getCanonicalName(), BotManager.create(readSession()));
             aradon.getServiceContext().putAttribute(AccountManager.class.getCanonicalName(), new AccountManager(this, NotifyStrategy.createSender(readSession())));
         } catch (IOException e) {
             e.printStackTrace();
