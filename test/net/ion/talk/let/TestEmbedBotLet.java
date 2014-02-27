@@ -1,6 +1,5 @@
 package net.ion.talk.let;
 
-import net.ion.framework.parse.gson.JsonObject;
 import net.ion.talk.bean.Const;
 import net.ion.talk.bot.EmbedBot;
 import net.ion.talk.bot.BotManager;
@@ -44,7 +43,6 @@ public class TestEmbedBotLet extends TestBaseLet {
                 .addParameter(Const.Bot.BotId, "fakeBot")
                 .addParameter(Const.Message.Event, Const.Event.onEnter)
                 .addParameter(Const.Message.Sender, "ryuneeee")
-                .addParameter(Const.User.UserId, "ryuneeee")
                 .addParameter(Const.Room.RoomId, "1")
                 .addParameter(Const.Message.Message, "HelloWorld!").handle(Method.POST);
 
@@ -59,7 +57,6 @@ public class TestEmbedBotLet extends TestBaseLet {
                 .addParameter(Const.Bot.BotId, "notFoundBot")
                 .addParameter(Const.Message.Event, Const.Event.onEnter)
                 .addParameter(Const.Message.Sender, "ryuneeee")
-                .addParameter(Const.User.UserId, "ryuneeee")
                 .addParameter(Const.Room.RoomId, "1")
                 .addParameter(Const.Message.Message, "HelloWorld!").handle(Method.POST);
 
@@ -76,7 +73,6 @@ public class TestEmbedBotLet extends TestBaseLet {
         Response response = tserver.mockClient().fake().createRequest("/bot")
                 .addParameter(Const.Bot.BotId, "fakeBot")
                 .addParameter(Const.Message.Event, "invalidEvent")
-                .addParameter(Const.User.UserId, "ryuneeee")
                 .addParameter(Const.Message.Sender, "ryuneeee")
                 .addParameter(Const.Room.RoomId, "1")
                 .addParameter(Const.Message.Message, "HelloWorld!").handle(Method.POST);
@@ -116,11 +112,11 @@ public class TestEmbedBotLet extends TestBaseLet {
         }
 
         @Override
-        public void onEnter(String roomId, String userId, String sender) {
+        public void onEnter(String roomId, String userId) {
         }
 
         @Override
-        public void onExit(String roomId, String userId, String sender) {
+        public void onExit(String roomId, String userId) {
         }
 
         @Override

@@ -43,14 +43,14 @@ public class UserInAndOutRoomHandler implements CDDHandler {
 
                 String randomID = new ObjectId().toString();
 
-                String sender = wsession.pathBy("/rooms/" + roomId + "/members/"+userId).property(Const.Message.Sender).stringValue();
+//                String sender = wsession.pathBy("/rooms/" + roomId + "/members/"+userId).property(Const.Message.Sender).stringValue();
 
                 wsession.pathBy("/rooms/" + roomId + "/messages/")
                         .addChild(randomID)
                         .property(Const.Message.Event, Const.Event.onEnter)
                         .property(Const.Room.RoomId, roomId)
                         .property(Const.Message.Message, userId + "님이 입장하셨습니다.")
-                        .property(Const.Message.Sender, sender);
+                        .property(Const.Message.Sender, userId);
 
                 return null;
             }
@@ -66,7 +66,7 @@ public class UserInAndOutRoomHandler implements CDDHandler {
             @Override
             public Void handle(WriteSession wsession) throws Exception {
 
-                String sender = wsession.pathBy("/rooms/" + roomId + "/members/"+userId).property(Const.Message.Sender).stringValue();
+//                String sender = wsession.pathBy("/rooms/" + roomId + "/members/"+userId).property(Const.Message.Sender).stringValue();
 
                 String randomID = new ObjectId().toString();
 
@@ -76,7 +76,7 @@ public class UserInAndOutRoomHandler implements CDDHandler {
                         .property(Const.Message.Event, Const.Event.onExit)
                         .property(Const.Room.RoomId, roomId)
                         .property(Const.Message.Message, userId + "님이 퇴장하셨습니다.")
-                        .property(Const.Message.Sender, sender);
+                        .property(Const.Message.Sender, userId);
                 return null;
             }
         };

@@ -37,26 +37,26 @@ public class EchoBot implements EmbedBot {
     }
 
     @Override
-    public void onEnter(final String roomId, final String userId, String sender) throws Exception {
+    public void onEnter(String roomId, String sender) throws Exception {
 
         //if bot
-        if (id().equals(userId))
+        if (id().equals(sender))
             sendMessage(roomId, "Hello I'm EchoBot");
         else
-            sendMessage(roomId, "Hello! " + userId);
+            sendMessage(roomId, "Hello! " + sender);
     }
 
     @Override
-    public void onExit(final String roomId, final String userId, String sender) throws Exception {
+    public void onExit(String roomId, String sender) throws Exception {
 
-        if (id().equals(userId))
+        if (id().equals(sender))
             sendMessage(roomId, "Bye~ see you later!");
         else
-            sendMessage(roomId, "Bye! " + userId);
+            sendMessage(roomId, "Bye! " + sender);
     }
 
     @Override
-    public void onMessage(final String roomId, String sender, final String message) throws Exception {
+    public void onMessage(String roomId, String sender, String message) throws Exception {
         sendMessage(roomId, message);
     }
 

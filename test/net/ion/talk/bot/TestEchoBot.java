@@ -7,7 +7,6 @@ import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
-import net.ion.framework.util.Debug;
 import net.ion.framework.util.ObjectId;
 import net.ion.radon.aclient.NewClient;
 import net.ion.radon.core.Aradon;
@@ -57,13 +56,13 @@ public class TestEchoBot extends TestCase{
 
 
     public void testOnEnter() throws Exception {
-        echoBot.onEnter("test", "ryun", "ryun");
+        echoBot.onEnter("test", "ryun");
         ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().next();
         assertEquals("Hello! ryun", messageNode.property(Const.Message.Message).stringValue());
     }
 
     public void testOnExit() throws Exception {
-        echoBot.onExit("test", "ryun", "ryun");
+        echoBot.onExit("test", "ryun");
         ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().next();
         assertEquals("Bye! ryun", messageNode.property(Const.Message.Message).stringValue());
 
@@ -97,7 +96,6 @@ public class TestEchoBot extends TestCase{
 
                 wsession.pathBy("/rooms/1234/messages/testMessage")
                         .property(Const.Message.Message, "Hello World!")
-                        .property(Const.User.UserId, "ryun")
                         .property(Const.Room.RoomId, "1234")
                         .property(Const.Message.Sender, "ryun")
                         .property(Const.Message.Event, Const.Event.onMessage);
