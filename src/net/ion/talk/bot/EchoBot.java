@@ -45,7 +45,7 @@ public class EchoBot implements EmbedBot {
 
         //if bot
         if (id().equals(sender))
-            sendMessage(roomId, "Hello I'm EchoBot", sender);
+            sendMessage(roomId, "Hello I'm EchoBot. please type: /help", sender);
         else
             sendMessage(roomId, "Hello! " + sender, sender);
     }
@@ -94,6 +94,7 @@ public class EchoBot implements EmbedBot {
             @Override
             public Object call() throws Exception {
                 final Set<String> memberList = rsession.pathBy("/rooms/" + roomId + "/members").childrenNames();
+
                 rsession.tranSync(new TransactionJob<Object>() {
                     @Override
                     public Object handle(WriteSession wsession) throws Exception {
