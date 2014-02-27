@@ -37,10 +37,10 @@ public class Mailer {
 		return this ;
 	}
 	
-	public Future<Void> unreadMessage(final MessageHandler<Void> messageHandler) {
-		return eservice.submit(new Callable<Void>() {
+	public <T> Future<T> unreadMessage(final MessageHandler<T> messageHandler) {
+		return eservice.submit(new Callable<T>() {
 			@Override
-			public Void call() throws Exception {
+			public T call() throws Exception {
 				Session session = Session.getDefaultInstance(mconfig.prop(), null);
 
 				Store store = null ;
@@ -53,7 +53,7 @@ public class Mailer {
 					inbox = store.getFolder("Inbox");
 
 					/* Open the inbox using store. */
-					inbox.open(Folder.READ_ONLY);
+					inbox.open(Folder.READ_WRITE);
 
 					/* Get the messages which is unread in the Inbox */
 					Message messages[] = inbox.search(new FlagTerm(new Flags(Flag.SEEN), false));
@@ -64,12 +64,12 @@ public class Mailer {
 					fp.add(FetchProfile.Item.CONTENT_INFO);
 					inbox.fetch(messages, fp);
 
-					messageHandler.handle(messages);
+					T result = messageHandler.handle(messages);
+					return result ;
 				} finally {
-					if (inbox != null) try {inbox.close(true) ;} catch(MessagingException ignroe){};
-					if (store != null) try {store.close();} catch(MessagingException ignroe){};
+					if (inbox != null) try {inbox.close(true) ;} catch(MessagingException ignore){};
+					if (store != null) try {store.close();} catch(MessagingException ignore){};
 				}
-				return null;
 			}
 		}) ;
 	}

@@ -1,34 +1,31 @@
 package net.ion.framework.mail;
 
+import java.text.MessageFormat;
 import java.util.concurrent.Executors;
 
 import javax.activation.DataHandler;
-import javax.activation.DataSource;
 import javax.activation.FileDataSource;
 import javax.mail.BodyPart;
+import javax.mail.Flags;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
+import javax.mail.Flags.Flag;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-import org.apache.commons.lang.SystemUtils;
-import org.apache.lucene.analysis.kr.utils.StringUtil;
-
 import junit.framework.TestCase;
-import net.ion.framework.mail.MailConfigBuilder;
-import net.ion.framework.mail.Mailer;
-import net.ion.framework.mail.MessageCreater;
-import net.ion.framework.mail.MessageHandler;
 import net.ion.framework.mail.ReceiveConfigBuilder.Protocol;
 import net.ion.framework.util.Debug;
 
+import org.apache.lucene.analysis.kr.utils.StringUtil;
+
 public class TestMailer extends TestCase {
 
-	private String userPwd = StringUtil.defaultIfEmpty(System.getProperty("mail.password"), "notdefine") ;
-	
+	private String userPwd = StringUtil.defaultIfEmpty(System.getProperty("mail.password"), "bleujin7");
+
 	public void testSendMail() throws Exception {
 		Mailer mailer = MailConfigBuilder.create().sendConfig().server("smtp.i-on.net").mailUserId("bleujin@i-on.net").mailUserPwd(userPwd).buildConfig().confirmValidOfSendMailConfig().createMailer();
 
@@ -59,7 +56,7 @@ public class TestMailer extends TestCase {
 				initMsg.setSubject("This is the Subject Line!");
 
 				Multipart multipart = new MimeMultipart(); // Create a multipart message
-				
+
 				BodyPart textPart = new MimeBodyPart();
 				textPart.setContent("<h1>This is attached message</h1>", "text/html"); // Fill the message
 				multipart.addBodyPart(textPart); // Set text message part
@@ -90,4 +87,32 @@ public class TestMailer extends TestCase {
 		}).get();
 	}
 
+	public void xtestMessageFormat() throws Exception {
+		Debug.line(MessageFormat.format("Hello {0}, and bye {1}{0}", "bleujin", 3));
+
+	}
+
+	public void xtestIfIMap() throws Exception {
+		Mailer mailer = MailConfigBuilder.create().sendConfig().server("smtp.i-on.net").mailUserId("bleujin@i-on.net")
+				.mailUserPwd(userPwd).receiveConfig().server("smtp.i-on.net").mailUserId("bleujin@i-on.net").mailUserPwd(userPwd).protocol(Protocol.IMAP).buildConfig()
+				.confirmValidOfSendMailConfig().confirmValidOfReceiveMailConfig().createMailer();
+
+		Integer readCount = mailer.unreadMessage(new MessageHandler<Integer>() {
+			@Override
+			public Integer handle(Message[] msgs) throws Exception {
+				for (Message msg : msgs) {
+					msg.setFlag(Flag.SEEN, true);
+					msg.saveChanges();
+				}
+
+				return msgs.length;
+			}
+		}).get() ;
+
+		assertEquals(1, readCount.intValue());
+	}
+	
+	
+	
+	
 }

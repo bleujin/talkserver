@@ -8,6 +8,7 @@ public class Const {
 		public static final String AccessToken = "accessToken";
 		public static final String DeviceOS = "deviceOS";
 		public static final String PushId = "pushId";
+		public static final String Password = "password";
 		public static String DelegateServer = "delegateServer" ;
 	}
 
