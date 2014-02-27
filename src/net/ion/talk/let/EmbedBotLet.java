@@ -36,13 +36,13 @@ public class EmbedBotLet implements IServiceLet{
         onEnter{
             @Override
             protected String call(EmbedBot bot, MessageBean message) {
-                return bot.onEnter(message.roomId, message.userId);
+                return bot.onEnter(message.roomId, message.userId, message.sender);
             }
         },
         onExit{
             @Override
             protected String call(EmbedBot bot, MessageBean message) {
-                return bot.onExit(message.roomId, message.userId);
+                return bot.onExit(message.roomId, message.userId, message.sender);
             }
         },
         onMessage{
@@ -62,8 +62,8 @@ public class EmbedBotLet implements IServiceLet{
         ReadSession rsession = rentry.login();
         BotManager botManager = context.getAttributeObject(BotManager.class.getCanonicalName(), BotManager.class);
 
-        EmbedBot bot = botManager.getBot(messageBean.userId);
-        if(bot==null || messageBean.event==null || messageBean.sender==null || messageBean.roomId==null || messageBean.message==null)
+        EmbedBot bot = botManager.getBot(messageBean.botId);
+        if(bot==null || messageBean.event==null || messageBean.sender==null || messageBean.roomId==null || messageBean.message==null || messageBean.userId==null)
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
 
         String scriptId = new ObjectId().toString();
@@ -84,6 +84,7 @@ public class EmbedBotLet implements IServiceLet{
 
 
     class MessageBean{
+        private String botId;
         private String userId;
         private String event;
         private String sender;

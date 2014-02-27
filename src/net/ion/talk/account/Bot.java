@@ -53,6 +53,7 @@ public class Bot extends Account {
         NewClient.BoundRequestBuilder builder = newClient.preparePost(requestURL);
         builder.addParameter(Const.Message.Event, message.property(Const.Message.Event).stringValue())
                 .addParameter(Const.Message.Sender, message.property(Const.Message.Sender).stringValue())
+                .addParameter(Const.User.UserId, message.property(Const.User.UserId).stringValue())
                 .addParameter(Const.Bot.BotId, accountId())
                 .addParameter(Const.Message.Message, message.property(Const.Message.Message).stringValue())
                 .addParameter(Const.Room.RoomId, message.property(Const.Room.RoomId).stringValue());
@@ -64,5 +65,8 @@ public class Bot extends Account {
         ReadNode messageNode = notifyNode.ref(Const.Message.Message);
         return messageNode;
     }
+
+
+
 
 }

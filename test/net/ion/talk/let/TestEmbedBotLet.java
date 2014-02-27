@@ -1,7 +1,6 @@
 package net.ion.talk.let;
 
 import net.ion.framework.parse.gson.JsonObject;
-import net.ion.framework.util.Debug;
 import net.ion.talk.bean.Const;
 import net.ion.talk.bot.EmbedBot;
 import net.ion.talk.bot.BotManager;
@@ -42,9 +41,10 @@ public class TestEmbedBotLet extends TestBaseLet {
 
 
         Response response = tserver.mockClient().fake().createRequest("/bot")
-                .addParameter(Const.User.UserId, "fakeBot")
+                .addParameter(Const.Bot.BotId, "fakeBot")
                 .addParameter(Const.Message.Event, Const.Event.onEnter)
                 .addParameter(Const.Message.Sender, "ryuneeee")
+                .addParameter(Const.User.UserId, "ryuneeee")
                 .addParameter(Const.Room.RoomId, "1")
                 .addParameter(Const.Message.Message, "HelloWorld!").handle(Method.POST);
 
@@ -56,9 +56,10 @@ public class TestEmbedBotLet extends TestBaseLet {
     public void testNotFoundBot(){
 
         Response response = tserver.mockClient().fake().createRequest("/bot")
-                .addParameter(Const.User.UserId, "notFoundBot")
+                .addParameter(Const.Bot.BotId, "notFoundBot")
                 .addParameter(Const.Message.Event, Const.Event.onEnter)
                 .addParameter(Const.Message.Sender, "ryuneeee")
+                .addParameter(Const.User.UserId, "ryuneeee")
                 .addParameter(Const.Room.RoomId, "1")
                 .addParameter(Const.Message.Message, "HelloWorld!").handle(Method.POST);
 
@@ -73,8 +74,9 @@ public class TestEmbedBotLet extends TestBaseLet {
 
 
         Response response = tserver.mockClient().fake().createRequest("/bot")
-                .addParameter(Const.User.UserId, "fakeBot")
+                .addParameter(Const.Bot.BotId, "fakeBot")
                 .addParameter(Const.Message.Event, "invalidEvent")
+                .addParameter(Const.User.UserId, "ryuneeee")
                 .addParameter(Const.Message.Sender, "ryuneeee")
                 .addParameter(Const.Room.RoomId, "1")
                 .addParameter(Const.Message.Message, "HelloWorld!").handle(Method.POST);
@@ -89,7 +91,7 @@ public class TestEmbedBotLet extends TestBaseLet {
         botManager.registerBot(fakeBot);
 
         Response response = tserver.mockClient().fake().createRequest("/bot")
-                .addParameter(Const.User.UserId, "fakeBot")
+                .addParameter(Const.Bot.BotId, "fakeBot")
                 .addParameter(Const.Message.Event, Const.Event.onEnter)
                 .addParameter("Invalid", "Parameter").handle(Method.POST);
 
@@ -114,12 +116,12 @@ public class TestEmbedBotLet extends TestBaseLet {
         }
 
         @Override
-        public String onEnter(String roomId, String userId) {
+        public String onEnter(String roomId, String userId, String sender) {
             return null;
         }
 
         @Override
-        public String onExit(String roomId, String userId) {
+        public String onExit(String roomId, String userId, String sender) {
             return null;
         }
 
