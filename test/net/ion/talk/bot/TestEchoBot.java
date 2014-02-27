@@ -7,6 +7,7 @@ import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
+import net.ion.framework.util.Debug;
 import net.ion.framework.util.ObjectId;
 import net.ion.radon.aclient.NewClient;
 import net.ion.radon.core.Aradon;
@@ -16,6 +17,8 @@ import net.ion.talk.bean.Const;
 import net.ion.talk.let.EmbedBotLet;
 import net.ion.talk.responsebuilder.TalkResponse;
 import net.ion.talk.responsebuilder.TalkResponseBuilder;
+
+import java.util.Iterator;
 
 /**
  * Created with IntelliJ IDEA.
@@ -38,7 +41,7 @@ public class TestEchoBot extends TestCase{
         rengine = RhinoEntry.test();
         rengine.startForTest();
         rsession = rentry.login();
-        echoBot = new EchoBot();
+        echoBot = new EchoBot(rsession);
 
 
         rsession.tranSync(new TransactionJob<Object>() {
@@ -54,23 +57,20 @@ public class TestEchoBot extends TestCase{
 
 
     public void testOnEnter() throws Exception {
-        String script = echoBot.onEnter("test", "ryun", "ryun");
-        rengine.executeScript(rsession, new ObjectId().toString(), script, null);
+        echoBot.onEnter("test", "ryun", "ryun");
         ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().next();
         assertEquals("Hello! ryun", messageNode.property(Const.Message.Message).stringValue());
     }
 
     public void testOnExit() throws Exception {
-        String script = echoBot.onExit("test", "ryun", "ryun");
-        rengine.executeScript(rsession, new ObjectId().toString(), script, null);
+        echoBot.onExit("test", "ryun", "ryun");
         ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().next();
         assertEquals("Bye! ryun", messageNode.property(Const.Message.Message).stringValue());
 
     }
 
     public void testOnMessage() throws Exception {
-        String script = echoBot.onMessage("test", "ryun", "Everybody Hello!");
-        rengine.executeScript(rsession, new ObjectId().toString(), script, null);
+        echoBot.onMessage("test", "ryun", "Everybody Hello!");
         ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().next();
         assertEquals("Everybody Hello!", messageNode.property(Const.Message.Message).stringValue());
     }
@@ -79,31 +79,55 @@ public class TestEchoBot extends TestCase{
     public void testEchoBot() throws Exception {
 
         BotManager botManager = BotManager.create(rsession);
-        botManager.registerBot(new EchoBot());
-
-        final String notifyId = new ObjectId().toString();
-
-        rsession.tranSync(new TransactionJob<Object>() {
-            @Override
-            public Object handle(WriteSession wsession) throws Exception {
-                wsession.pathBy("/notifies/echoBot/"+notifyId).refTo("message", "/rooms/1234/messages/testMessage");
-                return null;
-            }
-        });
-
+        botManager.registerBot(new EchoBot(rsession));
 
         Aradon aradon = AradonTester.create().register("", "/bot",  EmbedBotLet.class).getAradon().startServer(9000);
         aradon.getServiceContext().putAttribute(RepositoryEntry.EntryName, rentry);
         aradon.getServiceContext().putAttribute(RhinoEntry.EntryName, rengine);
         aradon.getServiceContext().putAttribute(BotManager.class.getCanonicalName(), botManager);
 
+
+        final String notifyId = new ObjectId().toString();
+
+        rsession.tranSync(new TransactionJob<Object>() {
+            @Override
+            public Object handle(WriteSession wsession) throws Exception {
+                wsession.pathBy("/rooms/1234/members/echoBot");
+                wsession.pathBy("/rooms/1234/members/ryun");
+
+                wsession.pathBy("/rooms/1234/messages/testMessage")
+                        .property(Const.Message.Message, "Hello World!")
+                        .property(Const.User.UserId, "ryun")
+                        .property(Const.Room.RoomId, "1234")
+                        .property(Const.Message.Sender, "ryun")
+                        .property(Const.Message.Event, Const.Event.onMessage);
+                wsession.pathBy("/notifies/echoBot/" + notifyId).refTo("message", "/rooms/1234/messages/testMessage");
+                return null;
+            }
+        });
+
+
+
         TalkResponse fakeResponse = TalkResponseBuilder.create().newInner().property("notifyId", notifyId).build();
 
         Bot bot = new Bot("echoBot", rsession, NewClient.create());
         bot.onMessage(fakeResponse);
 
-        //assertEquals()
 
+        Thread.sleep(100);
+        Iterator<String> iter = rsession.pathBy("/rooms/1234/messages/").childrenNames().iterator();
+
+        String echoMessage = null;
+        while(iter.hasNext()){
+            echoMessage = iter.next();
+            if(echoMessage != "testMessage")
+                break;
+        }
+
+        ReadNode responseMessage = rsession.pathBy("/rooms/1234/messages/" + echoMessage);
+
+        assertEquals("Hello World!", responseMessage.property(Const.Message.Message).stringValue());
+        assertEquals("echoBot", responseMessage.property(Const.Message.Sender).stringValue());
         aradon.getServiceContext().removeAttribute(RepositoryEntry.EntryName);
         aradon.getServiceContext().removeAttribute(RhinoEntry.EntryName);
         aradon.stop();

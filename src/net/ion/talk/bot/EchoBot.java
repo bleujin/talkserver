@@ -1,6 +1,13 @@
 package net.ion.talk.bot;
 
+import net.ion.craken.node.ReadSession;
+import net.ion.craken.node.TransactionJob;
+import net.ion.craken.node.WriteNode;
+import net.ion.craken.node.WriteSession;
 import net.ion.framework.util.ObjectId;
+import net.ion.talk.bean.Const;
+
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,8 +18,13 @@ import net.ion.framework.util.ObjectId;
  */
 public class EchoBot implements EmbedBot {
 
+    private final ReadSession rsession;
     private String id = "echoBot";
     private String requestURL = "http://localhost:9000/bot";
+
+    public EchoBot(ReadSession rsession) {
+        this.rsession = rsession;
+    }
 
     @Override
     public String id() {
@@ -25,112 +37,50 @@ public class EchoBot implements EmbedBot {
     }
 
     @Override
-    public String onEnter(String roomId, String userId, String sender) {
+    public void onEnter(final String roomId, final String userId, String sender) throws Exception {
 
         //if bot
-        if(id().equals(userId)){
-
-            return String.format("var memberList = session.pathBy('/rooms/%s/members').childrenNames().toArray();\n" +
-                    "\n" +
-                    "session.tranSync(function(wsession){\n" +
-                    "\tvar messageNode = wsession.pathBy('/rooms/%s/messages/%s')\n" +
-                    "\t.property('message', 'Hello I\\'m EchoBot')\n" +
-                    "\t.property('sender', '%s')\n" +
-                    "\t.property('roomId', '%s')\n" +
-                    "\t.property('event', 'onMessage')\n" +
-                    "\t.property('clientScript', 'client.room().message(args.message)')\n" +
-                    "\t.property('requestId', '%s')\n" +
-                    "\n" +
-                    "\tfor(i in memberList){\n" +
-                    "\t\tif(memberList[i] != '%s')\n" +
-                    "\t\t\tmessageNode.append('receivers', memberList[i]);\n" +
-                    "\t}\n" +
-                    "});", roomId, roomId, new ObjectId().toString(), id(), roomId, new ObjectId().toString(), id());
-        }else{
-
-            return String.format("var memberList = session.pathBy('/rooms/%s/members').childrenNames().toArray();\n" +
-                    "\n" +
-                    "session.tranSync(function(wsession){\n" +
-                    "\tvar messageNode = wsession.pathBy('/rooms/%s/messages/%s')\n" +
-                    "\t.property('message', 'Hello! %s')\n" +
-                    "\t.property('sender', '%s')\n" +
-                    "\t.property('roomId', '%s')\n" +
-                    "\t.property('event', 'onMessage')\n" +
-                    "\t.property('clientScript', 'client.room().message(args.message)')\n" +
-                    "\t.property('requestId', '%s')\n" +
-                    "\n" +
-                    "\tfor(i in memberList){\n" +
-                    "\t\tif(memberList[i] != '%s')\n" +
-                    "\t\t\tmessageNode.append('receivers', memberList[i]);\n" +
-                    "\t}\n" +
-                    "});", roomId, roomId, new ObjectId().toString(), userId, id(), roomId, new ObjectId().toString(), id());
-        }
+        if (id().equals(userId))
+            sendMessage(roomId, "Hello I'm EchoBot");
+        else
+            sendMessage(roomId, "Hello! " + userId);
     }
 
     @Override
-    public String onExit(String roomId, String userId, String sender) {
+    public void onExit(final String roomId, final String userId, String sender) throws Exception {
 
-        //if bot
-        if(id().equals(userId)){
-
-            return String.format("var memberList = session.pathBy('/rooms/%s/members').childrenNames().toArray();\n" +
-                    "\n" +
-                    "session.tranSync(function(wsession){\n" +
-                    "\tvar messageNode = wsession.pathBy('/rooms/%s/messages/%s')\n" +
-                    "\t.property('message', 'Bye~ see you later!')\n" +
-                    "\t.property('sender', '%s')\n" +
-                    "\t.property('roomId', '%s')\n" +
-                    "\t.property('event', 'onMessage')\n" +
-                    "\t.property('clientScript', 'client.room().message(args.message)')\n" +
-                    "\t.property('requestId', '%s')\n" +
-                    "\n" +
-                    "\tfor(i in memberList){\n" +
-                    "\t\tif(memberList[i] != '%s')\n" +
-                    "\t\t\tmessageNode.append('receivers', memberList[i]);\n" +
-                    "\t}\n" +
-                    "});", roomId, roomId, new ObjectId().toString(), id(), roomId, new ObjectId().toString(), id());
-        }else{
-
-            return String.format("var memberList = session.pathBy('/rooms/%s/members').childrenNames().toArray();\n" +
-                    "\n" +
-                    "session.tranSync(function(wsession){\n" +
-                    "\tvar messageNode = wsession.pathBy('/rooms/%s/messages/%s')\n" +
-                    "\t.property('message', 'Bye! %s')\n" +
-                    "\t.property('sender', '%s')\n" +
-                    "\t.property('roomId', '%s')\n" +
-                    "\t.property('event', 'onMessage')\n" +
-                    "\t.property('clientScript', 'client.room().message(args.message)')\n" +
-                    "\t.property('requestId', '%s')\n" +
-                    "\n" +
-                    "\tfor(i in memberList){\n" +
-                    "\t\tif(memberList[i] != '%s')\n" +
-                    "\t\t\tmessageNode.append('receivers', memberList[i]);\n" +
-                    "\t}\n" +
-                    "});", roomId, roomId, new ObjectId().toString(), userId, id(), roomId, new ObjectId().toString(), id());
-        }
+        if (id().equals(userId))
+            sendMessage(roomId, "Bye~ see you later!");
+        else
+            sendMessage(roomId, "Bye! " + userId);
     }
 
     @Override
-    public String onMessage(String roomId, String sender, String message) {
-        return String.format("var memberList = session.pathBy('/rooms/%s/members').childrenNames().toArray();\n" +
-                "\n" +
-                "session.tranSync(function(wsession){\n" +
-                "\tvar messageNode = wsession.pathBy('/rooms/%s/messages/%s')\n" +
-                "\t.property('message', '%s')\n" +
-                "\t.property('sender', '%s')\n" +
-                "\t.property('roomId', '%s')\n" +
-                "\t.property('event', 'onMessage')\n" +
-                "\t.property('clientScript', 'client.room().message(args.message)')\n" +
-                "\t.property('requestId', '%s')\n" +
-                "\n" +
-                "\tfor(i in memberList){\n" +
-                "\t\tif(memberList[i] != '%s')\n" +
-                "\t\t\tmessageNode.append('receivers', memberList[i]);\n" +
-                "\t}\n" +
-                "});", roomId, roomId, new ObjectId().toString(), message, id(), roomId, new ObjectId().toString(), id());
+    public void onMessage(final String roomId, String sender, final String message) throws Exception {
+        sendMessage(roomId, message);
     }
 
+    private void sendMessage(final String roomId, final String message) throws Exception {
+        final Set<String> memberList = rsession.pathBy("/rooms/" + roomId + "/members").childrenNames();
+        rsession.tranSync(new TransactionJob<Object>() {
+            @Override
+            public Object handle(WriteSession wsession) throws Exception {
+                WriteNode messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + new ObjectId().toString())
+                        .property(Const.Message.Message, message)
+                        .property(Const.Message.Sender, id())
+                        .property(Const.Room.RoomId, roomId)
+                        .property(Const.Message.Event, Const.Event.onMessage)
+                        .property(Const.Message.ClientScript, "client.room().message(args.message)")
+                        .property(Const.Message.RequestId, new ObjectId().toString());
 
+                for (String member : memberList) {
+                    if (member != id())
+                        messageNode.append(Const.Message.Receivers, member);
+                }
+                return null;
+            }
+        });
+    }
 
 
 }

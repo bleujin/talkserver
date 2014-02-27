@@ -41,7 +41,7 @@ public class TestToonServerNew extends TestBaseLet{
 
 
         BotManager botManager = tserver.talkEngine().getServiceContext().getAttributeObject(BotManager.class.getCanonicalName(), BotManager.class);
-        botManager.registerBot(new EchoBot());
+        botManager.registerBot(new EchoBot(tserver.readSession()));
         
 //        new InfinityThread().startNJoin();
     }
