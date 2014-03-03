@@ -1,0 +1,84 @@
+
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name = "viewport" content = "width=640;user-scalable=1">
+	<link rel="stylesheet" type="text/css" href="/toonweb/style/style.css" />
+</head>
+
+<body>
+
+<br/><br/>
+	<h4>Send Message</h4>
+
+	<table>
+	<form action="/aradon/send/$senderId$/$topicId$" method="post" target="hframe">
+		<tr><th>Sender</th>
+			<td>$senderId$ (topic : $topicId$)</td></tr>
+		<tr><th>password(in database)</th>
+			<td><input type="text" name="password" size="20" value="81dc9bdb52d04dc20036dbd8313ed055"/></td></tr>
+		<tr><th>message template</th>
+			<td><textarea name="template" cols="60" rows="10">{
+  "head": {
+    "command":"app.message",
+    "sender": "\$define.senderId\$",
+    "request": "\$define.utcTime\$",
+    "topicid": "\$define.topicId\$",
+    "receiver": "\$csv.toid\$"
+  },
+  "body": {    
+    "sound":"ttas.wav",
+    "account":"\$csv.account\$",
+    "balloon":"\$csv.balloon\$",
+    "message":"\$csv.message\$",
+    "expression":"\$csv.expression\$",
+    "background":"\$csv.background\$",
+    "code":"\$csv.code\$",
+    "action":"\$csv.action\$",
+    "additional":"\$csv.additional\$",
+    "nickname":"\$csv.nickname\$",
+    "receivers":
+    [
+		{
+			"nickname":"\$csv.nickname\$",
+			"account":"\$csv.account\$",
+			"identifier":"\$define.senderId\$",
+			"expression":"\$csv.expression\$"
+		},
+		{
+			"nickname":"\$csv.tonickname\$",
+			"account":"\$csv.toaccount\$",
+			"identifier":"\$csv.toid\$",
+			"expression":"\$csv.toexpression\$"
+		}
+	]
+  }
+}</textarea></td></tr>
+
+		<tr><th>values(csv format)</th>
+			<td><textarea name="csv" cols="60" rows="12">nickname,account,tonickname,toaccount,toid,toexpression,expression,code,balloon,background,action,additional,message
+kalce,kalce@i-on.net,bleujin,bleujin@i-on.net,XXXX(TO-ID),XXXX(TO-EXPRESSION),XXXX(EXPRESSION),01~12,XXXX(BALLOON),XXXX(BACKGROUND),XXXX(ACTION),,HELLO !!!</textarea></td></tr>
+
+		<tr><th></th>
+			<td><input type="button" id="submitButton" value="submit"/> </td></tr>
+	</form>
+	</table>
+
+	<br/>
+	<iframe name="eframe" src="/aradon/send/$senderId$/$topicId$?m=iframe" width="700" height="300" ></iframe>	
+
+	<iframe name="hframe" id="hframe" src="about:blank" width="1" height="1" ></iframe>
+		
+
+	<script type="text/javascript">
+		document.getElementById("submitButton").onclick = function(){
+			document.forms[0].target="hframe" ;
+			document.forms[0].submit() ;
+			return true ;
+		}	
+	</script>
+
+</body>
+
+</body>
+</html>

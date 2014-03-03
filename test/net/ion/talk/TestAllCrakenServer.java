@@ -2,6 +2,7 @@ package net.ion.talk;
 
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import net.ion.framework.mail.TestMailer;
 import net.ion.talk.account.TestAccount;
 import net.ion.talk.bot.TestEchoBot;
 import net.ion.talk.handler.TestAllHandler;
@@ -14,7 +15,8 @@ public class TestAllCrakenServer extends TestCase {
 	
 	public static TestSuite suite(){
 		TestSuite result = new TestSuite() ;
-		result.addTestSuite(TestParameterMap.class) ;
+        result.addTestSuite(TestParameterMap.class) ;
+        result.addTestSuite(TestMailer.class) ;
 		result.addTestSuite(TestTalkEngine.class) ;
         result.addTestSuite(TestEchoBot.class);
         result.addTestSuite(TestAccount.class);

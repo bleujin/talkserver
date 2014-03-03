@@ -21,81 +21,80 @@ import javax.mail.search.FlagTerm;
 
 import org.infinispan.util.concurrent.WithinThreadExecutor;
 
-public class Mailer{
+public class Mailer {
 
-	private MailConfig mconfig;
-	private ExecutorService eservice;
+    private MailConfig mconfig;
+    private ExecutorService eservice;
 
-	Mailer(MailConfig mconfig) {
-		this.mconfig = mconfig;
-		this.eservice = new WithinThreadExecutor() ; 
-	}
-	
-	
-	public Mailer executors(ExecutorService eservice){
-		this.eservice = eservice ;
-		return this ;
-	}
-	
-	public <T> Future<T> unreadMessage(final MessageHandler<T> messageHandler) {
-		return eservice.submit(new Callable<T>() {
-			@Override
-			public T call() throws Exception {
-				Session session = Session.getDefaultInstance(mconfig.prop(), null);
+    Mailer(MailConfig mconfig) {
+        this.mconfig = mconfig;
+        this.eservice = new WithinThreadExecutor() ;
+    }
 
-				Store store = null ;
-				Folder inbox = null ;
-                T t;
+
+    public Mailer executors(ExecutorService eservice){
+        this.eservice = eservice ;
+        return this ;
+    }
+
+    public <T> Future<T> unreadMessage(final MessageHandler<T> messageHandler) {
+        return eservice.submit(new Callable<T>() {
+            @Override
+            public T call() throws Exception {
+                Session session = Session.getDefaultInstance(mconfig.prop(), null);
+
+                Store store = null ;
+                Folder inbox = null ;
                 try {
-					store = session.getStore(mconfig.recPortocol().stringValue());
-					store.connect(mconfig.recServerHost(), mconfig.recMailUserId(), mconfig.recMailUserPwd());
+                    store = session.getStore(mconfig.recPortocol().stringValue());
+                    store.connect(mconfig.recServerHost(), mconfig.recMailUserId(), mconfig.recMailUserPwd());
 
 					/* Mention the folder name which you want to read. */
-					inbox = store.getFolder("Inbox");
+                    inbox = store.getFolder("Inbox");
 
 					/* Open the inbox using store. */
-					inbox.open(Folder.READ_ONLY);
+                    inbox.open(Folder.READ_WRITE);
 
 					/* Get the messages which is unread in the Inbox */
-					Message messages[] = inbox.search(new FlagTerm(new Flags(Flag.SEEN), false));
+                    Message messages[] = inbox.search(new FlagTerm(new Flags(Flag.SEEN), false));
 
 					/* Use a suitable FetchProfile */
-					FetchProfile fp = new FetchProfile();
-					fp.add(FetchProfile.Item.ENVELOPE);
-					fp.add(FetchProfile.Item.CONTENT_INFO);
-					inbox.fetch(messages, fp);
+                    FetchProfile fp = new FetchProfile();
+                    fp.add(FetchProfile.Item.ENVELOPE);
+                    fp.add(FetchProfile.Item.CONTENT_INFO);
+                    inbox.fetch(messages, fp);
 
-					t = messageHandler.handle(messages);
-				} finally {
-					if (inbox != null) try {inbox.close(true) ;} catch(MessagingException ignroe){};
-					if (store != null) try {store.close();} catch(MessagingException ignroe){};
-				}
-				return t;
-			}
-		}) ;
-	}
+                    T result = messageHandler.handle(messages);
+                    return result ;
+                } finally {
+                    if (inbox != null) try {inbox.close(true) ;} catch(MessagingException ignore){};
+                    if (store != null) try {store.close();} catch(MessagingException ignore){};
+                }
+            }
+        }) ;
+    }
 
-	public Future<Void> sendMail(final MessageCreater creater) {
-		return eservice.submit(new Callable<Void>(){
-			@Override
-			public Void call() throws Exception {
-				Properties props = System.getProperties();
-				props.setProperty("mail.smtp.host", mconfig.sendServerHost());
-				props.setProperty("mail.user", mconfig.sendMailUserId()) ;
-				props.setProperty("mail.password", mconfig.sendMailUserPwd()) ;
+    public Future<Void> sendMail(final MessageCreater creater) {
+        return eservice.submit(new Callable<Void>(){
+            @Override
+            public Void call() throws Exception {
+                Properties props = System.getProperties();
+                props.setProperty("mail.smtp.host", mconfig.sendServerHost());
+                props.setProperty("mail.user", mconfig.sendMailUserId()) ;
+                props.setProperty("mail.password", mconfig.sendMailUserPwd()) ;
 
-				Session session = Session.getDefaultInstance(props);
+                Session session = Session.getDefaultInstance(props);
 
-				MimeMessage initMessage = new MimeMessage(session);
-				// Set From: header field of the header.
-				initMessage.setFrom(new InternetAddress(mconfig.sendMailUserId())); // Sender's email ID needs to be mentioned
-				
-				MimeMessage makedMessage = creater.makeMessage(initMessage) ;
-				Transport.send(makedMessage);
-				return null;
-			}
-			
-		}) ;
-	}
+                MimeMessage initMessage = new MimeMessage(session);
+                // Set From: header field of the header.
+                initMessage.setFrom(new InternetAddress(mconfig.sendMailUserId())); // Sender's email ID needs to be mentioned
+
+                MimeMessage makedMessage = creater.makeMessage(initMessage) ;
+                Transport.send(makedMessage);
+                return null;
+            }
+
+        }) ;
+    }
 
 }

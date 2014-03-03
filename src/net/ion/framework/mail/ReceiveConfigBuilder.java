@@ -8,7 +8,7 @@ public class ReceiveConfigBuilder {
 
 	private MailConfigBuilder parent ;
 	private String server = "smtp.i-on.net";
-	private int portNum = 110;
+	private int portNum = 0;
 	private String mailId;
 	private String password;
 	private Protocol protocol = Protocol.POP3 ;
@@ -18,9 +18,22 @@ public class ReceiveConfigBuilder {
 			public String stringValue() {
 				return "pop3";
 			}
+			
+			public int defaultPort(){
+				return 110 ;
+			}
+		}, IMAP {
+			public String stringValue(){
+				return "imap" ;
+			}
+			
+			public int defaultPort(){
+				return 143 ;
+			}
 		};
 
 		public abstract String stringValue() ;
+		public abstract int defaultPort() ;
 	}
 
 	ReceiveConfigBuilder(MailConfigBuilder parent) {
@@ -47,7 +60,7 @@ public class ReceiveConfigBuilder {
 	}
 	
 	public int serverPort(){
-		return portNum ;
+		return portNum > 0 ? portNum : protocol().defaultPort() ;
 	}
 
 	public Protocol protocol(){
@@ -83,7 +96,9 @@ public class ReceiveConfigBuilder {
 		return this;
 	}
 	
-	
+	public SendConfigBuilder sendConfig(){
+		return parent.sendConfig() ;
+	}
 	
 	
 }

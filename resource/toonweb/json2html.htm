@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset='UTF-8' />
+	<title>JSON Visualizer</title>
+	<script src="js/jquery-1.7.2.min.js"></script>
+</head>
+
+	<textarea id='inputJSON' type='text' style='width:100%;height:150px;'>
+	{"millssincerequeststart":1989054,"timestamp":1361252029666,"remotehost":"/61.250.201.157:60877","userid":"bleujin","path":"/toon/bleujin/417460149137301879?_timeout=30000&_topicId=212121","action":"WEB-SOCKET-Sec-WebSocket-Version-13-IN-STRING","payload":"{\"head\":{\"sender\":\"bleujin\",\"request\":\"657\",\"topicid\":\"212121\",\"receiver\":\"@123456789\",\"created\":1361252029660,\"msgid\":\"51230ebda0c5ffcb2739c53e\",\"aradon\":\"reply\"},\"body\":{\"message\":\"dd\",\"name\":\"bleujin\",\"nickname\":\"bleujin\",\"background\":\"\",\"expression\":\"\",\"additional\":\"\"},\"aradon\":{\"senderName\":\"bleujin\",\"senderId\":\"bleujin\",\"crakenId\":\"bleujin-SV-23979\",\"badge\":1,\"deviceToken\":\"not_defined\",\"targetId\":\"bleujin\"}}","requestid":3,"date":"20130219-143349"}
+	</textarea>
+	
+	<div id="resultHTML"> </div>
+	
+	<script>
+
+	
+	function createTableView(jsonText, theme, enableHeader) {
+		// set optional theme parameter
+	    if (theme === undefined) {
+	        theme = 'mediumTable';  //default theme
+	    }
+	 
+	    if (enableHeader === undefined) {
+	        enableHeader = true; //default enable headers
+	    }
+
+	    
+	    // If the returned data is an object do nothing, else try to parse
+	    // var array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
+	    if (jsonText.trim().indexOf('{') != 0) return jsonText ;
+	    
+	    var jsonObj = JSON.parse(jsonText) ;
+	    var str = '<table class="' + theme + '" border=1 cellpadding=2 cellspacing=0>';
+	    str += '<tbody>';
+
+        var row = 0;
+
+		var keys = [] ;
+		for (var index in jsonObj) {
+			keys.push(index) ;
+		}
+		keys.sort() ;
+		       
+        for (var index in keys) {
+            str += (row % 2 == 0) ? '<tr class="alt">' : '<tr>';
+ 
+            if (enableHeader) {
+                str += '<th scope="row">' + keys[index] + '</th>';
+            }
+             
+            str += '<td>' + jsonObj[keys[index]] + '</td>';
+            str += '</tr>';
+            row++;
+        }
+	    str += '</tbody>'
+	    str += '</table><br/>';
+	    return str;
+	}
+
+	 $('#resultHTML').html(createTableView($('#inputJSON').val(),'',true)) ;
+	
+	</script>
+	
+</body>
+</html>

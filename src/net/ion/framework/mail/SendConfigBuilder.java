@@ -59,5 +59,9 @@ public class SendConfigBuilder {
 		return parent.buildConfig() ;
 	}
 
+	public ReceiveConfigBuilder receiveConfig() {
+		return parent.receiveConfig();
+	}
+
 
 }
