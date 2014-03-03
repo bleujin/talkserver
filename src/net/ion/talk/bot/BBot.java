@@ -67,6 +67,7 @@ public class BBot extends EmbedBot {
         if(StringUtil.startsWith(message, "B@")){
             String content = StringUtil.stripStart(message, "B@");
             sendMail(roomId, sender, content);
+            sendMessage(roomId, sender, "명령을 보냈습니다! ");
 
         }else if(StringUtil.startsWith(message, "/register")){
             String[] split = message.split(" ");

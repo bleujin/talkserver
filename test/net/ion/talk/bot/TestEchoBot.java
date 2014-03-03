@@ -60,7 +60,13 @@ public class TestEchoBot extends TestCase {
 		aradon.getServiceContext().putAttribute(BotManager.class.getCanonicalName(), botManager);
 	}
 
-	public void testOnEnter() throws Exception {
+    @Override
+    public void tearDown() throws Exception {
+        aradon.stop();
+        super.tearDown();
+    }
+
+    public void testOnEnter() throws Exception {
 		echoBot.onEnter("test", "ryun");
 		Thread.sleep(1000);
 		ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().next();

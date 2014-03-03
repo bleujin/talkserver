@@ -70,6 +70,7 @@ public class TalkMessageHandler implements CDDHandler {
                                     .addParameter(Const.Message.Sender, pmap.get(PropertyId.fromIdString(Const.Message.Sender)).stringValue())
                                     .addParameter(Const.Bot.BotId, botId)
                                     .addParameter(Const.Message.Message, pmap.get(PropertyId.fromIdString(Const.Message.Message)).stringValue())
+//                                    .addParameter(Const.Message.MessageId, messageId)
                                     .addParameter(Const.Room.RoomId, roomId)
                                     .execute().get();
                         }

@@ -27,23 +27,23 @@ public class UserConnectionHandler implements TalkHandler {
     public Reason onConnected(TalkEngine tengine, final UserConnection uconn) {
 
         if (! uconn.isAllowUser(rsession.pathBy("/users/" + uconn.id()).property(User.AccessToken).stringValue())){
-        	return Reason.NOTALLOW;
+            return Reason.NOTALLOW;
         }
 
         try {
-			rsession.tranSync(new TransactionJob<Void>() {
-			    @Override
-			    public Void handle(WriteSession wsession) {
-			        wsession.pathBy("/connections/"+uconn.id())
-			                .refTo("user","/users/"+uconn.id());
-			        wsession.pathBy("/connections/"+uconn.id()).property(User.DelegateServer, rsession.workspace().repository().memberId());
+            rsession.tranSync(new TransactionJob<Void>() {
+                @Override
+                public Void handle(WriteSession wsession) {
+                    wsession.pathBy("/connections/"+uconn.id())
+                            .refTo("user","/users/"+uconn.id());
+                    wsession.pathBy("/users/"+uconn.id()).property(User.DelegateServer, rsession.workspace().repository().memberId());
                     wsession.pathBy("/users/"+uconn.id()).unset(User.AccessToken);
-			        return null;
-			    }
-			});
-		} catch (Exception e) {
-			return Reason.INTERNAL ;
-		}
+                    return null;
+                }
+            });
+        } catch (Exception e) {
+            return Reason.INTERNAL ;
+        }
         return Reason.OK ;
     }
 
@@ -58,7 +58,7 @@ public class UserConnectionHandler implements TalkHandler {
                 }
             });
         } catch (Exception e) {
-        	tengine.getLogger().warning(e.getLocalizedMessage());
+            e.printStackTrace();
         }
     }
 

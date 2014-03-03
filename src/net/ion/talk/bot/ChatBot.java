@@ -1,9 +1,11 @@
 package net.ion.talk.bot;
 
 import net.ion.craken.node.*;
+import net.ion.emotion.Empathyscope;
 import net.ion.framework.util.RandomUtil;
 import net.ion.talk.bean.Const;
 
+import java.io.IOException;
 import java.util.Set;
 
 /**
@@ -58,9 +60,13 @@ public class ChatBot extends EmbedBot {
         });
     }
 
-    private String setFilter(Set<String> members, String message, String clientScript) {
+    private String setFilter(Set<String> members, String message, String clientScript) throws IOException {
+
 
         StringBuilder sb = new StringBuilder();
+
+
+        Empathyscope.feel(message);
         if(message.equals("야")){
 
             sb.append("client.fontSize(200); ");
