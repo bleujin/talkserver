@@ -13,24 +13,10 @@ import java.util.Set;
  * Time: 오후 4:20
  * To change this template use File | Settings | File Templates.
  */
-public class ChatBot implements EmbedBot {
-
-    private static final String id = "chatBot";
-    private static final String requestURL = "http://localhost:9000/bot";
-    private final ReadSession rsession;
+public class ChatBot extends EmbedBot {
 
     public ChatBot(ReadSession rsession) {
-        this.rsession = rsession;
-    }
-
-    @Override
-    public String id() {
-        return id;
-    }
-
-    @Override
-    public String requestURL() {
-        return requestURL;
+        super("chatBot", "http://localhost:9000/bot", rsession);
     }
 
     @Override
@@ -48,7 +34,6 @@ public class ChatBot implements EmbedBot {
 
     @Override
     public void onFilter(final String roomId, String sender, final String message, final String messageId) throws Exception {
-
 
 
 

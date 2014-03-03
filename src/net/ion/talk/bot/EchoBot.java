@@ -18,32 +18,19 @@ import java.util.concurrent.*;
  * Time: 오후 2:26
  * To change this template use File | Settings | File Templates.
  */
-public class EchoBot implements EmbedBot {
+public class EchoBot extends EmbedBot {
 
-    private final ReadSession rsession;
-    private String id = "echoBot";
-    private String requestURL = "http://localhost:9000/bot";
     private ScheduledExecutorService es = Executors.newScheduledThreadPool(5);
 
     public EchoBot(ReadSession rsession) {
-        this.rsession = rsession;
-    }
-
-    @Override
-    public String id() {
-        return id;
-    }
-
-    @Override
-    public String requestURL() {
-        return requestURL;
+        super("echoBot", "http://localhost:9000/bot", rsession);
     }
 
     @Override
     public void onEnter(String roomId, String sender) throws Exception {
 
         //if bot
-        if (id().equals(sender))
+        if (id.equals(sender))
             sendMessage(roomId, "Hello I'm EchoBot. please type: /help", sender);
         else
             sendMessage(roomId, "Hello! " + sender, sender);
@@ -52,7 +39,7 @@ public class EchoBot implements EmbedBot {
     @Override
     public void onExit(String roomId, String sender) throws Exception {
 
-        if (id().equals(sender))
+        if (id.equals(sender))
             sendMessage(roomId, "Bye~ see you later!", sender);
         else
             sendMessage(roomId, "Bye! " + sender, sender);
@@ -62,9 +49,9 @@ public class EchoBot implements EmbedBot {
     public void onMessage(String roomId, String sender, String message) throws Exception {
 
 
-        if(StringUtil.startsWith(message, "/help ")){
+        if(StringUtil.startsWith(message, "/help")){
             sendMessage(roomId, "안녕하세요! EchoBot입니다. 봇에게 지연된 응답을 받고 싶으면 \"/delay 초\"라고 대답해주세요. 5초후 예: /delay 5", sender);
-        }else if(StringUtil.startsWith(message, "/delay ")){
+        }else if(StringUtil.startsWith(message, "/delay")){
             int delay = Integer.parseInt(StringUtil.stripStart(message, "/delay "));
             sendMessage(roomId, sender + " 사용자에게는 봇이 " +delay +"초 후에 반응합니다.", sender);
             setDelay(roomId, sender, delay);
@@ -78,20 +65,14 @@ public class EchoBot implements EmbedBot {
     public void onFilter(String roomId, String sender, String message, String messageId) throws Exception {
     }
 
-    private void setDelay(final String roomId, final String sender, final int delay) throws Exception {
 
-        rsession.tranSync(new TransactionJob<Object>() {
-            @Override
-            public Object handle(WriteSession wsession) throws Exception {
-                wsession.pathBy("/rooms/" + roomId + "/bots/" + id() + "/" + sender).property("delay", delay);
-                return null;
-            }
-        });
+    private void setDelay(final String roomId, final String sender, final int delay) throws Exception {
+        setUserProperty(roomId, sender, "delay", delay);
     }
 
     private void sendMessage(final String roomId, final String message, String sender) throws Exception {
 
-        int delay = rsession.ghostBy("/rooms/" + roomId + "/bots/" + id() + "/" + sender).property("delay").intValue(0);
+        int delay = getUserProperty(roomId, sender, "delay").intValue(0);
 
         es.schedule(new Callable<Object>() {
             @Override

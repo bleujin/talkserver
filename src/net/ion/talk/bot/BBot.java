@@ -23,16 +23,13 @@ import java.util.concurrent.*;
  * Time: 오후 2:26
  * To change this template use File | Settings | File Templates.
  */
-public class BBot implements EmbedBot {
+public class BBot extends EmbedBot {
 
     private static String ION_SMTP_SERVER = "smtp.i-on.net";
-    private final ReadSession rsession;
-    private String id = "bBot";
-    private String requestURL = "http://localhost:9000/bot";
     private ScheduledExecutorService es = Executors.newScheduledThreadPool(5);
 
     public BBot(ReadSession rsession) {
-        this.rsession = rsession;
+        super("bBot", "http://localhost:9000/bot", rsession);
     }
 
     @Override
@@ -72,8 +69,8 @@ public class BBot implements EmbedBot {
             if(split.length != 3)
                 sendMessage(roomId, sender, "잘못 입력하셨습니다. 다시 입력해주세요.");
 
-            setBotProperty(roomId, sender, "account", split[1]);
-            setBotProperty(roomId, sender, "password", split[2]);
+            setUserProperty(roomId, sender, "account", split[1]);
+            setUserProperty(roomId, sender, "password", split[2]);
             sendMessage(roomId, sender, split[1] + " 계정이 정상적으로 등록되었습니다!");
 
         }else
@@ -83,22 +80,6 @@ public class BBot implements EmbedBot {
 
     @Override
     public void onFilter(String roomId, String sender, String message, String messageId) throws Exception {
-    }
-
-
-    private String getBotProperty(String roomId, String sender, String key){
-        return rsession.ghostBy("/rooms/" + roomId + "/bots/" + id() + "/" + sender).property(key).stringValue();
-
-    }
-
-    private void setBotProperty(final String roomId, final String sender, final String key, final String value) throws Exception {
-        rsession.tranSync(new TransactionJob<Object>() {
-            @Override
-            public Object handle(WriteSession wsession) throws Exception {
-                wsession.pathBy("/rooms/" + roomId + "/bots/" + id() + "/" + sender).property(key, value);
-                return null;
-            }
-        });
     }
 
     private void sendMessage(final String roomId, String sender, final String message) throws Exception {
@@ -134,8 +115,8 @@ public class BBot implements EmbedBot {
 
     private void sendMail(final String roomId, final String sender, final String content) throws Exception {
 
-        final String account = getBotProperty(roomId, sender, "account");
-        final String password = getBotProperty(roomId, sender, "password");
+        final String account = getUserProperty(roomId, sender, "account").stringValue();
+        final String password = getUserProperty(roomId, sender, "password").stringValue();
         if(StringUtil.isEmpty(account)){
             sendMessage(roomId, sender, "계정 정보가 없습니다. \"/register 이메일 비밀번호\"를 이용하여 계정정보를 입력해주세요. ");
             return;
