@@ -34,10 +34,10 @@ public abstract class EmbedBot {
         return requestURL;
     }
 
-    abstract void onEnter(String roomId, String userId) throws Exception;
-    abstract void onExit(String roomId, String userId) throws Exception;
-    abstract void onMessage(String roomId, String sender, String message) throws Exception;
-    abstract void onFilter(String roomId, String sender, String message, String messageId) throws Exception;
+    public abstract void onEnter(String roomId, String userId) throws Exception;
+    public abstract void onExit(String roomId, String userId) throws Exception;
+    public abstract void onMessage(String roomId, String sender, String message) throws Exception;
+    public abstract void onFilter(String roomId, String sender, String message, String messageId) throws Exception;
 
     protected void setRoomProperty(final String roomId, final String key, final Object value) throws Exception {
         rsession.tranSync(new TransactionJob<Object>() {
