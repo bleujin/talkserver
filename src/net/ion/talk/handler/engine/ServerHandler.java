@@ -80,7 +80,6 @@ public class ServerHandler implements TalkHandler {
 				}
 			});
 		} catch (Exception e) {
-			e.printStackTrace() ;
 			tengine.getLogger().warning(e.getMessage()) ;
 		}
 	}

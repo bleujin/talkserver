@@ -58,7 +58,7 @@ public class UserConnectionHandler implements TalkHandler {
                 }
             });
         } catch (Exception e) {
-            e.printStackTrace();
+        	tengine.getLogger().warning(e.getLocalizedMessage());
         }
     }
 

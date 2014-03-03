@@ -17,79 +17,72 @@ import org.infinispan.notifications.cachelistener.event.CacheEntryRemovedEvent;
 import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA.
- * User: Ryun
- * Date: 2014. 2. 25.
- * Time: 오후 4:05
- * To change this template use File | Settings | File Templates.
+ * Created with IntelliJ IDEA. User: Ryun Date: 2014. 2. 25. Time: 오후 4:05 To change this template use File | Settings | File Templates.
  */
-public class TestRemovedProperty extends TestCase{
+public class TestRemovedProperty extends TestCase {
 
-    private RepositoryEntry rentry;
-    private ReadSession rsession;
+	private RepositoryEntry rentry;
+	private ReadSession rsession;
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        rentry = RepositoryEntry.test();
-        rsession = rentry.login();
-        rsession.workspace().cddm().add(new TestListener());
+	@Override
+	public void setUp() throws Exception {
+		super.setUp();
+		rentry = RepositoryEntry.test();
+		rsession = rentry.login();
+		rsession.workspace().cddm().add(new TestListener());
 
-        rsession.workspace().repository().memberId();
-    }
+		rsession.workspace().repository().memberId();
+	}
 
-    public void testFirst() throws Exception {
+	public void testFirst() throws Exception {
 
-        rsession.tranSync(new TransactionJob<Object>() {
-            @Override
-            public Object handle(WriteSession wsession) throws Exception {
+		rsession.tranSync(new TransactionJob<Object>() {
+			@Override
+			public Object handle(WriteSession wsession) throws Exception {
 
-                wsession.pathBy("/connect/ryun").property("server", "server");
-                wsession.pathBy("/test/ryun/ryun2").property("message", "hello");
-                return null;
-            }
-        });
+				wsession.pathBy("/connect/ryun").property("server", "server");
+				wsession.pathBy("/test/ryun/ryun2").property("message", "hello");
+				return null;
+			}
+		});
 
+		Thread.sleep(1000);
 
-        Thread.sleep(1000);
+		assertEquals("hello", rsession.pathBy("/test/ryun/ryun2").property("message").stringValue());
 
-        assertEquals("hello", rsession.pathBy("/test/ryun/ryun2").property("message").stringValue());
+	}
 
-    }
+	@Override
+	public void tearDown() throws Exception {
+		rentry.shutdown();
+		super.tearDown();
+	}
 
-    @Override
-    public void tearDown() throws Exception {
-        rentry.shutdown();
-        super.tearDown();
-    }
+	public class TestListener implements CDDHandler {
 
-    public class TestListener implements CDDHandler {
+		@Override
+		public String pathPattern() {
+			return "/test/{test}";
+		}
 
-        @Override
-        public String pathPattern() {
-            return "/test/{test}";
-        }
+		@Override
+		public TransactionJob<Void> modified(Map<String, String> resolveMap, CacheEntryModifiedEvent<TreeNodeKey, AtomicMap<PropertyId, PropertyValue>> event) {
 
-        @Override
-        public TransactionJob<Void> modified(Map<String, String> resolveMap, CacheEntryModifiedEvent<TreeNodeKey, AtomicMap<PropertyId, PropertyValue>> event) {
+			Debug.line(event);
 
+			return new TransactionJob<Void>() {
+				@Override
+				public Void handle(WriteSession wsession) throws Exception {
+					Debug.line(wsession.pathBy("/test/ryun/ryun2").property("message").stringValue());
+					return null;
+				}
+			};
+		}
 
-            Debug.line(event);
-
-            return new TransactionJob<Void>() {
-                @Override
-                public Void handle(WriteSession wsession) throws Exception {
-                    Debug.line(wsession.pathBy("/test/ryun/ryun2").property("message").stringValue());
-                    return null;
-                }
-            };
-        }
-
-        @Override
-        public TransactionJob<Void> deleted(Map<String, String> stringStringMap, CacheEntryRemovedEvent<TreeNodeKey, AtomicMap<PropertyId, PropertyValue>> event) {
-            return null;
-        }
-    }
-
+		@Override
+		public TransactionJob<Void> deleted(Map<String, String> stringStringMap, CacheEntryRemovedEvent<TreeNodeKey, AtomicMap<PropertyId, PropertyValue>> event) {
+			return null;
+		}
+	}
 
 }

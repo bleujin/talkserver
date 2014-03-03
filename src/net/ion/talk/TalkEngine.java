@@ -153,7 +153,7 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 				handler.onMessage(this, found, rsession, tmessage);
 			}
 		} catch (IOException ex) {
-			ex.printStackTrace();
+			logger.warning(ex.getLocalizedMessage());
 		}
 	}
 

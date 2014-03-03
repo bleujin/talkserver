@@ -1,8 +1,8 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-	<script src="/static/jquery-1.10.2.min.js" type="text/javascript"></script>
-	<script src="/static/scriptAjax.js" type="text/javascript"></script>
+	<script src="/resource/jquery-1.10.2.min.js" type="text/javascript"></script>
+	<script src="/resource/scriptAjax.js" type="text/javascript"></script>
 	</head>
 <body>
     <div class="form">

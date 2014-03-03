@@ -8,23 +8,23 @@ import com.google.common.collect.Lists;
 
 public class MessageIDTest extends TestCase {
 
-    public void testGenerate() {
-        String generated = MessageID.generate();
-        System.out.println(generated);
+	public void testGenerate() {
+		String generated = MessageID.generate();
+		System.out.println(generated);
 
-        assertEquals(9, generated.length());
-    }
+		assertEquals(9, generated.length());
+	}
 
-    public void testDuplicateIDPercent() {
+	public void testDuplicateIDPercent() {
 
-        List<String> generated = Lists.newArrayList();
-        int total = 1000000;
+		List<String> generated = Lists.newArrayList();
+		int total = 1000000;
 
-        for(int i = 0; i < total; i++) {
-            generated.add(MessageID.generate());
-        }
+		for (int i = 0; i < total; i++) {
+			generated.add(MessageID.generate());
+		}
 
-        int actual = generated.size();
-        assertEquals(1.0f, (float)(actual/total));
-    }
+		int actual = generated.size();
+		assertEquals(1.0f, (float) (actual / total));
+	}
 }

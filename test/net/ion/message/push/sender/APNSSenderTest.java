@@ -7,23 +7,25 @@ public class APNSSenderTest extends BaseTest {
 	private APNSSender sender = APNSSender.create(KEY_STORE_PATH, PASSWORD, isProduction);
 
 	public void testFirst() throws Exception {
-        PushResponse response = sender.sendTo(APPLE_DEVICE_TOKEN).message("안녕").badge(1).sound("default").push();
-        assertTrue(response.isSuccess());
+		PushResponse response = sender.sendTo(APPLE_DEVICE_TOKEN).message("안녕").badge(1).sound("default").push();
+		assertTrue(response.isSuccess());
 	}
 
 	public void testError_whenNoMsg() throws Exception {
 		try {
 			sender.sendTo(APPLE_DEVICE_TOKEN).push();
 			fail();
-		} catch (IllegalStateException e) {}
+		} catch (IllegalStateException e) {
+		}
 	}
 
 	public void testError_tooLargeMessage() throws Exception {
-        String largeMessage = createDummyMessage(840);
-        try{
+		String largeMessage = createDummyMessage(840);
+		try {
 			sender.sendTo(APPLE_DEVICE_TOKEN).message(largeMessage.toString()).push();
 			fail();
-		} catch (IllegalStateException e) {}
+		} catch (IllegalStateException e) {
+		}
 	}
 
 	public void testResponse() throws Exception {
@@ -37,7 +39,5 @@ public class APNSSenderTest extends BaseTest {
 		assertEquals(false, response.isSuccess());
 		assertNotNull(response.getResponseMessage());
 	}
-	
-	
 
 }

@@ -31,32 +31,31 @@ import net.ion.talk.ToonServer;
 
 public class TestLoginWebSocket extends TestBaseLet {
 
-    @Override
+	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		
-		tserver.addTalkHander(new EchoHandler())
-			.startRadon() ;
 
-        tserver.readSession().tranSync(new TransactionJob<Object>() {
-            @Override
-            public Object handle(WriteSession wsession) throws Exception {
-                wsession.pathBy("/servers/" + wsession.workspace().repository()).property("host", InetAddress.getLocalHost().getHostAddress()).property("port", 9000);
-                return null;
-            }
-        });
+		tserver.addTalkHander(new EchoHandler()).startRadon();
+
+		tserver.readSession().tranSync(new TransactionJob<Object>() {
+			@Override
+			public Object handle(WriteSession wsession) throws Exception {
+				wsession.pathBy("/servers/" + wsession.workspace().repository()).property("host", InetAddress.getLocalHost().getHostAddress()).property("port", 9000);
+				return null;
+			}
+		});
 	}
-    
-    public void testLogin() throws Exception {
-    	NewClient nc = tserver.mockClient().real();
-    	Realm realm = new RealmBuilder().setPrincipal("emanon").setPassword("emanon").build() ;
-		Response response = nc.prepareGet("http://" + InetAddress.getLocalHost().getHostAddress() +":9000/auth/login").setRealm(realm).execute().get();
-		
+
+	public void testLogin() throws Exception {
+		NewClient nc = tserver.mockClient().real();
+		Realm realm = new RealmBuilder().setPrincipal("emanon").setPassword("emanon").build();
+		Response response = nc.prepareGet("http://" + InetAddress.getLocalHost().getHostAddress() + ":9000/auth/login").setRealm(realm).execute().get();
+
 		String wsaddress = response.getTextBody();
-		
-		final AtomicReference<String> received = new AtomicReference<String>() ;
+
+		final AtomicReference<String> received = new AtomicReference<String>();
 		final CountDownLatch count = new CountDownLatch(1);
-		WebSocket websocket = nc.createWebSocket(wsaddress, new WebSocketTextListener(){
+		WebSocket websocket = nc.createWebSocket(wsaddress, new WebSocketTextListener() {
 			@Override
 			public void onClose(WebSocket arg0) {
 			}
@@ -71,24 +70,21 @@ public class TestLoginWebSocket extends TestBaseLet {
 
 			@Override
 			public void onFragment(String arg0, boolean arg1) {
-				
+
 			}
 
 			@Override
 			public void onMessage(String message) {
-				received.set(message) ;
-				count.countDown() ;
+				received.set(message);
+				count.countDown();
 			}
 		});
-		
-		
-		websocket.sendTextMessage("Hello") ;
+
+		websocket.sendTextMessage("Hello");
 		count.await();
-		
-		assertEquals("Hello", received.get()) ;
-		
+
+		assertEquals("Hello", received.get());
+
 	}
-    
-    
-    
+
 }

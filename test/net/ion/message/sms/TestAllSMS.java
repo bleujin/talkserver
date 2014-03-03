@@ -10,14 +10,14 @@ import junit.framework.TestSuite;
 
 public class TestAllSMS extends TestCase {
 
-	public static TestSuite suite(){
-		TestSuite suite = new TestSuite() ;
-		
+	public static TestSuite suite() {
+		TestSuite suite = new TestSuite();
+
 		suite.addTestSuite(PhoneMessageTest.class);
 		suite.addTestSuite(SMSSenderTest.class);
 		suite.addTestSuite(MessageIDTest.class);
 		suite.addTestSuite(SimpleJavaTest.class);
-		
-		return suite ;
-	} 
+
+		return suite;
+	}
 }

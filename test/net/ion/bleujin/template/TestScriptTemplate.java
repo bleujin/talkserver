@@ -19,43 +19,40 @@ public class TestScriptTemplate extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		r = RepositoryImpl.inmemoryCreateWithTest();
-		r.start() ;
-		
+		r.start();
+
 		this.session = r.login("test");
 		session.tranSync(new TransactionJob<Void>() {
 
 			@Override
 			public Void handle(WriteSession wsession) throws Exception {
-				wsession.pathBy("/emps").property("name", "employee").property("script", "-- script --")
-					.addChild("bleujin").property("name", "bluejin").parent() 
-					.addChild("hero").property("name", "heor") ;
+				wsession.pathBy("/emps").property("name", "employee").property("script", "-- script --").addChild("bleujin").property("name", "bluejin").parent().addChild("hero").property("name", "heor");
 				return null;
 			}
-		}) ;
+		});
 	}
-	
+
 	public void testNodeTemplate() throws Exception {
 
 		ReadNode found = session.pathBy("/emps");
 		final Engine engine = session.workspace().parseEngine();
-		String result = found.transformer(ScriptTemplate.test(engine)) ;
+		String result = found.transformer(ScriptTemplate.test(engine));
 
-		
-		Debug.line(result) ;
-		
+		Debug.line(result);
+
 	}
-	
+
 	public void testTemplateWhenNotExist() throws Exception {
 		ReadNode notFound = session.ghostBy("/emps/notFound");
 		final Engine engine = session.workspace().parseEngine();
-		String result = notFound.transformer(ScriptTemplate.test(engine)) ;	
-		Debug.line(result) ;
+		String result = notFound.transformer(ScriptTemplate.test(engine));
+		Debug.line(result);
 	}
-	
+
 	@Override
 	protected void tearDown() throws Exception {
 		// TODO Auto-generated method stub
-		r.shutdown() ;
+		r.shutdown();
 		super.tearDown();
 	}
 }

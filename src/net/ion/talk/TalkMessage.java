@@ -1,21 +1,20 @@
 package net.ion.talk;
 
 import net.ion.framework.parse.gson.JsonObject;
-import net.ion.framework.util.Debug;
 import net.ion.framework.util.ObjectId;
 
 public abstract class TalkMessage {
 
-	public static TalkMessage fromJsonString(String json) {
+	public static TalkMessage fromJsonString(String jsonText) {
 		try {
-			return new TalkScriptMessage(JsonObject.fromString(json));
+			return new TalkScriptMessage(JsonObject.fromString(jsonText));
 		} catch (Exception notJson) {
-			return new PlainTalkMessage(json);
+			return new PlainTalkMessage(jsonText);
 		}
 	}
 
-	public static TalkMessage fromScript(String script) {
-		return new TalkScriptMessage(new JsonObject().put("script", script).put("id", new ObjectId().toString()).put("params", new JsonObject())) ;
+	public static TalkMessage fromScript(String scriptPath) {
+		return new TalkScriptMessage(new JsonObject().put("script", scriptPath).put("params", new JsonObject())) ;
 	}
 
 	public abstract String script() ;
@@ -30,14 +29,15 @@ public abstract class TalkMessage {
 
 class TalkScriptMessage extends TalkMessage {
 	
-	private JsonObject json;
-	
+	private final JsonObject json;
+	private final ObjectId id ;
 	TalkScriptMessage(JsonObject json) {
 		this.json = json;
+		this.id   = new ObjectId() ;
 	}
 
-	public static TalkMessage fromScript(String script) {
-		return new TalkScriptMessage(new JsonObject().put("script", script).put("id", new ObjectId().toString()).put("params", new JsonObject())) ;
+	public static TalkMessage fromScript(String scriptPath) {
+		return new TalkScriptMessage(new JsonObject().put("script", scriptPath).put("params", new JsonObject())) ;
 	}
 
 	public String script() {
@@ -46,7 +46,7 @@ class TalkScriptMessage extends TalkMessage {
 
 	public String id() {
         //It will be create scriptId from server or client.
-        return new ObjectId().toString();
+        return id.toString();
 //        return json.asString("id");
 	}
 

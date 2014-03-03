@@ -16,74 +16,56 @@ import java.util.concurrent.ExecutionException;
 
 public class TestScriptExecLet extends TestBaseLet {
 
-    private ReadSession session;
+	private ReadSession session;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        tserver.cbuilder().aradon()
-                .sections().restSection("execute")
-                .path("execute").addUrlPattern("/").matchMode(IMatchMode.STARTWITH).handler(ScriptExecLet.class)
-                .build();
-        tserver.startRadon();
-        session = tserver.readSession();
-    }
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
+		tserver.cbuilder().aradon().sections().restSection("execute").path("execute").addUrlPattern("/").matchMode(IMatchMode.STARTWITH).handler(ScriptExecLet.class).build();
+		tserver.startRadon();
+		session = tserver.readSession();
+	}
 
+	public void testAjaxScript() throws Exception {
+		NewClient client = tserver.mockClient().real();
+		String script = "rb.create().newInner().property('name','ryun').build().toJsonObject();";
+		RequestBuilder requestBuilder = new RequestBuilder().setMethod(Method.POST).addParameter("script", script);
 
-    public void testAjaxScript() throws Exception {
-        NewClient client = tserver.mockClient().real();
-        String script = "rb.create().newInner().property('name','ryun').build().toJsonObject();";
-        RequestBuilder requestBuilder = new RequestBuilder()
-                .setMethod(Method.POST)
-                .addParameter("script", script);
+		Request request = requestBuilder.setUrl("http://" + tserver.getHostAddress() + ":9000/execute/ajax.json" + "").build();
 
-        Request request = requestBuilder.setUrl("http://" + tserver.getHostAddress() + ":9000/execute/ajax.json" +
-                "").build();
+		Response response = client.executeRequest(request).get();
+		assertEquals(200, response.getStatusCode());
+		assertEquals("application/json; charset=UTF-8", response.getContentType());
+		JsonObject obj = JsonObject.fromString(response.getTextBody()).asJsonObject("result");
+		assertEquals("ryun", obj.asString("name"));
 
-        Response response = client.executeRequest(request).get();
-        assertEquals(200, response.getStatusCode());
-        assertEquals("application/json; charset=UTF-8",response.getContentType());
-        JsonObject obj = JsonObject.fromString(response.getTextBody()).asJsonObject("result");
-        assertEquals("ryun", obj.asString("name"));
+		request = requestBuilder.setUrl("http://" + tserver.getHostAddress() + ":9000/execute/ajax.string").build();
 
-        request = requestBuilder.setUrl("http://" + tserver.getHostAddress() + ":9000/execute/ajax.string").build();
+		response = client.executeRequest(request).get();
+		assertEquals("text/plain; charset=UTF-8", response.getContentType());
+		obj = JsonObject.fromString(response.getTextBody()).asJsonObject("result");
+		assertEquals("ryun", obj.asString("name"));
+		client.close();
+	}
 
-        response = client.executeRequest(request).get();
-        assertEquals("text/plain; charset=UTF-8",response.getContentType());
-        obj = JsonObject.fromString(response.getTextBody()).asJsonObject("result");
-        assertEquals("ryun", obj.asString("name"));
-        client.close();
-    }
+	public void testAjaxScriptWithParams() throws Exception {
+		NewClient client = tserver.mockClient().real();
+		String script = "rb.create().newInner()" + ".property('name', params.asString('name'))" + ".property('location', params.asString('location'))" + ".property('money', params.asInt('money'))" + ".inner('friends').property('name', params.asString('friends')).build().toJsonObject();";
 
+		RequestBuilder requestBuilder = new RequestBuilder().setMethod(Method.POST).addParameter("script", script).addParameter("name", "alex").addParameter("location", "oregon").addParameter("money", "10000").addParameter("friends", "joshua");
 
-    public void testAjaxScriptWithParams() throws Exception {
-        NewClient client = tserver.mockClient().real();
-        String script = "rb.create().newInner()" +
-                ".property('name', params.asString('name'))" +
-                ".property('location', params.asString('location'))" +
-                ".property('money', params.asInt('money'))" +
-                ".inner('friends').property('name', params.asString('friends')).build().toJsonObject();";
+		Request request = requestBuilder.setUrl("http://" + tserver.getHostAddress() + ":9000/execute/ajax.json").build();
+		Response response = client.executeRequest(request).get();
 
-        RequestBuilder requestBuilder = new RequestBuilder()
-                .setMethod(Method.POST)
-                .addParameter("script", script)
-                .addParameter("name", "alex")
-                .addParameter("location", "oregon")
-                .addParameter("money", "10000")
-                .addParameter("friends","joshua");
+		assertEquals(200, response.getStatusCode());
 
-        Request request = requestBuilder.setUrl("http://" + tserver.getHostAddress() + ":9000/execute/ajax.json").build();
-        Response response = client.executeRequest(request).get();
+		assertEquals("application/json; charset=UTF-8", response.getContentType());
+		JsonObject obj = JsonObject.fromString(response.getTextBody()).asJsonObject("result");
+		assertEquals("alex", obj.get("name").getAsString());
+		assertEquals("oregon", obj.get("location").getAsString());
+		assertEquals(10000.0, obj.get("money").getAsDouble());
+		assertEquals("joshua", obj.get("friends").getAsJsonObject().get("name").getAsString());
 
-        assertEquals(200, response.getStatusCode());
-
-        assertEquals("application/json; charset=UTF-8", response.getContentType());
-        JsonObject obj = JsonObject.fromString(response.getTextBody()).asJsonObject("result");
-        assertEquals("alex", obj.get("name").getAsString());
-        assertEquals("oregon", obj.get("location").getAsString());
-        assertEquals(10000.0, obj.get("money").getAsDouble());
-        assertEquals("joshua", obj.get("friends").getAsJsonObject().get("name").getAsString());
-
-    }
+	}
 
 }

@@ -18,56 +18,50 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Created with IntelliJ IDEA.
- * User: Ryun
- * Date: 2014. 2. 25.
- * Time: 오후 2:26
- * To change this template use File | Settings | File Templates.
+ * Created with IntelliJ IDEA. User: Ryun Date: 2014. 2. 25. Time: 오후 2:26 To change this template use File | Settings | File Templates.
  */
 public class TestPropertyValue extends TestCase {
 
-    private RepositoryEntry rentry;
-    private ReadSession rsession;
+	private RepositoryEntry rentry;
+	private ReadSession rsession;
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        rentry = RepositoryEntry.test();
-        rsession = rentry.login();
-    }
+	@Override
+	public void setUp() throws Exception {
+		super.setUp();
+		rentry = RepositoryEntry.test();
+		rsession = rentry.login();
+	}
 
-    public void testFirst() throws Exception {
+	public void testFirst() throws Exception {
 
-        rsession.tranSync(new TransactionJob<Object>() {
-            @Override
-            public Object handle(WriteSession wsession) throws Exception {
-                wsession.pathBy("/test/ryun").append("receivers", "alex", "lucy", "steve");
-                return null;
-            }
-        });
+		rsession.tranSync(new TransactionJob<Object>() {
+			@Override
+			public Object handle(WriteSession wsession) throws Exception {
+				wsession.pathBy("/test/ryun").append("receivers", "alex", "lucy", "steve");
+				return null;
+			}
+		});
 
-        Set receivers = rsession.pathBy("/test/ryun").property("receivers").asSet();
-        Debug.line(receivers);
+		Set receivers = rsession.pathBy("/test/ryun").property("receivers").asSet();
+		Debug.line(receivers);
 
-        rsession.tranSync(new TransactionJob<Object>() {
-            @Override
-            public Object handle(WriteSession wsession) throws Exception {
-                wsession.pathBy("/test/ryun").unset("receivers");
-                return null;
-            }
-        });
+		rsession.tranSync(new TransactionJob<Object>() {
+			@Override
+			public Object handle(WriteSession wsession) throws Exception {
+				wsession.pathBy("/test/ryun").unset("receivers");
+				return null;
+			}
+		});
 
-        PropertyValue pValue = rsession.pathBy("/test/ryun").property("receivers");
-        assertEquals(pValue, PropertyValue.NotFound);
+		PropertyValue pValue = rsession.pathBy("/test/ryun").property("receivers");
+		assertEquals(pValue, PropertyValue.NotFound);
 
-    }
+	}
 
-    @Override
-    public void tearDown() throws Exception {
-        rentry.shutdown();
-        super.tearDown();
-    }
-
-
+	@Override
+	public void tearDown() throws Exception {
+		rentry.shutdown();
+		super.tearDown();
+	}
 
 }

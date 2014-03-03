@@ -6,12 +6,11 @@ import java.io.IOException;
 
 public class GCMSenderTest extends BaseTest {
 
-
 	GCMSender sender = GCMSender.create(CGM_API_KEY);
 
 	public void testFirst() throws IOException {
 		PushResponse push = sender.sendTo(GOOGLE_DEVICE_TOKEN).message("message").delayWhenIdle(false).timeToLive(60 * 30).collapseKey("msg").push();
-        Debug.line(push.getResponseMessage());
+		Debug.line(push.getResponseMessage());
 		assertTrue(push.isSuccess());
 	}
 
@@ -19,17 +18,19 @@ public class GCMSenderTest extends BaseTest {
 		try {
 			sender.sendTo(GOOGLE_DEVICE_TOKEN).push();
 			fail();
-		} catch (IllegalStateException e) {}
+		} catch (IllegalStateException e) {
+		}
 	}
 
 	public void testError_tooLargeMessage() throws Exception {
 		try {
 
 			String largeMessage = createDummyMessage(12270);
-            Debug.line(largeMessage.length());
-            sender.sendTo(GOOGLE_DEVICE_TOKEN).message(largeMessage).push();
+			Debug.line(largeMessage.length());
+			sender.sendTo(GOOGLE_DEVICE_TOKEN).message(largeMessage).push();
 			fail();
-		} catch (IllegalStateException e) {}
+		} catch (IllegalStateException e) {
+		}
 	}
 
 	public void testResponse() throws Exception {

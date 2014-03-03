@@ -12,7 +12,6 @@ import net.ion.talk.responsebuilder.TestAllResponseBuilder;
 
 public class TestAllCrakenServer extends TestCase {
 
-	
 	public static TestSuite suite(){
 		TestSuite result = new TestSuite() ;
         result.addTestSuite(TestParameterMap.class) ;
@@ -23,10 +22,8 @@ public class TestAllCrakenServer extends TestCase {
         result.addTest(TestAllHandler.suite());
         result.addTest(TestAllLet.suite());
 		result.addTest(TestAllResponseBuilder.suite());
-		
-		
-		return result ;
+
+		return result;
 	}
-	
-	
+
 }

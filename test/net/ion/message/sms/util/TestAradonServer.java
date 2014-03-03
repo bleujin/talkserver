@@ -10,14 +10,13 @@ import net.ion.radon.util.AradonTester;
 
 public class TestAradonServer {
 
-    public static void main(String[] args) throws Exception {
-        Aradon aradon = AradonTester.create().getAradon();
+	public static void main(String[] args) throws Exception {
+		Aradon aradon = AradonTester.create().getAradon();
 
+		SectionService section = aradon.attach(SectionConfiguration.createBlank("callback"));
+		section.attach(IPathConfigFactory.create("", "/receive", "", EnumClass.IMatchMode.EQUALS, ConsoleCallbackLet.class));
 
-        SectionService section = aradon.attach(SectionConfiguration.createBlank("callback"));
-        section.attach(IPathConfigFactory.create("", "/receive", "", EnumClass.IMatchMode.EQUALS, ConsoleCallbackLet.class));
-
-        aradon.startServer(9000);
-    }
+		aradon.startServer(9000);
+	}
 
 }

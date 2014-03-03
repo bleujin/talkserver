@@ -22,31 +22,27 @@ import net.ion.script.rhino.RhinoEngine;
 
 public class TestCrakenServer extends TestCase {
 
-
 	public void testSlide() throws Exception {
 		RhinoEngine rengine = RhinoEngine.create().start().get();
 
 		RepositoryImpl r = RepositoryImpl.inmemoryCreateWithTest();
 		r.start();
 
-		Radon radon = RadonConfiguration.newBuilder(9000)
-			.add("/websocket/{id}", new BroadEchoWebSocket())
-			.add("/script/{id}", new ScriptWebSocket(rengine, r))
-			.add("/events/{id}", new EventSourceHandler() {
-				public void onOpen(EventSourceConnection conn) throws Exception {
-				}
-				public void onClose(EventSourceConnection conn) throws Exception {
-				} })
-			.add("/*", new SimpleStaticFileHandler(new File("./resource/docs/"))).createRadon();
+		Radon radon = RadonConfiguration.newBuilder(9000).add("/websocket/{id}", new BroadEchoWebSocket()).add("/script/{id}", new ScriptWebSocket(rengine, r)).add("/events/{id}", new EventSourceHandler() {
+			public void onOpen(EventSourceConnection conn) throws Exception {
+			}
+
+			public void onClose(EventSourceConnection conn) throws Exception {
+			}
+		}).add("/*", new SimpleStaticFileHandler(new File("./resource/docs/"))).createRadon();
 
 		radon.start().get();
 
-        r.shutdown();
-        radon.stop();
+		r.shutdown();
+		radon.stop();
 
-//		new InfinityThread().startNJoin();
+		// new InfinityThread().startNJoin();
 	}
-
 
 	private static class ScriptWebSocket implements WebSocketHandler {
 		private List<WebSocketConnection> connections = new CopyOnWriteArrayList<WebSocketConnection>();
@@ -91,13 +87,12 @@ public class TestCrakenServer extends TestCase {
 		}
 	}
 
-
 }
-
 
 class MyOutput extends PrintStream {
 
-	private StringBuilder builder = new StringBuilder() ;
+	private StringBuilder builder = new StringBuilder();
+
 	public MyOutput() throws IOException {
 		super(File.createTempFile("out", "osuffix"));
 	}
@@ -107,12 +102,12 @@ class MyOutput extends PrintStream {
 		append(s.trim(), false);
 	}
 
-	public String readOut(){
-		String result = builder.toString() ;
-		builder = new StringBuilder() ;
-		return result ;
+	public String readOut() {
+		String result = builder.toString();
+		builder = new StringBuilder();
+		return result;
 	}
-	
+
 	public void write(byte b[], int off, int len) {
 		String s = new String(b, off, len);
 		append(s.trim(), false);
@@ -146,9 +141,9 @@ class MyOutput extends PrintStream {
 	}
 
 	private synchronized void append(String x, boolean newline) {
-		builder.append(x) ;
-		if(newline) builder.append("\r\n") ;
+		builder.append(x);
+		if (newline)
+			builder.append("\r\n");
 	}
 
 }
-
