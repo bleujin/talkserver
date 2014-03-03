@@ -93,8 +93,7 @@ public class TestMailer extends TestCase {
 	}
 
 	public void xtestIfIMap() throws Exception {
-		Mailer mailer = MailConfigBuilder.create().sendConfig().server("smtp.i-on.net").mailUserId("bleujin@i-on.net")
-				.mailUserPwd(userPwd).receiveConfig().server("smtp.i-on.net").mailUserId("bleujin@i-on.net").mailUserPwd(userPwd).protocol(Protocol.IMAP).buildConfig()
+		Mailer mailer = MailConfigBuilder.create().sendConfig().server("smtp.i-on.net").mailUserId("bleujin@i-on.net").mailUserPwd(userPwd).receiveConfig().server("smtp.i-on.net").mailUserId("bleujin@i-on.net").mailUserPwd(userPwd).protocol(Protocol.IMAP).buildConfig()
 				.confirmValidOfSendMailConfig().confirmValidOfReceiveMailConfig().createMailer();
 
 		Integer readCount = mailer.unreadMessage(new MessageHandler<Integer>() {
@@ -107,12 +106,9 @@ public class TestMailer extends TestCase {
 
 				return msgs.length;
 			}
-		}).get() ;
+		}).get();
 
 		assertEquals(1, readCount.intValue());
 	}
-	
-	
-	
-	
+
 }

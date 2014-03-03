@@ -8,120 +8,96 @@ import org.restlet.data.Method;
 import org.restlet.data.Status;
 
 /**
- * Created with IntelliJ IDEA.
- * User: Ryun
- * Date: 2014. 2. 19.
- * Time: 오후 5:16
- * To change this template use File | Settings | File Templates.
+ * Created with IntelliJ IDEA. User: Ryun Date: 2014. 2. 19. Time: 오후 5:16 To change this template use File | Settings | File Templates.
  */
 public class TestEmbedBotLet extends TestBaseLet {
 
-    private BotManager botManager;
+	private BotManager botManager;
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        tserver.startRadon();
-        botManager = BotManager.create(tserver.readSession());
-        tserver.talkEngine().context().putAttribute(BotManager.class.getCanonicalName(), botManager);
-    }
+	@Override
+	public void setUp() throws Exception {
+		super.setUp();
+		tserver.startRadon();
+		botManager = BotManager.create(tserver.readSession());
+		tserver.talkEngine().context().putAttribute(BotManager.class.getCanonicalName(), botManager);
+	}
 
-    @Override
-    public void tearDown() throws Exception {
-        tserver.stop();
-        super.tearDown();
-    }
+	@Override
+	public void tearDown() throws Exception {
+		tserver.stop();
+		super.tearDown();
+	}
 
-    public void testFakeBot() throws Exception {
+	public void testFakeBot() throws Exception {
 
-        EmbedBot fakeBot = new FakeBot();
-        botManager.registerBot(fakeBot);
+		EmbedBot fakeBot = new FakeBot();
+		botManager.registerBot(fakeBot);
 
+		Response response = tserver.mockClient().fake().createRequest("/bot").addParameter(Const.Bot.BotId, "fakeBot").addParameter(Const.Message.Event, Const.Event.onEnter).addParameter(Const.Message.Sender, "ryuneeee").addParameter(Const.Room.RoomId, "1")
+				.addParameter(Const.Message.Message, "HelloWorld!").handle(Method.POST);
 
+		tserver.mockClient().close();
+		assertEquals(Status.SUCCESS_OK.getCode(), response.getStatus().getCode());
 
-        Response response = tserver.mockClient().fake().createRequest("/bot")
-                .addParameter(Const.Bot.BotId, "fakeBot")
-                .addParameter(Const.Message.Event, Const.Event.onEnter)
-                .addParameter(Const.Message.Sender, "ryuneeee")
-                .addParameter(Const.Room.RoomId, "1")
-                .addParameter(Const.Message.Message, "HelloWorld!").handle(Method.POST);
+	}
 
-        tserver.mockClient().close();
-        assertEquals(Status.SUCCESS_OK.getCode(), response.getStatus().getCode());
+	public void testNotFoundBot() {
 
-    }
+		Response response = tserver.mockClient().fake().createRequest("/bot").addParameter(Const.Bot.BotId, "notFoundBot").addParameter(Const.Message.Event, Const.Event.onEnter).addParameter(Const.Message.Sender, "ryuneeee").addParameter(Const.Room.RoomId, "1")
+				.addParameter(Const.Message.Message, "HelloWorld!").handle(Method.POST);
 
-    public void testNotFoundBot(){
+		tserver.mockClient().close();
+		assertEquals(Status.CLIENT_ERROR_BAD_REQUEST.getCode(), response.getStatus().getCode());
+	}
 
-        Response response = tserver.mockClient().fake().createRequest("/bot")
-                .addParameter(Const.Bot.BotId, "notFoundBot")
-                .addParameter(Const.Message.Event, Const.Event.onEnter)
-                .addParameter(Const.Message.Sender, "ryuneeee")
-                .addParameter(Const.Room.RoomId, "1")
-                .addParameter(Const.Message.Message, "HelloWorld!").handle(Method.POST);
+	public void testInvalidEvent() throws Exception {
 
-        tserver.mockClient().close();
-        assertEquals(Status.CLIENT_ERROR_BAD_REQUEST.getCode(), response.getStatus().getCode());
-    }
+		EmbedBot fakeBot = new FakeBot();
+		botManager.registerBot(fakeBot);
 
-    public void testInvalidEvent() throws Exception {
+		Response response = tserver.mockClient().fake().createRequest("/bot").addParameter(Const.Bot.BotId, "fakeBot").addParameter(Const.Message.Event, "invalidEvent").addParameter(Const.Message.Sender, "ryuneeee").addParameter(Const.Room.RoomId, "1")
+				.addParameter(Const.Message.Message, "HelloWorld!").handle(Method.POST);
+		tserver.mockClient().close();
+		// assertEquals(Status.CLIENT_ERROR_BAD_REQUEST.getCode(), response.getStatus().getCode());
+		// assertEquals("suceess", JsonObject.fromString(response.getEntityAsText()).asString("status"));
+	}
 
-        EmbedBot fakeBot = new FakeBot();
-        botManager.registerBot(fakeBot);
+	public void testInvalidParameter() throws Exception {
 
+		EmbedBot fakeBot = new FakeBot();
+		botManager.registerBot(fakeBot);
 
-        Response response = tserver.mockClient().fake().createRequest("/bot")
-                .addParameter(Const.Bot.BotId, "fakeBot")
-                .addParameter(Const.Message.Event, "invalidEvent")
-                .addParameter(Const.Message.Sender, "ryuneeee")
-                .addParameter(Const.Room.RoomId, "1")
-                .addParameter(Const.Message.Message, "HelloWorld!").handle(Method.POST);
-        tserver.mockClient().close();
-//        assertEquals(Status.CLIENT_ERROR_BAD_REQUEST.getCode(), response.getStatus().getCode());
-//        assertEquals("suceess", JsonObject.fromString(response.getEntityAsText()).asString("status"));
-    }
+		Response response = tserver.mockClient().fake().createRequest("/bot").addParameter(Const.Bot.BotId, "fakeBot").addParameter(Const.Message.Event, Const.Event.onEnter).addParameter("Invalid", "Parameter").handle(Method.POST);
 
-    public void testInvalidParameter() throws Exception {
+		tserver.mockClient().close();
+		assertEquals(Status.CLIENT_ERROR_BAD_REQUEST.getCode(), response.getStatus().getCode());
+	}
 
-        EmbedBot fakeBot = new FakeBot();
-        botManager.registerBot(fakeBot);
+	private class FakeBot implements EmbedBot {
 
-        Response response = tserver.mockClient().fake().createRequest("/bot")
-                .addParameter(Const.Bot.BotId, "fakeBot")
-                .addParameter(Const.Message.Event, Const.Event.onEnter)
-                .addParameter("Invalid", "Parameter").handle(Method.POST);
+		private String id = "fakeBot";
+		private String requestURL = "http://localhost:9000/bot";
 
-        tserver.mockClient().close();
-        assertEquals(Status.CLIENT_ERROR_BAD_REQUEST.getCode(), response.getStatus().getCode());
-    }
+		@Override
+		public String id() {
+			return id;
+		}
 
+		@Override
+		public String requestURL() {
+			return requestURL;
+		}
 
-    private class FakeBot implements EmbedBot {
+		@Override
+		public void onEnter(String roomId, String userId) {
+		}
 
-        private String id = "fakeBot";
-        private String requestURL = "http://localhost:9000/bot";
+		@Override
+		public void onExit(String roomId, String userId) {
+		}
 
-        @Override
-        public String id() {
-            return id;
-        }
-
-        @Override
-        public String requestURL() {
-            return requestURL;
-        }
-
-        @Override
-        public void onEnter(String roomId, String userId) {
-        }
-
-        @Override
-        public void onExit(String roomId, String userId) {
-        }
-
-        @Override
-        public void onMessage(String roomId, String sender, String message) {
-        }
-    }
+		@Override
+		public void onMessage(String roomId, String sender, String message) {
+		}
+	}
 }
-

@@ -23,7 +23,7 @@ import java.io.IOException;
 /**
  * Author: Ryunhee Han Date: 2013. 12. 27.
  */
-public class StaticFileLet implements IServiceLet {
+public class ResourceLet implements IServiceLet {
 
 	@Get
 	public Representation deliverFile(@AnRequest InnerRequest request) throws IOException {

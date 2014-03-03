@@ -34,10 +34,8 @@ public class UserConnectionHandler implements TalkHandler {
 			rsession.tranSync(new TransactionJob<Void>() {
 			    @Override
 			    public Void handle(WriteSession wsession) {
-			        wsession.pathBy("/connections/"+uconn.id())
-			                .refTo("user","/users/"+uconn.id());
-			        wsession.pathBy("/users/"+uconn.id()).property(User.DelegateServer, rsession.workspace().repository().memberId());
-                    wsession.pathBy("/users/"+uconn.id()).unset(User.AccessToken);
+			        wsession.pathBy("/connections/"+uconn.id()).refTo("user","/users/"+uconn.id());
+			        wsession.pathBy("/users/"+uconn.id()).property(User.DelegateServer, rsession.workspace().repository().memberId()).unset(User.AccessToken);
 			        return null;
 			    }
 			});
@@ -58,7 +56,7 @@ public class UserConnectionHandler implements TalkHandler {
                 }
             });
         } catch (Exception e) {
-            e.printStackTrace();
+        	tengine.getLogger().warning(e.getLocalizedMessage());
         }
     }
 

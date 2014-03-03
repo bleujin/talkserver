@@ -7,12 +7,11 @@ import org.restlet.resource.Post;
 
 public class ConsoleCallbackLet extends AbstractServerResource {
 
-    @Post
-    public String printToConsole() {
-        MultiValueMap formParameter = getInnerRequest().getFormParameter();
-        Debug.line(formParameter);
-        return formParameter.toString() ;
-    }
-
+	@Post
+	public String printToConsole() {
+		MultiValueMap formParameter = getInnerRequest().getFormParameter();
+		Debug.line(formParameter);
+		return formParameter.toString();
+	}
 
 }

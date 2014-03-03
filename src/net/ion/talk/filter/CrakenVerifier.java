@@ -1,4 +1,4 @@
-package net.ion.talk.let;
+package net.ion.talk.filter;
 
 import java.io.IOException;
 
@@ -15,8 +15,9 @@ import org.restlet.security.Verifier;
 public class CrakenVerifier implements Verifier {
 
 	private ReadSession session;
+
 	private CrakenVerifier(ReadSession session) {
-		this.session = session ;
+		this.session = session;
 	}
 
 	public static CrakenVerifier test(ReadSession session) throws Exception {
@@ -26,29 +27,29 @@ public class CrakenVerifier implements Verifier {
 	@Override
 	public int verify(Request request, Response response) {
 
-		if (request.getChallengeResponse() == null){
+		if (request.getChallengeResponse() == null) {
 			return Verifier.RESULT_MISSING;
 		}
-        String id = request.getChallengeResponse().getIdentifier() ;
-        String pushId = String.valueOf(request.getChallengeResponse().getSecret());
-        if(!session.exists("/users/" + id))
-            return Verifier.RESULT_INVALID;
-        if(!session.pathBy("/users/" + id).property("pushId").stringValue().equals(pushId))
-            return Verifier.RESULT_INVALID;
+		String id = request.getChallengeResponse().getIdentifier();
+		String pushId = String.valueOf(request.getChallengeResponse().getSecret());
+		if (!session.exists("/users/" + id))
+			return Verifier.RESULT_INVALID;
+		if (!session.pathBy("/users/" + id).property("pushId").stringValue().equals(pushId))
+			return Verifier.RESULT_INVALID;
 
-        return Verifier.RESULT_VALID;
+		return Verifier.RESULT_VALID;
 	}
 
 	// Only Use Test
-	CrakenVerifier addUser(final String userId, final String pushId) throws Exception{
+	CrakenVerifier addUser(final String userId, final String pushId) throws Exception {
 		session.tranSync(new TransactionJob<Void>() {
 			@Override
 			public Void handle(WriteSession wsession) throws Exception {
-				wsession.pathBy("/users/" + userId).property("pushId", pushId) ;
+				wsession.pathBy("/users/" + userId).property("pushId", pushId);
 				return null;
 			}
-		}) ;
+		});
 		return this;
 	}
-	
+
 }

@@ -12,6 +12,7 @@ import net.ion.radon.core.EnumClass.IMatchMode;
 import net.ion.radon.core.config.ConfigurationBuilder;
 import net.ion.radon.core.security.ChallengeAuthenticator;
 import net.ion.talk.account.AccountManager;
+import net.ion.talk.filter.CrakenVerifier;
 import net.ion.talk.handler.TalkHandler;
 import net.ion.talk.handler.TalkHandlerGroup;
 import net.ion.talk.handler.craken.NotifyStrategy;
@@ -61,9 +62,9 @@ public class ToonServer {
                 .path("script").addUrlPattern("/").matchMode(EnumClass.IMatchMode.STARTWITH).handler(ScriptEditLet.class)
             .restSection("execute")
                 .path("execute").addUrlPattern("/").matchMode(IMatchMode.STARTWITH).handler(ScriptExecLet.class)
-            .restSection("static")
-                .path("static").addUrlPattern("/{path}").matchMode(EnumClass.IMatchMode.STARTWITH)
-                .handler(StaticFileLet.class)
+            .restSection("resource")
+                .path("resource").addUrlPattern("/{path}").matchMode(EnumClass.IMatchMode.STARTWITH)
+                .handler(ResourceLet.class)
             .restSection("bot")
                 .path("bot").addUrlPattern("").matchMode(IMatchMode.STARTWITH).handler(EmbedBotLet.class)
 			.restSection("websocket")

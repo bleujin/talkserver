@@ -10,16 +10,15 @@ import junit.framework.TestSuite;
 
 public class TestAllPush extends TestCase {
 
-	
-	public static TestSuite suite(){
-		TestSuite  suite = new TestSuite() ;
-		
+	public static TestSuite suite() {
+		TestSuite suite = new TestSuite();
+
 		suite.addTestSuite(APNSSenderTest.class);
 		suite.addTestSuite(GCMSenderTest.class);
 		suite.addTestSuite(GCMTest.class);
 		suite.addTestSuite(JAVAPNSTest.class);
 		suite.addTestSuite(SenderTest.class);
-		
-		return suite ;
-	} 
+
+		return suite;
+	}
 }

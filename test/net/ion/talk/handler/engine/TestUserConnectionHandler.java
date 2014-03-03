@@ -11,50 +11,45 @@ import net.ion.talk.TalkEngine;
 import net.ion.talk.bean.Const;
 
 /**
- * Created with IntelliJ IDEA.
- * User: Ryun
- * Date: 2014. 2. 3.
- * Time: 오후 5:15
- * To change this template use File | Settings | File Templates.
+ * Created with IntelliJ IDEA. User: Ryun Date: 2014. 2. 3. Time: 오후 5:15 To change this template use File | Settings | File Templates.
  */
 public class TestUserConnectionHandler extends TestCase {
 
+	private WebSocketConnection ryun = FakeWebSocketConnection.create("ryun");
+	private ReadSession rsession;
+	private TalkEngine engine;
 
-    private WebSocketConnection ryun = FakeWebSocketConnection.create("ryun");
-    private ReadSession rsession;
-    private TalkEngine engine;
+	@Override
+	public void setUp() throws Exception {
+		super.setUp();
+		engine = TalkEngine.test().registerHandler(new UserConnectionHandler()).startForTest();
+		rsession = engine.readSession();
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        engine = TalkEngine.test().registerHandler(new UserConnectionHandler()).startForTest();
-        rsession = engine.readSession();
+		rsession.tranSync(new TransactionJob<Object>() {
+			@Override
+			public Object handle(WriteSession wsession) throws Exception {
+				ryun.data("accessToken", "testToken");
+				wsession.pathBy("/users/ryun").property(Const.User.AccessToken, "testToken");
+				return null;
+			}
+		});
 
-        rsession.tranSync(new TransactionJob<Object>() {
-            @Override
-            public Object handle(WriteSession wsession) throws Exception {
-                ryun.data("accessToken", "testToken");
-                wsession.pathBy("/users/ryun").property(Const.User.AccessToken, "testToken");
-                return null;
-            }
-        });
+	}
 
-    }
+	@Override
+	public void tearDown() throws Exception {
+		engine.stopForTest();
+		super.tearDown();
+	}
 
-    @Override
-    public void tearDown() throws Exception {
-        engine.stopForTest();
-        super.tearDown();
-    }
+	public void testUserInAndOut() throws Exception {
 
-    public void testUserInAndOut() throws Exception {
+		engine.onOpen(ryun);
+		assertTrue(rsession.exists("/connections/" + ryun.getString("id")));
+		assertEquals(rsession.workspace().repository().memberId(), rsession.pathBy("/users/" + ryun.getString("id")).property("delegateServer").stringValue());
 
-        engine.onOpen(ryun);
-        assertTrue(rsession.exists("/connections/"+ryun.getString("id")));
-        assertEquals(rsession.workspace().repository().memberId(), rsession.pathBy("/users/"+ryun.getString("id")).property("delegateServer").stringValue());
-
-        engine.onClose(ryun);
-        assertFalse(rsession.exists("/connections/"+ryun.getString("id")));
-    }
+		engine.onClose(ryun);
+		assertFalse(rsession.exists("/connections/" + ryun.getString("id")));
+	}
 
 }

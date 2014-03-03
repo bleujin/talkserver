@@ -3,7 +3,7 @@ package net.ion.message.push.sender.strategy;
 import net.ion.message.push.sender.BaseTest;
 import net.ion.message.push.sender.Vender;
 
-public class TestStrategies extends BaseTest{
+public class TestStrategies extends BaseTest {
 
 	public static PushStrategy airkjhAPNSStrategy() {
 		return new PushStrategy() {

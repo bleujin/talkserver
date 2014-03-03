@@ -10,61 +10,55 @@ import net.ion.talk.bean.Const;
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: Ryun
- * Date: 2014. 2. 3.
- * Time: 오후 6:26
- * To change this template use File | Settings | File Templates.
+ * Created with IntelliJ IDEA. User: Ryun Date: 2014. 2. 3. Time: 오후 6:26 To change this template use File | Settings | File Templates.
  */
-public class TestUserInAndOutRoomHandler extends TestCrakenHandlerBase{
+public class TestUserInAndOutRoomHandler extends TestCrakenHandlerBase {
 
+	@Override
+	public void setUp() throws Exception {
+		super.setUp();
+		rsession.workspace().cddm().add(new UserInAndOutRoomHandler());
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        rsession.workspace().cddm().add(new UserInAndOutRoomHandler());
+		rsession.tranSync(new TransactionJob<Object>() {
+			@Override
+			public Object handle(WriteSession wsession) throws Exception {
+				wsession.pathBy("/rooms/1/members/ryun").property(Const.Message.Sender, "alex");
+				return null;
+			}
+		});
+		rsession.tranSync(new TransactionJob<Object>() {
+			@Override
+			public Object handle(WriteSession wsession) throws Exception {
+				wsession.pathBy("/rooms/1/members/alex").property(Const.Message.Sender, "ryun");
+				return null;
+			}
+		});
+		//
+		Thread.sleep(100);
+	}
 
-        rsession.tranSync(new TransactionJob<Object>() {
-            @Override
-            public Object handle(WriteSession wsession) throws Exception {
-                wsession.pathBy("/rooms/1/members/ryun").property(Const.Message.Sender, "alex");
-                return null;
-            }
-        });
-        rsession.tranSync(new TransactionJob<Object>() {
-            @Override
-            public Object handle(WriteSession wsession) throws Exception {
-                wsession.pathBy("/rooms/1/members/alex").property(Const.Message.Sender, "ryun");
-                return null;
-            }
-        });
-//
-        Thread.sleep(100);
-    }
-    
-    @Override
-    public void tearDown() throws Exception {
-    	super.tearDown();
-    }
+	@Override
+	public void tearDown() throws Exception {
+		super.tearDown();
+	}
 
-    public void testUserInAndOut() throws Exception {
+	public void testUserInAndOut() throws Exception {
 
+		assertEquals(2, rsession.pathBy("/rooms/1/messages/").children().toList().size());
 
-        assertEquals(2, rsession.pathBy("/rooms/1/messages/").children().toList().size());
+		for (ReadNode node : rsession.pathBy("/rooms/1/messages/").children().toList()) {
 
-        for(ReadNode node : rsession.pathBy("/rooms/1/messages/").children().toList()){
+			final String user = node.property("sender").stringValue();
+			rsession.tranSync(new TransactionJob<Object>() {
+				@Override
+				public Object handle(WriteSession wsession) throws Exception {
+					wsession.pathBy("/rooms/1/members/" + user).removeSelf();
+					return null;
+				}
+			});
+		}
 
-            final String user = node.property("sender").stringValue();
-            rsession.tranSync(new TransactionJob<Object>() {
-                @Override
-                public Object handle(WriteSession wsession) throws Exception {
-                    wsession.pathBy("/rooms/1/members/" + user).removeSelf();
-                    return null;
-                }
-            });
-        }
-
-        assertEquals(0, rsession.pathBy("/rooms/1/members/").childrenNames().size());
-    }
+		assertEquals(0, rsession.pathBy("/rooms/1/members/").childrenNames().size());
+	}
 
 }

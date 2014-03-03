@@ -20,44 +20,37 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.Get;
 
 /**
- * Created with IntelliJ IDEA.
- * User: Ryun
- * Date: 2014. 2. 3.
- * Time: 오후 1:25
- * To change this template use File | Settings | File Templates.
+ * Created with IntelliJ IDEA. User: Ryun Date: 2014. 2. 3. Time: 오후 1:25 To change this template use File | Settings | File Templates.
  */
-public class TestAradonRepresentation extends TestCase implements IServiceLet{
+public class TestAradonRepresentation extends TestCase implements IServiceLet {
 
-    public void testResponse() throws Exception {
+	public void testResponse() throws Exception {
 
-        Aradon aradon = AradonTester.create().register("test", "/{string}",  TestAradonRepresentation.class).getAradon();
-        Radon radon = aradon.toRadon(9000).start().get();
+		Aradon aradon = AradonTester.create().register("test", "/{string}", TestAradonRepresentation.class).getAradon();
+		Radon radon = aradon.toRadon(9000).start().get();
 
-        AradonClient ac = AradonClientFactory.create(aradon);
-        Response response = ac.createRequest("/test/one").handle(Method.GET);
+		AradonClient ac = AradonClientFactory.create(aradon);
+		Response response = ac.createRequest("/test/one").handle(Method.GET);
 
-        assertEquals(200, response.getStatus().getCode());
-        assertEquals("application/json", response.getEntity().getMediaType().toString());
+		assertEquals(200, response.getStatus().getCode());
+		assertEquals("application/json", response.getEntity().getMediaType().toString());
 
+		net.ion.radon.aclient.Response ncResponse = NewClient.create().prepareGet("http://localhost:9000/test/two").execute().get();
+		assertEquals(200, ncResponse.getStatusCode());
+		assertEquals("application/json; charset=UTF-8", ncResponse.getContentType());
 
-        net.ion.radon.aclient.Response ncResponse = NewClient.create().prepareGet("http://localhost:9000/test/two").execute().get();
-        assertEquals(200, ncResponse.getStatusCode());
-        assertEquals("application/json; charset=UTF-8", ncResponse.getContentType());
+		radon.stop().get();
 
-        radon.stop().get() ;
+	}
 
-    }
+	@Get
+	public Representation get(@AnRequest InnerRequest request) {
 
-    @Get
-    public Representation get(@AnRequest InnerRequest request){
+		Debug.line(request.getAttribute("string"));
 
+		JsonObject jsonObject = JsonObject.fromString("{\"name\":\"ryun\"}");
 
-        Debug.line(request.getAttribute("string"));
-
-        JsonObject jsonObject = JsonObject.fromString("{\"name\":\"ryun\"}");
-
-        return new JsonObjectRepresentation(jsonObject);
-    }
-
+		return new JsonObjectRepresentation(jsonObject);
+	}
 
 }

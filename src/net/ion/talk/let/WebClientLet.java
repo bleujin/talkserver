@@ -32,7 +32,7 @@ import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.resource.ResourceException;
 
-public class ClientLet implements IServiceLet {
+public class WebClientLet implements IServiceLet {
 
 	@Get @Post
 	public Representation viewPage(
@@ -46,7 +46,7 @@ public class ClientLet implements IServiceLet {
 		ReadSession session = rentry.login() ;
 		
 		// net.ion.toon.aradon.ClientLet
-		String fileName = context.getAttributeObject(ClientLet.class.getCanonicalName(), "./resource/toonweb/chat.tpl", String.class);
+		String fileName = context.getAttributeObject(WebClientLet.class.getCanonicalName(), "./resource/toonweb/chat.tpl", String.class);
 		File tplFile = new File(fileName);
 		if (!tplFile.exists())
 			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "not found template file : " + fileName);

@@ -15,13 +15,13 @@ import org.jboss.netty.channel.ChannelFuture;
 
 public class FakeWebSocketConnection implements WebSocketConnection {
 
-	private Map<String, Object> datas = MapUtil.newMap() ;
-	private List<String> received = ListUtil.newList() ;
+	private Map<String, Object> datas = MapUtil.newMap();
+	private List<String> received = ListUtil.newList();
 
 	public static FakeWebSocketConnection create(String id) {
 		final FakeWebSocketConnection result = new FakeWebSocketConnection();
 		result.data("id", id);
-		return result ;
+		return result;
 	}
 
 	@Override
@@ -31,7 +31,7 @@ public class FakeWebSocketConnection implements WebSocketConnection {
 
 	@Override
 	public WebSocketConnection data(String key, Object value) {
-		datas.put(key, value) ;
+		datas.put(key, value);
 		return this;
 	}
 
@@ -52,13 +52,13 @@ public class FakeWebSocketConnection implements WebSocketConnection {
 
 	@Override
 	public WebSocketConnection send(String message) {
-		received.add(message) ;
+		received.add(message);
 		return this;
 	}
 
 	@Override
 	public void execute(Runnable command) {
-		command.run() ;
+		command.run();
 	}
 
 	@Override
@@ -77,13 +77,8 @@ public class FakeWebSocketConnection implements WebSocketConnection {
 	}
 
 	public String recentMsg() {
-		return received.get(received.size() -1) ;
+		return received.get(received.size() - 1);
 	}
-
-	
-	
-	
-	
 
 	@Override
 	public WebSocketConnection send(byte[] message) {
@@ -94,7 +89,7 @@ public class FakeWebSocketConnection implements WebSocketConnection {
 	public WebSocketConnection send(byte[] message, int offset, int length) {
 		return this;
 	}
-	
+
 	@Override
 	public Executor handlerExecutor() {
 		// TODO Auto-generated method stub
@@ -119,6 +114,4 @@ public class FakeWebSocketConnection implements WebSocketConnection {
 		return null;
 	}
 
-
-	
 }

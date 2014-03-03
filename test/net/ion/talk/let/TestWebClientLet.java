@@ -22,50 +22,43 @@ import net.ion.radon.core.EnumClass.ILocation;
 import net.ion.radon.util.AradonTester;
 import net.ion.talk.filter.ToonAuthenticator;
 
-public class TestClientLet extends TestCase {
+public class TestWebClientLet extends TestCase {
 
 	private Radon radon;
-
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		RepositoryEntry rentry = RepositoryEntry.test() ;
-		ReadSession session = rentry.login() ;
-		
+		RepositoryEntry rentry = RepositoryEntry.test();
+		ReadSession session = rentry.login();
+
 		session.tranSync(new TransactionJob<Void>() {
 			@Override
 			public Void handle(WriteSession wsession) throws Exception {
-				wsession.pathBy("/servers/home").property("host", "61.250.201.157").property("port", 9000) ;
-				wsession.pathBy("/users/bleujin").property("password", "1234") ;
+				wsession.pathBy("/servers/home").property("host", "61.250.201.157").property("port", 9000);
+				wsession.pathBy("/users/bleujin").property("password", "1234");
 				return null;
 			}
-		}) ;
-		
-		
-		Aradon aradon = AradonTester.create().register("session", "/client/{roomId}", ClientLet.class)
-				.mergeSection("session")
-				.putAttribute(RepositoryEntry.EntryName, rentry)
-				.addFilter(ILocation.PRE, new ToonAuthenticator("toon"))
-				.getAradon();
-		
-		this.radon = aradon.toRadon(9000).start().get() ;
+		});
+
+		Aradon aradon = AradonTester.create().register("session", "/client/{roomId}", WebClientLet.class).mergeSection("session").putAttribute(RepositoryEntry.EntryName, rentry).addFilter(ILocation.PRE, new ToonAuthenticator("toon")).getAradon();
+
+		this.radon = aradon.toRadon(9000).start().get();
 	}
-	
+
 	@Override
 	protected void tearDown() throws Exception {
-		this.radon.stop() ;
+		this.radon.stop();
 		super.tearDown();
 	}
-	
-	
-	public void testPost() throws Exception {
-		NewClient nc = NewClient.create() ;
-		Realm realm = new RealmBuilder().setPrincipal("bleujin").setPassword("1234").build() ;
-		Request request = new RequestBuilder(Method.POST).setRealm(realm).setUrl("http://localhost:9000/session/client/roomroom").build() ;
-		Response response = nc.prepareRequest(request).execute().get() ;
 
-		Debug.line(response.getTextBody()) ;
-		
+	public void testPost() throws Exception {
+		NewClient nc = NewClient.create();
+		Realm realm = new RealmBuilder().setPrincipal("bleujin").setPassword("1234").build();
+		Request request = new RequestBuilder(Method.POST).setRealm(realm).setUrl("http://localhost:9000/session/client/roomroom").build();
+		Response response = nc.prepareRequest(request).execute().get();
+
+		Debug.line(response.getTextBody());
+		nc.close();
 	}
 }

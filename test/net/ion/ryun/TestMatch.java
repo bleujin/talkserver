@@ -11,33 +11,28 @@ import net.ion.radon.util.uriparser.URIResolver;
 import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA.
- * User: Ryun
- * Date: 2014. 2. 14.
- * Time: 오후 5:03
- * To change this template use File | Settings | File Templates.
+ * Created with IntelliJ IDEA. User: Ryun Date: 2014. 2. 14. Time: 오후 5:03 To change this template use File | Settings | File Templates.
  */
 public class TestMatch extends TestCase {
 
-    private String pattern = "ROOM|{id}|{COMMAND}|{user}";
-    private String message = "ROOM|1|ENTER|ryun";
+	private String pattern = "ROOM|{id}|{COMMAND}|{user}";
+	private String message = "ROOM|1|ENTER|ryun";
 
-    public void testMatch() throws Exception {
+	public void testMatch() throws Exception {
 
+		assertTrue(new URIPattern(pattern).match(message));
+		Debug.line(resolve(pattern, message));
 
-        assertTrue(new URIPattern(pattern).match(message));
-        Debug.line(resolve(pattern, message));
+	}
 
-    }
+	public Map<String, String> resolve(String pattern, String message) {
+		URIResolveResult resolver = new URIResolver(message).resolve(new URIPattern(pattern));
+		Map<String, String> result = MapUtil.newMap();
 
-    public Map<String, String> resolve(String pattern, String message){
-        URIResolveResult resolver = new URIResolver(message).resolve(new URIPattern(pattern));
-        Map<String, String> result = MapUtil.newMap() ;
+		for (String name : resolver.names()) {
+			result.put(name, ObjectUtil.toString(resolver.get(name)));
+		}
 
-        for(String name : resolver.names()){
-            result.put(name, ObjectUtil.toString(resolver.get(name))) ;
-        }
-
-        return result ;
-    }
+		return result;
+	}
 }
