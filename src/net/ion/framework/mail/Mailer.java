@@ -21,7 +21,7 @@ import javax.mail.search.FlagTerm;
 
 import org.infinispan.util.concurrent.WithinThreadExecutor;
 
-public class Mailer {
+public class Mailer{
 
 	private MailConfig mconfig;
 	private ExecutorService eservice;
@@ -37,15 +37,16 @@ public class Mailer {
 		return this ;
 	}
 	
-	public Future<Void> unreadMessage(final MessageHandler<Void> messageHandler) {
-		return eservice.submit(new Callable<Void>() {
+	public <T> Future<T> unreadMessage(final MessageHandler<T> messageHandler) {
+		return eservice.submit(new Callable<T>() {
 			@Override
-			public Void call() throws Exception {
+			public T call() throws Exception {
 				Session session = Session.getDefaultInstance(mconfig.prop(), null);
 
 				Store store = null ;
 				Folder inbox = null ;
-				try {
+                T t;
+                try {
 					store = session.getStore(mconfig.recPortocol().stringValue());
 					store.connect(mconfig.recServerHost(), mconfig.recMailUserId(), mconfig.recMailUserPwd());
 
@@ -64,12 +65,12 @@ public class Mailer {
 					fp.add(FetchProfile.Item.CONTENT_INFO);
 					inbox.fetch(messages, fp);
 
-					messageHandler.handle(messages);
+					t = messageHandler.handle(messages);
 				} finally {
 					if (inbox != null) try {inbox.close(true) ;} catch(MessagingException ignroe){};
 					if (store != null) try {store.close();} catch(MessagingException ignroe){};
 				}
-				return null;
+				return t;
 			}
 		}) ;
 	}

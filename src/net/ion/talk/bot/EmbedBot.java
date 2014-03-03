@@ -16,5 +16,6 @@ public interface EmbedBot {
     void onEnter(String roomId, String userId) throws Exception;
     void onExit(String roomId, String userId) throws Exception;
     void onMessage(String roomId, String sender, String message) throws Exception;
+    void onFilter(String roomId, String sender, String message, String messageId) throws Exception;
 
 }

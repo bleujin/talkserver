@@ -7,6 +7,7 @@ import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
 import net.ion.craken.node.crud.RepositoryImpl;
+import net.ion.framework.util.Debug;
 import net.ion.framework.util.MapUtil;
 import net.ion.framework.util.StringUtil;
 import net.ion.message.push.sender.PushMessage;
@@ -43,6 +44,7 @@ public class TestAccount extends TestCase{
     private Account bot;
     private Account disconnectedUser;
     private Account notFoundUser;
+    private Aradon aradon;
 
     @Override
     public void setUp() throws Exception {
@@ -61,8 +63,8 @@ public class TestAccount extends TestCase{
             }
         }) ;
 
-
-        FakeTalkEngine fakeTalkEngine = new FakeTalkEngine(AradonTester.create().getAradon(), rentry);
+        aradon = AradonTester.create().getAradon();
+        FakeTalkEngine fakeTalkEngine = new FakeTalkEngine(aradon, rentry);
         fakeTalkEngine.users.put("bleujin", new FakeUserConnection(null));
 
         AccountManager am = AccountManager.create(fakeTalkEngine, new FakeSender());
@@ -75,8 +77,9 @@ public class TestAccount extends TestCase{
 
     @Override
     public void tearDown() throws Exception {
-        super.tearDown();
         session.workspace().repository().shutdown();
+        aradon.stop();
+        super.tearDown();
     }
 
     public void testCreate() throws Exception {
@@ -121,6 +124,8 @@ public class TestAccount extends TestCase{
             }
         });
 
+
+        Debug.line(session.pathBy("/users/"));
         TalkResponse response = TalkResponseBuilder.create().newInner().property("notifyId", "test").build();
         assertEquals(200, bot.onMessage(response));
     }

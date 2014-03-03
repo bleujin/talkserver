@@ -44,6 +44,7 @@ public class TestEmbedBotLet extends TestBaseLet {
                 .addParameter(Const.Message.Event, Const.Event.onEnter)
                 .addParameter(Const.Message.Sender, "ryuneeee")
                 .addParameter(Const.Room.RoomId, "1")
+                .addParameter(Const.Message.MessageId, "testMessage")
                 .addParameter(Const.Message.Message, "HelloWorld!").handle(Method.POST);
 
         tserver.mockClient().close();
@@ -121,6 +122,10 @@ public class TestEmbedBotLet extends TestBaseLet {
 
         @Override
         public void onMessage(String roomId, String sender, String message) {
+        }
+
+        @Override
+        public void onFilter(String roomId, String sender, String message, String messageId) throws Exception {
         }
     }
 }

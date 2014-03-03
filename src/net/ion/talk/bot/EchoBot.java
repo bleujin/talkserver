@@ -4,7 +4,6 @@ import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteNode;
 import net.ion.craken.node.WriteSession;
-import net.ion.framework.util.Debug;
 import net.ion.framework.util.ObjectId;
 import net.ion.framework.util.StringUtil;
 import net.ion.talk.bean.Const;
@@ -75,12 +74,16 @@ public class EchoBot implements EmbedBot {
 
     }
 
+    @Override
+    public void onFilter(String roomId, String sender, String message, String messageId) throws Exception {
+    }
+
     private void setDelay(final String roomId, final String sender, final int delay) throws Exception {
 
         rsession.tranSync(new TransactionJob<Object>() {
             @Override
             public Object handle(WriteSession wsession) throws Exception {
-                wsession.pathBy("/rooms/" + roomId + "/members/" + sender + "/bot/" + id()).property("delay", delay);
+                wsession.pathBy("/rooms/" + roomId + "/bots/" + id() + "/" + sender).property("delay", delay);
                 return null;
             }
         });
@@ -88,7 +91,7 @@ public class EchoBot implements EmbedBot {
 
     private void sendMessage(final String roomId, final String message, String sender) throws Exception {
 
-        int delay = rsession.ghostBy("/rooms/" + roomId + "/members/" + sender + "/bot/" + id()).property("delay").intValue(0);
+        int delay = rsession.ghostBy("/rooms/" + roomId + "/bots/" + id() + "/" + sender).property("delay").intValue(0);
 
         es.schedule(new Callable<Object>() {
             @Override

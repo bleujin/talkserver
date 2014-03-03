@@ -36,7 +36,7 @@ public class UserConnectionHandler implements TalkHandler {
 			    public Void handle(WriteSession wsession) {
 			        wsession.pathBy("/connections/"+uconn.id())
 			                .refTo("user","/users/"+uconn.id());
-			        wsession.pathBy("/users/"+uconn.id()).property(User.DelegateServer, rsession.workspace().repository().memberId());
+			        wsession.pathBy("/connections/"+uconn.id()).property(User.DelegateServer, rsession.workspace().repository().memberId());
                     wsession.pathBy("/users/"+uconn.id()).unset(User.AccessToken);
 			        return null;
 			    }

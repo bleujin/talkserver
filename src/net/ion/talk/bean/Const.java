@@ -14,6 +14,7 @@ public class Const {
     public static class Bot {
         public static final String BotId = "botId";
         public static final String RequestURL = "requestURL";
+        public static final String isSyncBot = "isSyncBot";
     }
 
     public static class Message {
@@ -25,6 +26,10 @@ public class Const {
         public static final String Receivers = "receivers";
         public static final String ClientScript = "clientScript";
         public static final String RequestId = "requestId";
+        public static final String MessageId = "messageId";
+        public static final String CausedEvent = "causedBy";
+        public static final String Filter = "filter";
+        public static final String FilterEnabled = "filterEnabled";
     }
 
     public static class Room {
@@ -35,8 +40,17 @@ public class Const {
         public static final String onEnter = "onEnter";
         public static final String onExit = "onExit";
         public static final String onMessage= "onMessage";
+        public static final String onFilter = "onFilter";
     }
 
 
+    public static class Connection {
+        public static final String DelegateServer = "delegateServer";
+    }
+
+    public static class Notify {
+        public static final String LastNotifyId = "lastNotifyId";
+        public static final String CreatedAt = "createdAt";
+    }
 }
 

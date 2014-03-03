@@ -49,6 +49,12 @@ public class EmbedBotLet implements IServiceLet{
             protected void call(EmbedBot bot, MessageBean message) throws Exception {
                 bot.onMessage(message.roomId, message.sender, message.message);
             }
+        },
+        onFilter{
+            @Override
+            protected void call(EmbedBot bot, MessageBean message) throws Exception {
+                bot.onFilter(message.roomId, message.sender, message.message, message.messageId);
+            }
         };
 
         protected abstract void call(EmbedBot bot, MessageBean message) throws Exception;
@@ -59,7 +65,7 @@ public class EmbedBotLet implements IServiceLet{
         BotManager botManager = context.getAttributeObject(BotManager.class.getCanonicalName(), BotManager.class);
 
         EmbedBot bot = botManager.getBot(messageBean.botId);
-        if(bot==null || messageBean.event==null || messageBean.sender==null || messageBean.roomId==null || messageBean.message==null)
+        if(bot==null || messageBean.event==null || messageBean.sender==null || messageBean.roomId==null || messageBean.message==null || messageBean.messageId==null)
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
 
         try {
@@ -79,7 +85,7 @@ public class EmbedBotLet implements IServiceLet{
         private String sender;
         private String roomId;
         private String message;
+        private String messageId;
     }
-
 
 }

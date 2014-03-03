@@ -117,7 +117,7 @@ public class TestEchoBot extends TestCase{
         bot.onMessage(fakeResponse);
 
 
-        Thread.sleep(1000);
+        Thread.sleep(2000);
         Iterator<String> iter = rsession.pathBy("/rooms/1234/messages/").childrenNames().iterator();
 
         String echoMessage = null;
@@ -157,7 +157,7 @@ public class TestEchoBot extends TestCase{
         Bot bot = new Bot("echoBot", rsession, NewClient.create());
         bot.onMessage(fakeResponse);
 
-        Thread.sleep(1000);
+        Thread.sleep(2000);
         ReadNode message = readMessage();
         assertEquals("ryun 사용자에게는 봇이 2초 후에 반응합니다.", message.property(Const.Message.Message).stringValue());
         assertEquals("echoBot", message.property(Const.Message.Sender).stringValue());
@@ -178,7 +178,6 @@ public class TestEchoBot extends TestCase{
         });
 
         fakeResponse = TalkResponseBuilder.create().newInner().property("notifyId", notifyId2).build();
-
         bot.onMessage(fakeResponse);
 
         Thread.sleep(1000);
@@ -211,4 +210,6 @@ public class TestEchoBot extends TestCase{
 
         return rsession.pathBy("/rooms/1234/messages/" + echoMessage);
     }
+
+
 }
