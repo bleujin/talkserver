@@ -63,18 +63,17 @@ public class TalkMessageHandler implements CDDHandler {
                         if(receivers!=null && !receivers.asSet().contains(botId))
                             continue;
 
-                        if(!wsession.exists("/bots/"+botId) && wsession.pathBy("/bots/"+botId).property(Const.Bot.isSyncBot).equals(PropertyValue.NotFound))
-                            continue;
+                        if(wsession.exists("/bots/"+botId) && !wsession.pathBy("/bots/"+botId).ref("bot").property(Const.Bot.isSyncBot).equals(PropertyValue.NotFound)){
+                            nc.preparePost(wsession.pathBy("/users/" + botId).property(Const.Bot.RequestURL).stringValue())
+                                    .addParameter(Const.Message.Event, Const.Event.onFilter)
+                                    .addParameter(Const.Message.CausedEvent, pmap.get(PropertyId.fromIdString(Const.Message.Event)).stringValue())
+                                    .addParameter(Const.Message.Sender, pmap.get(PropertyId.fromIdString(Const.Message.Sender)).stringValue())
+                                    .addParameter(Const.Bot.BotId, botId)
+                                    .addParameter(Const.Message.Message, pmap.get(PropertyId.fromIdString(Const.Message.Message)).stringValue())
+                                    .addParameter(Const.Room.RoomId, roomId)
+                                    .execute().get();
+                        }
 
-                        nc.preparePost(wsession.pathBy("/users/" + botId).property(Const.Bot.RequestURL).stringValue())
-                                .addParameter(Const.Message.Event, Const.Event.onFilter)
-                                .addParameter(Const.Message.CausedEvent, pmap.get(PropertyId.fromIdString(Const.Message.Event)).stringValue())
-                                .addParameter(Const.Message.Sender, pmap.get(PropertyId.fromIdString(Const.Message.Sender)).stringValue())
-                                .addParameter(Const.User.UserId, pmap.get(PropertyId.fromIdString(Const.User.UserId)).stringValue())
-                                .addParameter(Const.Bot.BotId, botId)
-                                .addParameter(Const.Message.Message, pmap.get(PropertyId.fromIdString(Const.Message.Message)).stringValue())
-                                .addParameter(Const.Room.RoomId, roomId)
-                                .execute().get();
                     }
                 }
 

@@ -34,6 +34,8 @@ public abstract class EmbedBot {
         return requestURL;
     }
 
+    abstract public boolean isSyncBot();
+
     public abstract void onEnter(String roomId, String userId) throws Exception;
     public abstract void onExit(String roomId, String userId) throws Exception;
     public abstract void onMessage(String roomId, String sender, String message) throws Exception;

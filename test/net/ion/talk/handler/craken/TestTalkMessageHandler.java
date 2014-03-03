@@ -14,7 +14,7 @@ import net.ion.talk.bean.Const;
  * Time: 오후 2:43
  * To change this template use File | Settings | File Templates.
  */
-public class TestUserMessageHandler extends TestCrakenHandlerBase{
+public class TestTalkMessageHandler extends TestCrakenHandlerBase{
 
     private String memberId;
 
@@ -88,6 +88,30 @@ public class TestUserMessageHandler extends TestCrakenHandlerBase{
         assertEquals(1, rsession.pathBy("/notifies/ryun/").children().toList().size());
         assertEquals(0, rsession.pathBy("/notifies/bleujin/").children().toList().size());
 
+    }
+
+    public void testWithBot() throws Exception {
+
+        rsession.tranSync(new TransactionJob<Object>() {
+            @Override
+            public Object handle(WriteSession wsession) throws Exception {
+
+                wsession.pathBy("/notifies/bleujin");
+                wsession.pathBy("/notifies/ryun");
+                wsession.pathBy("/users/chatBot").property("requestURL", "http://daum.net").property(Const.Bot.isSyncBot, "true");
+                wsession.pathBy("/bots/chatBot").refTo("bot", "/users/chatBot");
+                wsession.pathBy("/rooms/1234/members").addChild("ryun");
+                wsession.pathBy("/rooms/1234/members").addChild("bleujin");
+                wsession.pathBy("/rooms/1234/members").addChild("chatBot");
+                wsession.pathBy("/rooms/1234/messages/testMessage")
+                        .property(Const.Message.Message, "Hello Ryun")
+                        .property(Const.Message.Event, Const.Event.onMessage)
+                        .property(Const.Message.Sender, "ryun");
+
+                return null;
+            }
+        });
+        Thread.sleep(1000);
     }
 
     public void testAllReceivers() throws Exception {

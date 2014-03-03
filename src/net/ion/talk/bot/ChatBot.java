@@ -20,6 +20,11 @@ public class ChatBot extends EmbedBot {
     }
 
     @Override
+    public boolean isSyncBot() {
+        return true;
+    }
+
+    @Override
     public void onEnter(String roomId, String userId) throws Exception {
 
     }

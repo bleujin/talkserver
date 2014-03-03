@@ -115,6 +115,11 @@ public class TestEmbedBotLet extends TestBaseLet {
         }
 
         @Override
+        public boolean isSyncBot() {
+            return false;
+        }
+
+        @Override
         public void onEnter(String roomId, String userId) {
         }
 

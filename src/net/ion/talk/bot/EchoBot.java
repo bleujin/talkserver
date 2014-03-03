@@ -27,6 +27,11 @@ public class EchoBot extends EmbedBot {
     }
 
     @Override
+    public boolean isSyncBot() {
+        return false;
+    }
+
+    @Override
     public void onEnter(String roomId, String sender) throws Exception {
 
         //if bot
