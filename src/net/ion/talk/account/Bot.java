@@ -3,6 +3,7 @@ package net.ion.talk.account;
 import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.ReadSession;
 import net.ion.framework.parse.gson.JsonObject;
+import net.ion.framework.util.Debug;
 import net.ion.framework.util.MapUtil;
 import net.ion.framework.util.ObjectUtil;
 import net.ion.radon.aclient.AsyncCompletionHandler;
@@ -37,12 +38,12 @@ public class Bot extends Account {
 
     @Override
     public Object onMessage(TalkResponse response) throws IOException, ExecutionException, InterruptedException {
-            return buildRequest(response).execute(new AsyncCompletionHandler<Object>() {
-                @Override
-                public Object onCompleted(Response response) throws Exception {
-                    return response.getStatusCode();
-                }
-            }).get();
+        return buildRequest(response).execute(new AsyncCompletionHandler<Object>() {
+            @Override
+            public Object onCompleted(Response response) throws Exception {
+                return response.getStatusCode();
+            }
+        }).get();
     }
 
     private NewClient.BoundRequestBuilder buildRequest(TalkResponse response) {
@@ -52,6 +53,7 @@ public class Bot extends Account {
 
         NewClient.BoundRequestBuilder builder = newClient.preparePost(requestURL);
         builder.addParameter(Const.Message.Event, messageNode.property(Const.Message.Event).stringValue())
+                .addParameter(Const.Message.MessageId, messageNode.fqn().name())
                 .addParameter(Const.Message.Sender, messageNode.property(Const.Message.Sender).stringValue())
                 .addParameter(Const.User.UserId, messageNode.property(Const.User.UserId).stringValue())
                 .addParameter(Const.Bot.BotId, accountId())

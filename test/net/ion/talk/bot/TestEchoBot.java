@@ -136,6 +136,9 @@ public class TestEchoBot extends TestCase {
 		});
 		TalkResponse fakeResponse = TalkResponseBuilder.create().newInner().property("notifyId", notifyId).build();
 
+        Thread.sleep(2000);
+        Iterator<String> iter = rsession.pathBy("/rooms/1234/messages/").childrenNames().iterator();
+
 		Bot bot = new Bot("echoBot", rsession, NewClient.create());
 		bot.onMessage(fakeResponse);
 
@@ -172,12 +175,6 @@ public class TestEchoBot extends TestCase {
 
 	}
 
-	@Override
-	public void tearDown() throws Exception {
-		aradon.stop();
-		super.tearDown();
-	}
-
 	public ReadNode readMessage() {
 		Iterator<String> iter = rsession.pathBy("/rooms/1234/messages/").childrenNames().iterator();
 
@@ -190,4 +187,5 @@ public class TestEchoBot extends TestCase {
 
 		return rsession.pathBy("/rooms/1234/messages/" + echoMessage);
 	}
+
 }

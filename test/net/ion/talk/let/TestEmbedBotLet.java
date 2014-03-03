@@ -1,5 +1,6 @@
 package net.ion.talk.let;
 
+import net.ion.craken.node.ReadSession;
 import net.ion.talk.bean.Const;
 import net.ion.talk.bot.EmbedBot;
 import net.ion.talk.bot.BotManager;
@@ -73,31 +74,36 @@ public class TestEmbedBotLet extends TestBaseLet {
 		assertEquals(Status.CLIENT_ERROR_BAD_REQUEST.getCode(), response.getStatus().getCode());
 	}
 
-	private class FakeBot implements EmbedBot {
+	private class FakeBot extends EmbedBot {
 
-		private String id = "fakeBot";
-		private String requestURL = "http://localhost:9000/bot";
+        protected FakeBot() {
+            super("fakeBot", "http://localhost:9000/bot", null);
+        }
 
-		@Override
-		public String id() {
-			return id;
-		}
+        @Override
+        public String id() {
+            return id;
+        }
 
-		@Override
-		public String requestURL() {
-			return requestURL;
-		}
+        @Override
+        public String requestURL() {
+            return requestURL;
+        }
 
-		@Override
-		public void onEnter(String roomId, String userId) {
-		}
+        @Override
+        public void onEnter(String roomId, String userId) {
+        }
 
-		@Override
-		public void onExit(String roomId, String userId) {
-		}
+        @Override
+        public void onExit(String roomId, String userId) {
+        }
 
-		@Override
-		public void onMessage(String roomId, String sender, String message) {
-		}
-	}
+        @Override
+        public void onMessage(String roomId, String sender, String message) {
+        }
+
+        @Override
+        public void onFilter(String roomId, String sender, String message, String messageId) throws Exception {
+        }
+    }
 }

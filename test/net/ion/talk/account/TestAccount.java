@@ -7,6 +7,7 @@ import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
 import net.ion.craken.node.crud.RepositoryImpl;
+import net.ion.framework.util.Debug;
 import net.ion.framework.util.MapUtil;
 import net.ion.framework.util.StringUtil;
 import net.ion.message.push.sender.PushMessage;
@@ -38,6 +39,7 @@ public class TestAccount extends TestCase {
 	private Account bot;
 	private Account disconnectedUser;
 	private Account notFoundUser;
+    private Aradon aradon;
 
 	@Override
 	public void setUp() throws Exception {
@@ -67,19 +69,11 @@ public class TestAccount extends TestCase {
 		notFoundUser = am.newAccount("notFound");
 	}
 
-	@Override
-	public void tearDown() throws Exception {
-		super.tearDown();
-		session.workspace().repository().shutdown();
-	}
-
-	public void testCreate() throws Exception {
-
-		assertTrue(connectedUser.type() == Account.Type.ConnectedUser);
-		assertTrue(disconnectedUser.type() == Account.Type.DisconnectedUser);
-		assertTrue(bot.type() == Account.Type.Bot);
-		assertTrue(notFoundUser.type() == Account.Type.NotFoundUser);
-
+    @Override
+    public void tearDown() throws Exception {
+        session.workspace().repository().shutdown();
+        aradon.stop();
+        super.tearDown();
 	}
 
 	public void testWhenNotConnectedUser() throws Exception {
@@ -103,20 +97,23 @@ public class TestAccount extends TestCase {
 		assertNull(notFoundUser.onMessage(response));
 	}
 
-	public void testBot() throws Exception {
 
-		session.tranSync(new TransactionJob<Void>() {
-			@Override
-			public Void handle(WriteSession wsession) throws Exception {
-				wsession.pathBy("/rooms/testRoom/messages/testMessage").property("sender", "ryun").property("message", "Hello World!");
-				wsession.pathBy("/notifies/bot/test").refTo("message", "/rooms/testRoom/messages/testMessage").refTo("roomId", "/rooms/testRoom");
-				return null;
-			}
-		});
+    public void testBot() throws Exception {
 
-		TalkResponse response = TalkResponseBuilder.create().newInner().property("notifyId", "test").build();
-		assertEquals(200, bot.onMessage(response));
-	}
+        session.tranSync(new TransactionJob<Void>() {
+            @Override
+            public Void handle(WriteSession wsession) throws Exception {
+                wsession.pathBy("/rooms/testRoom/messages/testMessage").property("sender", "ryun").property("message","Hello World!");
+                wsession.pathBy("/notifies/bot/test").refTo("message", "/rooms/testRoom/messages/testMessage").refTo("roomId", "/rooms/testRoom");
+                return null;
+            }
+        });
+
+
+        Debug.line(session.pathBy("/users/"));
+        TalkResponse response = TalkResponseBuilder.create().newInner().property("notifyId", "test").build();
+        assertEquals(200, bot.onMessage(response));
+    }
 
 }
 

@@ -33,6 +33,7 @@ public class BotManager {
             @Override
             public Object handle(WriteSession wsession) throws Exception {
                 wsession.pathBy("/users/"+bot.id()).property(Const.Bot.RequestURL, bot.requestURL());
+                wsession.pathBy("/bots/"+bot.id()).refTo("bot", "/users/"+bot.id());
                 return null;
             }
         });
@@ -44,6 +45,7 @@ public class BotManager {
             @Override
             public Object handle(WriteSession wsession) throws Exception {
                 wsession.pathBy("/users/"+bot.id()).removeSelf();
+                wsession.pathBy("/bots/"+bot.id()).removeSelf();
                 return null;
             }
         });
