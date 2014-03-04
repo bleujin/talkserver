@@ -2,9 +2,13 @@ package net.ion.talk.let;
 
 import net.ion.framework.util.Debug;
 import net.ion.framework.util.IOUtil;
+import net.ion.framework.util.ObjectUtil;
 import net.ion.nradon.let.IServiceLet;
+import net.ion.radon.core.annotation.AnContext;
 import net.ion.radon.core.annotation.AnRequest;
+import net.ion.radon.core.annotation.ContextParam;
 import net.ion.radon.core.let.InnerRequest;
+
 import org.apache.commons.io.FilenameUtils;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
@@ -26,13 +30,13 @@ import java.io.IOException;
 public class ResourceLet implements IServiceLet {
 
 	@Get
-	public Representation deliverFile(@AnRequest InnerRequest request) throws IOException {
+	public Representation deliverFile(@ContextParam("baseDir") String baseDir, @AnRequest InnerRequest request) throws IOException {
 
-		final String resourceHome = "./resource/";
+		final String resourceHome = ObjectUtil.coalesce(baseDir, "./resource/");
 		
-		File file = new File(resourceHome + request.getPathReference().getPath());
+		File file = new File(resourceHome + request.getRemainPath());
 		if (file.exists()) {
-			FileInputStream fis = new FileInputStream(resourceHome + request.getPathReference().getPath());
+			FileInputStream fis = new FileInputStream(resourceHome + request.getRemainPath());
 			String extension = FilenameUtils.getExtension(request.getRemainPath());
 			return new InputRepresentation(fis, request.getPathService().getAradon().getMetadataService().getMediaType(extension));
 		} else {

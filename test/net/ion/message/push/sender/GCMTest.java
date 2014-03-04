@@ -9,7 +9,7 @@ public class GCMTest extends BaseTest {
 
 	public void testSimpleTest_withGCMLib() {
 
-		com.google.android.gcm.server.Sender sender = new com.google.android.gcm.server.Sender(CGM_API_KEY);
+		com.google.android.gcm.server.Sender sender = new com.google.android.gcm.server.Sender(GCM_API_KEY);
 
 		Message message = new Message.Builder().collapseKey("1").timeToLive(3).delayWhileIdle(true).addData("message", "hello world, this text will be seen in notification bar!!").build();
 
@@ -26,7 +26,7 @@ public class GCMTest extends BaseTest {
 
 		Message message = new Message.Builder().addData("message", largeMsg).delayWhileIdle(false).timeToLive(60).build();
 
-		com.google.android.gcm.server.Sender sender = new com.google.android.gcm.server.Sender(CGM_API_KEY);
+		com.google.android.gcm.server.Sender sender = new com.google.android.gcm.server.Sender(GCM_API_KEY);
 		Result result = sender.sendNoRetry(message, GOOGLE_DEVICE_TOKEN);
 
 		// 12240 => send success

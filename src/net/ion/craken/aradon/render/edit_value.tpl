@@ -2,8 +2,8 @@
 <!doctype html>
 <html>
 <head>
-	<script type="text/javascript" src="/file/template/js/jquery-1.10.2.min.js"></script>
-	<script type="text/javascript" src="/file/template/js/jquery.json-2.4.min.js"></script>
+	<script type="text/javascript" src="/admin/template/js/jquery-1.10.2.min.js"></script>
+	<script type="text/javascript" src="/admin/template/js/jquery.json-2.4.min.js"></script>
 
 	<script type="text/javascript">
 	    function updateNode() {

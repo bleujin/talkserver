@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public class GCMSenderTest extends BaseTest {
 
-	GCMSender sender = GCMSender.create(CGM_API_KEY);
+	GCMSender sender = GCMSender.create(GCM_API_KEY);
 
 	public void testFirst() throws IOException {
 		PushResponse push = sender.sendTo(GOOGLE_DEVICE_TOKEN).message("message").delayWhenIdle(false).timeToLive(60 * 30).collapseKey("msg").push();

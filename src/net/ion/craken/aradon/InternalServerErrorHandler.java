@@ -1,4 +1,4 @@
-package net.ion.talk.node;
+package net.ion.craken.aradon;
 
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;

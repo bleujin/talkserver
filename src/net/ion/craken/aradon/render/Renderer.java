@@ -1,9 +1,11 @@
-package net.ion.talk.node.render;
+package net.ion.craken.aradon.render;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.*;
 
 import com.google.common.collect.*;
+
 import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.Workspace;
@@ -11,8 +13,10 @@ import net.ion.craken.node.crud.ReadChildren;
 import net.ion.craken.tree.PropertyId;
 import net.ion.craken.tree.PropertyValue;
 import net.ion.framework.mte.Engine;
+import net.ion.framework.parse.gson.GsonBuilder;
 import net.ion.framework.parse.gson.JsonArray;
 import net.ion.framework.parse.gson.JsonObject;
+import net.ion.framework.parse.gson.stream.JsonWriter;
 import net.ion.framework.util.IOUtil;
 import net.ion.framework.util.MapUtil;
 import net.ion.radon.core.representation.JsonObjectRepresentation;
@@ -150,6 +154,8 @@ class NodeHtmlFunction implements RenderFunction {
 
     @Override
     public Function<ReadNode, ? extends Representation> getTransformer(final RenderRequest request) {
+    	
+
         return new Function<ReadNode, StringRepresentation>() {
             @Override
             public StringRepresentation apply(ReadNode node) {
@@ -223,7 +229,13 @@ class ChildrenHtmlFunction implements RenderFunction {
                 try {
                     String template = IOUtil.toStringWithClose(Renderer.class.getResourceAsStream(request.getTemplateFile()));
 
-                    Map<String, Object> propertyMap = MapUtil.chainKeyMap().put("parent", node).put("children", node.children()).put("workspace", wsName).toMap();
+                    String jsonString = new GsonBuilder().setPrettyPrinting().create().toJson(node.toValueJson()) ;
+                    
+                    
+                    Map<String, Object> propertyMap = MapUtil.chainKeyMap()
+                    			.put("parent", node)
+                    			.put("selfjson", jsonString)
+                    			.put("children", node.children()).put("workspace", wsName).toMap();
                     String transformed = parseEngine.transform(template, propertyMap);
 
                     return new StringRepresentation(transformed, MediaType.TEXT_HTML, Language.valueOf("UTF-8"));

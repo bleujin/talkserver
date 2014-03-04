@@ -2,21 +2,21 @@
 <!doctype html>
 <html>
 <head>
-<link rel="stylesheet" type="text/css" href="/file/template/js/jsoneditor.css"/>
+<link rel="stylesheet" type="text/css" href="/admin/template/js/jsoneditor.css"/>
 <style>
 /*form { display: block; margin: 20px auto; background: #eee; border-radius: 10px; padding: 15px }*/
 #progress { position:relative; width:400px; border: 1px solid #ddd; padding: 1px; border-radius: 3px; }
 #bar { background-color: #B4F5B4; width:0%; height:20px; border-radius: 3px; }
 #percent { position:absolute; display:inline-block; top:3px; left:48%; }
 </style>
-<script type="text/javascript" src="/file/template/js/jquery-1.10.2.min.js"></script>
-<script type="text/javascript" src="/file/template/js/jquery.json-2.4.min.js"></script>
-<script type="text/javascript" src="/file/template/js/jsoneditor.js"></script>
-<script type="text/javascript" src="/file/template/js/ace.js" charset="UTF-8"></script>
-<script type="text/javascript" src="/file/template/js/mode-json.js" charset="UTF-8"></script>
-<script type="text/javascript" src="/file/template/js/theme-textmate.js" charset="UTF-8"></script>
-<script type="text/javascript" src="/file/template/js/theme-jsoneditor.js" charset="UTF-8"></script>
-<script type="text/javascript" src="/file/template/js/jsonlint.js" charset="UTF-8"></script>
+<script type="text/javascript" src="/admin/template/js/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="/admin/template/js/jquery.json-2.4.min.js"></script>
+<script type="text/javascript" src="/admin/template/js/jsoneditor.js"></script>
+<script type="text/javascript" src="/admin/template/js/ace.js" charset="UTF-8"></script>
+<script type="text/javascript" src="/admin/template/js/mode-json.js" charset="UTF-8"></script>
+<script type="text/javascript" src="/admin/template/js/theme-textmate.js" charset="UTF-8"></script>
+<script type="text/javascript" src="/admin/template/js/theme-jsoneditor.js" charset="UTF-8"></script>
+<script type="text/javascript" src="/admin/template/js/jsonlint.js" charset="UTF-8"></script>
 <script src="http://malsup.github.com/jquery.form.js"></script>
 
 <script type="text/javascript">
@@ -108,7 +108,7 @@
 
 </head>
 <body>
-<form id="myForm" action="/upload" enctype="multipart/form-data" method="post">
+<form id="myForm" action="/admin/upload" enctype="multipart/form-data" method="post">
     <input type="hidden" name="path" value="" />
     <input type="hidden" name="workspace" value="${workspace}"/>
     <div>
@@ -128,13 +128,13 @@
     </div>
     <h3>Parent</h3>
     <ul>
-        <li><a href='/node/html/${workspace}${self.parent().fqn()}'>${self.parent().fqn()}</a></li>
+        <li><a href='/admin/repository/${workspace}/html${self.parent().fqn()}'>${self.parent().fqn()}</a></li>
     </ul>
     <h3>Children</h3>
     <div id="children">
 	<ul>
 	${foreach self.children() child }
-		    <li><a href='/node/html/${workspace}${child.fqn}'>${child.fqn}</a></li>
+		    <li><a href='/admin/repository/${workspace}/html${child.fqn}'>${child.fqn}</a></li>
 	${end}</ul>
     </div>
 

@@ -1,5 +1,7 @@
 package net.ion.talk;
 
+import net.ion.craken.aradon.NodeLet;
+import net.ion.craken.aradon.UploadLet;
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.aradon.bean.RhinoEntry;
 import net.ion.craken.node.ReadSession;
@@ -67,6 +69,11 @@ public class ToonServer {
                 .handler(ResourceLet.class)
             .restSection("bot")
                 .path("bot").addUrlPattern("").matchMode(IMatchMode.STARTWITH).handler(EmbedBotLet.class)
+                
+            .restSection("admin").addAttribute("baseDir", "./resource/template")
+				.path("node").addUrlPattern("/repository/{workspace}/{renderType}").matchMode(IMatchMode.STARTWITH).handler(NodeLet.class)
+                .path("template").addUrlPattern("/template").matchMode(EnumClass.IMatchMode.STARTWITH).handler(ResourceLet.class)
+                .path("upload").addUrlPattern("/upload").matchMode(IMatchMode.STARTWITH).handler(UploadLet.class)                
 			.restSection("websocket")
 				.addAttribute(TalkHandlerGroup.class.getCanonicalName(), talkHandlerGroup)
 				.wspath("websocket")

@@ -1,4 +1,4 @@
-package net.ion.talk.node;
+package net.ion.craken.aradon;
 
 import java.io.IOException;
 
@@ -33,7 +33,7 @@ public class UploadLet implements IServiceLet {
 
 		} else {
 
-			throw new ResourceException(Status.valueOf(500), "No multipart request");
+			throw new ResourceException(Status.CLIENT_ERROR_NOT_ACCEPTABLE, "No multipart request");
 
 		}
 	}
