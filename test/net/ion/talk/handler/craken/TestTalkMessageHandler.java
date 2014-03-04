@@ -10,8 +10,7 @@ import net.ion.talk.bean.Const;
 /**
  * Created with IntelliJ IDEA. User: Ryun Date: 2014. 2. 4. Time: 오후 2:43 To change this template use File | Settings | File Templates.
  */
-public class TestUserMessageHandler extends TestCrakenHandlerBase {
-
+public class TestTalkMessageHandler extends TestCrakenHandlerBase{
 	private String memberId;
 
 	@Override
@@ -80,6 +79,30 @@ public class TestUserMessageHandler extends TestCrakenHandlerBase {
 
 	}
 
+    public void testWithBot() throws Exception {
+
+        rsession.tranSync(new TransactionJob<Object>() {
+            @Override
+            public Object handle(WriteSession wsession) throws Exception {
+
+                wsession.pathBy("/notifies/bleujin");
+                wsession.pathBy("/notifies/ryun");
+                wsession.pathBy("/users/chatBot").property("requestURL", "http://daum.net").property(Const.Bot.isSyncBot, "true");
+                wsession.pathBy("/bots/chatBot").refTo("bot", "/users/chatBot");
+                wsession.pathBy("/rooms/1234/members").addChild("ryun");
+                wsession.pathBy("/rooms/1234/members").addChild("bleujin");
+                wsession.pathBy("/rooms/1234/members").addChild("chatBot");
+                wsession.pathBy("/rooms/1234/messages/testMessage")
+                        .property(Const.Message.Message, "Hello Ryun")
+                        .property(Const.Message.Event, Const.Event.onMessage)
+                        .property(Const.Message.Sender, "ryun");
+
+                return null;
+            }
+        });
+        Thread.sleep(1000);
+    }
+
 	public void testAllReceivers() throws Exception {
 
 		rsession.tranSync(new TransactionJob<Void>() {
@@ -87,7 +110,6 @@ public class TestUserMessageHandler extends TestCrakenHandlerBase {
 			public Void handle(WriteSession wsession) throws Exception {
 
 				wsession.pathBy("/rooms/1234/messages/testMessage").property(Const.Message.Message, "Hello Everybody~");
-
 				return null;
 			}
 		});
@@ -97,7 +119,30 @@ public class TestUserMessageHandler extends TestCrakenHandlerBase {
 		assertEquals(1, rsession.pathBy("/notifies/bleujin/").children().toList().size());
 	}
 
-	@Override
+
+    public void testUserOutNotification() throws Exception {
+
+        rsession.tranSync(new TransactionJob<Void>() {
+            @Override
+            public Void handle(WriteSession wsession) throws Exception {
+
+                wsession.pathBy("/rooms/1234/members/ryun").removeSelf();
+
+                wsession.pathBy("/rooms/1234/messages/testMessage")
+                        .property(Const.Message.Message, "Bye")
+                        .property(Const.Message.Sender, "ryun")
+                        .property(Const.Message.Event, Const.Event.onExit);
+
+                return null;
+            }
+        });
+
+        Thread.sleep(1000);
+        assertEquals(1, rsession.pathBy("/notifies/ryun/").children().toList().size());
+
+    }
+
+    @Override
 	public void tearDown() throws Exception {
 		super.tearDown();
 	}

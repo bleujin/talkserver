@@ -55,28 +55,30 @@ public class TalkMessageHandler implements CDDHandler {
             public Void handle(WriteSession wsession) throws Exception {
 
                 AtomicMap<PropertyId, PropertyValue> pmap = event.getValue() ;
-                if(pmap.get(PropertyId.fromIdString(Const.Message.Filter)) == null){
-                    Iterator<String> botIter = wsession.pathBy("/rooms/" + roomId + "/members").childrenNames().iterator();
+                if(pmap.get(PropertyId.fromIdString(Const.Message.Filter)) != null)
+                    return null;
 
-                    while(botIter.hasNext()){
-                        String botId = botIter.next();
-                        if(receivers!=null && !receivers.asSet().contains(botId))
-                            continue;
+                Iterator<String> botIter = wsession.pathBy("/rooms/" + roomId + "/members").childrenNames().iterator();
 
-                        if(!wsession.exists("/bots/"+botId) && wsession.pathBy("/bots/"+botId).property(Const.Bot.isSyncBot).equals(PropertyValue.NotFound))
-                            continue;
+                while(botIter.hasNext()){
+                    String botId = botIter.next();
+                    if(receivers!=null && !receivers.asSet().contains(botId))
+                        continue;
 
+                    if(wsession.exists("/bots/"+botId) && !wsession.pathBy("/bots/"+botId).ref("bot").property(Const.Bot.isSyncBot).equals(PropertyValue.NotFound)){
                         nc.preparePost(wsession.pathBy("/users/" + botId).property(Const.Bot.RequestURL).stringValue())
                                 .addParameter(Const.Message.Event, Const.Event.onFilter)
                                 .addParameter(Const.Message.CausedEvent, pmap.get(PropertyId.fromIdString(Const.Message.Event)).stringValue())
                                 .addParameter(Const.Message.Sender, pmap.get(PropertyId.fromIdString(Const.Message.Sender)).stringValue())
-                                .addParameter(Const.User.UserId, pmap.get(PropertyId.fromIdString(Const.User.UserId)).stringValue())
                                 .addParameter(Const.Bot.BotId, botId)
                                 .addParameter(Const.Message.Message, pmap.get(PropertyId.fromIdString(Const.Message.Message)).stringValue())
+                                .addParameter(Const.Message.MessageId, messageId)
                                 .addParameter(Const.Room.RoomId, roomId)
                                 .execute().get();
                     }
+
                 }
+
 
 
                 Iterator<String> iter = wsession.pathBy("/rooms/" + roomId + "/members").childrenNames().iterator();
@@ -95,6 +97,19 @@ public class TalkMessageHandler implements CDDHandler {
                                 .refTo(Const.Room.RoomId, "/rooms/" + roomId);
 
                 }
+                if(PropertyValue.createPrimitive(Const.Event.onExit).equals(pmap.get(PropertyId.fromIdString(Const.Message.Event)))){
+                    String sender = pmap.get(PropertyId.fromIdString(Const.Message.Sender)).stringValue();
+                    String randomID = new ObjectId().toString();
+                    wsession.pathBy("/notifies/" + sender).property(Const.Notify.LastNotifyId, randomID)
+                            .addChild(randomID)
+                            .property(Const.Connection.DelegateServer, getDelegateServer(sender, wsession))
+                            .property(Const.Notify.CreatedAt, ToonServer.GMTTime())
+                            .refTo(Const.Message.Message, "/rooms/" + roomId + "/messages/" + messageId)
+                            .refTo(Const.Room.RoomId, "/rooms/" + roomId);
+                }
+
+
+
                 return null;
             }
         };
@@ -102,8 +117,8 @@ public class TalkMessageHandler implements CDDHandler {
 
     protected String getDelegateServer(String userId, ISession session) {
 
-        if(session.exists("/connections/" + userId))
-            return session.pathBy("/connections/" + userId).property(Const.Connection.DelegateServer).stringValue();
+        if(session.exists("/users/" + userId))
+            return session.pathBy("/users/" + userId).property(Const.Connection.DelegateServer).stringValue();
         else
             return session.workspace().repository().memberId();
     }

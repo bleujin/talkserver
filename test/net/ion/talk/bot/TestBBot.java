@@ -84,20 +84,20 @@ public class TestBBot extends TestCase{
 
     public void testHelpWithOutAccount() throws Exception {
         bBot.onMessage("test", "ryun", "B@도움말");
-        Thread.sleep(500);
+        Thread.sleep(1000);
         ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().next();
         assertEquals("계정 정보가 없습니다. \"/register 이메일 비밀번호\"를 이용하여 계정정보를 입력해주세요.", messageNode.property(Const.Message.Message).stringValue());
     }
 
     public void testRegisterAccount() throws Exception {
-        bBot.onMessage("test", "test", "/register test@i-on.net fbsgml10");
+        bBot.onMessage("test", "ryun", "/register ryun@i-on.net ryun");
         Thread.sleep(1000);
         ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().next();
         assertEquals("ryun@i-on.net 계정이 정상적으로 등록되었습니다!", messageNode.property(Const.Message.Message).stringValue());
     }
 
     public void testHelpWithAccount() throws Exception {
-        bBot.onMessage("test", "ryun", "/register ryun@i-on.net fbsgml10");
+        bBot.onMessage("test", "ryun", "/register ryun@i-on.net ryun");
         Thread.sleep(1000);
         ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().next();
         assertEquals("ryun@i-on.net 계정이 정상적으로 등록되었습니다!", messageNode.property(Const.Message.Message).stringValue());
@@ -106,13 +106,8 @@ public class TestBBot extends TestCase{
         bBot.onMessage("test", "ryun", "B@도움말");
         Thread.sleep(2000);
         messageNode = rsession.pathBy("/rooms/test/messages/").children().next();
-        assertEquals("B@Bot 에게 반응이 올 때 까지 잠시만 기다려주세요 ...", messageNode.property(Const.Message.Message).stringValue());
+        assertEquals("명령을 보냈습니다!", messageNode.property(Const.Message.Message).stringValue());
         removeRecentMessage();
-
-
-        Thread.sleep(20000);
-        messageNode = rsession.pathBy("/rooms/test/messages/").children().next();
-        assertEquals("B@Bot 에게 반응이 올 때 까지 잠시만 기다려주세요 ...", messageNode.property(Const.Message.Message).stringValue());
 
     }
 

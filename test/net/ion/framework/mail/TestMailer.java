@@ -26,7 +26,7 @@ public class TestMailer extends TestCase {
 
     private String userPwd = StringUtil.defaultIfEmpty(System.getProperty("mail.password"), "bleujin7");
 
-    public void testSendMail() throws Exception {
+    public void xtestSendMail() throws Exception {
         Mailer mailer = MailConfigBuilder.create().sendConfig().server("smtp.i-on.net").mailUserId("bleujin@i-on.net").mailUserPwd(userPwd).buildConfig().confirmValidOfSendMailConfig().createMailer();
 
         mailer.sendMail(new MessageCreater() {
@@ -40,7 +40,7 @@ public class TestMailer extends TestCase {
         });
     }
 
-    public void testReceiveMail() throws Exception {
+    public void xtestReceiveMail() throws Exception {
         Mailer mailer = MailConfigBuilder.create().receiveConfig().server("smtp.i-on.net").mailUserId("bleujin@i-on.net").mailUserPwd(userPwd).protocol(Protocol.POP3).buildConfig().confirmValidOfReceiveMailConfig().createMailer();
 
         mailer.unreadMessage(MessageHandler.PRINTER);

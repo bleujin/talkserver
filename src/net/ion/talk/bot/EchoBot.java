@@ -23,7 +23,12 @@ public class EchoBot extends EmbedBot {
     private ScheduledExecutorService es = Executors.newScheduledThreadPool(5);
 
     public EchoBot(ReadSession rsession) {
-        super("echoBot", "http://localhost:9000/bot", rsession);
+        super("echoBot", "메아리봇" ,"흠..?", "http://localhost:9000/bot", rsession);
+    }
+
+    @Override
+    public boolean isSyncBot() {
+        return false;
     }
 
     @Override

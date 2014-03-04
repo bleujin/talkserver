@@ -29,7 +29,7 @@ public class BBot extends EmbedBot {
     private ScheduledExecutorService es = Executors.newScheduledThreadPool(5);
 
     public BBot(ReadSession rsession) {
-        super("bBot", "http://localhost:9000/bot", rsession);
+        super("bBot", "B@Bot", "나는야 B@Bot!", "http://localhost:9000/bot", rsession);
     }
 
     @Override
@@ -40,6 +40,11 @@ public class BBot extends EmbedBot {
     @Override
     public String requestURL() {
         return requestURL;
+    }
+
+    @Override
+    public boolean isSyncBot() {
+        return false;
     }
 
     @Override
@@ -109,7 +114,7 @@ public class BBot extends EmbedBot {
                 });
                 return null;
             }
-        });
+        }).get();
 
     }
 
@@ -118,7 +123,7 @@ public class BBot extends EmbedBot {
         final String account = getUserProperty(roomId, sender, "account").stringValue();
         final String password = getUserProperty(roomId, sender, "password").stringValue();
         if(StringUtil.isEmpty(account)){
-            sendMessage(roomId, sender, "계정 정보가 없습니다. \"/register 이메일 비밀번호\"를 이용하여 계정정보를 입력해주세요. ");
+            sendMessage(roomId, sender, "계정 정보가 없습니다. \"/register 이메일 비밀번호\"를 이용하여 계정정보를 입력해주세요.");
             return;
         }
 
@@ -143,6 +148,8 @@ public class BBot extends EmbedBot {
                 return null;
             }
         });
+
+        sendMessage(roomId, sender, "명령을 보냈습니다!");
 
     }
 

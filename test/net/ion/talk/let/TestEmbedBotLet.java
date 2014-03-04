@@ -34,7 +34,12 @@ public class TestEmbedBotLet extends TestBaseLet {
 		EmbedBot fakeBot = new FakeBot();
 		botManager.registerBot(fakeBot);
 
-		Response response = tserver.mockClient().fake().createRequest("/bot").addParameter(Const.Bot.BotId, "fakeBot").addParameter(Const.Message.Event, Const.Event.onEnter).addParameter(Const.Message.Sender, "ryuneeee").addParameter(Const.Room.RoomId, "1")
+		Response response = tserver.mockClient().fake().createRequest("/bot")
+                .addParameter(Const.Bot.BotId, "fakeBot")
+                .addParameter(Const.Message.Event, Const.Event.onEnter)
+                .addParameter(Const.Message.MessageId, "hallo")
+                .addParameter(Const.Message.Sender, "ryuneeee")
+                .addParameter(Const.Room.RoomId, "1")
 				.addParameter(Const.Message.Message, "HelloWorld!").handle(Method.POST);
 
 		tserver.mockClient().close();
@@ -44,7 +49,12 @@ public class TestEmbedBotLet extends TestBaseLet {
 
 	public void testNotFoundBot() {
 
-		Response response = tserver.mockClient().fake().createRequest("/bot").addParameter(Const.Bot.BotId, "notFoundBot").addParameter(Const.Message.Event, Const.Event.onEnter).addParameter(Const.Message.Sender, "ryuneeee").addParameter(Const.Room.RoomId, "1")
+		Response response = tserver.mockClient().fake().createRequest("/bot")
+                .addParameter(Const.Bot.BotId, "notFoundBot")
+                .addParameter(Const.Message.Event, Const.Event.onEnter)
+                .addParameter(Const.Message.MessageId, "hallo")
+                .addParameter(Const.Message.Sender, "ryuneeee")
+                .addParameter(Const.Room.RoomId, "1")
 				.addParameter(Const.Message.Message, "HelloWorld!").handle(Method.POST);
 
 		tserver.mockClient().close();
@@ -56,7 +66,12 @@ public class TestEmbedBotLet extends TestBaseLet {
 		EmbedBot fakeBot = new FakeBot();
 		botManager.registerBot(fakeBot);
 
-		Response response = tserver.mockClient().fake().createRequest("/bot").addParameter(Const.Bot.BotId, "fakeBot").addParameter(Const.Message.Event, "invalidEvent").addParameter(Const.Message.Sender, "ryuneeee").addParameter(Const.Room.RoomId, "1")
+		Response response = tserver.mockClient().fake().createRequest("/bot")
+                .addParameter(Const.Bot.BotId, "fakeBot")
+                .addParameter(Const.Message.Event, "invalidEvent")
+                .addParameter(Const.Message.MessageId, "hallo")
+                .addParameter(Const.Message.Sender, "ryuneeee")
+                .addParameter(Const.Room.RoomId, "1")
 				.addParameter(Const.Message.Message, "HelloWorld!").handle(Method.POST);
 		tserver.mockClient().close();
 		// assertEquals(Status.CLIENT_ERROR_BAD_REQUEST.getCode(), response.getStatus().getCode());
@@ -68,7 +83,10 @@ public class TestEmbedBotLet extends TestBaseLet {
 		EmbedBot fakeBot = new FakeBot();
 		botManager.registerBot(fakeBot);
 
-		Response response = tserver.mockClient().fake().createRequest("/bot").addParameter(Const.Bot.BotId, "fakeBot").addParameter(Const.Message.Event, Const.Event.onEnter).addParameter("Invalid", "Parameter").handle(Method.POST);
+		Response response = tserver.mockClient().fake().createRequest("/bot")
+                .addParameter(Const.Bot.BotId, "fakeBot")
+                .addParameter(Const.Message.Event, Const.Event.onEnter)
+                .addParameter("Invalid", "Parameter").handle(Method.POST);
 
 		tserver.mockClient().close();
 		assertEquals(Status.CLIENT_ERROR_BAD_REQUEST.getCode(), response.getStatus().getCode());
@@ -77,7 +95,7 @@ public class TestEmbedBotLet extends TestBaseLet {
 	private class FakeBot extends EmbedBot {
 
         protected FakeBot() {
-            super("fakeBot", "http://localhost:9000/bot", null);
+            super("fakeBot", "fakeBot", "페이크봇", "http://localhost:9000/bot", null);
         }
 
         @Override
@@ -88,6 +106,11 @@ public class TestEmbedBotLet extends TestBaseLet {
         @Override
         public String requestURL() {
             return requestURL;
+        }
+
+        @Override
+        public boolean isSyncBot() {
+            return false;
         }
 
         @Override

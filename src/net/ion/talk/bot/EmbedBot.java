@@ -19,9 +19,13 @@ public abstract class EmbedBot {
     protected String id;
     protected String requestURL;
     protected ReadSession session;
+    protected String nickname;
+    protected String stateMessage;
 
-    protected EmbedBot(String id, String requestURL, ReadSession rsession) {
+    protected EmbedBot(String id, String nickname, String stateMessage, String requestURL, ReadSession rsession) {
         this.id = id;
+        this.nickname = nickname;
+        this.stateMessage = stateMessage;
         this.requestURL = requestURL;
         this.rsession = rsession;
     }
@@ -33,6 +37,16 @@ public abstract class EmbedBot {
     public String requestURL(){
         return requestURL;
     }
+
+    public String nickname(){
+        return nickname;
+    }
+
+    public String stateMessage(){
+        return stateMessage;
+    }
+
+    abstract public boolean isSyncBot();
 
     public abstract void onEnter(String roomId, String userId) throws Exception;
     public abstract void onExit(String roomId, String userId) throws Exception;

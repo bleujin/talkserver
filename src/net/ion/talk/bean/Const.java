@@ -16,6 +16,8 @@ public class Const {
         public static final String BotId = "botId";
         public static final String RequestURL = "requestURL";
         public static final String isSyncBot = "isSyncBot";
+        public static final String Nickname = "nickname";
+        public static final String StateMessage = "stateMessage";
     }
 
     public static class Message {

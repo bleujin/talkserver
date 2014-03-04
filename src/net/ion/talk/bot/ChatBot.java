@@ -1,10 +1,16 @@
 package net.ion.talk.bot;
 
 import net.ion.craken.node.*;
+import net.ion.emotion.Emotion;
+import net.ion.emotion.EmotionalState;
+import net.ion.emotion.Empathyscope;
 import net.ion.framework.util.RandomUtil;
 import net.ion.talk.bean.Const;
 
+import java.io.IOException;
 import java.util.Set;
+
+import static java.lang.Math.sqrt;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,8 +21,23 @@ import java.util.Set;
  */
 public class ChatBot extends EmbedBot {
 
+
+    public static final int NEUTRAL = -1;
+    public static final int HAPPINESS = 0;
+    public static final int SADNESS = 1;
+    public static final int FEAR = 2;
+    public static final int ANGER = 3;
+    public static final int DISGUST = 4;
+    public static final int SURPRISE = 5;
+
+
     public ChatBot(ReadSession rsession) {
-        super("chatBot", "http://localhost:9000/bot", rsession);
+        super("chatBot", "채팅효과봇", "채팅을 재미있게!", "http://localhost:9000/bot", rsession);
+    }
+
+    @Override
+    public boolean isSyncBot() {
+        return true;
     }
 
     @Override
@@ -53,19 +74,22 @@ public class ChatBot extends EmbedBot {
         });
     }
 
-    private String setFilter(Set<String> members, String message, String clientScript) {
+    private String setFilter(Set<String> members, String message, String clientScript) throws IOException {
+
 
         StringBuilder sb = new StringBuilder();
-        if(message.equals("야")){
 
-            sb.append("client.fontSize(200); ");
-            sb.append(clientScript);
+        EmotionalState emotion = Empathyscope.feel(message);
+        int emotionType = emotion.getStrongestEmotion().getType();
+        int emotionWeight = Double.valueOf(sqrt(sqrt(emotion.getStrongestEmotion().getWeight()*100))*100).intValue();
 
-            for(String member : members){
-                sb.append(" client.character(\""+member+"\").motion(\""+ (RandomUtil.nextInt(3)+1) +"\");");
 
-            }
+        for(String member : members){
+
+            sb.append("client.character(\""+member+"\").motion(\""+ emotionType +"\").fontSize("+ emotionWeight +").messageBalloon("+ RandomUtil.nextInt(3) +");");
         }
+
+        sb.append(clientScript);
 
         return sb.toString();
     }

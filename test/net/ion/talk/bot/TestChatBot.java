@@ -51,7 +51,7 @@ public class TestChatBot extends TestCase{
             public Object handle(WriteSession wsession) throws Exception {
                 wsession.pathBy("/rooms/test/members/ryun");
                 wsession.pathBy("/rooms/test/members/alex");
-                wsession.pathBy("/rooms/test/members/chatBot");
+                wsession.pathBy("/rooms/test/members/chatBot").property(Const.Bot.isSyncBot, "true");
                 return null;
             }
         });
@@ -73,7 +73,7 @@ public class TestChatBot extends TestCase{
             @Override
             public Object handle(WriteSession wsession) throws Exception {
                 wsession.pathBy("/rooms/test/messages/testMessage")
-                        .property(Const.Message.Message, "야")
+                        .property(Const.Message.Message, "happy")
                         .property(Const.Message.ClientScript, "client.rooms().message(args.message);")
                         .property(Const.Message.Sender, "ryun")
                         .property(Const.Message.Event, Const.Event.onMessage);
@@ -81,134 +81,81 @@ public class TestChatBot extends TestCase{
             }
         });
 
-        chatBot.onFilter("test", "ryun", "야", "testMessage");
-        Thread.sleep(1000);
+        chatBot.onFilter("test", "ryun", "happy", "testMessage");
+
         ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().next();
-        Debug.line(messageNode.property(Const.Message.ClientScript).stringValue());
-//        assertEquals("Everybody Hello!", messageNode.property(Const.Message.Message).stringValue());
+        assertTrue(StringUtil.startsWith(messageNode.property(Const.Message.ClientScript).stringValue(), "client.character"));
+        assertEquals(1, rsession.pathBy("/rooms/test/messages").childrenNames().size());
+    }
+
+    public void testHappy() throws Exception{
+
+        rsession.tranSync(new TransactionJob<Object>() {
+            @Override
+            public Object handle(WriteSession wsession) throws Exception {
+                wsession.pathBy("/rooms/test/messages/testMessage")
+                        .property(Const.Message.Message, "happy")
+                        .property(Const.Message.ClientScript, "client.rooms().message(args.message);")
+                        .property(Const.Message.Sender, "ryun")
+                        .property(Const.Message.Event, Const.Event.onMessage);
+                return null;
+            }
+        });
+
+        chatBot.onFilter("test", "ryun", "happy", "testMessage");
+
+        ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().next();
+        assertTrue(messageNode.property(Const.Message.ClientScript).stringValue().contains("motion(\"0\")"));
+
     }
 
 
-//    public void testEchoBot() throws Exception {
-//
-//        final String notifyId = new ObjectId().toString();
-//
-//        rsession.tranSync(new TransactionJob<Object>() {
-//            @Override
-//            public Object handle(WriteSession wsession) throws Exception {
-//                wsession.pathBy("/rooms/1234/members/echoBot");
-//                wsession.pathBy("/rooms/1234/members/ryun");
-//
-//                wsession.pathBy("/rooms/1234/messages/testMessage")
-//                        .property(Const.Message.Message, "Hello World!")
-//                        .property(Const.Message.Sender, "ryun")
-//                        .property(Const.Message.Event, Const.Event.onMessage);
-//                wsession.pathBy("/notifies/echoBot/" + notifyId).refTo("message", "/rooms/1234/messages/testMessage");
-//                return null;
-//            }
-//        });
-//
-//
-//
-//        TalkResponse fakeResponse = TalkResponseBuilder.create().newInner().property("notifyId", notifyId).build();
-//
-//        Bot bot = new Bot("echoBot", rsession, NewClient.create());
-//        bot.onMessage(fakeResponse);
-//
-//
-//        Thread.sleep(2000);
-//        Iterator<String> iter = rsession.pathBy("/rooms/1234/messages/").childrenNames().iterator();
-//
-//        String echoMessage = null;
-//        while(iter.hasNext()){
-//            echoMessage = iter.next();
-//            if(echoMessage != "testMessage")
-//                break;
-//        }
-//
-//        ReadNode responseMessage = rsession.pathBy("/rooms/1234/messages/" + echoMessage);
-//
-//        assertEquals("Hello World!", responseMessage.property(Const.Message.Message).stringValue());
-//        assertEquals("echoBot", responseMessage.property(Const.Message.Sender).stringValue());
-//    }
-//
-//
-//    public void testDelay() throws Exception {
-//
-//        final String notifyId = new ObjectId().toString();
-//
-//        rsession.tranSync(new TransactionJob<Object>() {
-//            @Override
-//            public Object handle(WriteSession wsession) throws Exception {
-//                wsession.pathBy("/rooms/1234/members/echoBot");
-//                wsession.pathBy("/rooms/1234/members/ryun");
-//
-//                wsession.pathBy("/rooms/1234/messages/testMessage")
-//                        .property(Const.Message.Message, "/delay 2")
-//                        .property(Const.Message.Sender, "ryun")
-//                        .property(Const.Message.Event, Const.Event.onMessage);
-//                wsession.pathBy("/notifies/echoBot/" + notifyId).refTo("message", "/rooms/1234/messages/testMessage");
-//                return null;
-//            }
-//        });
-//        TalkResponse fakeResponse = TalkResponseBuilder.create().newInner().property("notifyId", notifyId).build();
-//
-//        Bot bot = new Bot("echoBot", rsession, NewClient.create());
-//        bot.onMessage(fakeResponse);
-//
-//        Thread.sleep(1000);
-//        ReadNode message = readMessage();
-//        assertEquals("ryun 사용자에게는 봇이 2초 후에 반응합니다.", message.property(Const.Message.Message).stringValue());
-//        assertEquals("echoBot", message.property(Const.Message.Sender).stringValue());
-//
-//        final String notifyId2 = new ObjectId().toString();
-//
-//        rsession.tranSync(new TransactionJob<Object>() {
-//            @Override
-//            public Object handle(WriteSession wsession) throws Exception {
-//                wsession.pathBy("/rooms/1234/messages/").removeSelf();
-//                wsession.pathBy("/rooms/1234/messages/testMessage2")
-//                        .property(Const.Message.Message, "Hello")
-//                        .property(Const.Message.Sender, "ryun")
-//                        .property(Const.Message.Event, Const.Event.onMessage);
-//                wsession.pathBy("/notifies/echoBot/" + notifyId2).refTo("message", "/rooms/1234/messages/testMessage2");
-//                return null;
-//            }
-//        });
-//
-//        fakeResponse = TalkResponseBuilder.create().newInner().property("notifyId", notifyId2).build();
-//        bot.onMessage(fakeResponse);
-//
-//        Thread.sleep(1000);
-//        message = readMessage();
-//        assertEquals("Hello", message.property(Const.Message.Message).stringValue());
-//        assertEquals("ryun", message.property(Const.Message.Sender).stringValue());
-//
-//        Thread.sleep(2000);
-//        message = readMessage();
-//        assertEquals("Hello", message.property(Const.Message.Message).stringValue());
-//        assertEquals("echoBot", message.property(Const.Message.Sender).stringValue());
-//
-//    }
+    public void testAngry() throws Exception{
+
+        rsession.tranSync(new TransactionJob<Object>() {
+            @Override
+            public Object handle(WriteSession wsession) throws Exception {
+                wsession.pathBy("/rooms/test/messages/testMessage")
+                        .property(Const.Message.Message, "angry")
+                        .property(Const.Message.ClientScript, "client.rooms().message(args.message);")
+                        .property(Const.Message.Sender, "ryun")
+                        .property(Const.Message.Event, Const.Event.onMessage);
+                return null;
+            }
+        });
+
+        chatBot.onFilter("test", "ryun", "angry", "testMessage");
+
+        ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().next();
+        assertTrue(messageNode.property(Const.Message.ClientScript).stringValue().contains("motion(\"3\")"));
+
+    }
+    public void testSad() throws Exception{
+
+        rsession.tranSync(new TransactionJob<Object>() {
+            @Override
+            public Object handle(WriteSession wsession) throws Exception {
+                wsession.pathBy("/rooms/test/messages/testMessage")
+                        .property(Const.Message.Message, "sad")
+                        .property(Const.Message.ClientScript, "client.rooms().message(args.message);")
+                        .property(Const.Message.Sender, "ryun")
+                        .property(Const.Message.Event, Const.Event.onMessage);
+                return null;
+            }
+        });
+
+        chatBot.onFilter("test", "ryun", "sad", "testMessage");
+
+        ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().next();
+        assertTrue(messageNode.property(Const.Message.ClientScript).stringValue().contains("motion(\"1\")"));
+
+    }
+
 
     @Override
     public void tearDown() throws Exception {
         aradon.stop();
         super.tearDown();
     }
-
-    public ReadNode readMessage() {
-        Iterator<String> iter = rsession.pathBy("/rooms/1234/messages/").childrenNames().iterator();
-
-        String echoMessage = null;
-        while(iter.hasNext()){
-            echoMessage = iter.next();
-            if(!StringUtil.startsWith(echoMessage, "testMessage"))
-                break;
-        }
-
-        return rsession.pathBy("/rooms/1234/messages/" + echoMessage);
-    }
-
 
 }

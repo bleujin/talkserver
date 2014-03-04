@@ -61,4 +61,5 @@ public class TestUserInAndOutRoomHandler extends TestCrakenHandlerBase {
 		assertEquals(0, rsession.pathBy("/rooms/1/members/").childrenNames().size());
 	}
 
+
 }

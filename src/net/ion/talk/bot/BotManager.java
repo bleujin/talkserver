@@ -32,7 +32,13 @@ public class BotManager {
         session.tranSync(new TransactionJob<Object>() {
             @Override
             public Object handle(WriteSession wsession) throws Exception {
-                wsession.pathBy("/users/"+bot.id()).property(Const.Bot.RequestURL, bot.requestURL());
+                wsession.pathBy("/users/"+bot.id())
+                        .property(Const.User.UserId, bot.id())
+                        .property(Const.Bot.Nickname, bot.nickname())
+                        .property(Const.Bot.StateMessage, bot.stateMessage())
+                        .property(Const.Bot.RequestURL, bot.requestURL())
+                        .property(Const.Bot.isSyncBot, bot.isSyncBot());
+
                 wsession.pathBy("/bots/"+bot.id()).refTo("bot", "/users/"+bot.id());
                 return null;
             }

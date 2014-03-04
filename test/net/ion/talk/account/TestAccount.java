@@ -20,6 +20,7 @@ import net.ion.radon.core.Aradon;
 import net.ion.radon.util.AradonTester;
 import net.ion.talk.TalkEngine;
 import net.ion.talk.UserConnection;
+import net.ion.talk.bean.Const;
 import net.ion.talk.responsebuilder.TalkResponse;
 import net.ion.talk.responsebuilder.TalkResponseBuilder;
 
@@ -39,7 +40,6 @@ public class TestAccount extends TestCase {
 	private Account bot;
 	private Account disconnectedUser;
 	private Account notFoundUser;
-    private Aradon aradon;
 
 	@Override
 	public void setUp() throws Exception {
@@ -69,10 +69,33 @@ public class TestAccount extends TestCase {
 		notFoundUser = am.newAccount("notFound");
 	}
 
+
+    public void testBot() throws Exception {
+
+        session.tranSync(new TransactionJob<Void>() {
+            @Override
+            public Void handle(WriteSession wsession) throws Exception {
+                wsession.pathBy("/rooms/testRoom/messages/testMessage")
+                        .property("sender", "ryun")
+                        .property("message","Hello World!")
+                        .property(Const.Message.Event, Const.Event.onMessage);
+
+                wsession.pathBy("/notifies/bot/test").refTo("message", "/rooms/testRoom/messages/testMessage").refTo("roomId", "/rooms/testRoom");
+                return null;
+            }
+        });
+
+
+        Thread.sleep(2000);
+        Debug.line(session.pathBy("/users/"));
+        TalkResponse response = TalkResponseBuilder.create().newInner().property("notifyId", "test").build();
+        assertEquals(200, bot.onMessage(response));
+    }
+
+
     @Override
     public void tearDown() throws Exception {
         session.workspace().repository().shutdown();
-        aradon.stop();
         super.tearDown();
 	}
 
@@ -96,24 +119,6 @@ public class TestAccount extends TestCase {
 		TalkResponse response = TalkResponseBuilder.create().newInner().build();
 		assertNull(notFoundUser.onMessage(response));
 	}
-
-
-    public void testBot() throws Exception {
-
-        session.tranSync(new TransactionJob<Void>() {
-            @Override
-            public Void handle(WriteSession wsession) throws Exception {
-                wsession.pathBy("/rooms/testRoom/messages/testMessage").property("sender", "ryun").property("message","Hello World!");
-                wsession.pathBy("/notifies/bot/test").refTo("message", "/rooms/testRoom/messages/testMessage").refTo("roomId", "/rooms/testRoom");
-                return null;
-            }
-        });
-
-
-        Debug.line(session.pathBy("/users/"));
-        TalkResponse response = TalkResponseBuilder.create().newInner().property("notifyId", "test").build();
-        assertEquals(200, bot.onMessage(response));
-    }
 
 }
 

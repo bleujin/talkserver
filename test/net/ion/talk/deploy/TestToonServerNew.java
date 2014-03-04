@@ -40,7 +40,7 @@ public class TestToonServerNew extends TestBaseLet {
         botManager.registerBot(new BBot(tserver.readSession()));
         botManager.registerBot(new ChatBot(tserver.readSession()));
         
-//        new InfinityThread().startNJoin();
+        new InfinityThread().startNJoin();
     }
 
 }
