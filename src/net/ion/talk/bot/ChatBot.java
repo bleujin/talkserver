@@ -1,6 +1,8 @@
 package net.ion.talk.bot;
 
 import net.ion.craken.node.*;
+import net.ion.emotion.Emotion;
+import net.ion.emotion.EmotionalState;
 import net.ion.emotion.Empathyscope;
 import net.ion.framework.util.RandomUtil;
 import net.ion.talk.bean.Const;
@@ -16,6 +18,16 @@ import java.util.Set;
  * To change this template use File | Settings | File Templates.
  */
 public class ChatBot extends EmbedBot {
+
+
+    public static final int NEUTRAL = -1;
+    public static final int HAPPINESS = 0;
+    public static final int SADNESS = 1;
+    public static final int FEAR = 2;
+    public static final int ANGER = 3;
+    public static final int DISGUST = 4;
+    public static final int SURPRISE = 5;
+
 
     public ChatBot(ReadSession rsession) {
         super("chatBot", "http://localhost:9000/bot", rsession);
@@ -65,18 +77,15 @@ public class ChatBot extends EmbedBot {
 
         StringBuilder sb = new StringBuilder();
 
+        EmotionalState emotion = Empathyscope.feel(message);
+        int emotionType = emotion.getStrongestEmotion().getType();
 
-        Empathyscope.feel(message);
-        if(message.equals("야")){
-
-            sb.append("client.fontSize(200); ");
-            sb.append(clientScript);
-
-            for(String member : members){
-                sb.append(" client.character(\""+member+"\").motion(\""+ (RandomUtil.nextInt(3)+1) +"\");");
-
-            }
+        for(String member : members){
+            sb.append("client.fontSize("+ ((RandomUtil.nextInt(4)+1)*100) +");");
+            sb.append("client.character(\""+member+"\").motion(\""+ emotionType +"\");");
         }
+
+        sb.append(clientScript);
 
         return sb.toString();
     }

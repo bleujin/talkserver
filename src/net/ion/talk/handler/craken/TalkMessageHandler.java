@@ -55,28 +55,30 @@ public class TalkMessageHandler implements CDDHandler {
             public Void handle(WriteSession wsession) throws Exception {
 
                 AtomicMap<PropertyId, PropertyValue> pmap = event.getValue() ;
-                if(pmap.get(PropertyId.fromIdString(Const.Message.Filter)) == null){
-                    Iterator<String> botIter = wsession.pathBy("/rooms/" + roomId + "/members").childrenNames().iterator();
+                if(pmap.get(PropertyId.fromIdString(Const.Message.Filter)) == null)
+                    return null;
 
-                    while(botIter.hasNext()){
-                        String botId = botIter.next();
-                        if(receivers!=null && !receivers.asSet().contains(botId))
-                            continue;
+                Iterator<String> botIter = wsession.pathBy("/rooms/" + roomId + "/members").childrenNames().iterator();
 
-                        if(wsession.exists("/bots/"+botId) && !wsession.pathBy("/bots/"+botId).ref("bot").property(Const.Bot.isSyncBot).equals(PropertyValue.NotFound)){
-                            nc.preparePost(wsession.pathBy("/users/" + botId).property(Const.Bot.RequestURL).stringValue())
-                                    .addParameter(Const.Message.Event, Const.Event.onFilter)
-                                    .addParameter(Const.Message.CausedEvent, pmap.get(PropertyId.fromIdString(Const.Message.Event)).stringValue())
-                                    .addParameter(Const.Message.Sender, pmap.get(PropertyId.fromIdString(Const.Message.Sender)).stringValue())
-                                    .addParameter(Const.Bot.BotId, botId)
-                                    .addParameter(Const.Message.Message, pmap.get(PropertyId.fromIdString(Const.Message.Message)).stringValue())
-                                    .addParameter(Const.Message.MessageId, messageId)
-                                    .addParameter(Const.Room.RoomId, roomId)
-                                    .execute().get();
-                        }
+                while(botIter.hasNext()){
+                    String botId = botIter.next();
+                    if(receivers!=null && !receivers.asSet().contains(botId))
+                        continue;
 
+                    if(wsession.exists("/bots/"+botId) && !wsession.pathBy("/bots/"+botId).ref("bot").property(Const.Bot.isSyncBot).equals(PropertyValue.NotFound)){
+                        nc.preparePost(wsession.pathBy("/users/" + botId).property(Const.Bot.RequestURL).stringValue())
+                                .addParameter(Const.Message.Event, Const.Event.onFilter)
+                                .addParameter(Const.Message.CausedEvent, pmap.get(PropertyId.fromIdString(Const.Message.Event)).stringValue())
+                                .addParameter(Const.Message.Sender, pmap.get(PropertyId.fromIdString(Const.Message.Sender)).stringValue())
+                                .addParameter(Const.Bot.BotId, botId)
+                                .addParameter(Const.Message.Message, pmap.get(PropertyId.fromIdString(Const.Message.Message)).stringValue())
+                                .addParameter(Const.Message.MessageId, messageId)
+                                .addParameter(Const.Room.RoomId, roomId)
+                                .execute().get();
                     }
+
                 }
+
 
 
                 Iterator<String> iter = wsession.pathBy("/rooms/" + roomId + "/members").childrenNames().iterator();
