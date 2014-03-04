@@ -70,7 +70,7 @@ public class TalkMessageHandler implements CDDHandler {
                                     .addParameter(Const.Message.Sender, pmap.get(PropertyId.fromIdString(Const.Message.Sender)).stringValue())
                                     .addParameter(Const.Bot.BotId, botId)
                                     .addParameter(Const.Message.Message, pmap.get(PropertyId.fromIdString(Const.Message.Message)).stringValue())
-//                                    .addParameter(Const.Message.MessageId, messageId)
+                                    .addParameter(Const.Message.MessageId, messageId)
                                     .addParameter(Const.Room.RoomId, roomId)
                                     .execute().get();
                         }
@@ -102,8 +102,8 @@ public class TalkMessageHandler implements CDDHandler {
 
     protected String getDelegateServer(String userId, ISession session) {
 
-        if(session.exists("/connections/" + userId))
-            return session.pathBy("/connections/" + userId).property(Const.Connection.DelegateServer).stringValue();
+        if(session.exists("/users/" + userId))
+            return session.pathBy("/users/" + userId).property(Const.Connection.DelegateServer).stringValue();
         else
             return session.workspace().repository().memberId();
     }
