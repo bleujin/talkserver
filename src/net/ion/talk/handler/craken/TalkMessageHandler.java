@@ -55,7 +55,7 @@ public class TalkMessageHandler implements CDDHandler {
             public Void handle(WriteSession wsession) throws Exception {
 
                 AtomicMap<PropertyId, PropertyValue> pmap = event.getValue() ;
-                if(pmap.get(PropertyId.fromIdString(Const.Message.Filter)) == null)
+                if(pmap.get(PropertyId.fromIdString(Const.Message.Filter)) != null)
                     return null;
 
                 Iterator<String> botIter = wsession.pathBy("/rooms/" + roomId + "/members").childrenNames().iterator();

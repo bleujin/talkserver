@@ -29,7 +29,7 @@ public class BBot extends EmbedBot {
     private ScheduledExecutorService es = Executors.newScheduledThreadPool(5);
 
     public BBot(ReadSession rsession) {
-        super("bBot", "http://localhost:9000/bot", rsession);
+        super("bBot", "B@Bot", "나는야 B@Bot!", "http://localhost:9000/bot", rsession);
     }
 
     @Override

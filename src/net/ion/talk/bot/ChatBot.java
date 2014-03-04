@@ -10,6 +10,8 @@ import net.ion.talk.bean.Const;
 import java.io.IOException;
 import java.util.Set;
 
+import static java.lang.Math.sqrt;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Ryun
@@ -30,7 +32,7 @@ public class ChatBot extends EmbedBot {
 
 
     public ChatBot(ReadSession rsession) {
-        super("chatBot", "http://localhost:9000/bot", rsession);
+        super("chatBot", "채팅효과봇", "채팅을 재미있게!", "http://localhost:9000/bot", rsession);
     }
 
     @Override
@@ -79,10 +81,12 @@ public class ChatBot extends EmbedBot {
 
         EmotionalState emotion = Empathyscope.feel(message);
         int emotionType = emotion.getStrongestEmotion().getType();
+        int emotionWeight = Double.valueOf(sqrt(sqrt(emotion.getStrongestEmotion().getWeight()*100))*100).intValue();
+
 
         for(String member : members){
-            sb.append("client.fontSize("+ ((RandomUtil.nextInt(4)+1)*100) +");");
-            sb.append("client.character(\""+member+"\").motion(\""+ emotionType +"\");");
+
+            sb.append("client.character(\""+member+"\").motion(\""+ emotionType +"\").fontSize("+ emotionWeight +").messageBalloon("+ RandomUtil.nextInt(3) +");");
         }
 
         sb.append(clientScript);

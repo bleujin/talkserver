@@ -95,7 +95,7 @@ public class TestEmbedBotLet extends TestBaseLet {
 	private class FakeBot extends EmbedBot {
 
         protected FakeBot() {
-            super("fakeBot", "http://localhost:9000/bot", null);
+            super("fakeBot", "fakeBot", "페이크봇", "http://localhost:9000/bot", null);
         }
 
         @Override

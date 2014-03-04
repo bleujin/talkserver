@@ -15,7 +15,7 @@ public class TestAllCrakenServer extends TestCase {
 	public static TestSuite suite(){
 		TestSuite result = new TestSuite() ;
         result.addTestSuite(TestParameterMap.class) ;
-        result.addTestSuite(TestMailer.class) ;
+//        result.addTestSuite(TestMailer.class) ;
 		result.addTestSuite(TestTalkEngine.class) ;
         result.addTestSuite(TestEchoBot.class);
         result.addTestSuite(TestAccount.class);
