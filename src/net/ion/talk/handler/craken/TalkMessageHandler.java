@@ -97,8 +97,7 @@ public class TalkMessageHandler implements CDDHandler {
                                 .refTo(Const.Room.RoomId, "/rooms/" + roomId);
 
                 }
-
-                if(pmap.get(PropertyId.fromIdString(Const.Message.Event)).equals(PropertyValue.createPrimitive(Const.Event.onExit))){
+                if(PropertyValue.createPrimitive(Const.Event.onExit).equals(pmap.get(PropertyId.fromIdString(Const.Message.Event)))){
                     String sender = pmap.get(PropertyId.fromIdString(Const.Message.Sender)).stringValue();
                     String randomID = new ObjectId().toString();
                     wsession.pathBy("/notifies/" + sender).property(Const.Notify.LastNotifyId, randomID)

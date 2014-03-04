@@ -4,6 +4,7 @@ import junit.framework.Assert;
 import junit.framework.TestCase;
 import net.ion.craken.node.ReadSession;
 import net.ion.framework.util.Debug;
+import net.ion.framework.util.InfinityThread;
 import net.ion.nradon.WebSocketConnection;
 import net.ion.talk.TalkEngine.Reason;
 import net.ion.talk.handler.TalkHandler;
@@ -22,7 +23,7 @@ public class TestTalkEngine extends TestCase {
 
 	@Override
 	protected void tearDown() throws Exception {
-		engine.onStop();
+		engine.stopForTest();
 		super.tearDown();
 	}
 
@@ -32,7 +33,7 @@ public class TestTalkEngine extends TestCase {
 		engine.onClose(bleujin);
 	}
 
-	public void testConnectionManger() {
+	public void testConnectionManger() throws InterruptedException {
 		engine.onOpen(bleujin);
 
 		assertTrue(engine.connManger().findBy(bleujin) != null);
@@ -41,6 +42,7 @@ public class TestTalkEngine extends TestCase {
 		engine.onClose(bleujin);
 		assertTrue(engine.connManger().findBy(bleujin) == null);
 		assertTrue(engine.connManger().findBy("bleujin") == null);
+//        new InfinityThread().startNJoin();
 	}
 
 }
