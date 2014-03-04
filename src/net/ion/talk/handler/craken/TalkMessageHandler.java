@@ -97,6 +97,20 @@ public class TalkMessageHandler implements CDDHandler {
                                 .refTo(Const.Room.RoomId, "/rooms/" + roomId);
 
                 }
+
+                if(pmap.get(PropertyId.fromIdString(Const.Message.Event)).equals(PropertyValue.createPrimitive(Const.Event.onExit))){
+                    String sender = pmap.get(PropertyId.fromIdString(Const.Message.Sender)).stringValue();
+                    String randomID = new ObjectId().toString();
+                    wsession.pathBy("/notifies/" + sender).property(Const.Notify.LastNotifyId, randomID)
+                            .addChild(randomID)
+                            .property(Const.Connection.DelegateServer, getDelegateServer(sender, wsession))
+                            .property(Const.Notify.CreatedAt, ToonServer.GMTTime())
+                            .refTo(Const.Message.Message, "/rooms/" + roomId + "/messages/" + messageId)
+                            .refTo(Const.Room.RoomId, "/rooms/" + roomId);
+                }
+
+
+
                 return null;
             }
         };

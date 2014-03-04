@@ -67,7 +67,6 @@ public class BBot extends EmbedBot {
         if(StringUtil.startsWith(message, "B@")){
             String content = StringUtil.stripStart(message, "B@");
             sendMail(roomId, sender, content);
-            sendMessage(roomId, sender, "명령을 보냈습니다! ");
 
         }else if(StringUtil.startsWith(message, "/register")){
             String[] split = message.split(" ");
@@ -115,7 +114,7 @@ public class BBot extends EmbedBot {
                 });
                 return null;
             }
-        });
+        }).get();
 
     }
 
@@ -124,7 +123,7 @@ public class BBot extends EmbedBot {
         final String account = getUserProperty(roomId, sender, "account").stringValue();
         final String password = getUserProperty(roomId, sender, "password").stringValue();
         if(StringUtil.isEmpty(account)){
-            sendMessage(roomId, sender, "계정 정보가 없습니다. \"/register 이메일 비밀번호\"를 이용하여 계정정보를 입력해주세요. ");
+            sendMessage(roomId, sender, "계정 정보가 없습니다. \"/register 이메일 비밀번호\"를 이용하여 계정정보를 입력해주세요.");
             return;
         }
 
@@ -149,6 +148,8 @@ public class BBot extends EmbedBot {
                 return null;
             }
         });
+
+        sendMessage(roomId, sender, "명령을 보냈습니다!");
 
     }
 

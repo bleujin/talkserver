@@ -119,7 +119,30 @@ public class TestTalkMessageHandler extends TestCrakenHandlerBase{
 		assertEquals(1, rsession.pathBy("/notifies/bleujin/").children().toList().size());
 	}
 
-	@Override
+
+    public void testUserOutNotification() throws Exception {
+
+        rsession.tranSync(new TransactionJob<Void>() {
+            @Override
+            public Void handle(WriteSession wsession) throws Exception {
+
+                wsession.pathBy("/rooms/1234/members/ryun").removeSelf();
+
+                wsession.pathBy("/rooms/1234/messages/testMessage")
+                        .property(Const.Message.Message, "Bye")
+                        .property(Const.Message.Sender, "ryun")
+                        .property(Const.Message.Event, Const.Event.onExit);
+
+                return null;
+            }
+        });
+
+        Thread.sleep(1000);
+        assertEquals(1, rsession.pathBy("/notifies/ryun/").children().toList().size());
+
+    }
+
+    @Override
 	public void tearDown() throws Exception {
 		super.tearDown();
 	}

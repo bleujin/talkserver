@@ -26,6 +26,12 @@ public class TestBotManager extends TestCase {
         botManager = BotManager.create(rsession);
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        rentry.shutdown();
+        super.tearDown();
+    }
+
     public void testBasic() throws Exception {
 
         FakeBot fakeBot = new FakeBot();

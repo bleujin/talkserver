@@ -84,7 +84,7 @@ public class TestChatBot extends TestCase{
         chatBot.onFilter("test", "ryun", "happy", "testMessage");
 
         ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().next();
-        assertTrue(StringUtil.startsWith(messageNode.property(Const.Message.ClientScript).stringValue(), "client.fontSize"));
+        assertTrue(StringUtil.startsWith(messageNode.property(Const.Message.ClientScript).stringValue(), "client.character"));
         assertEquals(1, rsession.pathBy("/rooms/test/messages").childrenNames().size());
     }
 
