@@ -75,24 +75,4 @@ public class TestMakeResponse extends TestCase {
 		assertEquals(20, JsonUtil.findSimpleObject(response.toJsonObject(), "bf.age"));
 	}
 
-
-    public void testParent() throws Exception {
-
-        ReadSession rsession = RepositoryEntry.test().login();
-        rsession.tranSync(new TransactionJob<Object>() {
-            @Override
-            public Object handle(WriteSession wsession) throws Exception {
-                wsession.pathBy("/ryun/").addChild("test1").property("message", "property1");
-                wsession.pathBy("/ryun/").addChild("test2").property("message", "property2");
-                wsession.pathBy("/ryun/").addChild("test3").property("message", "property3");
-                return null;
-            }
-        });
-
-        ReadChildren children = rsession.pathBy("/ryun").children();
-
-        TalkResponse response = TalkResponseBuilder.create().newInner().inlist("key", children, "message").parent().build();
-        Debug.line(response);
-
-    }
 }

@@ -33,10 +33,12 @@ public class ResourceLet implements IServiceLet {
 	public Representation deliverFile(@ContextParam("baseDir") String baseDir, @AnRequest InnerRequest request) throws IOException {
 
 		final String resourceHome = ObjectUtil.coalesce(baseDir, "./resource/");
-		
-		File file = new File(resourceHome + request.getRemainPath());
+
+
+		File file = new File(resourceHome + request.getPathReference().getPath());
+
 		if (file.exists()) {
-			FileInputStream fis = new FileInputStream(resourceHome + request.getRemainPath());
+			FileInputStream fis = new FileInputStream(file);
 			String extension = FilenameUtils.getExtension(request.getRemainPath());
 			return new InputRepresentation(fis, request.getPathService().getAradon().getMetadataService().getMediaType(extension));
 		} else {
