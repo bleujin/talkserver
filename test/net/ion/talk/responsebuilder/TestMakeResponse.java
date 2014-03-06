@@ -1,11 +1,19 @@
 package net.ion.talk.responsebuilder;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import junit.framework.TestCase;
+import net.ion.craken.aradon.bean.RepositoryEntry;
+import net.ion.craken.node.ReadSession;
+import net.ion.craken.node.TransactionJob;
+import net.ion.craken.node.WriteSession;
+import net.ion.craken.node.crud.ReadChildren;
 import net.ion.framework.parse.gson.JsonArray;
 import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.parse.gson.JsonUtil;
+import net.ion.framework.util.Debug;
 import net.ion.talk.responsebuilder.AbstractBuilder;
 import net.ion.talk.responsebuilder.TalkResponse;
 import net.ion.talk.responsebuilder.TalkResponseBuilder;
@@ -67,4 +75,24 @@ public class TestMakeResponse extends TestCase {
 		assertEquals(20, JsonUtil.findSimpleObject(response.toJsonObject(), "bf.age"));
 	}
 
+
+    public void testParent() throws Exception {
+
+        ReadSession rsession = RepositoryEntry.test().login();
+        rsession.tranSync(new TransactionJob<Object>() {
+            @Override
+            public Object handle(WriteSession wsession) throws Exception {
+                wsession.pathBy("/ryun/").addChild("test1").property("message", "property1");
+                wsession.pathBy("/ryun/").addChild("test2").property("message", "property2");
+                wsession.pathBy("/ryun/").addChild("test3").property("message", "property3");
+                return null;
+            }
+        });
+
+        ReadChildren children = rsession.pathBy("/ryun").children();
+
+        TalkResponse response = TalkResponseBuilder.create().newInner().inlist("key", children, "message").parent().build();
+        Debug.line(response);
+
+    }
 }

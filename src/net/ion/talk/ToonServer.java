@@ -70,7 +70,7 @@ public class ToonServer {
             .restSection("bot")
                 .path("bot").addUrlPattern("").matchMode(IMatchMode.STARTWITH).handler(EmbedBotLet.class)
                 
-            .restSection("admin").addAttribute("baseDir", "./resource/template")
+            .restSection("admin").addAttribute("baseDir", "./resource/template").addAttribute("repository", rentry.repository())
 				.path("node").addUrlPattern("/repository/{workspace}/{renderType}").matchMode(IMatchMode.STARTWITH).handler(NodeLet.class)
                 .path("template").addUrlPattern("/template").matchMode(EnumClass.IMatchMode.STARTWITH).handler(ResourceLet.class)
                 .path("upload").addUrlPattern("/upload").matchMode(IMatchMode.STARTWITH).handler(UploadLet.class)                
