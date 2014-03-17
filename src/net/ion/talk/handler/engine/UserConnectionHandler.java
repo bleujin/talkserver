@@ -67,7 +67,7 @@ public class UserConnectionHandler implements TalkHandler {
     }
 
     @Override
-    public void onEngineStart(TalkEngine tengine) throws IOException {
+    public void onEngineStart(TalkEngine tengine) throws Exception {
         this.rsession = tengine.readSession();
     }
 

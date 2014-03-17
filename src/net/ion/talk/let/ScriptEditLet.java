@@ -1,5 +1,8 @@
 package net.ion.talk.let;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import net.ion.craken.aradon.bean.RepositoryEntry;
@@ -9,6 +12,7 @@ import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteNode;
 import net.ion.craken.node.WriteSession;
 import net.ion.craken.tree.Fqn;
+import net.ion.framework.util.IOUtil;
 import net.ion.nradon.let.IServiceLet;
 import net.ion.radon.core.TreeContext;
 import net.ion.radon.core.annotation.AnContext;
@@ -77,7 +81,21 @@ public class ScriptEditLet implements IServiceLet {
 			}
 		});
 
+        saveScriptToFile("." + requestPath, script);
+
 		response.redirectPermanent(requestPath);
 		return "";
 	}
+
+    private void saveScriptToFile(String path, String script) throws IOException {
+        File file = new File(path + ".script");
+        if(!file.getParentFile().exists())
+            file.getParentFile().mkdirs();
+
+        FileOutputStream fos = new FileOutputStream(file);
+        IOUtil.write(script, fos);
+        fos.close();
+    }
+
+
 }

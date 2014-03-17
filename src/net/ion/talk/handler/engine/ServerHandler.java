@@ -48,7 +48,7 @@ public class ServerHandler implements TalkHandler {
 	}
 
 	@Override
-	public void onEngineStart(TalkEngine tengine) throws IOException {
+	public void onEngineStart(TalkEngine tengine) throws Exception {
 		try {
 			this.session = tengine.readSession();
 

@@ -16,7 +16,7 @@ public interface TalkHandler {
 
 	void onMessage(TalkEngine tengine, UserConnection uconn, ReadSession rsession, TalkMessage tmsg);
 
-	void onEngineStart(TalkEngine tengine) throws IOException;
+	void onEngineStart(TalkEngine tengine) throws Exception;
 
 	void onEngineStop(TalkEngine tengine);
 

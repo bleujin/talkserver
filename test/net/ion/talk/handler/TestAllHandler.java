@@ -5,6 +5,7 @@ import junit.framework.TestSuite;
 import net.ion.talk.handler.craken.TestNotifySendHandler;
 import net.ion.talk.handler.craken.TestTalkMessageHandler;
 import net.ion.talk.handler.craken.TestUserInAndOutRoomHandler;
+import net.ion.talk.handler.engine.TestInitScriptHandler;
 import net.ion.talk.handler.engine.TestServerHandler;
 import net.ion.talk.handler.engine.TestUserConnectionHandler;
 import net.ion.talk.handler.engine.TestWebSocketTalkMessageHandler;
@@ -23,7 +24,8 @@ public class TestAllHandler extends TestCase {
         result.addTestSuite(TestTalkMessageHandler.class);
 
 		// engine
-		result.addTestSuite(TestServerHandler.class);
+        result.addTestSuite(TestInitScriptHandler.class);
+        result.addTestSuite(TestServerHandler.class);
 		result.addTestSuite(TestUserConnectionHandler.class);
 		result.addTestSuite(TestWebSocketTalkMessageHandler.class);
 

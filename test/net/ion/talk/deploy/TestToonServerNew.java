@@ -11,6 +11,7 @@ import net.ion.talk.handler.craken.NotificationListener;
 import net.ion.talk.handler.craken.NotifyStrategy;
 import net.ion.talk.handler.craken.TalkMessageHandler;
 import net.ion.talk.handler.craken.UserInAndOutRoomHandler;
+import net.ion.talk.handler.engine.InitScriptHandler;
 import net.ion.talk.handler.engine.ServerHandler;
 import net.ion.talk.handler.engine.UserConnectionHandler;
 import net.ion.talk.handler.engine.WebSocketMessageHandler;
@@ -22,7 +23,7 @@ import net.ion.talk.let.TestBaseLet;
 public class TestToonServerNew extends TestBaseLet {
 
 	public void testRunInfinite() throws Exception {
-		tserver.addTalkHander(new UserConnectionHandler()).addTalkHander(ServerHandler.test()).addTalkHander(new WebSocketMessageHandler());
+		tserver.addTalkHander(new UserConnectionHandler()).addTalkHander(ServerHandler.test()).addTalkHander(new WebSocketMessageHandler()).addTalkHander(new InitScriptHandler());
 
 		tserver.cbuilder().build();
 		tserver.startRadon();
@@ -39,7 +40,7 @@ public class TestToonServerNew extends TestBaseLet {
         botManager.registerBot(new EchoBot(tserver.readSession()));
         botManager.registerBot(new BBot(tserver.readSession()));
         botManager.registerBot(new ChatBot(tserver.readSession()));
-        
+
         new InfinityThread().startNJoin();
     }
 

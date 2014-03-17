@@ -68,7 +68,7 @@ public class WebSocketMessageHandler implements TalkHandler {
     }
 
     @Override
-    public void onEngineStart(TalkEngine tengine) throws IOException {
+    public void onEngineStart(TalkEngine tengine) throws Exception {
         rengine = tengine.rhinoEntry();
     }
 
