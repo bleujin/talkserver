@@ -58,6 +58,9 @@ public class TestPropertyValue extends TestCase {
 
 	}
 
+
+
+
 	@Override
 	public void tearDown() throws Exception {
 		rentry.shutdown();
