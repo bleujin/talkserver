@@ -65,7 +65,7 @@ public class TalkMessageHandler implements CDDHandler {
                     if(receivers!=null && !receivers.asSet().contains(botId))
                         continue;
 
-                    if(wsession.exists("/bots/"+botId) && !wsession.pathBy("/bots/"+botId).ref("bot").property(Const.Bot.isSyncBot).equals(PropertyValue.NotFound)){
+                    if(wsession.exists("/bots/"+botId) && wsession.pathBy("/bots/"+botId).ref("bot").property(Const.Bot.isSyncBot).stringValue().equals("true")){
                         nc.preparePost(wsession.pathBy("/users/" + botId).property(Const.Bot.RequestURL).stringValue())
                                 .addParameter(Const.Message.Event, Const.Event.onFilter)
                                 .addParameter(Const.Message.CausedEvent, pmap.get(PropertyId.fromIdString(Const.Message.Event)).stringValue())
@@ -117,7 +117,7 @@ public class TalkMessageHandler implements CDDHandler {
 
     protected String getDelegateServer(String userId, ISession session) {
 
-        if(session.exists("/users/" + userId))
+        if(session.exists("/users/" + userId) && !session.exists("/bots/" + userId))
             return session.pathBy("/users/" + userId).property(Const.Connection.DelegateServer).stringValue();
         else
             return session.workspace().repository().memberId();

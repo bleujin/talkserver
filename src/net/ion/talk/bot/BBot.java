@@ -78,9 +78,7 @@ public class BBot extends EmbedBot {
             setUserProperty(roomId, sender, "password", split[2]);
             sendMessage(roomId, sender, split[1] + " 계정이 정상적으로 등록되었습니다!");
 
-        }else
-            sendMessage(roomId, sender, message);
-
+        }
     }
 
     @Override
