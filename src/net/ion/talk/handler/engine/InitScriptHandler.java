@@ -13,6 +13,7 @@ import net.ion.talk.TalkEngine;
 import net.ion.talk.TalkMessage;
 import net.ion.talk.UserConnection;
 import net.ion.talk.handler.TalkHandler;
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -75,8 +76,8 @@ public class InitScriptHandler implements TalkHandler{
 
                     FileInputStream fis = new FileInputStream(file);
                     String script = IOUtil.toStringWithClose(fis);
-                    Debug.line("Script Loaded:" + file.getPath());
-                    wsession.pathBy(file.getPath().substring(1, file.getPath().lastIndexOf(".script"))).property("script", script);
+                    Debug.line("Script Loaded:" + FilenameUtils.separatorsToSystem(file.getPath()));
+                    wsession.pathBy(FilenameUtils.separatorsToSystem(file.getPath().substring(1, file.getPath().lastIndexOf(".script")))).property("script", script);
                 }
                 return null;
             }

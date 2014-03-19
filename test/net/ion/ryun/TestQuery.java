@@ -40,7 +40,7 @@ public class TestQuery extends TestCase{
             }
         });
 
-        Debug.line(rsession.pathBy("/users/").childQuery("name:6929").find().size());
+        Debug.line(rsession.pathBy("/users/").childQuery("name:ryun").findOne());
 
     }
 
