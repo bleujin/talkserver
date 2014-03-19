@@ -1,0 +1,6 @@
+var friends= params.asStrings("friends");
+session.tranSync(function(wsession){
+     for(var i=0;i<friends.length;i++){
+          wsession.pathBy("/users/"+params.asString("userId")).unRefTos("friends","/users/"+friends[i]);
+     }
+});

@@ -1,0 +1,31 @@
+var phones = params.asStrings("phone");
+
+var jb = rb.create().newInner().inlist("friends");
+
+
+
+for(var i=0;i<phones.length;i++){
+
+  var findUser = session.pathBy("/users/").childQuery("phone:"+phones[i]).find().first();
+
+  try{     
+
+       jb.property(findUser, "phone").property("userId", findUser.fqn().name());
+
+        jb.property(findUser, "phone");
+
+            if(i<phones.length-1){
+
+                  jb.next();
+
+             }
+
+  }catch(e){
+
+    
+
+  }
+
+}
+
+jb.build().toJsonElement().toString();

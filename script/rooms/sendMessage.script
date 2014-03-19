@@ -1,0 +1,16 @@
+importPackage(net.ion.framework.util)
+
+var receivers = params.asStrings("receivers");
+var randomId = new ObjectId().toString();
+
+session.tranSync(function(wsession){
+var msgNode=wsession.pathBy("/rooms/" + params.asString("roomId")+"/messages/"+randomId)
+.property("message",params.asString("message"))
+.property("sender",params.asString("sender"))
+.property("clientScript",params.asString("clientScript"))
+.property("event","onMessage")
+.property("requestId",params.asString("requestId"));
+for(var i=0;i< receivers.length;i++){
+       msgNode.append("receivers", receivers[i]);
+}
+});

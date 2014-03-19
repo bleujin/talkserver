@@ -1,0 +1,5 @@
+session.tranSync(function(wsession){
+wsession.pathBy("/users/" + params.asString("userId")+"/connection")
+.property("latitude",params.asString("latitude"))
+.property("longitude",params.asString("longitude"));
+});

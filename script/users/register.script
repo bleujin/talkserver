@@ -1,0 +1,11 @@
+session.tranSync(function(wsession){
+wsession.pathBy("/users/" + params.asString("userId"))
+.property("phone",params.asString("phone"))
+.property("userId",params.asString("userId"))
+.property("nickname",params.asString("nickname"))
+.property("pushId",params.asString("pushId"))
+.property("deviceOS",params.asString("deviceOS"))
+.property("stateMessage",params.asString("stateMessage"))
+.property("friends", "")
+.property("recommendFriends", "");
+});

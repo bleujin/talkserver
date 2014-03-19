@@ -1,0 +1,4 @@
+var room = session.pathBy("/rooms/"+params.asString("roomId"));
+var members = room.child("members").childrenNames();
+
+rb.create().newInner().property(room, "name").property("members", members).build().toJsonElement().toString();

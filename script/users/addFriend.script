@@ -1,0 +1,12 @@
+
+var friends= params.asStrings("friends");
+session.tranSync(function(wsession){
+for(var i=0;i<friends.length;i++){
+if(wsession.pathBy("/users").hasChild(friends[i])){
+wsession.pathBy("/users/"+params.asString("userId")).refTos("friends","/users/"+friends[i]);
+if(!(wsession.pathBy("/users/"+friends[i]).hasRef("friends",wsession.pathBy("/users/"+params.asString("userId")).fqn()))){
+wsession.pathBy("/users/"+friends[i]).refTos("recommendFriends","/users/"+params.asString("userId"));
+}
+}
+}
+});
