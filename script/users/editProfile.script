@@ -1,0 +1,5 @@
+session.tranSync(function(wsession){
+wsession.pathBy("/users/" + params.asString("userId"))
+.property("nickname",params.asString("nickname"))
+.property("stateMessage",params.asString("stateMessage"))
+});
