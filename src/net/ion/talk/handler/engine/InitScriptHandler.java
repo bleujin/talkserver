@@ -76,8 +76,8 @@ public class InitScriptHandler implements TalkHandler{
 
                     FileInputStream fis = new FileInputStream(file);
                     String script = IOUtil.toStringWithClose(fis);
-                    Debug.line("Script Loaded:" + FilenameUtils.separatorsToSystem(file.getPath()));
-                    wsession.pathBy(FilenameUtils.separatorsToSystem(file.getPath().substring(1, file.getPath().lastIndexOf(".script")))).property("script", script);
+                    Debug.line("Script Loaded:" + FilenameUtils.separatorsToUnix(file.getPath()));
+                    wsession.pathBy(FilenameUtils.separatorsToUnix(file.getPath().substring(1, file.getPath().lastIndexOf(".script")))).property("script", script);
                 }
                 return null;
             }
