@@ -27,7 +27,7 @@
 	</div>
 	<div id="child">
 	<ul>
-	<li><a href='${self.parent().fqn()}'>${self.parent().fqn()}</a></li><br>
+	<li><a href='${self.parent().fqn()}/'>${self.parent().fqn()}</a></li><br>
 	${foreach self.children() child }
 		    <li><a href='${child.fqn}'>${child.fqn}</a></li>
 	${end}</ul>
