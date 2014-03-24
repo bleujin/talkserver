@@ -6,18 +6,15 @@ import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.aradon.bean.RhinoEntry;
 import net.ion.craken.node.ReadSession;
 import net.ion.framework.util.MapUtil;
-import net.ion.message.push.sender.Sender;
 import net.ion.nradon.Radon;
 import net.ion.radon.core.Aradon;
 import net.ion.radon.core.EnumClass;
 import net.ion.radon.core.EnumClass.IMatchMode;
 import net.ion.radon.core.config.ConfigurationBuilder;
 import net.ion.radon.core.security.ChallengeAuthenticator;
-import net.ion.talk.account.AccountManager;
 import net.ion.talk.filter.CrakenVerifier;
 import net.ion.talk.handler.TalkHandler;
 import net.ion.talk.handler.TalkHandlerGroup;
-import net.ion.talk.handler.craken.NotifyStrategy;
 import net.ion.talk.let.*;
 
 import java.io.FileNotFoundException;
@@ -58,8 +55,11 @@ public class ToonServer {
 		.sections()
             .restSection("auth")
 			    .addPreFilter(new ChallengeAuthenticator("users", verifier))
-				.path("login")
-				.addUrlPattern("/login").matchMode(IMatchMode.STARTWITH).handler(LoginLet.class)
+                .path("login")
+                .addUrlPattern("/login").matchMode(IMatchMode.STARTWITH).handler(LoginLet.class)
+            .restSection("register")
+                .path("/SMSAuth")
+                .addUrlPattern("/SMSAuth").matchMode(IMatchMode.STARTWITH).handler(SMSAuthLet.class)
             .restSection("script")
                 .path("script").addUrlPattern("/").matchMode(EnumClass.IMatchMode.STARTWITH).handler(ScriptEditLet.class)
             .restSection("execute")

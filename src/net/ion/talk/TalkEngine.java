@@ -12,6 +12,8 @@ import net.ion.framework.logging.LogBroker;
 import net.ion.framework.util.ListUtil;
 import net.ion.framework.util.MapUtil;
 import net.ion.message.push.sender.Sender;
+import net.ion.message.sms.sender.SMSConfig;
+import net.ion.message.sms.sender.SMSSender;
 import net.ion.nradon.AbstractWebSocketResource;
 import net.ion.nradon.WebSocketConnection;
 import net.ion.radon.aclient.ClientConfig;
@@ -81,10 +83,15 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
         aradon.getServiceContext().putAttribute(TalkEngine.class.getCanonicalName(), this);
         NewClient nc = NewClient.create(ClientConfig.newBuilder().setMaxRequestRetry(5).setMaxRequestRetry(2).build());
         aradon.getServiceContext().putAttribute(NewClient.class.getCanonicalName(), nc);
+
+
+        SMSSender smsSender = new SMSConfig(nc).newDomestic().create();
+        aradon.getServiceContext().putAttribute(SMSSender.class.getCanonicalName(), smsSender);
         try {
 
             aradon.getServiceContext().putAttribute(BotManager.class.getCanonicalName(), BotManager.create(readSession()));
             aradon.getServiceContext().putAttribute(AccountManager.class.getCanonicalName(), new AccountManager(this, NotifyStrategy.createSender(readSession())));
+
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -80,6 +80,7 @@ public class SMSConfig {
         this.userCode = "ioncom";
         this.handlerURL = "https://toll.surem.com:440/message/direct_INTL_return_post.asp";
         this.validator = Validator.internationalValidator();
+        this.senderPhoneKey = "group_name";
         this.isDomesticMessage = false;
 
         return this;

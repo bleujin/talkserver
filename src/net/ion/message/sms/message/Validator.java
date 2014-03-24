@@ -18,13 +18,11 @@ public class Validator {
     Map<String, Integer> lengths = Maps.newHashMap();
 
     public static Validator domesticValidator() {
-        Validator validator = new Validator();
-
-        return validator.mandatory("to_message").withinLength("to_message", 360);
+        return new Validator().mandatory("to_message").withinLength("to_message", 360);
     }
 
     public static Validator internationalValidator() {
-        return new Validator().mandatory("to_message", "rurl").withinLength("to_message", 640);
+        return new Validator().mandatory("to_message").withinLength("to_message", 640);
     }
 
     public Validator mandatory(String... fields) {
