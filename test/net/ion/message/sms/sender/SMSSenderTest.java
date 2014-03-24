@@ -48,7 +48,7 @@ public class SMSSenderTest extends TestCase {
 
 	public void testInternationalSender_message() throws IOException, ExecutionException, InterruptedException {
 		SMSSender sender = new SMSConfig().newInternational().create();
-		PhoneMessage msg = sender.newMessage("8201025704848").from("02-3430-1751").message("안녕하세요");
+		PhoneMessage msg = sender.newMessage("821025704848").from("02-3430-1751").message("안녕하세요");
 
         msg.send().get();
 		assertEquals("0234301751", msg.getParam().asString("from_num"));

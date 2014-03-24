@@ -85,7 +85,7 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
         aradon.getServiceContext().putAttribute(NewClient.class.getCanonicalName(), nc);
 
 
-        SMSSender smsSender = new SMSConfig(nc).newDomestic().create();
+        SMSSender smsSender = new SMSConfig(nc).newInternational().create();
         aradon.getServiceContext().putAttribute(SMSSender.class.getCanonicalName(), smsSender);
         try {
 
