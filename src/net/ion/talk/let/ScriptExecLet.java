@@ -59,7 +59,10 @@ public class ScriptExecLet implements IServiceLet {
                 result = rengine.executePath(rentry.login(), scriptId, "/script"+spath, ParameterMap.create(request.getFormParameter()));
             }
 
-        } catch (IllegalArgumentException e) {
+            if(result instanceof Throwable)
+                throw (Exception) result;
+
+        } catch (Exception e) {
             e.printStackTrace();
             if(format.equals("json"))
                 return new JsonObjectRepresentation(TalkResponseBuilder.makeResponse(e));
