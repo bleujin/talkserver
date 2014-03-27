@@ -2,10 +2,9 @@ package net.ion.ryun.extend;
 
 import junit.framework.TestCase;
 import net.ion.craken.aradon.bean.RepositoryEntry;
-import net.ion.craken.node.NodeCommon;
-import net.ion.craken.node.ReadSession;
-import net.ion.craken.node.TransactionJob;
-import net.ion.craken.node.WriteSession;
+import net.ion.craken.node.*;
+import net.ion.craken.node.crud.ReadChildren;
+import net.ion.framework.util.Debug;
 
 /**
  * Created with IntelliJ IDEA.
@@ -34,6 +33,8 @@ public class TestReadNode extends TestCase{
             }
         });
 
+        assertTrue(rsession.pathBy("ryun/test/1") instanceof NodeCommon);
+        assertTrue(rsession.pathBy("ryun/test").children() instanceof AbstractChildren);
 
     }
 }

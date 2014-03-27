@@ -1,6 +1,7 @@
 package net.ion.talk.responsebuilder;
 
 import net.ion.craken.node.ReadNode;
+import net.ion.framework.parse.gson.JsonElement;
 import net.ion.talk.ToonServer;
 
 /**
@@ -33,6 +34,9 @@ public class TalkResponseBuilder {
 	}
 
     public static String makeResponse(String id, Object result) {
+
+        result = result instanceof JsonElement ? result : result.toString();
+
         BasicBuilder response = TalkResponseBuilder.create().newInner()
                 .property("createAt", ToonServer.GMTTime())
 //                .property("id", id)

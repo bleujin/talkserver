@@ -2,6 +2,7 @@ package net.ion.talk.let;
 
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.aradon.bean.RhinoEntry;
+import net.ion.framework.parse.gson.JsonElement;
 import net.ion.framework.util.ObjectId;
 import net.ion.framework.util.StringUtil;
 import net.ion.nradon.let.IServiceLet;
@@ -40,9 +41,7 @@ public class ScriptExecLet implements IServiceLet {
             spath = splitPath[0];
             format = splitPath[1];
 
-            //It will be create scriptId from server or client.
             scriptId = new ObjectId().toString();
-//            scriptId = request.getFormParameter().get("id").toString();
         } catch (ArrayIndexOutOfBoundsException e1){
             e1.printStackTrace();
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
@@ -52,34 +51,47 @@ public class ScriptExecLet implements IServiceLet {
         }
 
         try {
-            if(spath.equals("/ajax")){
-                String script = request.getFormParameter().get("script").toString();
-                result = rengine.executeScript(rentry.login(), scriptId, script, ParameterMap.create(request.getFormParameter()));
-            }else{
-                result = rengine.executePath(rentry.login(), scriptId, "/script"+spath, ParameterMap.create(request.getFormParameter()));
-            }
+            result = executeScript(request, rengine, rentry, spath, scriptId);
 
             if(result instanceof Throwable)
                 throw (Exception) result;
 
-            if(format.equals("json"))
-                return new JsonObjectRepresentation(TalkResponseBuilder.makeResponse(scriptId, result));
-            else if(format.equals("string"))
-                return new StringRepresentation(TalkResponseBuilder.makeResponse(scriptId, result).toString());
-            else
-                return new InputRepresentation((InputStream) result);
-
+            return returnResult(format, scriptId, result);
 
         } catch (Exception e) {
-            e.printStackTrace();
-            if(format.equals("json"))
-                return new JsonObjectRepresentation(TalkResponseBuilder.makeResponse(e));
-            else if(format.equals("string"))
-                return new StringRepresentation(TalkResponseBuilder.makeResponse(e).toString());
-            else
-                return new JsonObjectRepresentation(TalkResponseBuilder.makeResponse(e));
-
+            return returnException(format, e);
         }
 	}
+
+    private Object executeScript(InnerRequest request, RhinoEntry rengine, RepositoryEntry rentry, String spath, String scriptId) throws IOException {
+        Object result;
+        if(spath.equals("/ajax")){
+            String script = request.getFormParameter().get("script").toString();
+            result = rengine.executeScript(rentry.login(), scriptId, script, ParameterMap.create(request.getFormParameter()));
+        }else{
+            result = rengine.executePath(rentry.login(), scriptId, "/script"+spath, ParameterMap.create(request.getFormParameter()));
+        }
+        return result;
+    }
+
+    private Representation returnResult(String format, String scriptId, Object result) {
+
+        if(format.equals("json"))
+            return new JsonObjectRepresentation(TalkResponseBuilder.makeResponse(scriptId, result));
+        else if(format.equals("string"))
+            return new StringRepresentation(TalkResponseBuilder.makeResponse(scriptId, result).toString());
+        else
+            return new InputRepresentation((InputStream) result);
+    }
+
+    private Representation returnException(String format, Exception e) {
+        e.printStackTrace();
+        if(format.equals("json"))
+            return new JsonObjectRepresentation(TalkResponseBuilder.makeResponse(e));
+        else if(format.equals("string"))
+            return new StringRepresentation(TalkResponseBuilder.makeResponse(e).toString());
+        else
+            return new JsonObjectRepresentation(TalkResponseBuilder.makeResponse(e));
+    }
 
 }
