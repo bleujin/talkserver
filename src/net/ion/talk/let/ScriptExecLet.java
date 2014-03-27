@@ -62,6 +62,14 @@ public class ScriptExecLet implements IServiceLet {
             if(result instanceof Throwable)
                 throw (Exception) result;
 
+            if(format.equals("json"))
+                return new JsonObjectRepresentation(TalkResponseBuilder.makeResponse(scriptId, result));
+            else if(format.equals("string"))
+                return new StringRepresentation(TalkResponseBuilder.makeResponse(scriptId, result).toString());
+            else
+                return new InputRepresentation((InputStream) result);
+
+
         } catch (Exception e) {
             e.printStackTrace();
             if(format.equals("json"))
@@ -72,14 +80,6 @@ public class ScriptExecLet implements IServiceLet {
                 return new JsonObjectRepresentation(TalkResponseBuilder.makeResponse(e));
 
         }
-
-        if(format.equals("json"))
-            return new JsonObjectRepresentation(TalkResponseBuilder.makeResponse(scriptId, result));
-        else if(format.equals("string"))
-            return new StringRepresentation(TalkResponseBuilder.makeResponse(scriptId, result).toString());
-        else
-            return new InputRepresentation((InputStream) result);
-
 	}
 
 }
