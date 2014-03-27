@@ -6,6 +6,7 @@ import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
 import net.ion.framework.util.Debug;
+import net.ion.framework.util.ObjectId;
 
 /**
  * Created with IntelliJ IDEA.
@@ -33,14 +34,27 @@ public class TestQuery extends TestCase{
             @Override
             public Object handle(WriteSession wsession) throws Exception {
 
-                wsession.pathBy("/users/6929").property("name", "ryun");
+                wsession.pathBy("/ryun/test/1").property("messageId", "532ff616ca9ce6662c37a242").property("test", 1);
+                wsession.pathBy("/ryun/test/2").property("messageId", "532ff616ca9ce6663137a242").property("test", 2);
+                wsession.pathBy("/ryun/test/3").property("messageId", "532ff616ca9ce6662d37a242").property("test", 3);
+                wsession.pathBy("/ryun/test/4").property("messageId", "532ff616ca9ce6662037a242").property("test", 4);
+                wsession.pathBy("/ryun/test/5").property("messageId", "532ff616ca9ce6662e37a242").property("test", 5);
 
+                //4 < 1 < 3 < 5 < 2
 
                 return null;
             }
         });
 
-        Debug.line(rsession.pathBy("/users/").childQuery("name:ryun").findOne());
+
+        Debug.line(rsession.pathBy("/ryun/test").children().where("this.messageId >= '532ff616ca9ce6662c37a242'").toList());
+
+
+    }
+
+
+    public void testCompare() throws Exception {
+
 
     }
 
