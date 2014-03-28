@@ -85,31 +85,12 @@ public class BBot extends EmbedBot {
     public void onFilter(String roomId, String sender, String message, String messageId) throws Exception {
     }
 
-    private void sendMessage(final String roomId, String sender, final String message) throws Exception {
+    protected void sendMessage(final String roomId, final String sender, final String message) throws Exception {
 
         es.submit(new Callable<Object>() {
             @Override
             public Object call() throws Exception {
-                final Set<String> memberList = rsession.pathBy("/rooms/" + roomId + "/members").childrenNames();
-
-                rsession.tranSync(new TransactionJob<Object>() {
-                    @Override
-                    public Object handle(WriteSession wsession) throws Exception {
-                        WriteNode messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + new ObjectId().toString())
-                                .property(Const.Message.Message, message)
-                                .property(Const.Message.Sender, id())
-                                .property(Const.Room.RoomId, roomId)
-                                .property(Const.Message.Event, Const.Event.onMessage)
-                                .property(Const.Message.ClientScript, "client.room().message(args.message)")
-                                .property(Const.Message.RequestId, new ObjectId().toString());
-
-                        for (String member : memberList) {
-                            if (!member.equals(id()))
-                                messageNode.append(Const.Message.Receivers, member);
-                        }
-                        return null;
-                    }
-                });
+                BBot.super.sendMessage(roomId, sender, message);
                 return null;
             }
         }).get();

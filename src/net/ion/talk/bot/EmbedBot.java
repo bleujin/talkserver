@@ -2,9 +2,15 @@ package net.ion.talk.bot;
 
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
+import net.ion.craken.node.WriteNode;
 import net.ion.craken.node.WriteSession;
 import net.ion.craken.tree.PropertyValue;
 import net.ion.framework.parse.gson.JsonObject;
+import net.ion.framework.util.ObjectId;
+import net.ion.talk.bean.Const;
+
+import java.util.Set;
+import java.util.concurrent.Callable;
 
 /**
  * Created with IntelliJ IDEA.
@@ -80,6 +86,32 @@ public abstract class EmbedBot {
 
     protected PropertyValue getUserProperty(String roomId, String user, String key){
         return rsession.ghostBy("/rooms/" + roomId + "/bots/" + id + "/" + user).property(key);
+    }
+
+    protected void sendMessage(final String roomId, String sender, final String message) throws Exception {
+
+        final Set<String> memberList = rsession.pathBy("/rooms/" + roomId + "/members").childrenNames();
+
+        rsession.tranSync(new TransactionJob<Object>() {
+            @Override
+            public Object handle(WriteSession wsession) throws Exception {
+                String randomId = new ObjectId().toString();
+                WriteNode messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + randomId)
+                        .property(Const.Message.Message, message)
+                        .property(Const.Message.Sender, id())
+                        .property(Const.Room.RoomId, roomId)
+                        .property(Const.Message.Event, Const.Event.onMessage)
+                        .property(Const.Message.ClientScript, "client.room().message(args.message)")
+                        .property(Const.Message.MessageId, randomId);
+
+                for (String member : memberList) {
+                    if (!member.equals(id()))
+                        messageNode.append(Const.Message.Receivers, member);
+                }
+                return null;
+            }
+        });
+
     }
 
 
