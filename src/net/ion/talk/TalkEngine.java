@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.aradon.bean.RhinoEntry;
@@ -42,6 +44,8 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 
     public static int HEARTBEAT_WATING = 15;
     public static int HEARTBEAT_KILLING = 15;
+
+    private static final Pattern hearbeatPtn = Pattern.compile("^HEARTBEAT$");
 
 	private ConnManager cmanger= ConnManager.create();
 	private List<TalkHandler> handlers = ListUtil.newList();
@@ -156,10 +160,13 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 	@Override
 	public void onMessage(WebSocketConnection conn, String msg) {
 		try {
-
 			final UserConnection found = cmanger.findBy(conn);
             cmanger.heartBeat(found);
-			TalkMessage tmessage = TalkMessage.fromJsonString(msg);
+
+            if(hearbeatPtn.matcher(msg).matches())
+                return;
+
+            TalkMessage tmessage = TalkMessage.fromJsonString(msg);
 
 			RepositoryEntry r = context().getAttributeObject(RepositoryEntry.EntryName, RepositoryEntry.class);
 			ReadSession rsession = r.login();
