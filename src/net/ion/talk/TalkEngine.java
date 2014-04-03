@@ -312,7 +312,7 @@ class ConnManager {
             @Override
             public void run() {
 
-                conn.sendMessage(TalkResponseBuilder.makeResponse(new ObjectId().toString(), "HEARTBEAT"));
+                conn.sendMessage("HEARTBEAT");
 
                 ScheduledFuture<?> killingJob = es.schedule(new Runnable() {
                     @Override
