@@ -2,6 +2,7 @@ package net.ion.talk;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
 
 import net.ion.framework.util.ObjectUtil;
 import net.ion.nradon.WebSocketConnection;
@@ -10,8 +11,10 @@ import net.ion.talk.TalkEngine.Reason;
 public class UserConnection {
 
 	private WebSocketConnection inner;
+    private long heartBeat = 0;
+    private ScheduledFuture<?> heartBeatJob;
 
-	protected UserConnection(WebSocketConnection inner) {
+    protected UserConnection(WebSocketConnection inner) {
 		this.inner = inner ;
 	}
 
@@ -70,4 +73,12 @@ public class UserConnection {
         return accessToken().equals(accessToken);
     }
 
+    public void setHeartBeatJob(ScheduledFuture<?> heartBeatJob) {
+        this.heartBeatJob = heartBeatJob;
+    }
+
+    public void cancelHeartBeatJob(boolean mayInterruptIfRunning){
+        if(heartBeatJob!=null)
+            heartBeatJob.cancel(mayInterruptIfRunning);
+    }
 }

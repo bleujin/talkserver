@@ -12,7 +12,7 @@ import net.ion.talk.handler.TalkHandler;
 public class TestTalkEngine extends TestCase {
 
 	private TalkEngine engine;
-	WebSocketConnection bleujin = FakeWebSocketConnection.create("bleujin");
+    FakeWebSocketConnection bleujin = FakeWebSocketConnection.create("bleujin");
 
 	@Override
 	protected void setUp() throws Exception {
@@ -23,7 +23,8 @@ public class TestTalkEngine extends TestCase {
 
 	@Override
 	protected void tearDown() throws Exception {
-		engine.stopForTest();
+        engine.readSession().workspace().repository().shutdown();
+        engine.onStop();
 		super.tearDown();
 	}
 
@@ -32,6 +33,32 @@ public class TestTalkEngine extends TestCase {
 		engine.onMessage(bleujin, "hello");
 		engine.onClose(bleujin);
 	}
+
+    public void testHeartBeatOne() throws InterruptedException {
+
+        TalkEngine.HEARTBEAT_WATING = 1;
+        TalkEngine.HEARTBEAT_KILLING = 1;
+        engine.onOpen(bleujin);
+        Thread.sleep(1500);
+        assertEquals(false, bleujin.isClosed());
+        Thread.sleep(1000);
+        assertEquals(true, bleujin.isClosed());
+    }
+
+    public void testHeartBeatShake() throws InterruptedException {
+
+        TalkEngine.HEARTBEAT_WATING = 1;
+        TalkEngine.HEARTBEAT_KILLING = 1;
+        engine.onOpen(bleujin);
+        Thread.sleep(1500);
+        assertEquals(false, bleujin.isClosed());
+        engine.onMessage(bleujin, "Hello");
+        Thread.sleep(1500);
+        assertEquals(false, bleujin.isClosed());
+        Thread.sleep(1000);
+        assertEquals(true, bleujin.isClosed());
+    }
+
 
 	public void testConnectionManger() throws InterruptedException {
 		engine.onOpen(bleujin);

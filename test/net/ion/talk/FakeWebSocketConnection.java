@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executor;
 
+import net.ion.framework.util.Debug;
 import net.ion.framework.util.ListUtil;
 import net.ion.framework.util.MapUtil;
 import net.ion.framework.util.ObjectUtil;
@@ -17,8 +18,9 @@ public class FakeWebSocketConnection implements WebSocketConnection {
 
 	private Map<String, Object> datas = MapUtil.newMap();
 	private List<String> received = ListUtil.newList();
+    private boolean closed;
 
-	public static FakeWebSocketConnection create(String id) {
+    public static FakeWebSocketConnection create(String id) {
 		final FakeWebSocketConnection result = new FakeWebSocketConnection();
 		result.data("id", id);
 		return result;
@@ -26,7 +28,8 @@ public class FakeWebSocketConnection implements WebSocketConnection {
 
 	@Override
 	public WebSocketConnection close() {
-		return this;
+        closed = true;
+        return this;
 	}
 
 	@Override
@@ -114,4 +117,7 @@ public class FakeWebSocketConnection implements WebSocketConnection {
 		return null;
 	}
 
+    public boolean isClosed() {
+        return closed;
+    }
 }

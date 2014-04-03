@@ -3,6 +3,7 @@ package net.ion.talk;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.*;
 import java.util.logging.Logger;
 
 import net.ion.craken.aradon.bean.RepositoryEntry;
@@ -11,6 +12,7 @@ import net.ion.craken.node.ReadSession;
 import net.ion.framework.logging.LogBroker;
 import net.ion.framework.util.ListUtil;
 import net.ion.framework.util.MapUtil;
+import net.ion.framework.util.ObjectId;
 import net.ion.message.push.sender.Sender;
 import net.ion.message.sms.sender.SMSConfig;
 import net.ion.message.sms.sender.SMSSender;
@@ -30,12 +32,16 @@ import net.ion.talk.handler.TalkHandler;
 import net.ion.talk.handler.TalkHandlerGroup;
 import net.ion.talk.handler.craken.NotifyStrategy;
 import net.ion.talk.responsebuilder.TalkResponse;
+import net.ion.talk.responsebuilder.TalkResponseBuilder;
 
 public class TalkEngine extends AbstractWebSocketResource implements OnOrderEventObject {
 
     public enum Reason {
 		OK, NOTALLOW, DOPPLE, TIMEOUT, CLIENT, INTERNAL;
 	}
+
+    public static int HEARTBEAT_WATING = 15;
+    public static int HEARTBEAT_KILLING = 15;
 
 	private ConnManager cmanger= ConnManager.create();
 	private List<TalkHandler> handlers = ListUtil.newList();
@@ -127,6 +133,7 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 	public void onOpen(WebSocketConnection conn) {
 		UserConnection created = UserConnection.create(conn);
 		cmanger.add(created);
+        cmanger.heartBeat(created);
 
 		for (TalkHandler handler : handlers) {
 			Reason reason = handler.onConnected(this, created);
@@ -151,6 +158,7 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 		try {
 
 			final UserConnection found = cmanger.findBy(conn);
+            cmanger.heartBeat(found);
 			TalkMessage tmessage = TalkMessage.fromJsonString(msg);
 
 			RepositoryEntry r = context().getAttributeObject(RepositoryEntry.EntryName, RepositoryEntry.class);
@@ -164,7 +172,8 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 		}
 	}
 
-	@Override
+
+    @Override
 	public void onMessage(WebSocketConnection conn, byte[] msg) {
 		throw new UnsupportedOperationException("not supported");
 	}
@@ -257,6 +266,7 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 class ConnManager {
 
 	private Map<String, UserConnection> conns = MapUtil.newMap();
+    private ScheduledExecutorService es = Executors.newScheduledThreadPool(5);
 
 	private ConnManager() {
 	}
@@ -294,4 +304,28 @@ class ConnManager {
 		return conns.containsValue(conn);
 	}
 
+    public void heartBeat(final UserConnection conn) {
+
+        conn.cancelHeartBeatJob(true);
+
+        ScheduledFuture<?> watingJob = es.schedule(new Runnable() {
+            @Override
+            public void run() {
+
+                conn.sendMessage(TalkResponseBuilder.makeResponse(new ObjectId().toString(), "HEARTBEAT"));
+
+                ScheduledFuture<?> killingJob = es.schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                        conn.close(TalkEngine.Reason.TIMEOUT);
+                    }
+                }, TalkEngine.HEARTBEAT_WATING, TimeUnit.SECONDS);
+
+                conn.setHeartBeatJob(killingJob);
+            }
+        }, TalkEngine.HEARTBEAT_KILLING, TimeUnit.SECONDS);
+
+        conn.setHeartBeatJob(watingJob);
+
+    }
 }
