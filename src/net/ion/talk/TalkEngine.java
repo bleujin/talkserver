@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.ion.craken.aradon.bean.RepositoryEntry;
@@ -14,7 +13,6 @@ import net.ion.craken.node.ReadSession;
 import net.ion.framework.logging.LogBroker;
 import net.ion.framework.util.ListUtil;
 import net.ion.framework.util.MapUtil;
-import net.ion.framework.util.ObjectId;
 import net.ion.message.push.sender.Sender;
 import net.ion.message.sms.sender.SMSConfig;
 import net.ion.message.sms.sender.SMSSender;
@@ -34,7 +32,6 @@ import net.ion.talk.handler.TalkHandler;
 import net.ion.talk.handler.TalkHandlerGroup;
 import net.ion.talk.handler.craken.NotifyStrategy;
 import net.ion.talk.responsebuilder.TalkResponse;
-import net.ion.talk.responsebuilder.TalkResponseBuilder;
 
 public class TalkEngine extends AbstractWebSocketResource implements OnOrderEventObject {
 
@@ -42,8 +39,9 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 		OK, NOTALLOW, DOPPLE, TIMEOUT, CLIENT, INTERNAL;
 	}
 
-    public static int HEARTBEAT_WATING = 15;
-    public static int HEARTBEAT_KILLING = 15;
+    public static int HEARTBEAT_WATING = 15000;
+    public static int HEARTBEAT_KILLING = 30000;
+    public static int HEARTBEAT_DELAY = 1000;
 
     private static final Pattern hearbeatPtn = Pattern.compile("^HEARTBEAT$");
 
@@ -84,6 +82,7 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 
 	// Only test
 	public void stopForTest() {
+        cmanger.shutdown();
         onEvent(AradonEvent.STOP, null);
 	}
 
@@ -124,7 +123,7 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 		return this;
 	}
 
-	public TalkEngine unregisterHander(TalkHandler handler) {
+	public TalkEngine unregisterHandler(TalkHandler handler) {
 		handlers.remove(handler);
 		return this;
 	}
@@ -136,8 +135,9 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 	@Override
 	public void onOpen(WebSocketConnection conn) {
 		UserConnection created = UserConnection.create(conn);
+        created.updateHeartBeat();
 		cmanger.add(created);
-        cmanger.heartBeat(created);
+
 
 		for (TalkHandler handler : handlers) {
 			Reason reason = handler.onConnected(this, created);
@@ -161,10 +161,10 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 	public void onMessage(WebSocketConnection conn, String msg) {
 		try {
 			final UserConnection found = cmanger.findBy(conn);
-            cmanger.heartBeat(found);
 
-            if(hearbeatPtn.matcher(msg).matches())
-                return;
+            //heartbeat
+            found.updateHeartBeat();
+            if(hearbeatPtn.matcher(msg).matches()) return;
 
             TalkMessage tmessage = TalkMessage.fromJsonString(msg);
 
@@ -201,6 +201,7 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 
 	@Override
 	public void onStop() {
+        cmanger.shutdown();
 		onEvent(AradonEvent.STOP, null);
 	}
 
@@ -276,6 +277,7 @@ class ConnManager {
     private ScheduledExecutorService es = Executors.newScheduledThreadPool(5);
 
 	private ConnManager() {
+        this.startHeartBeat();
 	}
 
 	public UserConnection findBy(String id) {
@@ -311,28 +313,23 @@ class ConnManager {
 		return conns.containsValue(conn);
 	}
 
-    public void heartBeat(final UserConnection conn) {
+    public void startHeartBeat(){
+        es.schedule(new HeartBeatJob(), TalkEngine.HEARTBEAT_DELAY, TimeUnit.MILLISECONDS );
+    }
 
-        conn.cancelHeartBeatJob(true);
+    public void shutdown(){
+        es.shutdown();
+    }
 
-        ScheduledFuture<?> watingJob = es.schedule(new Runnable() {
-            @Override
-            public void run() {
+    class HeartBeatJob implements Runnable{
 
-                conn.sendMessage("HEARTBEAT");
-
-                ScheduledFuture<?> killingJob = es.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        conn.close(TalkEngine.Reason.TIMEOUT);
-                    }
-                }, TalkEngine.HEARTBEAT_WATING, TimeUnit.SECONDS);
-
-                conn.setHeartBeatJob(killingJob);
+        @Override
+        public void run() {
+            for(UserConnection uconn : conns.values()){
+                uconn.heartBeat();
             }
-        }, TalkEngine.HEARTBEAT_KILLING, TimeUnit.SECONDS);
 
-        conn.setHeartBeatJob(watingJob);
-
+            es.schedule(this, TalkEngine.HEARTBEAT_DELAY, TimeUnit.MILLISECONDS);
+        }
     }
 }
