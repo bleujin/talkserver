@@ -43,8 +43,8 @@ public class TestAccount extends TestCase {
 
 	@Override
 	public void setUp() throws Exception {
-		super.setUp();
 		RepositoryEntry rentry = RepositoryEntry.test();
+		rentry.repository().start() ;
 		session = rentry.login();
 
 		session.tranSync(new TransactionJob<Void>() {
@@ -67,6 +67,11 @@ public class TestAccount extends TestCase {
 		bot = am.newAccount("bot");
 		disconnectedUser = am.newAccount("ryun");
 		notFoundUser = am.newAccount("notFound");
+	}
+
+    @Override
+    public void tearDown() throws Exception {
+        session.workspace().repository().shutdown();
 	}
 
 
@@ -92,12 +97,6 @@ public class TestAccount extends TestCase {
         assertEquals(200, bot.onMessage(response));
     }
 
-
-    @Override
-    public void tearDown() throws Exception {
-        session.workspace().repository().shutdown();
-        super.tearDown();
-	}
 
 	public void testWhenNotConnectedUser() throws Exception {
 

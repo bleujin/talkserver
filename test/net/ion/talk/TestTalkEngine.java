@@ -16,16 +16,14 @@ public class TestTalkEngine extends TestCase {
 
 	@Override
 	protected void setUp() throws Exception {
-		super.setUp();
 		this.engine = TalkEngine.test();
 		engine.registerHandler(new DummyHandler());
 	}
 
 	@Override
 	protected void tearDown() throws Exception {
-        engine.readSession().workspace().repository().shutdown();
+//        engine.readSession().workspace().repository().shutdown();
         engine.onStop();
-		super.tearDown();
 	}
 
 	public void testUse() throws Exception {
