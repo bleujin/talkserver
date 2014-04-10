@@ -3,14 +3,15 @@ package net.ion.talk.handler.craken;
 import net.ion.craken.listener.CDDHandler;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
+import net.ion.craken.node.crud.TreeNodeKey;
 import net.ion.craken.tree.PropertyId;
 import net.ion.craken.tree.PropertyValue;
-import net.ion.craken.tree.TreeNodeKey;
 import net.ion.framework.parse.gson.JsonElement;
 import net.ion.framework.util.ObjectId;
 import net.ion.framework.util.StringUtil;
 import net.ion.talk.bean.Const;
 import net.ion.talk.responsebuilder.TalkResponseBuilder;
+
 import org.infinispan.atomic.AtomicMap;
 import org.infinispan.notifications.cachelistener.event.CacheEntryModifiedEvent;
 import org.infinispan.notifications.cachelistener.event.CacheEntryRemovedEvent;
@@ -46,7 +47,7 @@ public class UserInAndOutRoomHandler implements CDDHandler {
 //                String sender = wsession.pathBy("/rooms/" + roomId + "/members/"+userId).property(Const.Message.Sender).stringValue();
 
                 wsession.pathBy("/rooms/" + roomId + "/messages/")
-                        .addChild(randomID)
+                        .child(randomID)
                         .property(Const.Message.Event, Const.Event.onEnter)
                         .property(Const.Room.RoomId, roomId)
                         .property(Const.Message.Message, userId + "님이 입장하셨습니다.")
@@ -73,7 +74,7 @@ public class UserInAndOutRoomHandler implements CDDHandler {
 
                 //will define message
                 wsession.pathBy("/rooms/" + roomId + "/messages/")
-                        .addChild(randomID)
+                        .child(randomID)
                         .property(Const.Message.Event, Const.Event.onExit)
                         .property(Const.Room.RoomId, roomId)
                         .property(Const.Message.Message, userId + "님이 퇴장하셨습니다.")

@@ -2,14 +2,15 @@ package net.ion.talk.handler.craken;
 
 import net.ion.craken.listener.CDDHandler;
 import net.ion.craken.node.*;
+import net.ion.craken.node.crud.TreeNodeKey;
 import net.ion.craken.tree.PropertyId;
 import net.ion.craken.tree.PropertyValue;
-import net.ion.craken.tree.TreeNodeKey;
 import net.ion.framework.util.ObjectId;
 import net.ion.radon.aclient.ClientConfig;
 import net.ion.radon.aclient.NewClient;
 import net.ion.talk.*;
 import net.ion.talk.bean.Const;
+
 import org.infinispan.atomic.AtomicMap;
 import org.infinispan.notifications.cachelistener.event.CacheEntryModifiedEvent;
 import org.infinispan.notifications.cachelistener.event.CacheEntryRemovedEvent;
@@ -90,7 +91,7 @@ public class TalkMessageHandler implements CDDHandler {
 
                     String randomID = new ObjectId().toString();
                     wsession.pathBy("/notifies/" + userId).property(Const.Notify.LastNotifyId, randomID)
-                            .addChild(randomID)
+                            .child(randomID)
                                 .property(Const.Connection.DelegateServer, getDelegateServer(userId, wsession))
                                 .property(Const.Notify.CreatedAt, ToonServer.GMTTime())
                                 .refTo(Const.Message.Message, "/rooms/" + roomId + "/messages/" + messageId)
@@ -101,7 +102,7 @@ public class TalkMessageHandler implements CDDHandler {
                     String sender = pmap.get(PropertyId.fromIdString(Const.Message.Sender)).stringValue();
                     String randomID = new ObjectId().toString();
                     wsession.pathBy("/notifies/" + sender).property(Const.Notify.LastNotifyId, randomID)
-                            .addChild(randomID)
+                            .child(randomID)
                             .property(Const.Connection.DelegateServer, getDelegateServer(sender, wsession))
                             .property(Const.Notify.CreatedAt, ToonServer.GMTTime())
                             .refTo(Const.Message.Message, "/rooms/" + roomId + "/messages/" + messageId)

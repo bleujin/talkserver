@@ -83,7 +83,7 @@ public class TestChatBot extends TestCase{
 
         chatBot.onFilter("test", "ryun", "happy", "testMessage");
 
-        ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().next();
+        ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().firstNode();
         assertTrue(StringUtil.startsWith(messageNode.property(Const.Message.ClientScript).stringValue(), "client.character"));
         assertEquals(1, rsession.pathBy("/rooms/test/messages").childrenNames().size());
     }
@@ -104,7 +104,7 @@ public class TestChatBot extends TestCase{
 
         chatBot.onFilter("test", "ryun", "happy", "testMessage");
 
-        ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().next();
+        ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().firstNode();
         assertTrue(messageNode.property(Const.Message.ClientScript).stringValue().contains("motion(\"0\")"));
 
     }
@@ -126,7 +126,7 @@ public class TestChatBot extends TestCase{
 
         chatBot.onFilter("test", "ryun", "angry", "testMessage");
 
-        ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().next();
+        ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().firstNode();
         assertTrue(messageNode.property(Const.Message.ClientScript).stringValue().contains("motion(\"3\")"));
 
     }
@@ -146,7 +146,7 @@ public class TestChatBot extends TestCase{
 
         chatBot.onFilter("test", "ryun", "sad", "testMessage");
 
-        ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().next();
+        ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().firstNode();
         assertTrue(messageNode.property(Const.Message.ClientScript).stringValue().contains("motion(\"1\")"));
 
     }
