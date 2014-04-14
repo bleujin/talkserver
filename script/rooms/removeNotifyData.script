@@ -1,0 +1,9 @@
+var userId =params.asString("userId");
+var notifyId =params.asString("notifyId");
+
+session.tranSync(function(wsession){
+if(wsession.pathBy("/notifies/" + userId).hasChild(notifyId)){
+       wsession.pathBy("/notifies/" + userId +"/"+ notifyId).removeSelf();
+}
+
+}); 

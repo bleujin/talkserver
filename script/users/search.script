@@ -1,5 +1,5 @@
 var phones = params.asStrings("phone");
-
+ 
 var jb = rb.create().newInner().inlist("friends");
 
 
@@ -8,6 +8,7 @@ for(var i=0;i<phones.length;i++){
 
   var findUser = session.pathBy("/users/").childQuery("phone:"+phones[i]).find().first();
 
+  //if not exists.
   try{     
 
        jb.property(findUser, "phone").property("userId", findUser.fqn().name());
@@ -17,6 +18,8 @@ for(var i=0;i<phones.length;i++){
             if(i<phones.length-1){
 
                   jb.next();
+
+
 
              }
 

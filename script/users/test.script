@@ -1,0 +1,1 @@
+session.pathBy("/rooms/4848echoBot/messages").childrenNames();

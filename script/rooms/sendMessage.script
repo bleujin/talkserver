@@ -6,6 +6,7 @@ var randomId = new ObjectId().toString();
 session.tranSync(function(wsession){
 var msgNode=wsession.pathBy("/rooms/" + params.asString("roomId")+"/messages/"+randomId)
 .property("message",params.asString("message"))
+.property("messageId", randomId)
 .property("sender",params.asString("sender"))
 .property("clientScript",params.asString("clientScript"))
 .property("event","onMessage")

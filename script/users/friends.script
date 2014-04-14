@@ -1,3 +1,2 @@
-
 var user = session.pathBy("/users/" + params.asString("userId"));
-rb.create().newInner().inlist("friends", user.refs("friends").toList(), "phone,nickname,userId,stateMessage").build().toJsonElement().toString();
+rb.create().newInner().inlist("friends", user.refs("friends").toList(), "phone,nickname,userId,stateMessage,country").build().toJsonElement().toString();

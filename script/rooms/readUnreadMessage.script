@@ -1,0 +1,6 @@
+var roomId=params.asString("roomId");
+var unreadMessages = session.pathBy("/rooms/" + roomId + "/messages").children().where("this.messageId > '" + params.asString("messageId") + "'");
+
+unreadMessages;
+
+rb.create().newInner().inlist("messages", unreadMessages,"message, sender,requestId, clientScript,event, messageId").property("roomId", roomId).build().toJsonElement().toString();

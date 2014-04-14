@@ -1,0 +1,9 @@
+var user = session.pathBy("/users/" + params.asString("userId"));
+
+var children = session.pathBy("/bots").children();
+
+rb.create().newInner()
+.inlist("friends", user.refs("recommendFriends").toList(),"phone,nickname,userId")
+.root()
+.inlist("bots", children, "bot.userId,bot.nickname,bot.phone")
+.property("clientScript","client.friends().listRecomendFriends();").build().toJsonElement().toString();

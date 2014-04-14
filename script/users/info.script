@@ -1,3 +1,2 @@
-
 var user = session.pathBy("/users/" + params.asString("userId"));
-rb.create().newInner().property(user, "nickname, phone,pushId,stateMessage").build().toJsonObject().toString();
+rb.create().newInner().property(user, "nickname, phone,pushId,stateMessage,country").build().toJsonObject().toString();

@@ -1,0 +1,4 @@
+
+  session.tranSync(function(wsession){
+    wsession.pathBy("/auth/sms/" + params.asString("phone")).removeSelf();
+  });
