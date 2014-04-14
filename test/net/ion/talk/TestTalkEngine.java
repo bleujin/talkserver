@@ -22,7 +22,7 @@ public class TestTalkEngine extends TestCase {
 
 	@Override
 	protected void tearDown() throws Exception {
-//        engine.readSession().workspace().repository().shutdown();
+        engine.readSession().workspace().repository().shutdown();
         engine.onStop();
 	}
 

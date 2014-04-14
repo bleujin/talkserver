@@ -19,22 +19,22 @@ public class TestUserInAndOutRoomHandler extends TestCrakenHandlerBase {
 		super.setUp();
 		rsession.workspace().cddm().add(new UserInAndOutRoomHandler());
 
-		rsession.tranSync(new TransactionJob<Object>() {
+		rsession.tran(new TransactionJob<Object>() {
 			@Override
 			public Object handle(WriteSession wsession) throws Exception {
 				wsession.pathBy("/rooms/1/members/ryun").property(Const.Message.Sender, "alex");
 				return null;
 			}
 		});
-		rsession.tranSync(new TransactionJob<Object>() {
+		rsession.tran(new TransactionJob<Object>() {
 			@Override
 			public Object handle(WriteSession wsession) throws Exception {
 				wsession.pathBy("/rooms/1/members/alex").property(Const.Message.Sender, "ryun");
 				return null;
 			}
 		});
-		//
-		Thread.sleep(100);
+
+        Thread.sleep(1000);
 	}
 
 	@Override
