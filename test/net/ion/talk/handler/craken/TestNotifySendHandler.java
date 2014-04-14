@@ -68,7 +68,7 @@ public class TestNotifySendHandler extends TestCase {
 				String messageId = "messageId";
 
 				wsession.pathBy("/users/bleujin");
-				wsession.pathBy("/notifies/" + userId).property("lastNotifyId", notifyID).addChild(notifyID).property("delegateServer", memberId).property("createdAt", ToonServer.GMTTime()).refTo("message", "/rooms/" + roomId + "/messages/" + messageId).refTo("roomId", "/rooms/" + roomId);
+				wsession.pathBy("/notifies/" + userId).property("lastNotifyId", notifyID).child(notifyID).property("delegateServer", memberId).property("createdAt", ToonServer.GMTTime()).refTo("message", "/rooms/" + roomId + "/messages/" + messageId).refTo("roomId", "/rooms/" + roomId);
 				return null;
 			}
 		});

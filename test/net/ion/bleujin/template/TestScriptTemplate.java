@@ -6,6 +6,7 @@ import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
 import net.ion.craken.node.crud.RepositoryImpl;
+import net.ion.craken.node.crud.util.TransactionJobs;
 import net.ion.framework.mte.Engine;
 import net.ion.framework.util.Debug;
 import net.ion.talk.let.ScriptTemplate;
@@ -26,10 +27,15 @@ public class TestScriptTemplate extends TestCase {
 
 			@Override
 			public Void handle(WriteSession wsession) throws Exception {
-				wsession.pathBy("/emps").property("name", "employee").property("script", "-- script --").addChild("bleujin").property("name", "bluejin").parent().addChild("hero").property("name", "heor");
+				wsession.pathBy("/emps").property("name", "employee").property("script", "-- script --").child("bleujin").property("name", "bluejin").parent().child("hero").property("name", "heor");
 				return null;
 			}
 		});
+	}
+	
+	
+	public void testSearch() throws Exception {
+		session.queryRequest("name:employee").ascending("name").find().debugPrint(); 
 	}
 
 	public void testNodeTemplate() throws Exception {

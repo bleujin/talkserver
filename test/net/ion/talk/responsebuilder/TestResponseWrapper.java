@@ -56,7 +56,7 @@ public class TestResponseWrapper extends TestBaseCrud {
 			@Override
 			public Void handle(WriteSession wsession) throws Exception {
 				WriteNode bleujin = wsession.pathBy("/bleujin").property("name", "bleujin").property("age", 20);
-				bleujin.addChild("hero").property("name", "hero").property("age", 21).parent().addChild("jin").property("name", "jin");
+				bleujin.child("hero").property("name", "hero").property("age", 21).parent().child("jin").property("name", "jin");
 				return null;
 			}
 		});

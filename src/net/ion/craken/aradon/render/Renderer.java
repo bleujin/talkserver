@@ -203,10 +203,10 @@ class ChildrenJson implements RenderFunction {
 			@Override
 			public JsonObjectRepresentation apply(ReadNode node) {
 				JsonArray children = new JsonArray();
-				ReadChildren iter = node.children();
+				ReadChildren readChildren = node.children();
 
-				while (iter.hasNext()) {
-					children.add(iter.next().fqn().toJson());
+				for (ReadNode rnode : readChildren) {
+					children.add(rnode.fqn().toJson());
 				}
 
 				return new JsonObjectRepresentation(children);

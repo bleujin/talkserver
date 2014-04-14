@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 
+import net.ion.framework.util.Debug;
 import net.ion.framework.util.ObjectUtil;
 import net.ion.nradon.WebSocketConnection;
 import net.ion.talk.TalkEngine.Reason;
@@ -11,8 +12,8 @@ import net.ion.talk.TalkEngine.Reason;
 public class UserConnection {
 
 	private WebSocketConnection inner;
-    private long heartBeat = 0;
-    private ScheduledFuture<?> heartBeatJob;
+    private long lastHeartBeat = 0;
+
 
     protected UserConnection(WebSocketConnection inner) {
 		this.inner = inner ;
@@ -73,12 +74,24 @@ public class UserConnection {
         return accessToken().equals(accessToken);
     }
 
-    public void setHeartBeatJob(ScheduledFuture<?> heartBeatJob) {
-        this.heartBeatJob = heartBeatJob;
+
+
+    public void heartBeat() {
+        long heartBeatGap = ToonServer.GMTTime() - lastHeartBeat;
+
+        Debug.line(heartBeatGap);
+
+        if(heartBeatGap < TalkEngine.HEARTBEAT_WATING){
+            return;
+        }else if(heartBeatGap < TalkEngine.HEARTBEAT_KILLING){
+            sendMessage("HEARTBEAT");
+            return;
+        }else{
+            close(Reason.TIMEOUT);
+        }
     }
 
-    public void cancelHeartBeatJob(boolean mayInterruptIfRunning){
-        if(heartBeatJob!=null)
-            heartBeatJob.cancel(mayInterruptIfRunning);
+    public void updateHeartBeat() {
+        lastHeartBeat = ToonServer.GMTTime();
     }
 }

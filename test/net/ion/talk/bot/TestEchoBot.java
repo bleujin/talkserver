@@ -69,14 +69,14 @@ public class TestEchoBot extends TestCase {
     public void testOnEnter() throws Exception {
 		echoBot.onEnter("test", "ryun");
 		Thread.sleep(1000);
-		ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().next();
+		ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().firstNode();
 		assertEquals("Hello! ryun", messageNode.property(Const.Message.Message).stringValue());
 	}
 
 	public void testOnExit() throws Exception {
 		echoBot.onExit("test", "ryun");
 		Thread.sleep(1000);
-		ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().next();
+		ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().firstNode();
 		assertEquals("Bye! ryun", messageNode.property(Const.Message.Message).stringValue());
 
 	}
@@ -84,7 +84,7 @@ public class TestEchoBot extends TestCase {
 	public void testOnMessage() throws Exception {
 		echoBot.onMessage("test", "ryun", "Everybody Hello!");
 		Thread.sleep(1000);
-		ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().next();
+		ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().firstNode();
 		assertEquals("Everybody Hello!", messageNode.property(Const.Message.Message).stringValue());
 	}
 

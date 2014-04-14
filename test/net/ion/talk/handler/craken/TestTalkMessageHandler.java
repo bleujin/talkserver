@@ -25,8 +25,8 @@ public class TestTalkMessageHandler extends TestCrakenHandlerBase{
 
 				wsession.pathBy("/notifies/bleujin");
 				wsession.pathBy("/notifies/ryun");
-				wsession.pathBy("/rooms/1234/members").addChild("ryun");
-				wsession.pathBy("/rooms/1234/members").addChild("bleujin");
+				wsession.pathBy("/rooms/1234/members").child("ryun");
+				wsession.pathBy("/rooms/1234/members").child("bleujin");
 				return null;
 			}
 		});
@@ -50,12 +50,12 @@ public class TestTalkMessageHandler extends TestCrakenHandlerBase{
 
 		Thread.sleep(1000);
 
-		ReadNode notiRyun = rsession.pathBy("/notifies/ryun").children().next();
+		ReadNode notiRyun = rsession.pathBy("/notifies/ryun").children().firstNode();
 		assertEquals("Hello World!", notiRyun.ref("message").property("message").stringValue());
 		assertEquals(rsession.ghostBy("/users/alex"), notiRyun.ref("message").ref("sender"));
 		assertEquals(rsession.ghostBy("/chars/1"), notiRyun.ref("message").ref("character"));
 
-		ReadNode notiAlex = rsession.pathBy("/notifies/alex").children().next();
+		ReadNode notiAlex = rsession.pathBy("/notifies/alex").children().firstNode();
 		assertEquals("Hello World!", notiAlex.ref("message").property("message").stringValue());
 		assertEquals(rsession.ghostBy("/users/alex"), notiAlex.ref("message").ref("sender"));
 		assertEquals(rsession.ghostBy("/chars/1"), notiAlex.ref("message").ref("character"));
@@ -89,9 +89,9 @@ public class TestTalkMessageHandler extends TestCrakenHandlerBase{
                 wsession.pathBy("/notifies/ryun");
                 wsession.pathBy("/users/chatBot").property("requestURL", "http://daum.net").property(Const.Bot.isSyncBot, "true");
                 wsession.pathBy("/bots/chatBot").refTo("bot", "/users/chatBot");
-                wsession.pathBy("/rooms/1234/members").addChild("ryun");
-                wsession.pathBy("/rooms/1234/members").addChild("bleujin");
-                wsession.pathBy("/rooms/1234/members").addChild("chatBot");
+                wsession.pathBy("/rooms/1234/members").child("ryun");
+                wsession.pathBy("/rooms/1234/members").child("bleujin");
+                wsession.pathBy("/rooms/1234/members").child("chatBot");
                 wsession.pathBy("/rooms/1234/messages/testMessage")
                         .property(Const.Message.Message, "Hello Ryun")
                         .property(Const.Message.Event, Const.Event.onMessage)

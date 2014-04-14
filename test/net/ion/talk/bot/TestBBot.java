@@ -70,14 +70,14 @@ public class TestBBot extends TestCase{
     public void testOnEnter() throws Exception {
         bBot.onEnter("test", "bBot");
         Thread.sleep(500);
-        ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().next();
+        ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().firstNode();
         Debug.line("안녕하세요. B@bot 입니다! 도움이 필요하다면 \"B@메시지\"이라고 입력해주세요 :) ex) B@도움말, B@식당, B@월차", messageNode.property(Const.Message.Message).stringValue());
     }
 
     public void testOnExit() throws Exception {
         bBot.onExit("test", "bBot");
         Thread.sleep(500);
-        ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().next();
+        ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().firstNode();
         assertEquals("나중에 또 봐요 ~", messageNode.property(Const.Message.Message).stringValue());
 
     }
@@ -85,37 +85,36 @@ public class TestBBot extends TestCase{
     public void testHelpWithOutAccount() throws Exception {
         bBot.onMessage("test", "ryun", "B@도움말");
         Thread.sleep(1000);
-        ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().next();
+        ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().firstNode();
         assertEquals("계정 정보가 없습니다. \"/register 이메일 비밀번호\"를 이용하여 계정정보를 입력해주세요.", messageNode.property(Const.Message.Message).stringValue());
     }
 
     public void testRegisterAccount() throws Exception {
         bBot.onMessage("test", "ryun", "/register ryun@i-on.net ryun");
         Thread.sleep(1000);
-        ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().next();
+        ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().firstNode();
         assertEquals("ryun@i-on.net 계정이 정상적으로 등록되었습니다!", messageNode.property(Const.Message.Message).stringValue());
     }
 
     public void testHelpWithAccount() throws Exception {
         bBot.onMessage("test", "ryun", "/register ryun@i-on.net ryun");
         Thread.sleep(1000);
-        ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().next();
+        ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().firstNode() ;
         assertEquals("ryun@i-on.net 계정이 정상적으로 등록되었습니다!", messageNode.property(Const.Message.Message).stringValue());
         removeRecentMessage();
 
         bBot.onMessage("test", "ryun", "B@도움말");
         Thread.sleep(2000);
-        messageNode = rsession.pathBy("/rooms/test/messages/").children().next();
+        messageNode = rsession.pathBy("/rooms/test/messages/").children().firstNode();
         assertEquals("명령을 보냈습니다!", messageNode.property(Const.Message.Message).stringValue());
         removeRecentMessage();
-
     }
 
     private void removeRecentMessage() throws Exception {
         rsession.tranSync(new TransactionJob<Object>() {
             @Override
             public Object handle(WriteSession wsession) throws Exception {
-                wsession.pathBy("/rooms/test/messages/").children().next().removeSelf();
+                wsession.pathBy("/rooms/test/messages/").children().firstNode().removeSelf();
                 return null;
             }
         });
