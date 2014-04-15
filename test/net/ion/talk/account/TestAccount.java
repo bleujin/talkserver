@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
@@ -41,8 +40,9 @@ public class TestAccount extends TestCase {
 	private Account bot;
 	private Account disconnectedUser;
 	private Account notFoundUser;
+    private Aradon aradon;
 
-	@Override
+    @Override
 	public void setUp() throws Exception {
 		RepositoryEntry rentry = RepositoryEntry.test();
 		rentry.repository().start() ;
@@ -59,7 +59,9 @@ public class TestAccount extends TestCase {
 			}
 		});
 
-		FakeTalkEngine fakeTalkEngine = new FakeTalkEngine(AradonTester.create().getAradon(), rentry);
+        aradon = AradonTester.create().getAradon();
+
+        FakeTalkEngine fakeTalkEngine = new FakeTalkEngine(aradon, rentry);
 		fakeTalkEngine.users.put("bleujin", new FakeUserConnection(null));
 
 		AccountManager am = AccountManager.create(fakeTalkEngine, new FakeSender());
@@ -76,6 +78,7 @@ public class TestAccount extends TestCase {
 	}
 
 
+
     public void testBot() throws Exception {
 
         session.tranSync(new TransactionJob<Void>() {
@@ -86,40 +89,42 @@ public class TestAccount extends TestCase {
                         .property("message","Hello World!")
                         .property(Const.Message.Event, Const.Event.onMessage);
 
-                wsession.pathBy("/notifies/bot/test").refTo("message", "/rooms/testRoom/messages/testMessage").refTo("roomId", "/rooms/testRoom");
+                wsession.pathBy("/notifies/bot/test").refTo ("message", "/rooms/testRoom/messages/testMessage").refTo("roomId", "/rooms/testRoom");
                 return null;
             }
         });
 
+
         Thread.sleep(2000);
         Debug.line(session.pathBy("/users/"));
-//        TalkResponse response = TalkResponseBuilder.create().newInner().property("notifyId", "test").build();
-//        assertEquals(200, bot.onMessage(response));
-        Debug.line(session.pathBy("/users/"));
 
+        System.gc();System.gc();System.gc();
+        TalkResponse response = TalkResponseBuilder.create().newInner().property("notifyId", "test").build();
+        assertEquals(200, bot.onMessage(response));
     }
 
 
-	public void testWhenNotConnectedUser() throws Exception {
+    public void testWhenNotConnectedUser() throws Exception {
 
-		TalkResponse response = TalkResponseBuilder.create().newInner().build();
+        TalkResponse response = TalkResponseBuilder.create().newInner().build();
 
-		disconnectedUser.onMessage(response);
-		String received = ((FakeSender) ((DisconnectedAccount) disconnectedUser).sender()).sendeds.get("ryun").received();
-		assertEquals("{}", received);
-	}
+        disconnectedUser.onMessage(response);
+        String received = ((FakeSender) ((DisconnectedAccount) disconnectedUser).sender()).sendeds.get("ryun").received();
+        assertEquals("{}", received);
+    }
 
-	public void testWhenConnectedUser() throws Exception {
-		TalkResponse response = TalkResponseBuilder.create().newInner().build();
-		connectedUser.onMessage(response);
-		String received = ((FakeUserConnection) ((ConnectedUserAccount) connectedUser).userConnection()).receivedMessage();
-		assertEquals("{}", received);
-	}
+    public void testWhenConnectedUser() throws Exception {
+        TalkResponse response = TalkResponseBuilder.create().newInner().build();
+        connectedUser.onMessage(response);
+        String received = ((FakeUserConnection) ((ConnectedUserAccount) connectedUser).userConnection()).receivedMessage();
+        assertEquals("{}", received);
+    }
 
-	public void testNotFoundUser() throws InterruptedException, ExecutionException, IOException {
-		TalkResponse response = TalkResponseBuilder.create().newInner().build();
-		assertNull(notFoundUser.onMessage(response));
-	}
+    public void testNotFoundUser() throws InterruptedException, ExecutionException, IOException {
+        TalkResponse response = TalkResponseBuilder.create().newInner().build();
+        assertNull(notFoundUser.onMessage(response));
+    }
+
 
 }
 
