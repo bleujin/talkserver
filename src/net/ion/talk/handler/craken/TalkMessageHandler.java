@@ -81,39 +81,32 @@ public class TalkMessageHandler implements CDDHandler {
                 }
 
 
-
                 Iterator<String> iter = wsession.pathBy("/rooms/" + roomId + "/members").childrenNames().iterator();
 
                 while(iter.hasNext()){
                     String userId = iter.next();
-                    if(receivers!=null && !receivers.asSet().contains(userId))
-                        continue;
-
-                    String randomID = new ObjectId().toString();
-                    wsession.pathBy("/notifies/" + userId).property(Const.Notify.LastNotifyId, randomID)
-                            .child(randomID)
-                                .property(Const.Connection.DelegateServer, getDelegateServer(userId, wsession))
-                                .property(Const.Notify.CreatedAt, ToonServer.GMTTime())
-                                .refTo(Const.Message.Message, "/rooms/" + roomId + "/messages/" + messageId)
-                                .refTo(Const.Room.RoomId, "/rooms/" + roomId);
-
+                    if(receivers!=null && !receivers.asSet().contains(userId)) continue;
+                    writeNotification(wsession, userId, roomId, messageId);
                 }
+
                 if(PropertyValue.createPrimitive(Const.Event.onExit).equals(pmap.get(PropertyId.fromIdString(Const.Message.Event)))){
                     String sender = pmap.get(PropertyId.fromIdString(Const.Message.Sender)).stringValue();
-                    String randomID = new ObjectId().toString();
-                    wsession.pathBy("/notifies/" + sender).property(Const.Notify.LastNotifyId, randomID)
-                            .child(randomID)
-                            .property(Const.Connection.DelegateServer, getDelegateServer(sender, wsession))
-                            .property(Const.Notify.CreatedAt, ToonServer.GMTTime())
-                            .refTo(Const.Message.Message, "/rooms/" + roomId + "/messages/" + messageId)
-                            .refTo(Const.Room.RoomId, "/rooms/" + roomId);
+                    writeNotification(wsession, sender, roomId, messageId);
                 }
-
-
 
                 return null;
             }
         };
+    }
+
+    private void writeNotification(WriteSession wsession, String sender, String roomId, String messageId) {
+        String randomID = new ObjectId().toString();
+        wsession.pathBy("/notifies/" + sender).property(Const.Notify.LastNotifyId, randomID)
+                .child(randomID)
+                .property(Const.Connection.DelegateServer, getDelegateServer(sender, wsession))
+                .property(Const.Notify.CreatedAt, ToonServer.GMTTime())
+                .refTo(Const.Message.Message, "/rooms/" + roomId + "/messages/" + messageId)
+                .refTo(Const.Room.RoomId, "/rooms/" + roomId);
     }
 
     protected String getDelegateServer(String userId, ISession session) {

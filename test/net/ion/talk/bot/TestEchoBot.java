@@ -7,7 +7,6 @@ import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
-import net.ion.framework.util.Debug;
 import net.ion.framework.util.ObjectId;
 import net.ion.framework.util.StringUtil;
 import net.ion.radon.aclient.NewClient;
@@ -107,7 +106,7 @@ public class TestEchoBot extends TestCase {
 		TalkResponse fakeResponse = TalkResponseBuilder.create().newInner().property("notifyId", notifyId).build();
 
 		Bot bot = new Bot("echoBot", rsession, NewClient.create());
-		bot.onMessage(fakeResponse);
+		bot.onMessage(notifyId, fakeResponse);
 
 		Thread.sleep(1000);
 		Iterator<String> iter = rsession.pathBy("/rooms/1234/messages/").childrenNames().iterator();
@@ -146,7 +145,7 @@ public class TestEchoBot extends TestCase {
         Iterator<String> iter = rsession.pathBy("/rooms/1234/messages/").childrenNames().iterator();
 
 		Bot bot = new Bot("echoBot", rsession, NewClient.create());
-		bot.onMessage(fakeResponse);
+		bot.onMessage(notifyId, fakeResponse);
 
 		Thread.sleep(1000);
 		ReadNode message = readMessage();
@@ -167,7 +166,7 @@ public class TestEchoBot extends TestCase {
 
 		fakeResponse = TalkResponseBuilder.create().newInner().property("notifyId", notifyId2).build();
 
-		bot.onMessage(fakeResponse);
+		bot.onMessage(notifyId, fakeResponse);
 
 		Thread.sleep(1000);
 		message = readMessage();

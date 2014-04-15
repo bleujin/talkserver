@@ -99,7 +99,7 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
         try {
 
             aradon.getServiceContext().putAttribute(BotManager.class.getCanonicalName(), BotManager.create(readSession()));
-            aradon.getServiceContext().putAttribute(AccountManager.class.getCanonicalName(), new AccountManager(this, NotifyStrategy.createSender(readSession())));
+            aradon.getServiceContext().putAttribute(AccountManager.class.getCanonicalName(), AccountManager.create(this, NotifyStrategy.createSender(readSession())));
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -271,6 +271,7 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 	}
 }
 
+
 class ConnManager {
 
 	private Map<String, UserConnection> conns = MapUtil.newMap();
@@ -328,8 +329,8 @@ class ConnManager {
             for(UserConnection uconn : conns.values()){
                 uconn.heartBeat();
             }
-
             es.schedule(this, TalkEngine.HEARTBEAT_DELAY, TimeUnit.MILLISECONDS);
         }
     }
+
 }

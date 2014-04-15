@@ -1,6 +1,10 @@
 package net.ion.talk.account;
 
+import com.google.common.base.Predicate;
 import net.ion.craken.node.ReadNode;
+import net.ion.craken.node.ReadSession;
+import net.ion.craken.node.TransactionJob;
+import net.ion.craken.node.WriteSession;
 import net.ion.talk.UserConnection;
 import net.ion.talk.responsebuilder.TalkResponse;
 
@@ -14,15 +18,18 @@ import net.ion.talk.responsebuilder.TalkResponse;
 public class ConnectedUserAccount extends Account {
 
     private final UserConnection uconn;
+    private final ReadSession rsession;
 
-    ConnectedUserAccount(String userId, ReadNode readNode, UserConnection uconn) {
+    ConnectedUserAccount(String userId, ReadSession rsession, UserConnection uconn) {
         super(userId, Type.ConnectedUser);
         this.uconn = uconn;
+        this.rsession = rsession;
     }
 
     @Override
-    public Object onMessage(TalkResponse response) {
+    public Object onMessage(final String notifyId, TalkResponse response) throws Exception {
         uconn.sendMessage(response.talkMessage());
+
         return null;
     }
 

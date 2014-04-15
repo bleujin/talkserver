@@ -41,10 +41,10 @@ public class AccountManager{
         UserConnection uconn = tengine.findConnection(userId);
 
         if(uconn!=null){
-            return new ConnectedUserAccount(userId, session.pathBy("/connections/"+userId).ref("user"), uconn);
+            return new ConnectedUserAccount(userId, session, uconn);
         }else if(session.exists("/users/"+userId)){
             ReadNode user = session.pathBy("/users/" + userId);
-            return user.property("requestURL") == PropertyValue.NotFound ? new DisconnectedAccount(userId, user, sender) : new Bot(userId, session, newClient);
+            return user.property("requestURL") == PropertyValue.NotFound ? new DisconnectedAccount(userId, session, sender) : new Bot(userId, session, newClient);
         }
 
         return Account.NotFoundUser;

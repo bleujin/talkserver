@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import net.ion.craken.listener.WorkspaceListener;
+import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.Workspace;
 import net.ion.craken.node.crud.TreeNodeKey;
 import net.ion.craken.tree.PropertyId;
@@ -32,7 +33,7 @@ public class NotificationListener implements WorkspaceListener{
     private AccountManager am;
 	private String memberId;
 
-	public NotificationListener(AccountManager am) throws IOException {
+    public NotificationListener(AccountManager am) throws IOException {
         this.am = am;
 	}
 
@@ -48,19 +49,15 @@ public class NotificationListener implements WorkspaceListener{
 			Map<String, String> resolveMap = event.getKey().getFqn().resolve(pattern) ;
 			final String userId = resolveMap.get("userId");
 			final String notifyId = resolveMap.get("notifyId");
-			
+
 			AtomicMap<PropertyId, PropertyValue> pmap = event.getValue() ;
 			PropertyValue pvalue = pmap.get(PropertyId.fromIdString(User.DelegateServer)) ;
-			
+
 			if(pvalue != null && pvalue.stringValue().equals(this.memberId)){
 				TalkResponse tresponse = TalkResponseBuilder.create().newInner().property("notifyId", notifyId).build() ;
                 try {
-                    am.newAccount(userId).onMessage(tresponse);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
+                    am.newAccount(userId).onMessage(notifyId, tresponse);
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -71,10 +68,10 @@ public class NotificationListener implements WorkspaceListener{
 	@Override
 	public void registered(Workspace wspace) {
 		this.memberId = wspace.repository().memberId() ;
-	}
+
+    }
 
 	@Override
 	public void unRegistered(Workspace wspace) {
 	}
-
 }

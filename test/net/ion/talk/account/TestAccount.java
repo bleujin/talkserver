@@ -2,17 +2,16 @@ package net.ion.talk.account;
 
 import junit.framework.TestCase;
 import net.ion.craken.aradon.bean.RepositoryEntry;
-import net.ion.craken.aradon.bean.RhinoEntry;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
-import net.ion.craken.node.crud.RepositoryImpl;
 import net.ion.framework.util.Debug;
 import net.ion.framework.util.MapUtil;
 import net.ion.framework.util.StringUtil;
 import net.ion.message.push.sender.PushMessage;
 import net.ion.message.push.sender.PushResponse;
 import net.ion.message.push.sender.Sender;
+import net.ion.message.push.sender.handler.ResponseHandler;
 import net.ion.nradon.WebSocketConnection;
 import net.ion.radon.aclient.ClientConfigBean;
 import net.ion.radon.aclient.NewClient;
@@ -28,6 +27,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
@@ -49,15 +49,15 @@ public class TestAccount extends TestCase {
 		session = rentry.login();
 
 		session.tranSync(new TransactionJob<Void>() {
-			@Override
-			public Void handle(WriteSession wsession) throws Exception {
-				wsession.pathBy("/users/bleujin").property("name", "bleujin");
-				wsession.pathBy("/users/ryun").property("name", "ryun");
-				wsession.pathBy("/users/bot").property("name", "bot").property("requestURL", "http://www.daum.net");
-				wsession.pathBy("/connections/bleujin").refTo("user", "/users/bleujin");
-				return null;
-			}
-		});
+            @Override
+            public Void handle(WriteSession wsession) throws Exception {
+                wsession.pathBy("/users/bleujin").property("name", "bleujin");
+                wsession.pathBy("/users/ryun").property("name", "ryun");
+                wsession.pathBy("/users/bot").property("name", "bot").property("requestURL", "http://www.daum.net");
+                wsession.pathBy("/connections/bleujin").refTo("user", "/users/bleujin");
+                return null;
+            }
+        });
 
         aradon = AradonTester.create().getAradon();
 
@@ -98,9 +98,8 @@ public class TestAccount extends TestCase {
         Thread.sleep(2000);
         Debug.line(session.pathBy("/users/"));
 
-        System.gc();System.gc();System.gc();
         TalkResponse response = TalkResponseBuilder.create().newInner().property("notifyId", "test").build();
-        assertEquals(200, bot.onMessage(response));
+        assertEquals(200, bot.onMessage("test", response));
     }
 
 
@@ -108,21 +107,29 @@ public class TestAccount extends TestCase {
 
         TalkResponse response = TalkResponseBuilder.create().newInner().build();
 
-        disconnectedUser.onMessage(response);
+        session.tranSync(new TransactionJob<Object>() {
+            @Override
+            public Object handle(WriteSession wsession) throws Exception {
+                wsession.pathBy("/notifies/ryun/test");
+                return null;
+            }
+        });
+        disconnectedUser.onMessage("test", response);
         String received = ((FakeSender) ((DisconnectedAccount) disconnectedUser).sender()).sendeds.get("ryun").received();
         assertEquals("{}", received);
+        assertFalse(session.exists("/notifies/ryun/test"));
     }
 
     public void testWhenConnectedUser() throws Exception {
         TalkResponse response = TalkResponseBuilder.create().newInner().build();
-        connectedUser.onMessage(response);
+        connectedUser.onMessage("test", response);
         String received = ((FakeUserConnection) ((ConnectedUserAccount) connectedUser).userConnection()).receivedMessage();
         assertEquals("{}", received);
     }
 
-    public void testNotFoundUser() throws InterruptedException, ExecutionException, IOException {
+    public void testNotFoundUser() throws Exception {
         TalkResponse response = TalkResponseBuilder.create().newInner().build();
-        assertNull(notFoundUser.onMessage(response));
+        assertNull(notFoundUser.onMessage("test", response));
     }
 
 
@@ -171,7 +178,7 @@ class FakeSender extends Sender {
 	public Map<String, FakePushMessage> sendeds = MapUtil.newMap();
 
 	protected FakeSender() {
-		super(null, null, null);
+		super(null, Executors.newFixedThreadPool(1), null);
 	}
 
 	@Override
@@ -196,7 +203,14 @@ class FakePushMessage extends PushMessage {
 		return null;
 	}
 
-	public String received() {
+    @Override
+    public <T> Future<T> sendAsync(String message, ResponseHandler<T> handler) {
+        this.received = message;
+        handler.onSuccess(new PushResponse());
+        return null;
+    }
+
+    public String received() {
 		return received;
 	}
 

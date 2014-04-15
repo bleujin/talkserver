@@ -2,21 +2,13 @@ package net.ion.talk.account;
 
 import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.ReadSession;
-import net.ion.framework.parse.gson.JsonObject;
-import net.ion.framework.util.Debug;
-import net.ion.framework.util.MapUtil;
-import net.ion.framework.util.ObjectUtil;
 import net.ion.radon.aclient.AsyncCompletionHandler;
 import net.ion.radon.aclient.NewClient;
 import net.ion.radon.aclient.Response;
-import net.ion.radon.util.uriparser.URIPattern;
-import net.ion.radon.util.uriparser.URIResolveResult;
-import net.ion.radon.util.uriparser.URIResolver;
 import net.ion.talk.bean.Const;
 import net.ion.talk.responsebuilder.TalkResponse;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -37,7 +29,7 @@ public class Bot extends Account {
     }
 
     @Override
-    public Object onMessage(TalkResponse response) throws IOException, ExecutionException, InterruptedException {
+    public Object onMessage(String notifyId, TalkResponse response) throws IOException, ExecutionException, InterruptedException {
         return buildRequest(response).execute(new AsyncCompletionHandler<Object>() {
             @Override
             public Object onCompleted(Response response) throws Exception {

@@ -1,8 +1,17 @@
 package net.ion.talk.account;
 
 import net.ion.craken.node.ReadNode;
+import net.ion.craken.node.ReadSession;
+import net.ion.craken.node.TransactionJob;
+import net.ion.craken.node.WriteSession;
+import net.ion.framework.util.Debug;
+import net.ion.message.push.sender.PushResponse;
 import net.ion.message.push.sender.Sender;
+import net.ion.message.push.sender.handler.ResponseHandler;
 import net.ion.talk.responsebuilder.TalkResponse;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 
 /**
@@ -15,15 +24,47 @@ import net.ion.talk.responsebuilder.TalkResponse;
 public class DisconnectedAccount extends Account {
 
     private final Sender sender;
+    private final ReadSession rsession;
 
-    DisconnectedAccount(String userId, ReadNode user, Sender sender) {
+    DisconnectedAccount(String userId, ReadSession rsession, Sender sender) {
         super(userId, Type.DisconnectedUser);
         this.sender = sender;
+        this.rsession = rsession;
     }
 
     @Override
-    public Object onMessage(TalkResponse response) {
-        return sender.sendTo(accountId()).sendAsync(response.pushMessage());
+    public Object onMessage(final String notifyId, TalkResponse response) throws ExecutionException, InterruptedException {
+        return sender.sendTo(accountId()).sendAsync(response.pushMessage(), new ResponseHandler<Object>() {
+            @Override
+            public <T> T result() {
+                return null;
+            }
+
+            @Override
+            public void onSuccess(PushResponse response) {
+                try {
+                    rsession.tranSync(new TransactionJob<Object>() {
+                        @Override
+                        public Object handle(WriteSession wsession) throws Exception {
+                            wsession.pathBy("/notifies/" + accountId() + "/" + notifyId).removeSelf();
+                            return null;
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFail(PushResponse response) {
+            }
+
+            @Override
+            public void onThrow(String receiver, String token, Throwable t) {
+            }
+        });
+
+
     }
 
     Sender sender(){
