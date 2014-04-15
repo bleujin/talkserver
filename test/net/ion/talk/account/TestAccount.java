@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
@@ -90,11 +91,12 @@ public class TestAccount extends TestCase {
             }
         });
 
-
         Thread.sleep(2000);
         Debug.line(session.pathBy("/users/"));
-        TalkResponse response = TalkResponseBuilder.create().newInner().property("notifyId", "test").build();
-        assertEquals(200, bot.onMessage(response));
+//        TalkResponse response = TalkResponseBuilder.create().newInner().property("notifyId", "test").build();
+//        assertEquals(200, bot.onMessage(response));
+        Debug.line(session.pathBy("/users/"));
+
     }
 
 
