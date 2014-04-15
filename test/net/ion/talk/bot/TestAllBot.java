@@ -8,7 +8,7 @@ import net.ion.talk.let.*;
 public class TestAllBot extends TestCase {
 
 	public static TestSuite suite() {
-		TestSuite result = new TestSuite();
+		TestSuite result = new TestSuite("Test All Bot");
 
         result.addTestSuite(TestBotManager.class);
         result.addTestSuite(TestBBot.class);

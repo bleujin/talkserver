@@ -8,6 +8,7 @@ import net.ion.craken.node.WriteSession;
 import net.ion.framework.util.Debug;
 import net.ion.framework.util.FileUtil;
 import net.ion.framework.util.IOUtil;
+import net.ion.framework.util.StringUtil;
 import net.ion.talk.TalkEngine;
 
 import java.io.*;
@@ -68,7 +69,7 @@ public class TestInitScriptHandler extends TestCase {
         final List<File> files = handler.getAllScriptFromFile("./script");
 
         for(File file : files){
-            assertTrue(rsession.exists(file.getPath().substring(1, file.getPath().lastIndexOf(".script"))));
+            assertTrue(rsession.exists(StringUtil.replace(file.getPath().substring(1, file.getPath().lastIndexOf(".script")), "\\","/")));
         }
     }
 
@@ -151,8 +152,4 @@ public class TestInitScriptHandler extends TestCase {
 
     }
 
-    public void testParentFile() throws Exception {
-        File file = new File("./script/ryun/test");
-        assertEquals("./script/ryun", file.getParent());
-    }
 }

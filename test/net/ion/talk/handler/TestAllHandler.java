@@ -16,7 +16,7 @@ import net.ion.talk.handler.engine.TestWebSocketTalkMessageHandler;
 public class TestAllHandler extends TestCase {
 
 	public static TestSuite suite() {
-		TestSuite result = new TestSuite();
+		TestSuite result = new TestSuite("Test All Handler");
 
         //craken
         result.addTestSuite(TestNotifySendHandler.class);

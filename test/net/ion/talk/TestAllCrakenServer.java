@@ -11,7 +11,7 @@ import net.ion.talk.responsebuilder.TestAllResponseBuilder;
 public class TestAllCrakenServer extends TestCase {
 
 	public static TestSuite suite(){
-		TestSuite result = new TestSuite() ;
+		TestSuite result = new TestSuite("Test All") ;
         result.addTestSuite(TestParameterMap.class) ;
 //        result.addTestSuite(TestMailer.class) ;
 		result.addTestSuite(TestTalkEngine.class) ;

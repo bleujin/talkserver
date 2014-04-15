@@ -27,7 +27,6 @@
 	<classpathentry kind="lib" path="lib/reflib/mail_fat.jar"/>
 	<classpathentry kind="lib" path="lib/reflib/antlr-3.4-complete.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/craken"/>
 	<classpathentry kind="lib" path="lib/ref/craken_0.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

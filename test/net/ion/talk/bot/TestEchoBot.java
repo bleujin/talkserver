@@ -9,6 +9,7 @@ import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
 import net.ion.framework.util.ObjectId;
 import net.ion.framework.util.StringUtil;
+import net.ion.nradon.Radon;
 import net.ion.radon.aclient.NewClient;
 import net.ion.radon.core.Aradon;
 import net.ion.radon.util.AradonTester;
@@ -30,6 +31,7 @@ public class TestEchoBot extends TestCase {
 	private RhinoEntry rengine;
 	private EchoBot echoBot;
 	private Aradon aradon;
+	private Radon radon;
 
 	@Override
 	public void setUp() throws Exception {
@@ -53,7 +55,8 @@ public class TestEchoBot extends TestCase {
 		BotManager botManager = BotManager.create(rsession);
 		botManager.registerBot(new EchoBot(rsession));
 
-		aradon = AradonTester.create().register("", "/bot", EmbedBotLet.class).getAradon().startServer(9000);
+		aradon = AradonTester.create().register("", "/bot", EmbedBotLet.class).getAradon() ;
+		this.radon = aradon.toRadon(9000).start().get() ;
 		aradon.getServiceContext().putAttribute(RepositoryEntry.EntryName, rentry);
 		aradon.getServiceContext().putAttribute(RhinoEntry.EntryName, rengine);
 		aradon.getServiceContext().putAttribute(BotManager.class.getCanonicalName(), botManager);
@@ -61,6 +64,7 @@ public class TestEchoBot extends TestCase {
 
     @Override
     public void tearDown() throws Exception {
+    	radon.stop().get() ;
         aradon.stop();
         super.tearDown();
     }

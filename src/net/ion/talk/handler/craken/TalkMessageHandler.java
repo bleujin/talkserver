@@ -1,6 +1,8 @@
 package net.ion.talk.handler.craken;
 
 import net.ion.craken.listener.CDDHandler;
+import net.ion.craken.listener.CDDModifiedEvent;
+import net.ion.craken.listener.CDDRemovedEvent;
 import net.ion.craken.node.*;
 import net.ion.craken.node.crud.TreeNodeKey;
 import net.ion.craken.tree.PropertyId;
@@ -39,12 +41,12 @@ public class TalkMessageHandler implements CDDHandler {
     }
 
     @Override
-    public TransactionJob<Void> deleted(Map<String, String> resolveMap, CacheEntryRemovedEvent<TreeNodeKey, AtomicMap<PropertyId, PropertyValue>> event) {
+    public TransactionJob<Void> deleted(Map<String, String> resolveMap, CDDRemovedEvent event) {
         return null;
     }
 
     @Override
-    public TransactionJob<Void> modified(Map<String, String> resolveMap, final CacheEntryModifiedEvent<TreeNodeKey, AtomicMap<PropertyId, PropertyValue>> event) {
+    public TransactionJob<Void> modified(Map<String, String> resolveMap, final CDDModifiedEvent event) {
 
         final String roomId = resolveMap.get(Const.Room.RoomId);
         final String messageId = resolveMap.get(Const.Message.MessageId);
@@ -55,7 +57,7 @@ public class TalkMessageHandler implements CDDHandler {
             @Override
             public Void handle(WriteSession wsession) throws Exception {
 
-                AtomicMap<PropertyId, PropertyValue> pmap = event.getValue() ;
+                Map<PropertyId, PropertyValue> pmap = event.getValue() ;
                 if(pmap.get(PropertyId.fromIdString(Const.Message.Filter)) != null)
                     return null;
 

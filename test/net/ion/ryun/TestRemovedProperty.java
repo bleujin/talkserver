@@ -3,6 +3,8 @@ package net.ion.ryun;
 import junit.framework.TestCase;
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.listener.CDDHandler;
+import net.ion.craken.listener.CDDModifiedEvent;
+import net.ion.craken.listener.CDDRemovedEvent;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
@@ -67,7 +69,7 @@ public class TestRemovedProperty extends TestCase {
 		}
 
 		@Override
-		public TransactionJob<Void> modified(Map<String, String> resolveMap, CacheEntryModifiedEvent<TreeNodeKey, AtomicMap<PropertyId, PropertyValue>> event) {
+		public TransactionJob<Void> modified(Map<String, String> resolveMap, CDDModifiedEvent event) {
 
 			Debug.line(event);
 
@@ -81,7 +83,7 @@ public class TestRemovedProperty extends TestCase {
 		}
 
 		@Override
-		public TransactionJob<Void> deleted(Map<String, String> stringStringMap, CacheEntryRemovedEvent<TreeNodeKey, AtomicMap<PropertyId, PropertyValue>> event) {
+		public TransactionJob<Void> deleted(Map<String, String> stringStringMap, CDDRemovedEvent event) {
 			return null;
 		}
 	}

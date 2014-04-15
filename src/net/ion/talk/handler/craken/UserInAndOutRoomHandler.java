@@ -2,6 +2,8 @@ package net.ion.talk.handler.craken;
 
 import net.ion.craken.listener.AsyncCDDHandler;
 import net.ion.craken.listener.CDDHandler;
+import net.ion.craken.listener.CDDModifiedEvent;
+import net.ion.craken.listener.CDDRemovedEvent;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
 import net.ion.craken.node.crud.TreeNodeKey;
@@ -27,7 +29,7 @@ import java.util.Map;
  * Time: 오후 6:27
  * To change this template use File | Settings | File Templates.
  */
-public class UserInAndOutRoomHandler implements AsyncCDDHandler {
+public class UserInAndOutRoomHandler implements CDDHandler {
 
     @Override
     public String pathPattern() {
@@ -35,7 +37,7 @@ public class UserInAndOutRoomHandler implements AsyncCDDHandler {
     }
 
     @Override
-    public TransactionJob<Void> modified(Map<String, String> resolveMap, CacheEntryModifiedEvent<TreeNodeKey, AtomicMap<PropertyId, PropertyValue>> event) {
+    public TransactionJob<Void> modified(Map<String, String> resolveMap, CDDModifiedEvent event) {
 
         final String roomId = resolveMap.get(Const.Room.RoomId);
         final String userId = resolveMap.get(Const.User.UserId);
@@ -62,7 +64,7 @@ public class UserInAndOutRoomHandler implements AsyncCDDHandler {
     }
 
     @Override
-    public TransactionJob<Void> deleted(Map<String, String> resolveMap, CacheEntryRemovedEvent<TreeNodeKey, AtomicMap<PropertyId, PropertyValue>> event) {
+    public TransactionJob<Void> deleted(Map<String, String> resolveMap, CDDRemovedEvent event) {
 
         final String roomId = resolveMap.get(Const.Room.RoomId);
         final String userId = resolveMap.get(Const.User.UserId);
