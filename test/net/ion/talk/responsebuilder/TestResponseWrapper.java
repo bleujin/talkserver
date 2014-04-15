@@ -1,5 +1,8 @@
 package net.ion.talk.responsebuilder;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+
 import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteNode;
@@ -82,6 +85,8 @@ public class TestResponseWrapper extends TestBaseCrud {
 		array = newBuilder.newInlist(bleujin.refs("friends"), "name, age").build().toJsonArray();
 		assertEquals(2, array.size());
 
+		
+		
 	}
 
 }

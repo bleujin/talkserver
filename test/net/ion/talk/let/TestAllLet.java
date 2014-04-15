@@ -7,7 +7,7 @@ import net.ion.talk.handler.engine.TestServerHandler;
 public class TestAllLet extends TestCase {
 
 	public static TestSuite suite() {
-		TestSuite result = new TestSuite();
+		TestSuite result = new TestSuite("Test All Let");
 
 		result.addTestSuite(TestLoginLet.class);
 		result.addTestSuite(TestLoginWebSocket.class);

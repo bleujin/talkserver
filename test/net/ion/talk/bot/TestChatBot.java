@@ -10,6 +10,7 @@ import net.ion.craken.node.WriteSession;
 import net.ion.framework.util.Debug;
 import net.ion.framework.util.ObjectId;
 import net.ion.framework.util.StringUtil;
+import net.ion.nradon.Radon;
 import net.ion.radon.aclient.NewClient;
 import net.ion.radon.core.Aradon;
 import net.ion.radon.util.AradonTester;
@@ -35,6 +36,7 @@ public class TestChatBot extends TestCase{
     private RhinoEntry rengine;
     private Aradon aradon;
     private ChatBot chatBot;
+	private Radon radon;
 
     @Override
     public void setUp() throws Exception {
@@ -60,12 +62,21 @@ public class TestChatBot extends TestCase{
         BotManager botManager = BotManager.create(rsession);
         botManager.registerBot(new EchoBot(rsession));
 
-        aradon = AradonTester.create().register("", "/bot",  EmbedBotLet.class).getAradon().startServer(9000);
+        aradon = AradonTester.create().register("", "/bot",  EmbedBotLet.class).getAradon() ;
+        this.radon = aradon.toRadon(9000).start().get();
         aradon.getServiceContext().putAttribute(RepositoryEntry.EntryName, rentry);
         aradon.getServiceContext().putAttribute(RhinoEntry.EntryName, rengine);
         aradon.getServiceContext().putAttribute(BotManager.class.getCanonicalName(), botManager);
     }
 
+
+    @Override
+    public void tearDown() throws Exception {
+    	radon.stop().get() ;
+        aradon.stop();
+        super.tearDown();
+    }
+    
     public void testOnFilter() throws Exception {
 
 
@@ -149,13 +160,6 @@ public class TestChatBot extends TestCase{
         ReadNode messageNode = rsession.pathBy("/rooms/test/messages/").children().firstNode();
         assertTrue(messageNode.property(Const.Message.ClientScript).stringValue().contains("motion(\"1\")"));
 
-    }
-
-
-    @Override
-    public void tearDown() throws Exception {
-        aradon.stop();
-        super.tearDown();
     }
 
 }

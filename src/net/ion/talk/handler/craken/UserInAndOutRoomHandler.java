@@ -29,7 +29,7 @@ import java.util.Map;
  * Time: 오후 6:27
  * To change this template use File | Settings | File Templates.
  */
-public class UserInAndOutRoomHandler implements AsyncCDDHandler {
+public class UserInAndOutRoomHandler implements CDDHandler {
 
     @Override
     public String pathPattern() {
