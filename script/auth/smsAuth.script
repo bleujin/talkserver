@@ -1,0 +1,10 @@
+var code = session.ghostBy("/auth/sms/" + params.asString("phone")).property("code").stringValue();
+
+if(code == params.asString("code")){
+  session.tranSync(function(wsession){
+    wsession.pathBy("/auth/sms/" + params.asString("phone")).removeSelf();
+  });
+  rb.create().newInner().property("auth","valid").build().toJsonObject();
+}else{
+  rb.create().newInner().property("auth","invalid").build().toJsonObject();
+}

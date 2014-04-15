@@ -1,0 +1,32 @@
+var phones = params.asStrings("phone");
+ 
+var jb = rb.create().newInner().inlist("friends");
+
+
+
+for(var i=0;i<phones.length;i++){
+
+  var findUser = session.pathBy("/users/").childQuery("phone:"+phones[i]).find().first();
+
+  //if not exists.
+  try{  
+if(findUser==null){
+ continue;
+}
+    session.tranSync(function(wsession){
+      if(wsession.pathBy("/users").hasChild(findUser.fqn().name()))
+        //addFriends
+        wsession.pathBy("/users/"+params.asString("userId")).refTos("friends","/users/"+ findUser.fqn().name());
+        //recommend
+      if(!(wsession.pathBy("/users/"+findUser.fqn().name()).hasRef("friends",wsession.pathBy("/users/"+params.asString("userId")).fqn())))
+        wsession.pathBy("/users/"+findUser.fqn().name()).refTos("recommendFriends","/users/"+params.asString("userId"));
+    });
+
+  }catch(e){
+  }
+
+}
+
+
+var user = session.pathBy("/users/" + params.asString("userId"));
+rb.create().newInner().inlist("friends", user.refs("friends").toList(), "phone,nickname,userId,stateMessage,country").build().toJsonElement().toString();

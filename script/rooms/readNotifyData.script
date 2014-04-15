@@ -7,6 +7,4 @@ var message = session.pathBy("/rooms/" + roomId + "/messages/" + messageId);
 
 
 
-rb.create().newInner().property(message, "message, sender,requestId, clientScript,event").property("roomId",roomId).property("messageId",message.fqn().name()).build().toJsonElement().toString();
-
-
+rb.create().newInner().property(message, "message, sender,requestId, clientScript,event").property("roomId",roomId).property("notifyId",params.asString("notifyId")).property("messageId",message.fqn().name()).build().toJsonElement().toString();

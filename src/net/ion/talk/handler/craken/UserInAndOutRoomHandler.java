@@ -1,5 +1,6 @@
 package net.ion.talk.handler.craken;
 
+import net.ion.craken.listener.AsyncCDDHandler;
 import net.ion.craken.listener.CDDHandler;
 import net.ion.craken.listener.CDDModifiedEvent;
 import net.ion.craken.listener.CDDRemovedEvent;
@@ -9,6 +10,7 @@ import net.ion.craken.node.crud.TreeNodeKey;
 import net.ion.craken.tree.PropertyId;
 import net.ion.craken.tree.PropertyValue;
 import net.ion.framework.parse.gson.JsonElement;
+import net.ion.framework.util.Debug;
 import net.ion.framework.util.ObjectId;
 import net.ion.framework.util.StringUtil;
 import net.ion.talk.bean.Const;
@@ -27,7 +29,7 @@ import java.util.Map;
  * Time: 오후 6:27
  * To change this template use File | Settings | File Templates.
  */
-public class UserInAndOutRoomHandler implements CDDHandler {
+public class UserInAndOutRoomHandler implements AsyncCDDHandler {
 
     @Override
     public String pathPattern() {
