@@ -32,8 +32,12 @@ public class TestWebSocketTalkMessageHandler extends TestCase {
 
 				wsession.pathBy("/script/users/register").property(
 						"script",
-						"session.tranSync(function(wsession){\n" + "  wsession.pathBy(\"/users/\" + params.asString(\"userId\"))\n" + "    .property(\"phone\",params.asString(\"phone\"))\n" + "    .property(\"nickname\",params.asString(\"nickname\"))\n"
-								+ "    .property(\"pushId\",params.asString(\"pushId\"))\n" + "    .property(\"deviceOS\",params.asString(\"deviceOS\"))\n" + "    .property(\"friends\", \"\");\n" + "});");
+						"session.tranSync(function(wsession){\n" + "  wsession.pathBy(\"/users/\" + params.asString(\"userId\"))\n" +
+						"    .property(\"phone\",params.asString(\"phone\"))\n" + 
+						"    .property(\"nickname\",params.asString(\"nickname\"))\n" + 
+						"    .property(\"pushId\",params.asString(\"pushId\"))\n" +
+						"    .property(\"deviceOS\",params.asString(\"deviceOS\"))\n" +
+						"    .property(\"friends\", \"\");\n" + "});");
 
 				wsession.pathBy("/script/users/info").property("script", "var user=session.pathBy(\"/users/\"+params.asString(\"userId\")); rb.create().newInner().property(user,\"nickname, phone\").build().toJsonObject();");
 				return null;

@@ -79,7 +79,7 @@ public class TestAccount extends TestCase {
 
 
 
-    public void testBot() throws Exception {
+    public void testSendToBot() throws Exception {
 
         session.tranSync(new TransactionJob<Void>() {
             @Override
@@ -93,10 +93,6 @@ public class TestAccount extends TestCase {
                 return null;
             }
         });
-
-
-        Thread.sleep(2000);
-        Debug.line(session.pathBy("/users/"));
 
         TalkResponse response = TalkResponseBuilder.create().newInner().property("notifyId", "test").build();
         assertEquals(200, bot.onMessage("test", response));
