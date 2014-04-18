@@ -76,6 +76,11 @@ public class UserInAndOutRoomHandler implements CDDHandler {
 
                 String randomID = new ObjectId().toString();
 
+
+//                wsession.pathBy("/rooms/1234/messages/testMessage")
+//                        .property(Const.Message.Message, "Bye")
+//                        .property(Const.Message.Sender, "ryun")
+//                        .property(Const.Message.Event, Const.Event.onExit);
                 //will define message
                 wsession.pathBy("/rooms/" + roomId + "/messages/")
                         .child(randomID)

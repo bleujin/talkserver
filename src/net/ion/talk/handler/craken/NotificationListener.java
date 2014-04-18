@@ -31,7 +31,7 @@ import org.infinispan.notifications.cachelistener.event.CacheEntryModifiedEvent;
 public class NotificationListener implements WorkspaceListener{
 
     private AccountManager am;
-	private String memberId;
+	protected String memberId;
 
     public NotificationListener(AccountManager am) throws IOException {
         this.am = am;

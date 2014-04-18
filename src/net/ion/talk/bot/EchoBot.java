@@ -20,10 +20,11 @@ import java.util.concurrent.*;
  */
 public class EchoBot extends EmbedBot {
 
-    private ScheduledExecutorService es = Executors.newScheduledThreadPool(5);
+    private ScheduledExecutorService ses;
 
-    public EchoBot(ReadSession rsession) {
+    public EchoBot(ReadSession rsession, ScheduledExecutorService ses) {
         super("echoBot", "메아리봇" ,"흠..?", "http://localhost:9000/bot", rsession);
+        this.ses = ses;
     }
 
     @Override
@@ -80,7 +81,7 @@ public class EchoBot extends EmbedBot {
 
         int delay = getUserProperty(roomId, sender, "delay").intValue(0);
 
-        es.schedule(new Callable<Object>() {
+        ses.schedule(new Callable<Object>() {
             @Override
             public Object call() throws Exception {
 

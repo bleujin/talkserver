@@ -45,7 +45,7 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 
     private static final Pattern hearbeatPtn = Pattern.compile("^HEARTBEAT$");
 
-	private ConnManager cmanger= ConnManager.create();
+	protected ConnManager cmanager = ConnManager.create();
 	private List<TalkHandler> handlers = ListUtil.newList();
 	private Aradon aradon;
 	private Logger logger = LogBroker.getLogger(TalkEngine.class);
@@ -82,7 +82,7 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 
 	// Only test
 	public void stopForTest() {
-        cmanger.shutdown();
+        cmanager.shutdown();
         onEvent(AradonEvent.STOP, null);
 	}
 
@@ -136,13 +136,13 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 	public void onOpen(WebSocketConnection conn) {
 		UserConnection created = UserConnection.create(conn);
         created.updateHeartBeat();
-		cmanger.add(created);
+		cmanager.add(created);
 
 
 		for (TalkHandler handler : handlers) {
 			Reason reason = handler.onConnected(this, created);
 			if (reason != Reason.OK) {
-				cmanger.remove(created, reason) ;
+				cmanager.remove(created, reason) ;
 				break ;
 			}
 		}
@@ -150,17 +150,17 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 
 	@Override
 	public void onClose(WebSocketConnection conn) {
-		final UserConnection found = cmanger.findBy(conn);
+		final UserConnection found = cmanager.findBy(conn);
 		for (TalkHandler handler : handlers) {
 			handler.onClose(this, found);
 		}
-		cmanger.remove(found, Reason.CLIENT);
+		cmanager.remove(found, Reason.CLIENT);
 	}
 
 	@Override
 	public void onMessage(WebSocketConnection conn, String msg) {
 		try {
-			final UserConnection found = cmanger.findBy(conn);
+			final UserConnection found = cmanager.findBy(conn);
 
             //heartbeat
             found.updateHeartBeat();
@@ -196,12 +196,12 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 	}
 
 	ConnManager connManger() {
-		return cmanger;
+		return cmanager;
 	}
 
 	@Override
 	public void onStop() {
-        cmanger.shutdown();
+        cmanager.shutdown();
 		onEvent(AradonEvent.STOP, null);
 	}
 

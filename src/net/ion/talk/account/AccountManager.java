@@ -20,15 +20,19 @@ import java.io.IOException;
 public class AccountManager{
 
 
-    private final ReadSession session;
     private final Sender sender;
     private final TalkEngine tengine;
-    private final NewClient newClient;
+    private ReadSession session;
+    private NewClient newClient;
 
     public AccountManager(TalkEngine tengine, Sender sender) throws IOException {
         this.tengine = tengine;
-        this.session = tengine.readSession();
         this.sender = sender;
+        init();
+    }
+
+    protected void init() throws IOException {
+        session = tengine.readSession();
         this.newClient = tengine.context().getAttributeObject(NewClient.class.getCanonicalName(), NewClient.class);
     }
 

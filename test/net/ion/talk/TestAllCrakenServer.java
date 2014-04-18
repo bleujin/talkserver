@@ -2,7 +2,7 @@ package net.ion.talk;
 
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import net.ion.talk.account.TestAccount;
+import net.ion.talk.account.TestAccountManager;
 import net.ion.talk.bot.TestAllBot;
 import net.ion.talk.handler.TestAllHandler;
 import net.ion.talk.let.TestAllLet;
@@ -15,7 +15,7 @@ public class TestAllCrakenServer extends TestCase {
         result.addTestSuite(TestParameterMap.class) ;
 //        result.addTestSuite(TestMailer.class) ;
 		result.addTestSuite(TestTalkEngine.class) ;
-        result.addTestSuite(TestAccount.class);
+        result.addTestSuite(TestAccountManager.class);
         
         result.addTest(TestAllHandler.suite());
         result.addTest(TestAllBot.suite());

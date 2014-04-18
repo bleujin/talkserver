@@ -33,6 +33,7 @@ public class Const {
         public static final String CausedEvent = "causedBy";
         public static final String Filter = "filter";
         public static final String FilterEnabled = "filterEnabled";
+
     }
 
     public static class Room {
@@ -54,6 +55,12 @@ public class Const {
     public static class Notify {
         public static final String LastNotifyId = "lastNotifyId";
         public static final String CreatedAt = "createdAt";
+        public static final String NotifyId = "notifyId";
+    }
+
+    public class Ref {
+        public static final String Bot = "bot";
+        public static final String User = "user";
     }
 }
 

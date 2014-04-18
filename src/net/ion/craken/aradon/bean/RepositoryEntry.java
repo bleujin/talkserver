@@ -48,6 +48,9 @@ public class RepositoryEntry implements OnOrderEventObject {
 	public RepositoryImpl repository(){
         return r;
     }
-	
-	
+
+
+    public void start() {
+        r.start();
+    }
 }

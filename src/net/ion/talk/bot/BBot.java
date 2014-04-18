@@ -26,10 +26,11 @@ import java.util.concurrent.*;
 public class BBot extends EmbedBot {
 
     private static String ION_SMTP_SERVER = "smtp.i-on.net";
-    private ScheduledExecutorService es = Executors.newScheduledThreadPool(5);
+    private ScheduledExecutorService ses;
 
-    public BBot(ReadSession rsession) {
+    public BBot(ReadSession rsession, ScheduledExecutorService ses) {
         super("bBot", "B@Bot", "나는야 B@Bot!", "http://localhost:9000/bot", rsession);
+        this.ses = ses;
     }
 
     @Override
@@ -87,7 +88,7 @@ public class BBot extends EmbedBot {
 
     protected void sendMessage(final String roomId, final String sender, final String message) throws Exception {
 
-        es.submit(new Callable<Object>() {
+        ses.submit(new Callable<Object>() {
             @Override
             public Object call() throws Exception {
                 BBot.super.sendMessage(roomId, sender, message);
@@ -106,7 +107,7 @@ public class BBot extends EmbedBot {
             return;
         }
 
-        es.submit(new Callable<Object>() {
+        ses.submit(new Callable<Object>() {
             @Override
             public Object call() throws Exception {
 

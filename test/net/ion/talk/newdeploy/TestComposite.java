@@ -1,16 +1,15 @@
 package net.ion.talk.newdeploy;
 
-import net.ion.craken.node.ReadSession;
-import net.ion.talk.FakeWebSocketConnection;
-import net.ion.talk.TalkEngine;
-import net.ion.talk.TalkMessage;
-import net.ion.talk.UserConnection;
-import net.ion.talk.TalkEngine.Reason;
-import net.ion.talk.account.TestAccount;
-import net.ion.talk.handler.TalkHandler;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import net.ion.craken.node.ReadSession;
+import net.ion.talk.TalkEngine;
+import net.ion.talk.TalkEngine.Reason;
+import net.ion.talk.TalkMessage;
+import net.ion.talk.UserConnection;
+import net.ion.talk.account.TestAccountManager;
+import net.ion.talk.handler.TalkHandler;
 
 public class TestComposite extends TestCase {
 
@@ -18,7 +17,7 @@ public class TestComposite extends TestCase {
 		TestSuite result = new TestSuite();
 
 		result.addTestSuite(TestHeart.class);
-		result.addTestSuite(TestAccount.class);
+		result.addTestSuite(TestAccountManager.class);
 
 		return result;
 	}

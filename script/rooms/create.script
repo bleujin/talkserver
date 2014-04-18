@@ -4,7 +4,7 @@ session.tranSync(function(wsession){
 
      for(var i=0;i<members.length;i++){
           if(!wsession.pathBy("/rooms/" + params.asString("roomId")+"/members/").hasChild(members[i])){
-                 wsession.pathBy("/rooms/" + params.asString("roomId")+"/members/"+members[i]).property("sender",params.asString("sender"));
+                 wsession.pathBy("/rooms/" + params.asString("roomId")+"/members/"+members[i]).property("sender",params.asString("sender")).refTo("user", "/users/"+members[i]);
           }
      }
 });

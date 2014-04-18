@@ -3,16 +3,13 @@ package net.ion.talk.handler.craken;
 import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
-import net.ion.framework.util.Debug;
-import net.ion.framework.util.ListUtil;
+import net.ion.talk.TestCrakenBase;
 import net.ion.talk.bean.Const;
-
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA. User: Ryun Date: 2014. 2. 3. Time: 오후 6:26 To change this template use File | Settings | File Templates.
  */
-public class TestUserInAndOutRoomHandler extends TestCrakenHandlerBase {
+public class TestUserInAndOutRoomHandler extends TestCrakenBase {
 
 	@Override
 	public void setUp() throws Exception {
