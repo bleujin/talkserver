@@ -8,7 +8,7 @@ import net.ion.talk.handler.TestAllHandler;
 import net.ion.talk.let.TestAllLet;
 import net.ion.talk.responsebuilder.TestAllResponseBuilder;
 
-public class TestAllCrakenServer extends TestCase {
+public class TestAllToonServer extends TestCase {
 
 	public static TestSuite suite(){
 		TestSuite result = new TestSuite("Test All") ;
