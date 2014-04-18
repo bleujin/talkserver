@@ -1,5 +1,6 @@
 package net.ion.talk.handler.craken;
 
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import net.ion.craken.node.ReadSession;
@@ -22,9 +23,9 @@ public class NotifyStrategy implements PushStrategy {
 		this.rsession = rsession;
 	}
 	
-	public static Sender createSender(ReadSession rsession){
-		SenderConfig config = SenderConfig.newBuilder().googleConfig(GCM_API_KEY).appleConfig(KEY_STORE_PATH, PASSWORD, false).retryAttempts(3).retryAfter(5, TimeUnit.MINUTES).build();;
-		return Sender.create(config, new NotifyStrategy(rsession)) ;
+	public static Sender createSender(ExecutorService es, ReadSession rsession){
+		SenderConfig config = SenderConfig.newBuilder().googleConfig(GCM_API_KEY).appleConfig(KEY_STORE_PATH, PASSWORD, false).retryAttempts(3).retryAfter(5, TimeUnit.MINUTES).build();
+        return Sender.create(new NotifyStrategy(rsession), es, config);
 	}
 
 	@Override

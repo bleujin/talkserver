@@ -47,7 +47,6 @@ public class TestTalkMessageHandler extends TestCrakenBase {
 
         NewClient nc = NewClient.create(ClientConfig.newBuilder().setRequestTimeoutInMs(3000).setMaxRequestRetry(3).setMaximumConnectionsPerHost(5).build());
 
-        rsession.workspace().cddm().add(new UserInAndOutRoomHandler());
         handler = new TalkMessageHandler(nc);
 		memberId = rsession.workspace().repository().memberId();
         rsession.workspace().cddm().add(handler);

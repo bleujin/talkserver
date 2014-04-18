@@ -49,6 +49,7 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 	private List<TalkHandler> handlers = ListUtil.newList();
 	private Aradon aradon;
 	private Logger logger = LogBroker.getLogger(TalkEngine.class);
+    private ScheduledExecutorService ses = Executors.newScheduledThreadPool(3);
 
 
 	private TalkEngine(){
@@ -88,6 +89,9 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 
 	public void onInit(SectionService parent, TreeContext context, WSPathConfiguration wsconfig) {
 		super.onInit(parent, context, wsconfig);
+
+
+
 		this.aradon = parent.getAradon();
         aradon.getServiceContext().putAttribute(TalkEngine.class.getCanonicalName(), this);
         NewClient nc = NewClient.create(ClientConfig.newBuilder().setMaxRequestRetry(5).setMaxRequestRetry(2).build());
@@ -99,11 +103,13 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
         try {
 
             aradon.getServiceContext().putAttribute(BotManager.class.getCanonicalName(), BotManager.create(readSession()));
-            aradon.getServiceContext().putAttribute(AccountManager.class.getCanonicalName(), AccountManager.create(this, NotifyStrategy.createSender(readSession())));
+            Sender sender = NotifyStrategy.createSender(ses, readSession());
+            aradon.getServiceContext().putAttribute(AccountManager.class.getCanonicalName(), AccountManager.create(this, sender));
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         TalkHandlerGroup hg = context.getAttributeObject(TalkHandlerGroup.class.getCanonicalName(), TalkHandlerGroup.class);
 		hg.set(this);
 
@@ -315,7 +321,7 @@ class ConnManager {
 	}
 
     public void startHeartBeat(){
-        es.schedule(new HeartBeatJob(), TalkEngine.HEARTBEAT_DELAY, TimeUnit.MILLISECONDS );
+        es.schedule(new HeartBeatJob(), TalkEngine.HEARTBEAT_DELAY, TimeUnit.MILLISECONDS);
     }
 
     public void shutdown(){

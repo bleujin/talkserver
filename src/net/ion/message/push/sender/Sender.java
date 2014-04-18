@@ -42,6 +42,7 @@ public class Sender {
     }
 
     public <T> Future<T> send(final PushMessage pushMessage, final ResponseHandler<T> handler) {
+
         Callable<T> sendTask = new Callable<T>() {
             @Override
             public T call() throws Exception {

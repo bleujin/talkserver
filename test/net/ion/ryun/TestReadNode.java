@@ -1,4 +1,4 @@
-package net.ion.ryun.extend;
+package net.ion.ryun;
 
 import junit.framework.TestCase;
 import net.ion.craken.aradon.bean.RepositoryEntry;

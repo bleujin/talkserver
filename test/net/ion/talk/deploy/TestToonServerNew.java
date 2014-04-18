@@ -43,7 +43,7 @@ public class TestToonServerNew extends TestBaseLet {
 
 		rsession.workspace().cddm().add(new UserInAndOutRoomHandler());
 		rsession.workspace().cddm().add(new TalkMessageHandler(tserver.mockClient().real()));
-		rsession.workspace().addListener(new NotificationListener(new AccountManager(tserver.talkEngine(), NotifyStrategy.createSender(rsession))));
+		rsession.workspace().addListener(new NotificationListener(new AccountManager(tserver.talkEngine(), NotifyStrategy.createSender(ses, rsession))));
 
         BotManager botManager = tserver.talkEngine().getServiceContext().getAttributeObject(BotManager.class.getCanonicalName(), BotManager.class);
 
