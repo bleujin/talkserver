@@ -1,6 +1,5 @@
 package net.ion.talk.script;
 
-import net.ion.framework.parse.gson.JsonArray;
 import net.ion.framework.parse.gson.JsonElement;
 import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.util.Debug;
@@ -10,6 +9,7 @@ import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -34,12 +34,12 @@ public class FileScriptObserver extends ScriptObserver {
 
 
     @Override
-    public void start() throws Exception {
+    protected void start() throws Exception {
         monitor.start();
     }
 
     @Override
-    public void stop() throws Exception {
+    protected void stop() throws Exception {
         monitor.stop();
 
     }
@@ -91,7 +91,6 @@ public class FileScriptObserver extends ScriptObserver {
                         String scriptKey = FilenameUtils.getBaseName(file.getName()) +  "@" + scriptName;
                         manager.putScript(scriptKey, sObj);
 
-
                     }
 
                     return null;
@@ -107,8 +106,21 @@ public class FileScriptObserver extends ScriptObserver {
         }
 
         @Override
-        public void onFileDelete(File file) {
-            manager.removeScript(file.getAbsolutePath());
+        public void onFileDelete(final File file) {
+
+            es.submit(new Callable<Object>() {
+                @Override
+                public Object call() throws Exception {
+
+                    String scriptKey = FilenameUtils.getBaseName(file.getName()) +  "@";
+
+                    for(String key : manager.getAllScript().keySet()){
+                        if(StringUtils.startsWith(key, scriptKey)) manager.removeScript(key);
+
+                    }
+                    return null;
+                }
+            });
         }
     }
 }

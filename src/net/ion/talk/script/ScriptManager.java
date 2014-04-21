@@ -6,6 +6,7 @@ import net.ion.framework.util.MapUtil;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 
@@ -81,5 +82,13 @@ public class ScriptManager {
         if(started) observer.start();
         observers.add(observer);
         return this;
+    }
+
+    public Map<String, ScriptObject> getAllScript() {
+        return Collections.unmodifiableMap(scripts);
+    }
+
+    public boolean ifExistScript(String key) {
+        return scripts.containsKey(key);
     }
 }
