@@ -53,7 +53,7 @@ public class TalkResponseBuilder {
     public static String makeResponse(Exception e) {
         return TalkResponseBuilder.create().newInner()
                 .property("status", "failure")
-                .property("result", e.toString())
+                .property("result", e.getMessage())
                 .property("createdAt", ToonServer.GMTTime())
                 .build().toString();
     }

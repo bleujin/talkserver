@@ -33,7 +33,7 @@ var execute = function(){
 
     $.ajax({
         type: "POST",
-        url: "/execute/ajax.string",
+        url: "/execute/test/hello" + ".string",
         data: data,
         dataType: "html"
     }).done(function(msg){

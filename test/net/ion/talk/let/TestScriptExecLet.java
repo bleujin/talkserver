@@ -8,15 +8,20 @@ import net.ion.framework.util.Debug;
 import net.ion.radon.aclient.*;
 import net.ion.radon.client.AradonClient;
 import net.ion.radon.core.EnumClass.IMatchMode;
+import net.ion.talk.TalkScript;
+
 import org.restlet.data.Method;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 
 public class TestScriptExecLet extends TestBaseLet {
 
 	private ReadSession session;
+	private TalkScript ts;
 
 	@Override
 	protected void setUp() throws Exception {
@@ -24,37 +29,46 @@ public class TestScriptExecLet extends TestBaseLet {
 		tserver.cbuilder().aradon().sections().restSection("execute").path("execute").addUrlPattern("/").matchMode(IMatchMode.STARTWITH).handler(ScriptExecLet.class).build();
 		tserver.startRadon();
 		session = tserver.readSession();
+		this.ts = TalkScript.create(session, Executors.newScheduledThreadPool(1));
+		ts.readDir(new File("./script")) ;
+		tserver.addAttribute(ts);
 	}
 
-	public void testAjaxScript() throws Exception {
+	public void testAjaxHello() throws Exception {
 		NewClient client = tserver.mockClient().real();
-		String script = "rb.create().newInner().property('name','ryun').build().toJsonObject();";
-		RequestBuilder requestBuilder = new RequestBuilder().setMethod(Method.POST).addParameter("script", script);
 
-		Request request = requestBuilder.setUrl("http://" + tserver.getHostAddress() + ":9000/execute/ajax.json" + "").build();
-
-		Response response = client.executeRequest(request).get();
+		Response response = client.executeRequest(new RequestBuilder().setMethod(Method.POST).setUrl("http://" + tserver.getHostAddress() + ":9000/execute/test/hello.json").build()).get();
 		assertEquals(200, response.getStatusCode());
 		assertEquals("application/json; charset=UTF-8", response.getContentType());
 		JsonObject obj = JsonObject.fromString(response.getTextBody()).asJsonObject("result");
 		assertEquals("ryun", obj.asString("name"));
+		Debug.line(obj);
+		
 
-		request = requestBuilder.setUrl("http://" + tserver.getHostAddress() + ":9000/execute/ajax.string").build();
-
-		response = client.executeRequest(request).get();
-		assertEquals("text/plain; charset=UTF-8", response.getContentType());
-		obj = JsonObject.fromString(response.getTextBody()).asJsonObject("result");
+		Response responseAsString = client.executeRequest(new RequestBuilder().setMethod(Method.POST).setUrl("http://" + tserver.getHostAddress() + ":9000/execute/test/hello.string").build()).get();
+		assertEquals("text/plain; charset=UTF-8", responseAsString.getContentType());
+		obj = JsonObject.fromString(responseAsString.getTextBody()).asJsonObject("result");
 		assertEquals("ryun", obj.asString("name"));
 		client.close();
 	}
-
-	public void testAjaxScriptWithParams() throws Exception {
+	
+	public void testOnException() throws Exception {
 		NewClient client = tserver.mockClient().real();
-		String script = "rb.create().newInner()" + ".property('name', params.asString('name'))" + ".property('location', params.asString('location'))" + ".property('money', params.asInt('money'))" + ".inner('friends').property('name', params.asString('friends')).build().toJsonObject();";
 
-		RequestBuilder requestBuilder = new RequestBuilder().setMethod(Method.POST).addParameter("script", script).addParameter("name", "alex").addParameter("location", "oregon").addParameter("money", "10000").addParameter("friends", "joshua");
+		Response response = client.executeRequest(new RequestBuilder().setMethod(Method.POST).setUrl("http://" + tserver.getHostAddress() + ":9000/execute/test/onexception.json").build()).get();
+		assertEquals(200, response.getStatusCode());
+		assertEquals("application/json; charset=UTF-8", response.getContentType());
+		JsonObject resJson = JsonObject.fromString(response.getTextBody());
+		assertEquals("failure", resJson.asString("status"));
+	}
+	
 
-		Request request = requestBuilder.setUrl("http://" + tserver.getHostAddress() + ":9000/execute/ajax.json").build();
+	public void testAjaxGreetingWithParams() throws Exception {
+		NewClient client = tserver.mockClient().real();
+		RequestBuilder requestBuilder = new RequestBuilder().setMethod(Method.POST)
+					.addParameter("name", "alex").addParameter("location", "oregon").addParameter("money", "10000").addParameter("friends", "joshua");
+
+		Request request = requestBuilder.setUrl("http://" + tserver.getHostAddress() + ":9000/execute/test/greeting.json").build();
 		Response response = client.executeRequest(request).get();
 
 		assertEquals(200, response.getStatusCode());

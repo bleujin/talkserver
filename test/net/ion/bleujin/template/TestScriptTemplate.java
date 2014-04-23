@@ -9,6 +9,7 @@ import net.ion.craken.node.crud.RepositoryImpl;
 import net.ion.craken.node.crud.util.TransactionJobs;
 import net.ion.framework.mte.Engine;
 import net.ion.framework.util.Debug;
+import net.ion.framework.util.ListUtil;
 import net.ion.talk.let.ScriptTemplate;
 
 public class TestScriptTemplate extends TestCase {
@@ -42,7 +43,7 @@ public class TestScriptTemplate extends TestCase {
 
 		ReadNode found = session.pathBy("/emps");
 		final Engine engine = session.workspace().parseEngine();
-		String result = found.transformer(ScriptTemplate.test(engine));
+		String result = found.transformer(ScriptTemplate.test(engine, ListUtil.EMPTY));
 
 		Debug.line(result);
 
@@ -51,7 +52,7 @@ public class TestScriptTemplate extends TestCase {
 	public void testTemplateWhenNotExist() throws Exception {
 		ReadNode notFound = session.ghostBy("/emps/notFound");
 		final Engine engine = session.workspace().parseEngine();
-		String result = notFound.transformer(ScriptTemplate.test(engine));
+		String result = notFound.transformer(ScriptTemplate.test(engine, ListUtil.EMPTY));
 		Debug.line(result);
 	}
 

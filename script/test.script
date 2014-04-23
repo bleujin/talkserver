@@ -1,0 +1,19 @@
+new function(){
+
+	this.hello = function(params){
+		return rb.create().newInner().property('name','ryun').build().toJsonObject();
+	}, 
+	
+	this.greeting = function(params){
+		return rb.create().newInner().property('name', params.asString('name'))
+			.property('location', params.asString('location'))
+			.property('money', params.asInt('money'))
+			.inner('friends').property('name', params.asStrings('friends')).build().toJsonObject();
+	}, 
+	
+	this.onexception = function(params){
+		return rb.notsuchMethod() ;
+	}
+
+
+} ;

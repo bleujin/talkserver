@@ -1,0 +1,83 @@
+new function(){
+
+	this.createWith = function(params){
+		var members= params.asStrings("members");
+
+		session.tranSync(function(wsession){
+		     for(var i=0;i<members.length;i++){
+		          if(!wsession.pathBy("/rooms/" + params.asString("roomId")+"/members/").hasChild(members[i])){
+		                 wsession.pathBy("/rooms/" + params.asString("roomId")+"/members/"+members[i]).property("sender",params.asString("sender")).refTo("user", "/users/"+members[i]);
+		          }
+		     }
+		});
+		return members.length ;	
+	}, 
+	
+	this.banWith = function(params){
+		var members= params.asStrings("members");
+		session.tranSync(function(wsession){
+			for(var i=0;i<members.length;i++){
+				if(wsession.pathBy("/rooms/" + params.asString("roomId")+"/members/").hasChild(members[i])){
+					wsession.pathBy("/rooms/" + params.asString("roomId")+"/members/"+members[i]).removeSelf();
+				}
+			}
+		});
+	}, 
+	
+	this.infoBy = function(params) {
+		var room = session.pathBy("/rooms/"+params.asString("roomId"));
+		var members = room.child("members").childrenNames();
+
+		return rb.create().newInner().property(room, "name").property("members", members).build().toJsonElement().toString();
+	}, 
+	
+	this.listNotifyDataBy = function(params){
+		var notify= session.pathBy("/notifies/" + params.asString("userId")+"/"+params.asString("notifyId"));
+		var roomId = notify.ref("roomId").fqn().name();
+		var messageId = notify.ref("message").fqn().name();
+		var message = session.pathBy("/rooms/" + roomId + "/messages/" + messageId);
+		
+		return rb.create().newInner().property(message, "message, sender,requestId, clientScript,event").property("roomId",roomId).property("notifyId",params.asString("notifyId")).property("messageId",message.fqn().name()).build().toJsonElement().toString();
+	}, 
+	
+	this.listUnreadMessageBy = function(params){
+		var roomId=params.asString("roomId");
+		var unreadMessages = session.pathBy("/rooms/" + roomId + "/messages").children().where("this.messageId > '" + params.asString("messageId") + "'");
+
+		unreadMessages;
+
+		return rb.create().newInner().inlist("messages", unreadMessages,"message, sender,requestId, clientScript,event, messageId").property("roomId", roomId).build().toJsonElement().toString();
+	}, 
+	
+	this.removeNotifyDataWith = function(params){
+		var userId =params.asString("userId");
+		var notifyId =params.asString("notifyId");
+		
+		session.tranSync(function(wsession){
+			if(wsession.pathBy("/notifies/" + userId).hasChild(notifyId)){
+			       wsession.pathBy("/notifies/" + userId +"/"+ notifyId).removeSelf();
+			}
+		}); 
+	}, 
+	
+	this.sendMessageWith = function(params){
+//		importPackage(net.ion.framework.util)
+
+		var receivers = params.asStrings("receivers");
+		var randomId = new net.ion.framework.util.ObjectId().toString();
+		
+		session.tranSync(function(wsession){
+			var msgNode=wsession.pathBy("/rooms/" + params.asString("roomId")+"/messages/"+randomId)
+				.property("message",params.asString("message"))
+				.property("messageId", randomId)
+				.property("sender",params.asString("sender"))
+				.property("clientScript",params.asString("clientScript"))
+				.property("event","onMessage")
+				.property("requestId",params.asString("requestId"));
+				for(var i=0;i< receivers.length;i++){
+				       msgNode.append("receivers", receivers[i]);
+				}
+		});	
+	}
+
+} ;

@@ -41,7 +41,6 @@ public class ToonServer {
 	private ConfigurationBuilder cbuilder;
     private TalkHandlerGroup talkHandlerGroup;
 	private MockClient mockClient;
-    private Map<String, Object> propertyMap = MapUtil.newMap();
 
 	private ToonServer init() throws Exception {
 		this.rentry = RepositoryEntry.test();
@@ -84,7 +83,7 @@ public class ToonServer {
 	}
 
     public static long GMTTime(){
-    	return new GregorianCalendar().getTime().getTime() ;
+    	return GregorianCalendar.getInstance().getTime().getTime() ;
     }
 
 	public ToonServer addTalkHander(TalkHandler thandler) {
@@ -152,12 +151,13 @@ public class ToonServer {
         return rengine;
     }
 
-    public void addAttribute(String key, Object value){
-        propertyMap.put(key, value);
+    public ToonServer addAttribute(Object value){
+        aradon.getServiceContext().putAttribute(value.getClass().getCanonicalName(), value) ;
+        return this ;
     }
 
     public <T> T getAttribute(String key, Class<T> clz){
-        return (T) propertyMap.get(key);
+    	 return aradon.getServiceContext().getAttributeObject(key, clz) ;
     }
 
     public String getHostAddress() {
@@ -166,6 +166,5 @@ public class ToonServer {
         } catch (UnknownHostException e) {
             return "127.0.0.1";
         }
-
     }
 }

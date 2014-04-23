@@ -1,0 +1,82 @@
+new function(){
+
+	this.addWith = function(params){
+		var friends= params.asStrings("friends");
+		session.tranSync(function(wsession){
+			for(var i=0;i<friends.length;i++){
+				if(wsession.pathBy("/users").hasChild(friends[i])){
+					wsession.pathBy("/users/"+params.asString("userId")).refTos("friends","/users/"+friends[i]);
+					if(!(wsession.pathBy("/users/"+friends[i]).hasRef("friends",wsession.pathBy("/users/"+params.asString("userId")).fqn()))){
+						wsession.pathBy("/users/"+friends[i]).refTos("recommendFriends","/users/"+params.asString("userId"));
+					}
+				}
+			}
+		});
+	}, 
+	
+	this.deleteWith = function(params){
+		var friends= params.asStrings("friends");
+		
+		session.tranSync(function(wsession){
+		     for(var i=0;i<friends.length;i++){
+		          wsession.pathBy("/users/"+params.asString("userId")).unRefTos("friends","/users/"+friends[i]);
+		     }
+		});
+		return friends ;
+	}, 
+	
+	this.deleteRecommendWith = function(params){
+		var friends= params.asStrings("friends");
+		session.tranSync(function(wsession){
+		     for(var i=0;i<friends.length;i++){
+		          wsession.pathBy("/users/"+params.asString("userId")).unRefTos("recommendFriends","/users/"+friends[i]);
+		     }
+		}); 
+	}, 
+	
+	
+	this.listBy = function(params){
+		var user = session.pathBy("/users/" + params.asString("userId"));
+		return rb.create().newInner().inlist("friends", user.refs("friends").toList(), "phone,nickname,userId,stateMessage,country").build().toJsonElement().toString();
+	}, 
+		
+
+	this.syncWith = function(params){
+		var phones = params.asStrings("phone");
+
+		var jb = rb.create().newInner().inlist("friends");
+
+		for(var i=0;i<phones.length;i++){
+			var findUser = session.pathBy("/users/").childQuery("phone:"+phones[i]).find().first();
+		
+			//if not exists.
+			try{  
+				if(findUser==null){
+				 continue;
+				}
+				
+			    session.tranSync(function(wsession){
+			      	if(wsession.pathBy("/users").hasChild(findUser.fqn().name())) //addFriends
+			        	wsession.pathBy("/users/"+params.asString("userId")).refTos("friends","/users/"+ findUser.fqn().name());
+			        
+			    	if(!(wsession.pathBy("/users/"+findUser.fqn().name()).hasRef("friends",wsession.pathBy("/users/"+params.asString("userId")).fqn())))  //recommend
+			        	wsession.pathBy("/users/"+findUser.fqn().name()).refTos("recommendFriends","/users/"+params.asString("userId"));
+			    });
+			
+			} catch(e){ }
+		}
+
+		var user = session.pathBy("/users/" + params.asString("userId"));
+		return rb.create().newInner().inlist("friends", user.refs("friends").toList(), "phone,nickname,userId,stateMessage,country").build().toJsonElement().toString();
+	}, 
+
+
+	this.recommendBy = function(params){
+		var user = session.pathBy("/users/" + params.asString("userId"));
+		var children = session.pathBy("/bots").children();
+	
+		return rb.create().newInner().inlist("friends", user.refs("recommendFriends").toList(),"phone,nickname,userId")
+			.root().inlist("bots", children, "bot.userId,bot.nickname,bot.phone").property("clientScript","client.friends().listRecomendFriends();").build().toJsonElement().toString();
+	}
+
+} ;
