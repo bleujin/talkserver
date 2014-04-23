@@ -4,6 +4,7 @@ import net.ion.craken.node.ReadSession;
 import net.ion.framework.util.InfinityThread;
 import net.ion.radon.aclient.ClientConfig;
 import net.ion.radon.aclient.NewClient;
+import net.ion.talk.TalkScript;
 import net.ion.talk.account.AccountManager;
 import net.ion.talk.bot.BBot;
 import net.ion.talk.bot.BotManager;
@@ -19,6 +20,7 @@ import net.ion.talk.handler.engine.UserConnectionHandler;
 import net.ion.talk.handler.engine.WebSocketMessageHandler;
 import net.ion.talk.let.TestBaseLet;
 
+import java.io.File;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -30,12 +32,15 @@ public class TestToonServerNew extends TestBaseLet {
 	public void testRunInfinite() throws Exception {
         ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
 
-		tserver.addTalkHander(new UserConnectionHandler()).addTalkHander(ServerHandler.test()).addTalkHander(new WebSocketMessageHandler()).addTalkHander(new InitScriptHandler());
+		tserver.addTalkHander(new UserConnectionHandler()).addTalkHander(ServerHandler.test()).addTalkHander(new WebSocketMessageHandler()); // .addTalkHander(new InitScriptHandler())
 
 		tserver.cbuilder().build();
 		tserver.startRadon();
 
 		ReadSession rsession = tserver.readSession();
+		TalkScript ts = TalkScript.create(rsession, ses) ;
+		ts.readDir(new File("./script"), true) ;
+		tserver.addAttribute(ts) ;
 
 		tserver.mockClient();
 
