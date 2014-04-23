@@ -13,7 +13,7 @@ public abstract class ScriptObserver {
     }
 
 
-    public abstract void start() throws Exception;
-    public abstract void stop() throws Exception;
+    protected abstract void start() throws Exception;
+    protected abstract void stop() throws Exception;
 
 }
