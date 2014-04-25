@@ -15,14 +15,21 @@ import net.ion.craken.aradon.NodeLet;
 import net.ion.craken.aradon.UploadLet;
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.node.ReadSession;
+import net.ion.message.push.sender.Pusher;
+import net.ion.message.sms.sender.SMSSender;
 import net.ion.nradon.Radon;
+import net.ion.radon.aclient.ClientConfig;
+import net.ion.radon.aclient.NewClient;
 import net.ion.radon.core.Aradon;
 import net.ion.radon.core.EnumClass;
 import net.ion.radon.core.EnumClass.IMatchMode;
 import net.ion.radon.core.config.ConfigurationBuilder;
 import net.ion.radon.core.security.ChallengeAuthenticator;
+import net.ion.talk.account.AccountManager;
+import net.ion.talk.bot.BotManager;
 import net.ion.talk.filter.CrakenVerifier;
 import net.ion.talk.handler.TalkHandler;
+import net.ion.talk.handler.craken.NotifyStrategy;
 import net.ion.talk.let.EmbedBotLet;
 import net.ion.talk.let.LoginLet;
 import net.ion.talk.let.ResourceLet;
@@ -51,15 +58,21 @@ public class ToonServer {
 	private ToonServer init() throws Exception {
 		this.repoEntry = RepositoryEntry.test();
 		CrakenVerifier verifier = CrakenVerifier.test(repoEntry.login());
-		ScheduledExecutorService ses = Executors.newScheduledThreadPool(10) ;
+		ScheduledExecutorService worker = Executors.newScheduledThreadPool(10) ;
 		
-		TalkScript tscript = TalkScript.create(repoEntry.login(), ses).readDir(new File("./script"), true) ;
+		TalkScript tscript = TalkScript.create(repoEntry.login(), worker).readDir(new File("./script"), true) ;
+		NewClient nc = NewClient.create(ClientConfig.newBuilder().setMaxRequestRetry(5).setMaxRequestRetry(2).build());
+		
+		SMSSender smsSender = SMSSender.create(nc);
 
 		this.cbuilder = ConfigurationBuilder.newBuilder()	
 				.aradon()
 					.addAttribute(RepositoryEntry.EntryName, repoEntry)
+					.addAttribute(ScheduledExecutorService.class.getCanonicalName(), worker)
 					.addAttribute(TalkScript.class.getCanonicalName(), tscript)
-					.addAttribute(ScheduledExecutorService.class.getCanonicalName(), ses)
+					.addAttribute(NewClient.class.getCanonicalName(), nc)
+					.addAttribute(SMSSender.class.getCanonicalName(), smsSender)
+					.addAttribute(BotManager.class.getCanonicalName(), BotManager.create(repoEntry.login()))
 				.sections()
 					.restSection("auth").addPreFilter(new ChallengeAuthenticator("users", verifier))
 						.path("login").addUrlPattern("/login").matchMode(IMatchMode.STARTWITH).handler(LoginLet.class)

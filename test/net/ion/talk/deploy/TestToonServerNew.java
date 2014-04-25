@@ -39,17 +39,19 @@ public class TestToonServerNew extends TestCase {
 		tserver.startRadon();
 		tserver.talkEngine().registerHandler(new UserConnectionHandler()).registerHandler(ServerHandler.test()).registerHandler(new WebSocketScriptHandler()) ;
 
+		NewClient nc = tserver.getAttribute(NewClient.class.getCanonicalName(), NewClient.class);
+		ScheduledExecutorService worker = tserver.getAttribute(ScheduledExecutorService.class.getCanonicalName(), ScheduledExecutorService.class);
+		BotManager botManager = tserver.getAttribute(BotManager.class.getCanonicalName(), BotManager.class);
 		ReadSession rsession = tserver.readSession();
-
-        ScheduledExecutorService ses = Executors.newScheduledThreadPool(3);
+		
+		
 		rsession.workspace().cddm().add(new UserInAndOutRoomHandler());
-		rsession.workspace().cddm().add(new TalkMessageHandler(NewClient.create()));
-		rsession.workspace().addListener(new NotificationListener(AccountManager.create(tserver.talkEngine(), NotifyStrategy.createSender(ses, rsession))));
+		rsession.workspace().cddm().add(new TalkMessageHandler(nc));
+		rsession.workspace().addListener(new NotificationListener(AccountManager.create(tserver.talkEngine(), NotifyStrategy.createSender(worker, rsession))));
 
-        BotManager botManager = tserver.talkEngine().context().getAttributeObject(BotManager.class.getCanonicalName(), BotManager.class);
 
-        botManager.registerBot(new EchoBot(tserver.readSession(), ses));
-        botManager.registerBot(new BBot(tserver.readSession(), ses));
+        botManager.registerBot(new EchoBot(tserver.readSession(), worker));
+        botManager.registerBot(new BBot(tserver.readSession(), worker));
         botManager.registerBot(new ChatBot(tserver.readSession()));
 
         new InfinityThread().startNJoin();
