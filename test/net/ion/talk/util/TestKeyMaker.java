@@ -1,5 +1,9 @@
 package net.ion.talk.util;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
+import net.ion.framework.util.Debug;
 import junit.framework.TestCase;
 
 public class TestKeyMaker extends TestCase {
@@ -24,5 +28,12 @@ public class TestKeyMaker extends TestCase {
 		long expected = km.publishKey("bleujin");
 		Thread.sleep(2000);
 		assertFalse(expected == km.publishKey("bleujin"));
+	}
+	
+	public void testGregorian() throws Exception {
+		Calendar ins = GregorianCalendar.getInstance() ;
+		Debug.line(ins.getTime().getTime());
+		Thread.sleep(789);
+		Debug.line(ins.getTime().getTime());
 	}
 }

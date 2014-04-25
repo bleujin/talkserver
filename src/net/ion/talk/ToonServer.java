@@ -1,6 +1,7 @@
 package net.ion.talk;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -8,6 +9,7 @@ import java.util.GregorianCalendar;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicReference;
 
 import net.ion.craken.aradon.NodeLet;
 import net.ion.craken.aradon.UploadLet;
@@ -35,12 +37,17 @@ public class ToonServer {
 		return new ToonServer().init();
 	}
 
+	private enum Status {
+		INITED, READY, STARTED, STOPED ;
+	}
+	
 	private RepositoryEntry repoEntry;
 	private Aradon aradon;
 	private Radon radon;
 	private ConfigurationBuilder cbuilder;
-	private MockClient mockClient;
 
+	private AtomicReference<Status> status = new AtomicReference<ToonServer.Status>(Status.STOPED) ;
+	
 	private ToonServer init() throws Exception {
 		this.repoEntry = RepositoryEntry.test();
 		CrakenVerifier verifier = CrakenVerifier.test(repoEntry.login());
@@ -70,7 +77,7 @@ public class ToonServer {
 						.path("resource").addUrlPattern("/{path}").matchMode(EnumClass.IMatchMode.STARTWITH).handler(ResourceLet.class)
 						
 					.restSection("bot")
-						.path("bot").addUrlPattern("/").matchMode(IMatchMode.STARTWITH).handler(EmbedBotLet.class)
+						.path("bot").addUrlPattern("/{botId}").matchMode(IMatchMode.STARTWITH).handler(EmbedBotLet.class)
 
 						
 					.restSection("admin").addAttribute("baseDir", "./resource/template").addAttribute("repository", repoEntry.repository())
@@ -81,7 +88,7 @@ public class ToonServer {
 //					.restSection("websocket").addAttribute(TalkHandlerGroup.class.getCanonicalName(), talkHandlerGroup)
 //						.wspath("websocket").addUrlPattern("/{id}/{accessToken}").handler(TalkEngine.class).toBuilder();
 
-		this.mockClient = MockClient.create(this);
+		status.set(Status.INITED);
 		return this;
 	}
 
@@ -89,30 +96,33 @@ public class ToonServer {
 		return GregorianCalendar.getInstance().getTime().getTime();
 	}
 
-	public ConfigurationBuilder cbuilder() {
-		return cbuilder;
-	}
-
-
-	public ToonServer startRadon() throws Exception {
+	public ToonServer ready() throws Exception {
 		this.aradon = Aradon.create(cbuilder.build());
 		this.radon = aradon.toRadon(9000);
 		
 		TalkEngine talkEngine = new TalkEngine(aradon.getServiceContext()) ;
-		radon.add("/websocket/{id}/{accessToken}", talkEngine) ;
 		talkEngine.startEngine() ;
+		radon.add("/websocket/{id}/{accessToken}", talkEngine) ;
+		
+		status.set(Status.READY);
+		return this;
+	}
+
+
+	public ToonServer startRadon() throws Exception {
+		if (status.get() != Status.READY) throw new IllegalStateException("current status is " + status.get()) ;
 		
 		radon.start().get();
+		status.set(Status.STARTED);
 		return this;
 	}
 
 	public void stop() throws InterruptedException, ExecutionException {
-		mockClient.close();
-		if (aradon != null)
-			aradon.stop();
-		if (radon != null)
-			radon.stop().get();
 		repoEntry.shutdown();
+		if (aradon != null) aradon.stop();
+		if (radon != null) radon.stop().get();
+		
+		status.set(Status.STOPED);
 	}
 
 	public Aradon aradon() {
@@ -135,11 +145,6 @@ public class ToonServer {
 		checkStarted();
 		return aradon.getServiceContext().getAttributeObject(TalkEngine.class.getCanonicalName(), TalkEngine.class);
 	}
-
-	public MockClient mockClient() {
-		return mockClient;
-	}
-
 
 	public ToonServer addAttribute(Object value) {
 		aradon.getServiceContext().putAttribute(value.getClass().getCanonicalName(), value);

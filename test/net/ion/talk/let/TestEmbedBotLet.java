@@ -1,6 +1,15 @@
 package net.ion.talk.let;
 
 import junit.framework.TestCase;
+import net.ion.craken.aradon.bean.RepositoryEntry;
+import net.ion.nradon.Radon;
+import net.ion.radon.client.AradonClient;
+import net.ion.radon.client.AradonClientFactory;
+import net.ion.radon.core.Aradon;
+import net.ion.radon.core.EnumClass.IMatchMode;
+import net.ion.radon.core.config.Configuration;
+import net.ion.radon.core.config.ConfigurationBuilder;
+import net.ion.radon.core.security.ChallengeAuthenticator;
 import net.ion.talk.ToonServer;
 import net.ion.talk.bean.Const;
 import net.ion.talk.bot.BotManager;
@@ -15,22 +24,32 @@ import org.restlet.data.Status;
  */
 public class TestEmbedBotLet extends TestCase {
 
-	private ToonServer tserver;
 	private BotManager botManager;
+	private Radon radon;
+	private AradonClient fake;
+	private RepositoryEntry repoEntry;
 
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		this.tserver = ToonServer.testWithLoginLet();
-		
-		tserver.startRadon();
-		botManager = BotManager.create(tserver.readSession());
-		tserver.talkEngine().context().putAttribute(BotManager.class.getCanonicalName(), botManager);
+		this.repoEntry = RepositoryEntry.test();
+		botManager = BotManager.create(repoEntry.login());
+		Configuration configuration = ConfigurationBuilder.newBuilder()	
+			.aradon()
+				.addAttribute(BotManager.class.getCanonicalName(), botManager)
+			.sections()
+				.restSection("bot")
+					.path("bot").addUrlPattern("/{botId}").matchMode(IMatchMode.STARTWITH).handler(EmbedBotLet.class).build() ;
+		Aradon aradon = Aradon.create(configuration);
+		this.fake = AradonClientFactory.create(aradon) ;
+		this.radon = aradon.toRadon() ;
 	}
 
 	@Override
 	public void tearDown() throws Exception {
-		tserver.stop();
+		repoEntry.shutdown(); 
+		fake.stop(); 
+		radon.stop();
 		super.tearDown();
 	}
 
@@ -39,30 +58,26 @@ public class TestEmbedBotLet extends TestCase {
 		EmbedBot fakeBot = new FakeBot();
 		botManager.registerBot(fakeBot);
 
-		Response response = tserver.mockClient().fake().createRequest("/bot")
-                .addParameter(Const.Bot.BotId, "fakeBot")
+		Response response = fake.createRequest("/bot/fakeBot")
                 .addParameter(Const.Message.Event, Const.Event.onEnter)
                 .addParameter(Const.Message.MessageId, "hallo")
                 .addParameter(Const.Message.Sender, "ryuneeee")
                 .addParameter(Const.Room.RoomId, "1")
 				.addParameter(Const.Message.Message, "HelloWorld!").handle(Method.POST);
 
-		tserver.mockClient().close();
 		assertEquals(Status.SUCCESS_OK.getCode(), response.getStatus().getCode());
 
 	}
 
-	public void testNotFoundBot() {
+	public void testNotFoundBot() throws Exception {
 
-		Response response = tserver.mockClient().fake().createRequest("/bot")
-                .addParameter(Const.Bot.BotId, "notFoundBot")
+		Response response = fake.createRequest("/bot/notFoundBot")
                 .addParameter(Const.Message.Event, Const.Event.onEnter)
                 .addParameter(Const.Message.MessageId, "hallo")
                 .addParameter(Const.Message.Sender, "ryuneeee")
                 .addParameter(Const.Room.RoomId, "1")
 				.addParameter(Const.Message.Message, "HelloWorld!").handle(Method.POST);
 
-		tserver.mockClient().close();
 		assertEquals(Status.CLIENT_ERROR_BAD_REQUEST.getCode(), response.getStatus().getCode());
 	}
 
@@ -71,14 +86,12 @@ public class TestEmbedBotLet extends TestCase {
 		EmbedBot fakeBot = new FakeBot();
 		botManager.registerBot(fakeBot);
 
-		Response response = tserver.mockClient().fake().createRequest("/bot")
-                .addParameter(Const.Bot.BotId, "fakeBot")
+		Response response = fake.createRequest("/bot/fakeBot")
                 .addParameter(Const.Message.Event, "invalidEvent")
                 .addParameter(Const.Message.MessageId, "hallo")
                 .addParameter(Const.Message.Sender, "ryuneeee")
                 .addParameter(Const.Room.RoomId, "1")
 				.addParameter(Const.Message.Message, "HelloWorld!").handle(Method.POST);
-		tserver.mockClient().close();
 		// assertEquals(Status.CLIENT_ERROR_BAD_REQUEST.getCode(), response.getStatus().getCode());
 		// assertEquals("suceess", JsonObject.fromString(response.getEntityAsText()).asString("status"));
 	}
@@ -88,12 +101,10 @@ public class TestEmbedBotLet extends TestCase {
 		EmbedBot fakeBot = new FakeBot();
 		botManager.registerBot(fakeBot);
 
-		Response response = tserver.mockClient().fake().createRequest("/bot")
-                .addParameter(Const.Bot.BotId, "fakeBot")
+		Response response = fake.createRequest("/bot/fakeBot")
                 .addParameter(Const.Message.Event, Const.Event.onEnter)
                 .addParameter("Invalid", "Parameter").handle(Method.POST);
 
-		tserver.mockClient().close();
 		assertEquals(Status.CLIENT_ERROR_BAD_REQUEST.getCode(), response.getStatus().getCode());
 	}
 

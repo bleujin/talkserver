@@ -35,7 +35,7 @@ public class TestToonServerNew extends TestCase {
 
 	public void testRunInfinite() throws Exception {
 		ToonServer tserver = ToonServer.testWithLoginLet(); 
-		tserver.cbuilder().build();
+		tserver.ready();
 		tserver.startRadon();
 		tserver.talkEngine().registerHandler(new UserConnectionHandler()).registerHandler(ServerHandler.test()).registerHandler(new WebSocketScriptHandler()) ;
 
@@ -43,7 +43,7 @@ public class TestToonServerNew extends TestCase {
 
         ScheduledExecutorService ses = Executors.newScheduledThreadPool(3);
 		rsession.workspace().cddm().add(new UserInAndOutRoomHandler());
-		rsession.workspace().cddm().add(new TalkMessageHandler(tserver.mockClient().real()));
+		rsession.workspace().cddm().add(new TalkMessageHandler(NewClient.create()));
 		rsession.workspace().addListener(new NotificationListener(AccountManager.create(tserver.talkEngine(), NotifyStrategy.createSender(ses, rsession))));
 
         BotManager botManager = tserver.talkEngine().context().getAttributeObject(BotManager.class.getCanonicalName(), BotManager.class);

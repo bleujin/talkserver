@@ -44,7 +44,7 @@ public class SMSAuthLet implements IServiceLet {
                 }
             });
 
-            smsSender.newMessage(phone).from("02-3430-1200").message("툰톡 인증번호는 [" + code + "] 입니다.").send();
+            smsSender.toPhoneNo(phone).from("02-3430-1200").message("툰톡 인증번호는 [" + code + "] 입니다.").send();
 
         } catch (Exception e) {
             return new StringRepresentation(TalkResponseBuilder.failResponse(e));

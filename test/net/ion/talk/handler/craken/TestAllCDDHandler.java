@@ -6,7 +6,7 @@ import junit.framework.TestSuite;
 public class TestAllCDDHandler extends TestCase {
 
 	public static TestSuite suite(){
-		TestSuite result = new TestSuite() ;
+		TestSuite result = new TestSuite("Test All CDD Handler") ;
 		
 		
 		result.addTestSuite(TestNotifySendHandler.class);

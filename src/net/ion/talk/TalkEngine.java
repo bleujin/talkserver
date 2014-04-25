@@ -87,7 +87,7 @@ public class TalkEngine implements WebSocketHandler {
 		NewClient nc = NewClient.create(ClientConfig.newBuilder().setMaxRequestRetry(5).setMaxRequestRetry(2).build());
 		context.putAttribute(NewClient.class.getCanonicalName(), nc);
 
-		SMSSender smsSender = new SMSConfig(nc).newDomestic().create();
+		SMSSender smsSender = new SMSConfig().createSender(nc);
 		context.putAttribute(SMSSender.class.getCanonicalName(), smsSender);
 		context.putAttribute(BotManager.class.getCanonicalName(), BotManager.create(repo.login()));
 

@@ -9,7 +9,7 @@ import junit.framework.TestSuite;
 public class TestAllEngine extends TestCase {
 
 	public static TestSuite suite() {
-		TestSuite suite = new TestSuite();
+		TestSuite suite = new TestSuite("Test All Engine");
 
 		suite.addTestSuite(TestParameterMap.class);
 		// result.addTestSuite(TestMailer.class) ;

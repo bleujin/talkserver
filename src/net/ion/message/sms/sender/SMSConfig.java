@@ -1,98 +1,68 @@
 package net.ion.message.sms.sender;
 
-import com.google.common.base.Preconditions;
-import net.ion.framework.util.StringUtil;
-import net.ion.message.sms.message.Validator;
 import net.ion.radon.aclient.NewClient;
 
 public class SMSConfig {
 
-    private String deptCode;
-    private String userCode;
-    private String handlerURL;
-    private String fromPhone = "000-000-0000";
-    private Validator validator;
+    enum TargetLoc {
+    	Domestic {
+			public String deptCode() {
+				return "8J-N2W-G1";
+			}
+			public String userCode() {
+				return "ioncom2";
+			}
+			public String handlerURL() {
+				return "https://toll.surem.com:440/message/direct_call_sms_return_post.asp";
+			}
 
-    private NewClient client;
-    private String callbackURL = "http://127.0.0.1/callback";
-
-    private boolean isDomesticMessage = true;
-
-
-    private String senderPhoneKey = "";
-
+			public String senderPhoneKey() {
+				return "group_name";
+			}
+			
+			public boolean isDomestic() {
+				return true ;
+			}
+    		
+    	}, International {
+			public String deptCode() {
+				return "JM-BWB-P6";
+			}
+			public String userCode() {
+				return "ioncom";
+			}
+			public String handlerURL() {
+				return "https://toll.surem.com:440/message/direct_INTL_return_post.asp";
+			}
+			public String senderPhoneKey() {
+				return "group_name";
+			}
+			public boolean isDomestic() {
+				return false ;
+			}
+    		
+    	} ;
+    	
+    	public abstract String deptCode() ;
+    	public abstract String userCode() ;
+    	public abstract String handlerURL() ;
+    	public abstract String senderPhoneKey() ;
+    	public abstract boolean isDomestic() ;
+    	public String callBackURL(){
+    		return "http://127.0.0.1/callback" ;
+    	}
+    	
+    }
+    
     public SMSConfig() {
-        this(NewClient.create());
+    }
+    
+    public TargetLoc target(String receiverPhoneNo){
+    	return receiverPhoneNo.startsWith("+") ? TargetLoc.International : TargetLoc.Domestic ;
     }
 
-    public SMSConfig(NewClient client) {
-        this.client = client;
-    }
-
-    public String deptCode() {
-        return deptCode;
-    }
-
-    public String userCode() {
-        return userCode;
-    }
-
-    public String handlerURL() {
-        return handlerURL;
-    }
-
-    public String fromPhone() {
-        return fromPhone;
-    }
-
-    public NewClient client() {
-        return client;
-    }
-
-    public String callbackURL() {
-        return callbackURL;
-    }
-
-    public Validator validator() {
-        return validator;
-    }
-
-    public String senderPhoneKey() {
-        return senderPhoneKey;
-    }
-
-    public boolean isDomesticMessage() {
-        return isDomesticMessage;
-    }
-
-    public SMSConfig newDomestic() {
-        this.deptCode = "8J-N2W-G1";
-        this.userCode = "ioncom2";
-        this.handlerURL = "https://toll.surem.com:440/message/direct_call_sms_return_post.asp";
-        this.validator = Validator.domesticValidator();
-        this.senderPhoneKey = "group_name";
-
-        return this;
-    }
-
-    public SMSConfig newInternational() {
-        this.deptCode = "JM-BWB-P6";
-        this.userCode = "ioncom";
-        this.handlerURL = "https://toll.surem.com:440/message/direct_INTL_return_post.asp";
-        this.validator = Validator.internationalValidator();
-        this.senderPhoneKey = "group_name";
-        this.isDomesticMessage = false;
-
-        return this;
-    }
-
-
-    public SMSSender create() {
-        Preconditions.checkArgument(StringUtil.isNotEmpty(deptCode), "deptCode is null or blank");
-        Preconditions.checkArgument(StringUtil.isNotEmpty(userCode), "userCode is null or blank");
-        Preconditions.checkArgument(StringUtil.isNotEmpty(handlerURL), "handlerURL is null or blank");
-
-        return new SMSSender(this);
+    public SMSSender createSender(NewClient client) {
+        return new SMSSender(client, this);
     }
 
 }

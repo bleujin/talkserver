@@ -38,7 +38,7 @@ public class TestConnectToServer extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		this.tserver = ToonServer.testWithLoginLet();
-		tserver.startRadon().talkEngine().registerHandler(new EchoHandler());
+		tserver.ready().talkEngine().registerHandler(new EchoHandler());
 
 		tserver.readSession().tranSync(new TransactionJob<Object>() {
 			@Override
@@ -47,6 +47,7 @@ public class TestConnectToServer extends TestCase {
 				return null;
 			}
 		});
+		tserver.startRadon() ;
 	}
 	
 	@Override
@@ -56,7 +57,7 @@ public class TestConnectToServer extends TestCase {
 	}
 
 	public void testLogin() throws Exception {
-		NewClient nc = tserver.mockClient().real();
+		NewClient nc = NewClient.create() ;
 		Realm realm = new RealmBuilder().setPrincipal("emanon").setPassword("emanon").build();
 		Response response = nc.prepareGet("http://" + InetAddress.getLocalHost().getHostAddress() + ":9000/auth/login").setRealm(realm).execute().get();
 

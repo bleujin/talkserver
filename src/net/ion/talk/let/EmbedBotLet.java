@@ -9,11 +9,13 @@ import net.ion.radon.core.TreeContext;
 import net.ion.radon.core.annotation.AnContext;
 import net.ion.radon.core.annotation.AnRequest;
 import net.ion.radon.core.annotation.FormBean;
+import net.ion.radon.core.annotation.PathParam;
 import net.ion.radon.core.let.InnerRequest;
 import net.ion.radon.core.representation.JsonObjectRepresentation;
 import net.ion.talk.bot.EmbedBot;
 import net.ion.talk.bot.BotManager;
 import net.ion.talk.responsebuilder.TalkResponseBuilder;
+
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
@@ -61,11 +63,11 @@ public class EmbedBotLet implements IServiceLet{
     }
 
     @Post
-    public Representation post(@AnContext TreeContext context, @AnRequest InnerRequest request, @FormBean MessageBean messageBean) throws Exception {
+    public Representation post(@AnContext TreeContext context, @AnRequest InnerRequest request, @PathParam("botId") String botId, @FormBean MessageBean messageBean) throws Exception {
         BotManager botManager = context.getAttributeObject(BotManager.class.getCanonicalName(), BotManager.class);
 
-        EmbedBot bot = botManager.getBot(messageBean.botId);
-        if(bot==null || messageBean.event==null || messageBean.sender==null || messageBean.roomId==null || messageBean.message==null || messageBean.messageId==null)
+        EmbedBot bot = botManager.getBot(botId);
+        if(botId==null || bot ==null || messageBean.event==null || messageBean.sender==null || messageBean.roomId==null || messageBean.message==null || messageBean.messageId==null)
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
 
         try {
@@ -80,7 +82,6 @@ public class EmbedBotLet implements IServiceLet{
 
 
     class MessageBean{
-        private String botId;
         private String event;
         private String sender;
         private String roomId;

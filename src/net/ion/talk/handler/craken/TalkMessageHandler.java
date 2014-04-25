@@ -58,7 +58,6 @@ public class TalkMessageHandler implements CDDHandler {
     public TransactionJob<Void> modified(final Map<String, String> resolveMap, final CDDModifiedEvent event) {
 
 
-        Debug.line(event);
         return new TransactionJob<Void>() {
             @Override
             public Void handle(WriteSession wsession) throws Exception {

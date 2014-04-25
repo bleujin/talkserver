@@ -31,7 +31,7 @@ public class TestSMSAuthLet extends TestCase{
     public void setUp() throws Exception {
         super.setUp();
 		this.repoEntry = RepositoryEntry.test();
-		SMSSender smsSender = new SMSConfig().newDomestic().create();
+		SMSSender smsSender = new SMSConfig().createSender(NewClient.create());
 
 		Configuration configuration = ConfigurationBuilder.newBuilder()	
 			.aradon()
