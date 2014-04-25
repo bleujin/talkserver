@@ -3,8 +3,8 @@ package net.ion.talk.handler.craken;
 import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
-import net.ion.talk.TestCrakenBase;
 import net.ion.talk.bean.Const;
+import net.ion.talk.bot.TestCrakenBase;
 
 /**
  * Created with IntelliJ IDEA. User: Ryun Date: 2014. 2. 3. Time: 오후 6:26 To change this template use File | Settings | File Templates.

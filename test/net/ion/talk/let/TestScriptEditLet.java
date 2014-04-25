@@ -1,48 +1,58 @@
 package net.ion.talk.let;
 
+import java.io.File;
+import java.util.concurrent.Executors;
+
+import junit.framework.TestCase;
 import net.ion.craken.node.ReadSession;
-import net.ion.craken.node.TransactionJob;
-import net.ion.craken.node.WriteSession;
 import net.ion.craken.node.crud.RepositoryImpl;
 import net.ion.framework.util.Debug;
 import net.ion.framework.util.InfinityThread;
-import net.ion.framework.util.ListUtil;
-import net.ion.framework.util.MapUtil;
-import net.ion.radon.client.AradonClient;
-import net.ion.radon.core.EnumClass;
-import net.ion.talk.TalkScript;
-
-import org.restlet.Response;
-import org.restlet.data.Method;
-
-import java.io.File;
-import java.util.*;
-import java.util.concurrent.*;
+import net.ion.nradon.Radon;
+import net.ion.radon.aclient.NewClient;
+import net.ion.radon.core.Aradon;
+import net.ion.radon.core.EnumClass.IMatchMode;
+import net.ion.radon.util.AradonTester;
+import net.ion.talk.script.TalkScript;
+import net.ion.talk.util.NetworkUtil;
 
 /**
  * Author: Ryunhee Han Date: 2013. 12. 26.
  */
-public class TestScriptEditLet extends TestBaseLet {
+public class TestScriptEditLet extends TestCase {
+
+	
+	private Radon radon;
+	private NewClient nc;
+	private RepositoryImpl repo;
 
 	@Override
 	public void setUp() throws Exception {
-		super.setUp();
+		Aradon aradon = AradonTester.create().register("script", "/", "script", IMatchMode.STARTWITH, ScriptEditLet.class).getAradon();
 
-		tserver.cbuilder().aradon().sections().restSection("script").path("script").addUrlPattern("/").matchMode(EnumClass.IMatchMode.STARTWITH).handler(ScriptEditLet.class).build();
-
-		// tserver.startAradon() ;
-		tserver.startRadon();
-		TalkScript ts = TalkScript.create(tserver.readSession(), Executors.newScheduledThreadPool(1));
+		this.repo = RepositoryImpl.inmemoryCreateWithTest() ;
+		ReadSession rsession = repo.login("test");
+		TalkScript ts = TalkScript.create(rsession, Executors.newScheduledThreadPool(3));
 		ts.readDir(new File("./script"), true) ;
-		tserver.addAttribute(ts) ;
-
+		
+		aradon.getServiceContext().putAttribute(TalkScript.class.getCanonicalName(), ts) ;
+		this.radon = aradon.toRadon(9000) ;
+		radon.start().get() ;
+		this.nc = NewClient.create() ;
 	}
-
-	public void testMergeScript() {
-		AradonClient ac = tserver.mockClient().fake();
-		Response response = ac.createRequest("/script/").handle(Method.GET);
+	
+	@Override
+	public void tearDown() throws Exception {
+		radon.stop() ;
+		repo.shutdown() ;
+		nc.close(); 
+		super.tearDown();
+	}
+	
+	public void testViewPage() throws Exception {
+		net.ion.radon.aclient.Response response = nc.prepareGet(NetworkUtil.httpAddress(9000, "/script/")).execute().get() ;
 		assertEquals(200, response.getStatus().getCode());
-		Debug.line(response.getEntityAsText());
+		Debug.line(response.getStatusText());
 	}
 	
 	public void xtestDeploy() throws Exception {

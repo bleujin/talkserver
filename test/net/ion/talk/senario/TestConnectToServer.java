@@ -1,4 +1,4 @@
-package net.ion.talk.let;
+package net.ion.talk.senario;
 
 import java.net.InetAddress;
 import java.util.concurrent.CountDownLatch;
@@ -28,14 +28,17 @@ import net.ion.radon.core.config.ConfigurationBuilder;
 import net.ion.radon.core.security.ChallengeAuthenticator;
 import net.ion.talk.TalkEngine;
 import net.ion.talk.ToonServer;
+import net.ion.talk.let.EchoHandler;
 
-public class TestLoginWebSocket extends TestBaseLet {
+public class TestConnectToServer extends TestCase {
+
+	private ToonServer tserver;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-
-		tserver.addTalkHander(new EchoHandler()).startRadon();
+		this.tserver = ToonServer.testWithLoginLet();
+		tserver.startRadon().talkEngine().registerHandler(new EchoHandler());
 
 		tserver.readSession().tranSync(new TransactionJob<Object>() {
 			@Override
@@ -44,6 +47,12 @@ public class TestLoginWebSocket extends TestBaseLet {
 				return null;
 			}
 		});
+	}
+	
+	@Override
+	public void tearDown() throws Exception {
+		tserver.stop(); 
+		super.tearDown();
 	}
 
 	public void testLogin() throws Exception {

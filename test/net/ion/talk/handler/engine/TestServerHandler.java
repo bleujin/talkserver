@@ -2,26 +2,30 @@ package net.ion.talk.handler.engine;
 
 import java.net.InetAddress;
 
+import junit.framework.TestCase;
 import net.ion.framework.util.Debug;
-import net.ion.talk.handler.engine.ServerHandler;
-import net.ion.talk.let.TestBaseLet;
+import net.ion.talk.TalkEngine;
 
-public class TestServerHandler extends TestBaseLet {
+public class TestServerHandler extends TestCase {
+
+	private TalkEngine engine;
 
 	@Override
 	protected void setUp() throws Exception {
-		super.setUp();
-		tserver.addTalkHander(ServerHandler.test());
-		tserver.startRadon();
+		this.engine = TalkEngine.testCreate().registerHandler(ServerHandler.test()) ;
+		engine.startEngine() ;
+	}
+	
+	@Override
+	public void tearDown() throws Exception {
+		engine.stopEngine(); 
+		super.tearDown();
 	}
 
 	public void testIsOnServer() throws Exception {
 
-		ServerHandler serverHandler = tserver.talkEngine().handler(ServerHandler.class);
+		ServerHandler serverHandler = engine.handler(ServerHandler.class);
 		assertTrue(serverHandler.registered(InetAddress.getLocalHost().getHostName()));
-
-		// tserver.talkEngine().onStop() ;
-		// assertFalse(serverHandler.registered(InetAddress.getLocalHost().getHostName())) ;
 	}
 
 	public void xtestIPAddress() throws Exception {
@@ -32,8 +36,4 @@ public class TestServerHandler extends TestBaseLet {
 		Debug.line(address.getHostName());
 	}
 
-	@Override
-	public void tearDown() throws Exception {
-		super.tearDown(); // To change body of overridden methods use File | Settings | File Templates.
-	}
 }

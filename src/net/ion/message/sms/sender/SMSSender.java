@@ -44,9 +44,9 @@ public class SMSSender {
     public PhoneMessage newMessage(String receiverPhone) {
         PhoneMessage message = new PhoneMessage(MessageID.generate());
 
-        message.setAttribute(this.config.getSenderPhoneKey(), receiverPhone);
-        message.setAttribute("deptcode", this.config.getDeptCode());
-        message.setAttribute("usercode", this.config.getUserCode());
+        message.setAttribute(this.config.senderPhoneKey(), receiverPhone);
+        message.setAttribute("deptcode", this.config.deptCode());
+        message.setAttribute("usercode", this.config.userCode());
 
         message.setSender(this);
 
@@ -67,7 +67,7 @@ public class SMSSender {
     }
 
     private <T> Future<T> executeAsync(final ResponseHandler<T> handler, Request request) throws IOException {
-        return this.config.getClient().executeRequest(request, new AsyncCompletionHandler<T>() {
+        return this.config.client().executeRequest(request, new AsyncCompletionHandler<T>() {
             @Override
             public T onCompleted(Response response) throws Exception {
                 MessagingResponse resp = MessagingResponse.from(response);
@@ -81,11 +81,11 @@ public class SMSSender {
     }
 
     private void checkValidity(PhoneMessage message) {
-        this.config.getValidator().checkValidity(message);
+        this.config.validator().checkValidity(message);
     }
 
     private Request toRequest(PhoneMessage message) {
-        return message.toRequest(this.config.getHandlerURL(), Method.POST);
+        return message.toRequest(this.config.handlerURL(), Method.POST);
     }
 
     public boolean isDomesticMessage() {

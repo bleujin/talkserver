@@ -1,10 +1,16 @@
-package net.ion.talk.account;
+package net.ion.talk.engine;
 
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
 import net.ion.radon.util.AradonTester;
-import net.ion.talk.TestCrakenBase;
+import net.ion.talk.account.Account;
+import net.ion.talk.account.AccountManager;
+import net.ion.talk.account.Bot;
+import net.ion.talk.account.ConnectedUserAccount;
+import net.ion.talk.account.DisconnectedAccount;
+import net.ion.talk.account.Account.Type;
 import net.ion.talk.bean.Const;
+import net.ion.talk.bot.TestCrakenBase;
 import net.ion.talk.fake.FakeSender;
 import net.ion.talk.fake.FakeTalkEngine;
 import net.ion.talk.fake.FakeUserConnection;
@@ -26,7 +32,7 @@ public class TestAccountManager extends TestCrakenBase{
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        fakeEngine = new FakeTalkEngine(rentry, AradonTester.create().getAradon());
+        fakeEngine = new FakeTalkEngine(rentry);
         sender = new FakeSender();
         am = AccountManager.create(fakeEngine, sender);
     }

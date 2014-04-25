@@ -1,4 +1,4 @@
-package net.ion.talk;
+package net.ion.talk.bot;
 
 import junit.framework.TestCase;
 import net.ion.craken.aradon.bean.RepositoryEntry;

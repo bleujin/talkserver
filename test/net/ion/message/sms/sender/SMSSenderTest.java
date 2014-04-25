@@ -13,7 +13,7 @@ public class SMSSenderTest extends TestCase {
 
 	public void testCreateSender() throws IOException, ExecutionException, InterruptedException {
 		SMSSender sender = new SMSConfig().newDomestic().create();
-		sender.newMessage("01025704848").message("안녕").from("02-3430-1751").send().get();
+		sender.newMessage("01042216492").message("안녕").from("02-3430-1751").send().get();
 	}
 
 	public void testCheckValidity() throws IOException {
@@ -41,9 +41,9 @@ public class SMSSenderTest extends TestCase {
 	public void testInternationalSender_init() {
 		SMSConfig config = new SMSConfig().newInternational();
 
-		assertTrue(StringUtil.isNotBlank(config.getDeptCode()));
-		assertTrue(StringUtil.isNotBlank(config.getUserCode()));
-		assertTrue(StringUtil.isNotBlank(config.getHandlerURL()));
+		assertTrue(StringUtil.isNotBlank(config.deptCode()));
+		assertTrue(StringUtil.isNotBlank(config.userCode()));
+		assertTrue(StringUtil.isNotBlank(config.handlerURL()));
 	}
 
 	public void testInternationalSender_message() throws IOException, ExecutionException, InterruptedException {

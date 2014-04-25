@@ -3,7 +3,6 @@ package net.ion.talk.bot;
 import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
-import net.ion.talk.TestCrakenBase;
 import net.ion.talk.bean.Const;
 
 import java.util.concurrent.Executors;

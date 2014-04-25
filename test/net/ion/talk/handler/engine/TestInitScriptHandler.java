@@ -31,8 +31,7 @@ public class TestInitScriptHandler extends TestCase {
         super.setUp();
 
         handler = new InitScriptHandler();
-        tengine = TalkEngine.test();
-        tengine.registerHandler(handler);
+        tengine = TalkEngine.testCreate().registerHandler(handler);
         rsession = tengine.readSession();
 
         rsession.tranSync(new TransactionJob<Object>() {
@@ -46,7 +45,7 @@ public class TestInitScriptHandler extends TestCase {
         });
 
 
-        tengine.startForTest();
+        tengine.startEngine();
 
 
 
@@ -57,7 +56,7 @@ public class TestInitScriptHandler extends TestCase {
         File dir = new File("./script/ryun");
         FileUtil.deleteDirectory(dir);
 
-        tengine.stopForTest();
+        tengine.stopEngine();
         super.tearDown();
     }
 

@@ -16,8 +16,8 @@ import java.util.concurrent.TimeUnit;
 public class SenderTest extends BaseTest {
 
 	private SenderConfig config = SenderConfig.createTest();
-	private Sender senderForAPNS = config.createSender(TestStrategies.airkjhAPNSStrategy());
-	private Sender senderForGCM = config.createSender(TestStrategies.airkjhGoogleStrategy());
+	private Pusher senderForAPNS = config.createSender(TestStrategies.airkjhAPNSStrategy());
+	private Pusher senderForGCM = config.createSender(TestStrategies.airkjhGoogleStrategy());
 
 	public void testFirst_apns_sync() throws Exception {
 		List<PushResponse> response = senderForAPNS.sendTo("airkjh", "bleujin").send("안녕");
@@ -50,7 +50,7 @@ public class SenderTest extends BaseTest {
 		// we do not use google sender at this time, so just don't pass api key argument as null
 		SenderConfig retryConfig = SenderConfig.newBuilder().appleConfig(KEY_STORE_PATH, PASSWORD, true).googleConfig("").retryAttempts(retryCount).build();
 
-		Sender sender = retryConfig.createSender(TestStrategies.airkjhAPNSStrategy());
+		Pusher sender = retryConfig.createSender(TestStrategies.airkjhAPNSStrategy());
 		Map<String, Integer> attempts = sender.sendTo(invalidUserId).sendAsync("모두 실패!!", testResponseHandler).get();
 		// invalid token is considered as failed request, not exception
 
@@ -61,7 +61,7 @@ public class SenderTest extends BaseTest {
 		int retryCount = 3;
 
 		SenderConfig config = SenderConfig.newBuilder().googleConfig(INVALID_DEVICE_TOKEN).retryAttempts(retryCount).build();
-		Sender sender = config.createSender(TestStrategies.airkjhGoogleStrategy());
+		Pusher sender = config.createSender(TestStrategies.airkjhGoogleStrategy());
 		Map<String, Integer> exceptionCount = sender.sendTo("airkjh").sendAsync("실패!!", testResponseHandler).get();
 
 		// invalid api key(google) occures exception
@@ -70,7 +70,7 @@ public class SenderTest extends BaseTest {
 
 	public void testRetryInterval() {
 		SenderConfig config = SenderConfig.newBuilder().googleConfig(INVALID_DEVICE_TOKEN).retryAttempts(3).retryAfter(20, TimeUnit.SECONDS).build();
-		Sender sender = config.createSender(TestStrategies.airkjhGoogleStrategy());
+		Pusher sender = config.createSender(TestStrategies.airkjhGoogleStrategy());
 		sender.sendTo("airkjh").sendAsync("Hello World!!", new TimePrintResponseHandler());
 	}
 

@@ -10,11 +10,11 @@ import java.util.concurrent.TimeUnit;
 
 public class PushMessage {
 
-    private Sender sender;
+    private Pusher sender;
     private String[] receivers;
     private String message;
 
-    public PushMessage(Sender sender, String[] receivers) {
+    public PushMessage(Pusher sender, String[] receivers) {
         this.sender = sender;
         this.receivers = receivers;
     }

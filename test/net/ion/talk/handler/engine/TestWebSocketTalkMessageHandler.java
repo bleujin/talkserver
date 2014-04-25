@@ -20,7 +20,7 @@ public class TestWebSocketTalkMessageHandler extends TestCase {
 
 	public void setUp() throws Exception {
 
-		tengine = TalkEngine.test().registerHandler(new WebSocketMessageHandler()).startForTest();
+		tengine = TalkEngine.testCreate().registerHandler(new WebSocketScriptHandler()).startEngine();
 		rsession = tengine.readSession();
 		ryun = FakeWebSocketConnection.create("ryun");
 
@@ -49,50 +49,45 @@ public class TestWebSocketTalkMessageHandler extends TestCase {
 
 	public void testSuceessSendMessage() throws Exception {
 		tengine.onOpen(ryun);
-		tengine.onMessage(ryun, "{\"script\":\"/users/register\", \"id\":\"userRegister\",\"params\":{\"userId\":\"ryun\", \"phone\":\"0101234568\",\"nickname\":\"ryuneeee\",\"pushId\":\"lolem ipsum pushId\",\"deviceOS\":\"android\",\"friends\":[\"alex\",\"lucy\"]}}");
+		tengine.onMessage(ryun, "{\"script\":\"/user/registerWith\", \"id\":\"userRegister\",\"params\":{\"userId\":\"ryun\", \"phone\":\"0101234568\",\"nickname\":\"ryuneeee\",\"pushId\":\"lolem ipsum pushId\",\"deviceOS\":\"android\",\"friends\":[\"alex\",\"lucy\"]}}");
 		try {
 			Debug.line(ryun.recentMsg());
 			fail();
 		} catch (Exception e) {
 
 		}
-
 	}
 
-	public void testInvalidParams() throws Exception {
+	public void testInvalidScriptName() throws Exception {
 		tengine.onOpen(ryun);
 
-		tengine.onMessage(ryun, "{\"script\":\"/users/info\"}");
+		tengine.onMessage(ryun, "{'id':1234, 'script':'/users/info'}");
 		Debug.line(ryun.recentMsg());
-		assertEquals("success", JsonObject.fromString(ryun.recentMsg()).asString("status"));
+		assertEquals("failure", JsonObject.fromString(ryun.recentMsg()).asString("status"));
 
 	}
 
 	public void testEmptyMessage() {
 		tengine.onOpen(ryun);
-		tengine.onMessage(ryun, "");
-		assertEquals("failure", JsonObject.fromString(ryun.recentMsg()).asString("status"));
-	}
-
-	public void testEmptyJson() {
-		tengine.onOpen(ryun);
 		tengine.onMessage(ryun, "{}");
-		assertEquals("failure", JsonObject.fromString(ryun.recentMsg()).asString("status"));
+		assertEquals("{}", ryun.recentMsg());
+		tengine.onMessage(ryun, "");
+		assertEquals("", ryun.recentMsg());
 	}
 
-	public void testInvalidJson() {
+	public void testInvalidScriptWillBeEchoed() {
 		tengine.onOpen(ryun);
 		tengine.onMessage(ryun, "{a}");
-		assertEquals("failure", JsonObject.fromString(ryun.recentMsg()).asString("status"));
+		assertEquals("{a}", ryun.recentMsg());
 		tengine.onMessage(ryun, "{안녕}");
-		assertEquals("failure", JsonObject.fromString(ryun.recentMsg()).asString("status"));
+		assertEquals("{안녕}", ryun.recentMsg());
 		tengine.onMessage(ryun, "{\"cript\":\"hell\"}");
-		assertEquals("failure", JsonObject.fromString(ryun.recentMsg()).asString("status"));
+		assertEquals("{\"cript\":\"hell\"}", ryun.recentMsg());
 	}
 
 	@Override
 	public void tearDown() throws Exception {
-		tengine.stopForTest();
+		tengine.stopEngine();
 		super.tearDown();
 	}
 }

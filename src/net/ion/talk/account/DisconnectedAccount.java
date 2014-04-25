@@ -6,7 +6,7 @@ import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
 import net.ion.framework.util.Debug;
 import net.ion.message.push.sender.PushResponse;
-import net.ion.message.push.sender.Sender;
+import net.ion.message.push.sender.Pusher;
 import net.ion.message.push.sender.handler.ResponseHandler;
 import net.ion.talk.responsebuilder.TalkResponse;
 
@@ -23,10 +23,10 @@ import java.util.concurrent.Future;
  */
 public class DisconnectedAccount extends Account {
 
-    private final Sender sender;
+    private final Pusher sender;
     private final ReadSession rsession;
 
-    DisconnectedAccount(String userId, ReadSession rsession, Sender sender) {
+    DisconnectedAccount(String userId, ReadSession rsession, Pusher sender) {
         super(userId, Type.DisconnectedUser);
         this.sender = sender;
         this.rsession = rsession;
@@ -67,7 +67,7 @@ public class DisconnectedAccount extends Account {
 
     }
 
-    Sender sender(){
+    Pusher sender(){
         return sender;
     }
 

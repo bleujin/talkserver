@@ -1,130 +1,116 @@
 package net.ion.talk;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+import org.restlet.Context;
+import org.restlet.routing.VirtualHost;
+
 import net.ion.craken.aradon.bean.RepositoryEntry;
-import net.ion.craken.aradon.bean.RhinoEntry;
 import net.ion.craken.node.ReadSession;
 import net.ion.framework.logging.LogBroker;
 import net.ion.framework.util.ListUtil;
 import net.ion.framework.util.MapUtil;
-import net.ion.message.push.sender.Sender;
+import net.ion.message.push.sender.Pusher;
 import net.ion.message.sms.sender.SMSConfig;
 import net.ion.message.sms.sender.SMSSender;
-import net.ion.nradon.AbstractWebSocketResource;
 import net.ion.nradon.WebSocketConnection;
+import net.ion.nradon.WebSocketHandler;
 import net.ion.radon.aclient.ClientConfig;
 import net.ion.radon.aclient.NewClient;
 import net.ion.radon.core.Aradon;
-import net.ion.radon.core.IService;
-import net.ion.radon.core.SectionService;
 import net.ion.radon.core.TreeContext;
-import net.ion.radon.core.config.WSPathConfiguration;
-import net.ion.radon.core.context.OnOrderEventObject;
 import net.ion.talk.account.AccountManager;
 import net.ion.talk.bot.BotManager;
 import net.ion.talk.handler.TalkHandler;
-import net.ion.talk.handler.TalkHandlerGroup;
 import net.ion.talk.handler.craken.NotifyStrategy;
 import net.ion.talk.responsebuilder.TalkResponse;
+import net.ion.talk.script.TalkScript;
 
-public class TalkEngine extends AbstractWebSocketResource implements OnOrderEventObject {
+public class TalkEngine implements WebSocketHandler {
 
-    public enum Reason {
+	public enum Reason {
 		OK, NOTALLOW, DOPPLE, TIMEOUT, CLIENT, INTERNAL;
 	}
 
-    public static int HEARTBEAT_WATING = 15000;
-    public static int HEARTBEAT_KILLING = 30000;
-    public static int HEARTBEAT_DELAY = 1000;
+	public static int HEARTBEAT_WATING = 15000;
+	public static int HEARTBEAT_KILLING = 30000;
+	public static int HEARTBEAT_DELAY = 1000;
 
-    private static final Pattern hearbeatPtn = Pattern.compile("^HEARTBEAT$");
+	private static final Pattern hearbeatPtn = Pattern.compile("^HEARTBEAT$");
 
 	protected ConnManager cmanager = ConnManager.create();
 	private List<TalkHandler> handlers = ListUtil.newList();
-	private Aradon aradon;
 	private Logger logger = LogBroker.getLogger(TalkEngine.class);
-    private ScheduledExecutorService ses = Executors.newScheduledThreadPool(3);
 
+	private final TreeContext context;
+	private final ScheduledExecutorService worker;
+	private AtomicReference<Boolean> started = new AtomicReference<Boolean>();
 
-	private TalkEngine(){
-		// called by aradon reflection
+	protected TalkEngine(TreeContext context) {
+		if (context == null)
+			throw new IllegalStateException("context is null");
+
+		this.context = context;
+		this.worker = context.getAttributeObject(ScheduledExecutorService.class.getCanonicalName(), ScheduledExecutorService.class);
+		context.putAttribute(TalkEngine.class.getCanonicalName(), this);
+		
+		started.set(Boolean.FALSE);
 	}
 
-	protected TalkEngine(Aradon aradon) {
-		if (aradon == null)
-			throw new IllegalStateException("aradon is null");
+	public static TalkEngine testCreate() throws Exception {
 
-		this.aradon = aradon;
-		aradon.getServiceContext().putAttribute(TalkEngine.class.getCanonicalName(), this);
-	}
-	public static TalkEngine create(Aradon aradon) {
-		return new TalkEngine(aradon);
-	}
-
-	public static TalkEngine test() throws Exception {
+		TreeContext context = TreeContext.createRootContext(new VirtualHost(new Context())) ;
+		ScheduledExecutorService worker = Executors.newScheduledThreadPool(5);
+		context.putAttribute(ScheduledExecutorService.class.getCanonicalName(), worker) ;
+		
 		RepositoryEntry repo = RepositoryEntry.test();
-		Aradon aradon = Aradon.create();
-		aradon.getServiceContext().putAttribute(RepositoryEntry.EntryName, repo);
-		aradon.getServiceContext().putAttribute(RhinoEntry.EntryName, RhinoEntry.test());
-		final TalkEngine result = TalkEngine.create(aradon);
+		repo.start(); 
+		
+		TalkScript ts = TalkScript.create(repo.login(), worker);
+		ts.readDir(new File("./script"), true);
+
+		context.putAttribute(RepositoryEntry.EntryName, repo);
+		context.putAttribute(TalkScript.class.getCanonicalName(), ts);
+
+		NewClient nc = NewClient.create(ClientConfig.newBuilder().setMaxRequestRetry(5).setMaxRequestRetry(2).build());
+		context.putAttribute(NewClient.class.getCanonicalName(), nc);
+
+		SMSSender smsSender = new SMSConfig(nc).newDomestic().create();
+		context.putAttribute(SMSSender.class.getCanonicalName(), smsSender);
+		context.putAttribute(BotManager.class.getCanonicalName(), BotManager.create(repo.login()));
+
+
+		final TalkEngine result = new TalkEngine(context);
+		Pusher pusher = NotifyStrategy.createSender(worker, repo.login());
+		context.putAttribute(AccountManager.class.getCanonicalName(), AccountManager.create(result, pusher));
+
 		return result;
 	}
 
-	public TalkEngine startForTest() throws Exception {
-		aradon.start();
-		return this;
+	public TreeContext context() {
+		return context;
 	}
 
-	// Only test
-	public void stopForTest() {
-        cmanager.shutdown();
-        onEvent(AradonEvent.STOP, null);
+	public <T> T contextAttribute(Class<T> clz) {
+		return context.getAttributeObject(clz.getCanonicalName(), clz);
 	}
 
-	public void onInit(SectionService parent, TreeContext context, WSPathConfiguration wsconfig) {
-		super.onInit(parent, context, wsconfig);
+	public TalkEngine registerHandler(TalkHandler hanlder) throws Exception {
+		if (started.get())
+			hanlder.onEngineStart(this);
 
-
-
-		this.aradon = parent.getAradon();
-        aradon.getServiceContext().putAttribute(TalkEngine.class.getCanonicalName(), this);
-        NewClient nc = NewClient.create(ClientConfig.newBuilder().setMaxRequestRetry(5).setMaxRequestRetry(2).build());
-        aradon.getServiceContext().putAttribute(NewClient.class.getCanonicalName(), nc);
-
-
-        SMSSender smsSender = new SMSConfig(nc).newInternational().create();
-        aradon.getServiceContext().putAttribute(SMSSender.class.getCanonicalName(), smsSender);
-        try {
-
-            aradon.getServiceContext().putAttribute(BotManager.class.getCanonicalName(), BotManager.create(readSession()));
-            Sender sender = NotifyStrategy.createSender(ses, readSession());
-            aradon.getServiceContext().putAttribute(AccountManager.class.getCanonicalName(), AccountManager.create(this, sender));
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        TalkHandlerGroup hg = context.getAttributeObject(TalkHandlerGroup.class.getCanonicalName(), TalkHandlerGroup.class);
-		hg.set(this);
-
-	}
-
-	public ReadSession readSession() throws IOException {
-		RepositoryEntry re = aradon.getServiceContext().getAttributeObject(RepositoryEntry.EntryName, RepositoryEntry.class);
-		return re.login();
-	}
-
-	public RhinoEntry rhinoEntry() {
-		return aradon.getServiceContext().getAttributeObject(RhinoEntry.EntryName, RhinoEntry.class);
-	}
-
-	public TalkEngine registerHandler(TalkHandler hanlder) {
 		handlers.add(hanlder);
 		return this;
 	}
@@ -134,22 +120,69 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 		return this;
 	}
 
-	public TreeContext context() {
-		return aradon.getServiceContext();
+	public TalkEngine startEngine() throws Exception {
+		for (TalkHandler handler : handlers) {
+			handler.onEngineStart(this);
+		}
+
+		started.set(Boolean.TRUE);
+
+		worker.schedule(new HeartBeatJob(), TalkEngine.HEARTBEAT_DELAY, TimeUnit.MILLISECONDS);
+		return this;
+	}
+
+	class HeartBeatJob implements Callable<Void> {
+		@Override
+		public Void call() {
+			final long gmtTime = GregorianCalendar.getInstance().getTime().getTime();
+			cmanager.handle(new ConnHandler<Void>(){
+				@Override
+				public Void handle(UserConnection conn) {
+					if (conn.isOverTime(gmtTime)) cmanager.remove(conn, Reason.TIMEOUT) ;
+					return null;
+				}
+			}) ;
+			
+			if (started.get()) worker.schedule(this, TalkEngine.HEARTBEAT_DELAY, TimeUnit.MILLISECONDS);
+			return null ;
+		}
+	}
+
+	public void stopEngine() {
+		for (TalkHandler handler : handlers) {
+			handler.onEngineStop(this);
+		}
+		started.set(Boolean.FALSE);
+
+		RepositoryEntry r = context().getAttributeObject(RepositoryEntry.EntryName, RepositoryEntry.class);
+		r.shutdown();
+		
+		
+		NewClient nc = context().getAttributeObject(NewClient.class.getCanonicalName(), NewClient.class);
+		if (nc != null)
+			nc.close();
+	}
+
+	public ReadSession readSession() throws IOException {
+		RepositoryEntry re = context.getAttributeObject(RepositoryEntry.EntryName, RepositoryEntry.class);
+		return re.login();
+	}
+
+	public TalkScript talkScript() {
+		return context.getAttributeObject(TalkScript.class.getCanonicalName(), TalkScript.class);
 	}
 
 	@Override
 	public void onOpen(WebSocketConnection conn) {
 		UserConnection created = UserConnection.create(conn);
-        created.updateHeartBeat();
+		created.updateHeartBeat();
 		cmanager.add(created);
-
 
 		for (TalkHandler handler : handlers) {
 			Reason reason = handler.onConnected(this, created);
 			if (reason != Reason.OK) {
-				cmanager.remove(created, reason) ;
-				break ;
+				cmanager.remove(created, reason);
+				break;
 			}
 		}
 	}
@@ -168,11 +201,12 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 		try {
 			final UserConnection found = cmanager.findBy(conn);
 
-            //heartbeat
-            found.updateHeartBeat();
-            if(hearbeatPtn.matcher(msg).matches()) return;
+			// heartbeat
+			found.updateHeartBeat();
+			if (hearbeatPtn.matcher(msg).matches())
+				return;
 
-            TalkMessage tmessage = TalkMessage.fromJsonString(msg);
+			TalkMessage tmessage = TalkMessage.fromJsonString(msg);
 
 			RepositoryEntry r = context().getAttributeObject(RepositoryEntry.EntryName, RepositoryEntry.class);
 			ReadSession rsession = r.login();
@@ -185,53 +219,24 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 		}
 	}
 
-
-    @Override
+	@Override
 	public void onMessage(WebSocketConnection conn, byte[] msg) {
 		throw new UnsupportedOperationException("not supported");
 	}
 
 	@Override
 	public void onPing(WebSocketConnection conn, byte[] msg) {
-		throw new UnsupportedOperationException("not supported");
+		conn.pong(msg);
+		// throw new UnsupportedOperationException("not supported");
 	}
 
 	@Override
 	public void onPong(WebSocketConnection conn, byte[] msg) {
-		throw new UnsupportedOperationException("not supported");
+		// throw new UnsupportedOperationException("not supported");
 	}
 
 	ConnManager connManger() {
 		return cmanager;
-	}
-
-	@Override
-	public void onStop() {
-        cmanager.shutdown();
-		onEvent(AradonEvent.STOP, null);
-	}
-
-	@Override
-	public void onEvent(AradonEvent event, IService service) {
-		try {
-			if (event == AradonEvent.START) {
-				for (TalkHandler handler : handlers) {
-					handler.onEngineStart(this);
-				}
-			} else if (event == AradonEvent.STOP) {
-				for (TalkHandler handler : handlers) {
-					handler.onEngineStop(this);
-				}
-                RepositoryEntry r = context().getAttributeObject(RepositoryEntry.EntryName, RepositoryEntry.class);
-                r.onEvent(AradonEvent.STOP, service);
-                NewClient nc = context().getAttributeObject(NewClient.class.getCanonicalName(), NewClient.class);
-                if(nc!=null)
-                    nc.close();
-			}
-
-		} catch (Exception ex) {
-			throw new IllegalStateException(ex);
-		}
 	}
 
 	public <T extends TalkHandler> T handler(Class<T> clz) {
@@ -246,11 +251,6 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 		return logger;
 	}
 
-	@Override
-	public int order() {
-		return 2;
-	}
-
 	public void remove(UserConnection uconn, Reason reason) {
 		connManger().remove(uconn, reason);
 	}
@@ -263,11 +263,11 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 		return connManger().findBy(id);
 	}
 
-    public UserConnection getUserConnection(WebSocketConnection wconn){
-        return connManger().findBy(wconn);
-    }
+	public UserConnection getUserConnection(WebSocketConnection wconn) {
+		return connManger().findBy(wconn);
+	}
 
-	public void sendMessage(String userId, Sender sender, TalkResponse tresponse) {
+	public void sendMessage(String userId, Pusher sender, TalkResponse tresponse) {
 		UserConnection uconn = findConnection(userId);
 		if (uconn != null) {
 			uconn.sendMessage(tresponse.talkMessage());
@@ -277,14 +277,15 @@ public class TalkEngine extends AbstractWebSocketResource implements OnOrderEven
 	}
 }
 
+interface ConnHandler<T> {
+	public T handle(UserConnection conn) ;
+}
 
 class ConnManager {
 
 	private Map<String, UserConnection> conns = MapUtil.newMap();
-    private ScheduledExecutorService es = Executors.newScheduledThreadPool(5);
 
 	private ConnManager() {
-        this.startHeartBeat();
 	}
 
 	public UserConnection findBy(String id) {
@@ -305,6 +306,15 @@ class ConnManager {
 			existConn.close(TalkEngine.Reason.DOPPLE);
 		return uconn;
 	}
+	
+	public <T> List<T> handle(ConnHandler<T> handler){
+		ArrayList<UserConnection> copyed = new ArrayList<UserConnection>(conns.values()) ;
+		List<T> result = ListUtil.newList() ;
+		for (UserConnection uconn : copyed) {
+			result.add(handler.handle(uconn)) ;
+		}
+		return result ;
+	}
 
 	public UserConnection remove(UserConnection uconn, TalkEngine.Reason reason) {
 		conns.remove(uconn.id());
@@ -319,24 +329,5 @@ class ConnManager {
 	public boolean contains(WebSocketConnection conn) {
 		return conns.containsValue(conn);
 	}
-
-    public void startHeartBeat(){
-        es.schedule(new HeartBeatJob(), TalkEngine.HEARTBEAT_DELAY, TimeUnit.MILLISECONDS);
-    }
-
-    public void shutdown(){
-        es.shutdown();
-    }
-
-    class HeartBeatJob implements Runnable{
-
-        @Override
-        public void run() {
-            for(UserConnection uconn : conns.values()){
-                uconn.heartBeat();
-            }
-            es.schedule(this, TalkEngine.HEARTBEAT_DELAY, TimeUnit.MILLISECONDS);
-        }
-    }
 
 }

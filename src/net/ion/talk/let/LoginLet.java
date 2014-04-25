@@ -5,11 +5,13 @@ import java.util.Collections;
 import java.util.List;
 
 import net.ion.framework.util.Debug;
+
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Get;
+import org.restlet.resource.Post;
 
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.node.ReadSession;
@@ -23,12 +25,13 @@ import net.ion.radon.core.TreeContext;
 import net.ion.radon.core.annotation.AnContext;
 import net.ion.radon.core.annotation.AnRequest;
 import net.ion.radon.core.let.InnerRequest;
+
 import org.restlet.security.Verifier;
 
 public class LoginLet implements IServiceLet{
 	
 	
-	@Get
+	@Get @Post
 	public Representation login(@AnContext TreeContext context, @AnRequest InnerRequest req) throws Exception{
 		final String userId = req.getChallengeResponse().getIdentifier();
 		final String accessToken = new ObjectId().toString() ;

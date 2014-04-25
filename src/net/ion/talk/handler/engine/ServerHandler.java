@@ -22,7 +22,7 @@ public class ServerHandler implements TalkHandler {
 	private ReadSession session;
 
 	public ServerHandler(String hostName, String serverHost, int port) {
-		this.hostName = hostName ;
+		this.hostName = hostName;
 		this.serverHost = serverHost;
 		this.port = port;
 	}
@@ -44,30 +44,25 @@ public class ServerHandler implements TalkHandler {
 
 	@Override
 	public Reason onConnected(TalkEngine tengine, UserConnection uconn) {
-		return Reason.OK ;
+		return Reason.OK;
 	}
 
 	@Override
 	public void onEngineStart(TalkEngine tengine) throws Exception {
-		try {
-			this.session = tengine.readSession();
+		this.session = tengine.readSession();
 
-			session.tranSync(new TransactionJob<Void>() {
-				@Override
-				public Void handle(WriteSession wsession) throws Exception {
-                    wsession.pathBy("/servers/" + hostName).property("host", serverHost).property("port", port);
-					return null;
-				}
-			});
-		} catch (Exception ex) {
-			throw new IOException(ex) ;
-		}
+		session.tranSync(new TransactionJob<Void>() {
+			@Override
+			public Void handle(WriteSession wsession) throws Exception {
+				wsession.pathBy("/servers/" + hostName).property("host", serverHost).property("port", port);
+				return null;
+			}
+		});
 	}
-	
+
 	public boolean registered(String hostName) {
-		return session.exists("/servers/" + hostName) ;
+		return session.exists("/servers/" + hostName);
 	}
-
 
 	@Override
 	public void onEngineStop(TalkEngine tengine) {
@@ -75,24 +70,21 @@ public class ServerHandler implements TalkHandler {
 			this.session.tranSync(new TransactionJob<Void>() {
 				@Override
 				public Void handle(WriteSession wsession) throws Exception {
-					wsession.pathBy("/servers/" + hostName).removeSelf() ;
+					wsession.pathBy("/servers/" + hostName).removeSelf();
 					return null;
 				}
 			});
 		} catch (Exception e) {
-			tengine.getLogger().warning(e.getMessage()) ;
+			tengine.getLogger().warning(e.getMessage());
 		}
 	}
 
 	@Override
 	public void onMessage(TalkEngine tengine, UserConnection uconn, ReadSession rsession, TalkMessage tmsg) {
-    }
+	}
 
 	public String hostName() {
 		return hostName;
 	}
-
-
-	
 
 }

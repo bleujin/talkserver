@@ -60,9 +60,9 @@ public abstract class EmbedBot {
     public abstract void onFilter(String roomId, String sender, String message, String messageId) throws Exception;
 
     protected void setRoomProperty(final String roomId, final String key, final Object value) throws Exception {
-        rsession.tranSync(new TransactionJob<Object>() {
+        rsession.tranSync(new TransactionJob<Void>() {
             @Override
-            public Object handle(WriteSession wsession) throws Exception {
+            public Void handle(WriteSession wsession) throws Exception {
                 wsession.pathBy("/rooms/" + roomId + "/bots/" + id).property(key, value);
                 return null;
             }
@@ -75,9 +75,9 @@ public abstract class EmbedBot {
     }
 
     protected void setUserProperty(final String roomId, final String user, final String key, final Object value) throws Exception {
-        rsession.tranSync(new TransactionJob<Object>() {
+        rsession.tranSync(new TransactionJob<Void>() {
             @Override
-            public Object handle(WriteSession wsession) throws Exception {
+            public Void handle(WriteSession wsession) throws Exception {
                 wsession.pathBy("/rooms/" + roomId + "/bots/" + id + "/" + user).property(key, value);
                 return null;
             }
@@ -92,9 +92,9 @@ public abstract class EmbedBot {
 
         final Set<String> memberList = rsession.pathBy("/rooms/" + roomId + "/members").childrenNames();
 
-        rsession.tranSync(new TransactionJob<Object>() {
+        rsession.tranSync(new TransactionJob<Void>() {
             @Override
-            public Object handle(WriteSession wsession) throws Exception {
+            public Void handle(WriteSession wsession) throws Exception {
                 String randomId = new ObjectId().toString();
                 WriteNode messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + randomId)
                         .property(Const.Message.Message, message)

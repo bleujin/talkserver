@@ -3,7 +3,6 @@ package net.ion.talk.bot;
 import junit.framework.TestCase;
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.node.ReadSession;
-import net.ion.talk.TestCrakenBase;
 
 /**
  * Created with IntelliJ IDEA.

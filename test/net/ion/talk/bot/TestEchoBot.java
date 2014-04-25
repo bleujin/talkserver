@@ -10,7 +10,6 @@ import net.ion.framework.util.Debug;
 import net.ion.framework.util.ObjectId;
 import net.ion.framework.util.StringUtil;
 import net.ion.radon.aclient.NewClient;
-import net.ion.talk.TestCrakenBase;
 import net.ion.talk.account.Bot;
 import net.ion.talk.bean.Const;
 import net.ion.talk.responsebuilder.TalkResponse;

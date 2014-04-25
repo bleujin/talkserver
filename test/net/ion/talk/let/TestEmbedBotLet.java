@@ -1,9 +1,11 @@
 package net.ion.talk.let;
 
-import net.ion.craken.node.ReadSession;
+import junit.framework.TestCase;
+import net.ion.talk.ToonServer;
 import net.ion.talk.bean.Const;
-import net.ion.talk.bot.EmbedBot;
 import net.ion.talk.bot.BotManager;
+import net.ion.talk.bot.EmbedBot;
+
 import org.restlet.Response;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
@@ -11,13 +13,16 @@ import org.restlet.data.Status;
 /**
  * Created with IntelliJ IDEA. User: Ryun Date: 2014. 2. 19. Time: 오후 5:16 To change this template use File | Settings | File Templates.
  */
-public class TestEmbedBotLet extends TestBaseLet {
+public class TestEmbedBotLet extends TestCase {
 
+	private ToonServer tserver;
 	private BotManager botManager;
 
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
+		this.tserver = ToonServer.testWithLoginLet();
+		
 		tserver.startRadon();
 		botManager = BotManager.create(tserver.readSession());
 		tserver.talkEngine().context().putAttribute(BotManager.class.getCanonicalName(), botManager);

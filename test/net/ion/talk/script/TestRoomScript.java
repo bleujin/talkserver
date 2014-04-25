@@ -1,6 +1,7 @@
 package net.ion.talk.script;
 
 import java.io.File;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -9,13 +10,15 @@ import org.bouncycastle.asn1.tsp.TSTInfo;
 import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
+import net.ion.craken.node.crud.ReadChildren;
 import net.ion.craken.node.crud.TestBaseCrud;
 import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.util.Debug;
 import net.ion.framework.util.MapUtil;
+import net.ion.radon.aclient.Response.ResponseBuilder;
 import net.ion.radon.core.let.MultiValueMap;
 import net.ion.talk.ParameterMap;
-import net.ion.talk.TalkScript;
+import net.ion.talk.responsebuilder.TalkResponseBuilder;
 import junit.framework.TestCase;
 
 public class TestRoomScript extends TestBaseCrud {
@@ -55,12 +58,32 @@ public class TestRoomScript extends TestBaseCrud {
 		assertFalse(session.exists("/rooms/1234/members/bleujin"));
 	}
 	
+	public void testRef() throws Exception {
+		testCreateWith(); 
+		session.tran(new TransactionJob<Void>() {
+			@Override
+			public Void handle(WriteSession wsession) throws Exception {
+				wsession.pathBy("/users/bleujin").property("name", "bleujin").property("age", 20) ;
+				return null;
+			}
+		}) ;
+
+		ReadNode room = session.pathBy("/rooms/1234");
+		ReadChildren members = room.child("members").children();
+		
+		String response = TalkResponseBuilder.create().newInner().property(room, "name").inlist("members").property(members, "user.name, user.age").build().toJsonElement().toString();
+		
+		Debug.line(response);
+	}
+	
 	public void testInfoBy() throws Exception {
 		testCreateWith(); 
 
+		
 		MultiValueMap mvm = MultiValueMap.create(MapUtil.<Object>chainKeyMap().put("roomId", "1234").toMap());
 		ParameterMap params = ParameterMap.create(mvm);
 		JsonObject result = JsonObject.fromString(ts.callFn("room/infoBy", params).toString()) ;
+		
 		assertEquals("bleujin", result.asJsonArray("members").get(0).getAsString());
 	}
 	

@@ -29,35 +29,35 @@ public class SMSConfig {
         this.client = client;
     }
 
-    public String getDeptCode() {
+    public String deptCode() {
         return deptCode;
     }
 
-    public String getUserCode() {
+    public String userCode() {
         return userCode;
     }
 
-    public String getHandlerURL() {
+    public String handlerURL() {
         return handlerURL;
     }
 
-    public String getFromPhone() {
+    public String fromPhone() {
         return fromPhone;
     }
 
-    public NewClient getClient() {
+    public NewClient client() {
         return client;
     }
 
-    public String getCallbackURL() {
+    public String callbackURL() {
         return callbackURL;
     }
 
-    public Validator getValidator() {
+    public Validator validator() {
         return validator;
     }
 
-    public String getSenderPhoneKey() {
+    public String senderPhoneKey() {
         return senderPhoneKey;
     }
 

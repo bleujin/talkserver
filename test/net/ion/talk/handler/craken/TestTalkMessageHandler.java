@@ -23,8 +23,9 @@ import net.ion.radon.core.config.Configuration;
 import net.ion.radon.core.config.ConfigurationBuilder;
 import net.ion.radon.util.AradonTester;
 import net.ion.talk.MockClient;
-import net.ion.talk.TestCrakenBase;
 import net.ion.talk.bean.Const;
+import net.ion.talk.bot.TestCrakenBase;
+
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;

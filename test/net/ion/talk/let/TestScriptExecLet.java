@@ -1,43 +1,60 @@
 package net.ion.talk.let;
 
+import java.io.File;
+import java.util.concurrent.Executors;
+
+import junit.framework.TestCase;
 import net.ion.craken.node.ReadSession;
-import net.ion.craken.node.TransactionJob;
-import net.ion.craken.node.WriteSession;
+import net.ion.craken.node.crud.RepositoryImpl;
 import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.util.Debug;
-import net.ion.radon.aclient.*;
-import net.ion.radon.client.AradonClient;
+import net.ion.nradon.Radon;
+import net.ion.radon.aclient.NewClient;
+import net.ion.radon.aclient.Request;
+import net.ion.radon.aclient.RequestBuilder;
+import net.ion.radon.aclient.Response;
+import net.ion.radon.core.Aradon;
 import net.ion.radon.core.EnumClass.IMatchMode;
-import net.ion.talk.TalkScript;
+import net.ion.radon.util.AradonTester;
+import net.ion.talk.script.TalkScript;
+import net.ion.talk.util.NetworkUtil;
 
 import org.restlet.data.Method;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-
-public class TestScriptExecLet extends TestBaseLet {
-
-	private ReadSession session;
-	private TalkScript ts;
+public class TestScriptExecLet extends TestCase {
+	
+	private Radon radon;
+	private NewClient client;
+	private RepositoryImpl repo;
 
 	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		tserver.cbuilder().aradon().sections().restSection("execute").path("execute").addUrlPattern("/").matchMode(IMatchMode.STARTWITH).handler(ScriptExecLet.class).build();
-		tserver.startRadon();
-		session = tserver.readSession();
-		this.ts = TalkScript.create(session, Executors.newScheduledThreadPool(1));
-		ts.readDir(new File("./script")) ;
-		tserver.addAttribute(ts);
+	public void setUp() throws Exception {
+
+
+		Aradon aradon = AradonTester.create().register("execute", "/", "execute", IMatchMode.STARTWITH, ScriptExecLet.class).getAradon();
+
+		this.repo = RepositoryImpl.inmemoryCreateWithTest() ;
+		ReadSession rsession = repo.login("test");
+		
+		TalkScript ts = TalkScript.create(rsession, Executors.newScheduledThreadPool(3));
+		ts.readDir(new File("./script"), true) ;
+		
+		aradon.getServiceContext().putAttribute(TalkScript.class.getCanonicalName(), ts) ;
+		this.radon = aradon.toRadon(9000) ;
+		radon.start().get() ;
+		this.client = NewClient.create() ;
+	}
+	
+	@Override
+	public void tearDown() throws Exception {
+		radon.stop() ;
+		repo.shutdown() ;
+		client.close(); 
+		super.tearDown();
 	}
 
 	public void testAjaxHello() throws Exception {
-		NewClient client = tserver.mockClient().real();
-
-		Response response = client.executeRequest(new RequestBuilder().setMethod(Method.POST).setUrl("http://" + tserver.getHostAddress() + ":9000/execute/test/hello.json").build()).get();
+		Response response = client.executeRequest(new RequestBuilder().setMethod(Method.POST).setUrl(NetworkUtil.httpAddress(9000, "/execute/test/hello.json")).build()).get();
 		assertEquals(200, response.getStatusCode());
 		assertEquals("application/json; charset=UTF-8", response.getContentType());
 		JsonObject obj = JsonObject.fromString(response.getTextBody()).asJsonObject("result");
@@ -45,7 +62,7 @@ public class TestScriptExecLet extends TestBaseLet {
 		Debug.line(obj);
 		
 
-		Response responseAsString = client.executeRequest(new RequestBuilder().setMethod(Method.POST).setUrl("http://" + tserver.getHostAddress() + ":9000/execute/test/hello.string").build()).get();
+		Response responseAsString = client.executeRequest(new RequestBuilder().setMethod(Method.POST).setUrl(NetworkUtil.httpAddress(9000, "/execute/test/hello.string")).build()).get();
 		assertEquals("text/plain; charset=UTF-8", responseAsString.getContentType());
 		obj = JsonObject.fromString(responseAsString.getTextBody()).asJsonObject("result");
 		assertEquals("ryun", obj.asString("name"));
@@ -53,22 +70,22 @@ public class TestScriptExecLet extends TestBaseLet {
 	}
 	
 	public void testOnException() throws Exception {
-		NewClient client = tserver.mockClient().real();
-
-		Response response = client.executeRequest(new RequestBuilder().setMethod(Method.POST).setUrl("http://" + tserver.getHostAddress() + ":9000/execute/test/onexception.json").build()).get();
+		Response response = client.executeRequest(new RequestBuilder().setMethod(Method.POST).setUrl(NetworkUtil.httpAddress(9000, "/execute/test/onexception.json")).build()).get();
 		assertEquals(200, response.getStatusCode());
 		assertEquals("application/json; charset=UTF-8", response.getContentType());
+		Debug.line(response.getTextBody());
 		JsonObject resJson = JsonObject.fromString(response.getTextBody());
 		assertEquals("failure", resJson.asString("status"));
 	}
 	
 
 	public void testAjaxGreetingWithParams() throws Exception {
-		NewClient client = tserver.mockClient().real();
+		
+		
 		RequestBuilder requestBuilder = new RequestBuilder().setMethod(Method.POST)
 					.addParameter("name", "alex").addParameter("location", "oregon").addParameter("money", "10000").addParameter("friends", "joshua");
 
-		Request request = requestBuilder.setUrl("http://" + tserver.getHostAddress() + ":9000/execute/test/greeting.json").build();
+		Request request = requestBuilder.setUrl(NetworkUtil.httpAddress(9000, "/execute/test/greeting.json")).build();
 		Response response = client.executeRequest(request).get();
 
 		assertEquals(200, response.getStatusCode());
@@ -79,7 +96,7 @@ public class TestScriptExecLet extends TestBaseLet {
 		assertEquals("oregon", obj.get("location").getAsString());
 		assertEquals(10000.0, obj.get("money").getAsDouble());
 		assertEquals("joshua", obj.get("friends").getAsJsonObject().get("name").getAsString());
-
+		
 	}
 
 }

@@ -1,4 +1,4 @@
-package net.ion.talk;
+package net.ion.talk.engine;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
+import net.ion.talk.ParameterMap;
 import net.ion.talk.util.NetworkUtil;
+
 import org.restlet.data.Method;
 import org.restlet.resource.Post;
 import org.restlet.resource.Put;
@@ -64,19 +66,12 @@ public class TestParameterMap extends TestCase {
 	}
 
 	public void xtestParamsType() throws Exception {
-		// Response response = client.preparePost(NetworkUtil.getHostAddressWithProtocol("Http") + ":8999/test/params")
-		// .addBodyPart(new StringPart("string", "?�녕"))
-		// .addBodyPart(new StringPart("string", "?�녕1"))
-		// .addBodyPart(new StringPart("int", "1")).addBodyPart(new StringPart("int", "2"))
-		// .addBodyPart(new StringPart("long", "1")).addBodyPart(new StringPart("long", "2"))
-		// .addBodyPart(new FilePart("file", new File("./resource/testScript.js")))
-		// .execute().get();
 
-		final Request request = new RequestBuilder().setUrl(NetworkUtil.httpAddress(8999, "/test/params")).setMethod(Method.POST).addParameter("string", "안녕").addParameter("string", "안녕2").build();
+		final Request request = new RequestBuilder().setUrl(NetworkUtil.httpAddress(8999, "/test/params")).setMethod(Method.POST)
+					.addParameter("string", "안녕").addParameter("string", "안녕2").build();
 		Debug.line(request.getParams());
 
 		Response response = client.executeRequest(request).get();
-
 		Debug.line("ok", response.getTextBody());
 	}
 

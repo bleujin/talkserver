@@ -1,6 +1,6 @@
 new function(){
 	
-	this.addGPSWith = function(){
+	this.addGPSWith = function(params){
 		session.tranSync(function(wsession){
 			wsession.pathBy("/users/" + params.asString("userId")+"/connection")
 				.property("latitude",params.asString("latitude"))
@@ -9,7 +9,7 @@ new function(){
 	}, 
 	
 
-	this.editProfileWith = function(){
+	this.editProfileWith = function(params){
 		session.tranSync(function(wsession){
 			wsession.pathBy("/users/" + params.asString("userId"))
 				.property("nickname",params.asString("nickname"))
@@ -18,7 +18,7 @@ new function(){
 		
 	}, 
 	
-	this.infoBy = function(){
+	this.infoBy = function(params){
 		var user = session.pathBy("/users/" + params.asString("userId"));
 		return rb.create().newInner().property(user, "nickname, phone,pushId,stateMessage,country").build().toJsonObject().toString();
 	}, 
@@ -26,7 +26,7 @@ new function(){
 	
 	
 	
-	this.registerWith = function(){
+	this.registerWith = function(params){
 		session.tranSync(function(wsession){
 			wsession.pathBy("/users/" + params.asString("userId"))
 				.property("phone",params.asString("phone"))
@@ -45,7 +45,7 @@ new function(){
 	
 	
 	
-	this.registerTermBy = function(){
+	this.registerTermBy = function(params){
 		rb.create().newInner().property("personal_contents",
 		"툰톡 개인정보취급방침 \n \n(주)아이온커뮤니케이션즈(이하 “회사”)가 툰톡 서비스 제공과 관련하여 정보통신망 이용촉진 및 정보보호 등에 관한 법률 등 관련 법령상에 따라 아래와 같이 개인정보를 수집, 이용 및 위탁함에 동의한다. \n \n" + 
 		"1.	수집하는 개인정보의 항목 \n" +
@@ -114,7 +114,7 @@ new function(){
 	
 	
 	
-	this.searchBy = function(){
+	this.searchBy = function(params){
 		var phones = params.asStrings("phone");
 	 	var jb = rb.create().newInner().inlist("friends");
 
@@ -138,7 +138,7 @@ new function(){
 	
 	
 	
-	this.smsAuthBy = function(){
+	this.smsAuthBy = function(params){
 		var code = session.ghostBy("/auth/sms/" + params.asString("phone")).property("code").stringValue();
 		
 		if(code == params.asString("code")){

@@ -71,7 +71,7 @@ public class EmbedBotLet implements IServiceLet{
         try {
             Event.valueOf(messageBean.event).call(bot, messageBean);
         } catch (IllegalArgumentException e) {
-            return new StringRepresentation(TalkResponseBuilder.makeResponse(e));
+            return new StringRepresentation(TalkResponseBuilder.failResponse(e));
         }
         String response = TalkResponseBuilder.makeResponse(new ObjectId().toString(), "");
 

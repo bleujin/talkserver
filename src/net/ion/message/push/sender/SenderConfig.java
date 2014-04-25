@@ -35,8 +35,8 @@ public class SenderConfig {
                 .build();
     }
 
-    public Sender createSender(PushStrategy strategy) {
-        return Sender.create(this, strategy);
+    public Pusher createSender(PushStrategy strategy) {
+        return Pusher.create(this, strategy);
     }
 
     public String getGoogleAPIKey() {

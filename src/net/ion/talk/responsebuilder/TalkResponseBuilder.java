@@ -50,7 +50,7 @@ public class TalkResponseBuilder {
         return response.build().toString();
     }
 
-    public static String makeResponse(Exception e) {
+    public static String failResponse(Exception e) {
         return TalkResponseBuilder.create().newInner()
                 .property("status", "failure")
                 .property("result", e.getMessage())

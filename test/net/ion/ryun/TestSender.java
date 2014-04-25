@@ -1,7 +1,7 @@
 package net.ion.ryun;
 
 import junit.framework.TestCase;
-import net.ion.message.push.sender.Sender;
+import net.ion.message.push.sender.Pusher;
 import net.ion.message.push.sender.SenderConfig;
 import net.ion.talk.handler.craken.NotifyStrategy;
 
@@ -25,7 +25,7 @@ public class TestSender extends TestCase {
 
         SenderConfig config = SenderConfig.newBuilder().googleConfig(GCM_API_KEY).appleConfig(KEY_STORE_PATH, PASSWORD, false).retryAttempts(3).retryAfter(5, TimeUnit.SECONDS).build();
 //        Sender sender = Sender.create(new NotifyStrategy(null), Executors.newCachedThreadPool(), config);
-        Sender sender = Sender.create(config, new NotifyStrategy(null));
+        Pusher sender = Pusher.create(config, new NotifyStrategy(null));
         sender.sendTo("test").sendAsync("");
 
     }

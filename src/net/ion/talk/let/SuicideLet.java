@@ -1,5 +1,6 @@
 package net.ion.talk.let;
 
+import java.io.IOException;
 import java.util.GregorianCalendar;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -19,8 +20,8 @@ import net.ion.talk.ToonServer;
 public class SuicideLet implements IServiceLet {
 
 	@Get
-	public String getMyName(@ContextParam("net.ion.talk.TalkEngine") TalkEngine engine) {
-		return "Hello.. ServerID is " + engine.getConfig().name();
+	public String getMyName(@ContextParam("net.ion.talk.TalkEngine") TalkEngine engine) throws IOException {
+		return "Hello.. ServerID is " + engine.readSession().workspace().repository().memberId();
 	}
 
 	@Delete

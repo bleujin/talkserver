@@ -11,7 +11,7 @@ import net.ion.craken.node.crud.TreeNodeKey;
 import net.ion.craken.tree.PropertyId;
 import net.ion.craken.tree.PropertyValue;
 import net.ion.framework.util.Debug;
-import net.ion.message.push.sender.Sender;
+import net.ion.message.push.sender.Pusher;
 import net.ion.talk.TalkEngine;
 import net.ion.talk.account.AccountManager;
 import net.ion.talk.bean.Const.User;

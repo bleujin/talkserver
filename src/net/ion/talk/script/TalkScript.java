@@ -1,4 +1,4 @@
-package net.ion.talk;
+package net.ion.talk.script;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +22,10 @@ import net.ion.framework.util.Debug;
 import net.ion.framework.util.FileUtil;
 import net.ion.framework.util.ListUtil;
 import net.ion.framework.util.MapUtil;
+import net.ion.framework.util.ObjectUtil;
 import net.ion.framework.util.StringUtil;
+import net.ion.talk.ParameterMap;
+import net.ion.talk.TalkMessage;
 import net.ion.talk.responsebuilder.TalkResponseBuilder;
 
 import org.apache.commons.io.DirectoryWalker;
@@ -30,6 +33,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
+import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.edu.emory.mathcs.backport.java.util.Collections;
 
 import sun.org.mozilla.javascript.internal.NativeObject;
@@ -174,24 +178,34 @@ public class TalkScript {
 		Object[] fns = no.getAllIds();
 		return StringUtil.split(StringUtil.join(fns, ','), ',') ;
 	}
-	
 
-	public Object callFn(String uptName, ParameterMap params) throws IOException{
+	
+	public <T> T callFn(String fullFnName, ParameterMap params, ScriptSuccessHandler<T> shandler, ScriptExceptionHandler<T> ehander) {
 		try {
-			String packName = StringUtil.substringBefore(uptName, "/");
-			String fnName = StringUtil.substringAfter(uptName, "/");
+			
+			String[] names = StringUtil.split(fullFnName, '/') ;
+			
+			String packName = names[0];
+			String fnName = names[1];
 
 			Object pack = packages.get(packName);
-			if (pack == null)
-				throw new IOException("not found package");
+			if (pack == null) return ehander.ehandle(new IOException("not found package : " + fullFnName) , fullFnName, params) ;
 
 			Object result = ((Invocable) sengine).invokeMethod(pack, fnName, params);
-			if (result == null) return "" ;
-			return result;
-		} catch (ScriptException e) {
-			throw new IOException(e);
-		} catch (NoSuchMethodException e) {
-			throw new IOException(e);
+			if(result instanceof NativeJavaObject) return shandler.success(((NativeJavaObject)result).unwrap());
+			  
+			return shandler.success(result);
+		} catch (ScriptException ex) {
+			return ehander.ehandle(ex, fullFnName, params) ;
+		} catch (IndexOutOfBoundsException ex) {
+			return ehander.ehandle(ex, fullFnName, params) ;
+		} catch (NoSuchMethodException ex) {
+			return ehander.ehandle(ex, fullFnName, params) ;
 		}
+		
+	}
+
+	public Object callFn(String fullFnName,  ParameterMap params) throws IOException{
+		return callFn(fullFnName, params,  ScriptSuccessHandler.ReturnNative, ScriptExceptionHandler.ReturnExceptionHandler) ;
 	}
 }

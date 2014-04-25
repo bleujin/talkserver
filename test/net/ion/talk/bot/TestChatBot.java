@@ -7,7 +7,6 @@ import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
 import net.ion.framework.util.StringUtil;
-import net.ion.talk.TestCrakenBase;
 import net.ion.talk.bean.Const;
 
 /**

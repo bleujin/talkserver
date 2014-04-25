@@ -22,7 +22,7 @@ public class TestUserConnectionHandler extends TestCase {
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		engine = TalkEngine.test().registerHandler(new UserConnectionHandler()).startForTest();
+		engine = TalkEngine.testCreate().registerHandler(new UserConnectionHandler()).startEngine();
 		rsession = engine.readSession();
 
 		rsession.tranSync(new TransactionJob<Object>() {
@@ -38,7 +38,7 @@ public class TestUserConnectionHandler extends TestCase {
 
 	@Override
 	public void tearDown() throws Exception {
-		engine.stopForTest();
+		engine.stopEngine();
 		super.tearDown();
 	}
 

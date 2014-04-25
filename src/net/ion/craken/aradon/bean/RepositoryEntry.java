@@ -8,7 +8,7 @@ import net.ion.radon.core.IService;
 import net.ion.radon.core.context.OnEventObject;
 import net.ion.radon.core.context.OnOrderEventObject;
 
-public class RepositoryEntry implements OnOrderEventObject {
+public class RepositoryEntry  {
 
 	private RepositoryImpl r;
 	private String wsName;
@@ -31,20 +31,6 @@ public class RepositoryEntry implements OnOrderEventObject {
 		r.shutdown() ;
 	}
 	
-	@Override
-	public void onEvent(AradonEvent event, IService service) {
-		if (event == AradonEvent.START){
-			r.start() ;
-		} else if (event == AradonEvent.STOP){
-			r.shutdown() ;
-		}
-	}
-
-	@Override
-	public int order() {
-		return 1;
-	}
-
 	public RepositoryImpl repository(){
         return r;
     }

@@ -20,7 +20,7 @@ public class BotManager {
     private final ReadSession session;
     private Map<String, EmbedBot> botMap = MapUtil.newMap();
 
-    public BotManager(ReadSession session) {
+    private BotManager(ReadSession session) {
         this.session = session;
     }
 

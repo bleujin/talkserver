@@ -9,7 +9,6 @@ import sun.org.mozilla.javascript.internal.NativeObject;
 import sun.org.mozilla.javascript.internal.Scriptable;
 import net.ion.craken.node.crud.TestBaseCrud;
 import net.ion.framework.util.Debug;
-import net.ion.talk.TalkScript;
 
 public class TestTalkScript extends TestBaseCrud {
 	private ScheduledExecutorService ses;

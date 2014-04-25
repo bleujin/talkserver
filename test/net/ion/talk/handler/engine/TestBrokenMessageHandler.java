@@ -29,12 +29,11 @@ public class TestBrokenMessageHandler extends TestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        tengine = TalkEngine.test();
-        tengine.registerHandler(new BrokenMessageHandler());
-        tengine.startForTest();
+        tengine = TalkEngine.testCreate().registerHandler(new BrokenMessageHandler());
+        tengine.startEngine();
 
         rsession = tengine.readSession();
-        rsession.workspace().addListener(new NotificationListener(new AccountManager(tengine, null)));
+        rsession.workspace().addListener(new NotificationListener(AccountManager.create(tengine, null)));
 
         rsession.tranSync(new TransactionJob<Object>() {
             @Override
@@ -58,7 +57,7 @@ public class TestBrokenMessageHandler extends TestCase {
 
     @Override
     public void tearDown() throws Exception {
-        tengine.stopForTest();
+        tengine.stopEngine();
         super.tearDown();
     }
 }

@@ -27,8 +27,6 @@ import org.restlet.resource.Post;
  */
 public class SMSAuthLet implements IServiceLet {
 
-
-
     @Post
     public Representation auth(@AnContext TreeContext context, @AnRequest InnerRequest request, @FormParam("phone") final String phone) {
         SMSSender smsSender = context.getAttributeObject(SMSSender.class.getCanonicalName(), SMSSender.class);
@@ -49,7 +47,7 @@ public class SMSAuthLet implements IServiceLet {
             smsSender.newMessage(phone).from("02-3430-1200").message("툰톡 인증번호는 [" + code + "] 입니다.").send();
 
         } catch (Exception e) {
-            return new StringRepresentation(TalkResponseBuilder.makeResponse(e));
+            return new StringRepresentation(TalkResponseBuilder.failResponse(e));
         }
 
 

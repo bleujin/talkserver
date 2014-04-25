@@ -26,15 +26,11 @@ public class UploadLet implements IServiceLet {
 	public Representation upsert(@ContextParam("repository") Repository repository, @AnRequest Request request, @FormParam("workspace") String workspace, @FormParam("path") final String nodePath, @FormParam("uploadFile") final FileItem fileItem) throws Exception {
 
 		if (isMultipartRequest(request)) {
-
 			writeBlob(repository, workspace, nodePath, fileItem);
-
 			return new JsonObjectRepresentation("{\"success\":true}");
 
 		} else {
-
 			throw new ResourceException(Status.CLIENT_ERROR_NOT_ACCEPTABLE, "No multipart request");
-
 		}
 	}
 

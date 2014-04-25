@@ -1,63 +1,84 @@
 package net.ion.talk;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.util.ObjectId;
+import net.ion.framework.util.ObjectUtil;
+import net.ion.framework.util.StringUtil;
 
 public abstract class TalkMessage {
 
 	public static TalkMessage fromJsonString(String jsonText) {
 		try {
-			return new TalkScriptMessage(JsonObject.fromString(jsonText));
+			JsonObject json = JsonObject.fromString(jsonText);
+			return new TalkScriptMessage(json.asString("id"), json.asString("script"), ParameterMap.create(json.asJsonObject("params"))).plainMessage(jsonText);
 		} catch (Exception notJson) {
 			return new PlainTalkMessage(jsonText);
 		}
 	}
 
-	public static TalkMessage fromScript(String scriptPath) {
-		return new TalkScriptMessage(new JsonObject().put("script", scriptPath).put("params", new JsonObject())) ;
+	public static TalkMessage fromScript(String id, String scriptPath, ParameterMap params) {
+		return new TalkScriptMessage(id, scriptPath, params).plainMessage(scriptPath) ;
 	}
 
 	public abstract String script() ;
 
 	public abstract String id();
 
-	public abstract JsonObject params();
+	public abstract ParameterMap params();
 
 	public abstract String toPlainMessage() ;
+	
+	public abstract boolean isScript() ;
+
+	public String successMesage(Object result) {
+		return JsonObject.create().put("id", id()).put("status", "success").put("result", ObjectUtil.toString(result)).put("script", script()).toString() ;
+	}
+
+	public String failMesage(Exception ex) {
+		return JsonObject.create().put("id", id()).put("status", "failure").put("result", ex.getMessage()).put("script", script()).toString() ;
+	}
 }
 
 
 class TalkScriptMessage extends TalkMessage {
 	
-	private final JsonObject json;
-	private final ObjectId id ;
-	TalkScriptMessage(JsonObject json) {
-		this.json = json;
-		this.id   = new ObjectId() ;
-	}
-
-	public static TalkMessage fromScript(String scriptPath) {
-		return new TalkScriptMessage(new JsonObject().put("script", scriptPath).put("params", new JsonObject())) ;
+	private final String scriptPath;
+	private ParameterMap params;
+	private final String id ;
+	private String plainMessage;
+	
+	TalkScriptMessage(String id, String scriptPath, ParameterMap params) {
+		this.id = id ;
+		this.scriptPath = scriptPath;
+		this.params = params ;
 	}
 
 	public String script() {
-		return json.asString("script");
+		return scriptPath;
 	}
 
 	public String id() {
-        //It will be create scriptId from server or client.
         return id.toString();
-//        return json.asString("id");
 	}
 
-	public JsonObject params() {
-		return json.asJsonObject("params");
+	public ParameterMap params() {
+		return params ;
 	}
 
-	public String toPlainMessage() {
-		return json.toString() ;
+	public TalkScriptMessage plainMessage(String plainMessage){
+		this.plainMessage = plainMessage ;
+		return this ;
 	}
 	
+	public String toPlainMessage() {
+		return plainMessage;
+	}
+	
+	public boolean isScript() {
+		return StringUtil.isNotBlank(id) && StringUtil.isNotBlank(scriptPath) ;
+	}
 }
 
 
@@ -76,7 +97,7 @@ class PlainTalkMessage extends TalkMessage{
 	}
 
 	@Override
-	public JsonObject params() {
+	public ParameterMap params() {
 		throw new UnsupportedOperationException("this plain msg") ;
 	}
 
@@ -89,5 +110,9 @@ class PlainTalkMessage extends TalkMessage{
 	public String toPlainMessage() {
 		return msg;
 	}
-	
+
+	public boolean isScript() {
+		return false ;
+	}
+
 }

@@ -76,18 +76,16 @@ public class UserConnection {
 
 
 
-    public void heartBeat() {
-        long heartBeatGap = ToonServer.GMTTime() - lastHeartBeat;
-
-        Debug.line(heartBeatGap);
+    public boolean isOverTime(long gmtTime) {
+        long heartBeatGap = gmtTime - lastHeartBeat;
 
         if(heartBeatGap < TalkEngine.HEARTBEAT_WATING){
-            return;
+            return false;
         }else if(heartBeatGap < TalkEngine.HEARTBEAT_KILLING){
             sendMessage("HEARTBEAT");
-            return;
+            return false;
         }else{
-            close(Reason.TIMEOUT);
+            return true ;
         }
     }
 

@@ -14,6 +14,7 @@ import net.ion.radon.core.let.MultiValueMap;
 
 public class ParameterMap {
 
+	public static final ParameterMap BLANK = ParameterMap.create(JsonObject.create());
 	private MultiValueMap inner;
 	private ParameterMap(MultiValueMap inner) {
 		this.inner = inner ;
@@ -24,6 +25,7 @@ public class ParameterMap {
 	}
 	
 	public static ParameterMap create(JsonObject json){
+		if (json == null) return BLANK ;
 		return new ParameterMap(MultiValueMap.create(json.toMap())) ;
 	}
 	

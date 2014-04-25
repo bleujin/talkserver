@@ -9,7 +9,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-public class Sender {
+public class Pusher {
 
     private PushStrategy strategy;
     private SenderConfig config;
@@ -19,18 +19,18 @@ public class Sender {
     private ExecutorService es;
     private BeforeSendHandler beforeHandler;
 
-    protected Sender(PushStrategy strategy, ExecutorService es, SenderConfig config) {
+    protected Pusher(PushStrategy strategy, ExecutorService es, SenderConfig config) {
         this.strategy = strategy;
         this.es = es;
         this.config = config;
     }
 
-    public static Sender create(PushStrategy strategy, ExecutorService es, SenderConfig provider) {
-        return new Sender(strategy, es, provider);
+    public static Pusher create(PushStrategy strategy, ExecutorService es, SenderConfig provider) {
+        return new Pusher(strategy, es, provider);
     }
 
-    public static Sender create(SenderConfig config, PushStrategy strategy) {
-        Sender sender = new Sender(strategy, config.getExecutorService(), config);
+    public static Pusher create(SenderConfig config, PushStrategy strategy) {
+        Pusher sender = new Pusher(strategy, config.getExecutorService(), config);
         sender.gcmSender = GCMSender.create(config.getGoogleAPIKey());
         sender.apnsSender = APNSSender.create(config.getApnsKeyStore(), config.getApnsPassword(), config.isApnsIsProduction());
 

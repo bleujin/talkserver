@@ -4,7 +4,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import net.ion.craken.node.ReadSession;
-import net.ion.message.push.sender.Sender;
+import net.ion.message.push.sender.Pusher;
 import net.ion.message.push.sender.SenderConfig;
 import net.ion.message.push.sender.Vender;
 import net.ion.message.push.sender.strategy.PushStrategy;
@@ -23,9 +23,9 @@ public class NotifyStrategy implements PushStrategy {
 		this.rsession = rsession;
 	}
 	
-	public static Sender createSender(ExecutorService es, ReadSession rsession){
+	public static Pusher createSender(ExecutorService es, ReadSession rsession){
 		SenderConfig config = SenderConfig.newBuilder().googleConfig(GCM_API_KEY).appleConfig(KEY_STORE_PATH, PASSWORD, false).retryAttempts(3).retryAfter(5, TimeUnit.MINUTES).build();
-        return Sender.create(new NotifyStrategy(rsession), es, config);
+        return Pusher.create(new NotifyStrategy(rsession), es, config);
 	}
 
 	@Override
