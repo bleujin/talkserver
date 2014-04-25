@@ -14,22 +14,17 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-import org.restlet.Context;
-import org.restlet.routing.VirtualHost;
-
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.node.ReadSession;
 import net.ion.framework.logging.LogBroker;
 import net.ion.framework.util.ListUtil;
 import net.ion.framework.util.MapUtil;
 import net.ion.message.push.sender.Pusher;
-import net.ion.message.sms.sender.SMSConfig;
 import net.ion.message.sms.sender.SMSSender;
 import net.ion.nradon.WebSocketConnection;
 import net.ion.nradon.WebSocketHandler;
 import net.ion.radon.aclient.ClientConfig;
 import net.ion.radon.aclient.NewClient;
-import net.ion.radon.core.Aradon;
 import net.ion.radon.core.TreeContext;
 import net.ion.talk.account.AccountManager;
 import net.ion.talk.bot.BotManager;
@@ -37,6 +32,9 @@ import net.ion.talk.handler.TalkHandler;
 import net.ion.talk.handler.craken.NotifyStrategy;
 import net.ion.talk.responsebuilder.TalkResponse;
 import net.ion.talk.script.TalkScript;
+
+import org.restlet.Context;
+import org.restlet.routing.VirtualHost;
 
 public class TalkEngine implements WebSocketHandler {
 
@@ -87,7 +85,7 @@ public class TalkEngine implements WebSocketHandler {
 		NewClient nc = NewClient.create(ClientConfig.newBuilder().setMaxRequestRetry(5).setMaxRequestRetry(2).build());
 		context.putAttribute(NewClient.class.getCanonicalName(), nc);
 
-		SMSSender smsSender = new SMSConfig().createSender(nc);
+		SMSSender smsSender = SMSSender.create(nc);
 		context.putAttribute(SMSSender.class.getCanonicalName(), smsSender);
 		context.putAttribute(BotManager.class.getCanonicalName(), BotManager.create(repo.login()));
 

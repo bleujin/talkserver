@@ -14,7 +14,7 @@ public class TestAllTalkHandler extends TestCase {
 	public static TestSuite suite() {
 		TestSuite result = new TestSuite("Test All Talk Handler");
 
-        result.addTestSuite(TestInitScriptHandler.class);
+//        result.addTestSuite(TestInitScriptHandler.class);
         result.addTestSuite(TestServerHandler.class);
 		result.addTestSuite(TestUserConnectionHandler.class);
 		result.addTestSuite(TestWebSocketTalkMessageHandler.class);

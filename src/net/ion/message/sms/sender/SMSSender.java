@@ -12,19 +12,18 @@ import net.ion.radon.aclient.Response;
 public class SMSSender {
 
 	private NewClient client;
-	private SMSConfig config;
 
-	public SMSSender(NewClient client, SMSConfig config) {
+	SMSSender(NewClient client) {
 		this.client = client;
-		this.config = config;
 	}
+	
+	public static SMSSender create(NewClient nc){
+		return new SMSSender(nc) ;
+	}
+	
 
 	public PhoneMessage toPhoneNo(String receiverPhone) {
 		return PhoneMessage.create(this, receiverPhone);
-	}
-
-	public SMSConfig config() {
-		return config;
 	}
 
 	public <T> Future<T> send(PhoneMessage message, final ResponseHandler<T> handler) throws IOException {

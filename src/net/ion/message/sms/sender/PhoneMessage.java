@@ -8,7 +8,6 @@ import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.util.Debug;
 import net.ion.message.sms.response.MessagingResponse;
 import net.ion.message.sms.response.ResponseHandler;
-import net.ion.message.sms.sender.SMSConfig.TargetLoc;
 import net.ion.radon.aclient.Request;
 import net.ion.radon.aclient.RequestBuilder;
 
@@ -21,25 +20,6 @@ import com.google.common.base.Preconditions;
 
 public class PhoneMessage {
 
-	private static ResponseHandler<MessagingResponse> DefaultResponseHandler = new ResponseHandler<MessagingResponse>() {
-		@Override
-		public MessagingResponse onSuccess(MessagingResponse response) {
-			Debug.debug("[MSG_SEND_SUCCESS]", response.getResponse("euc-kr"));
-			return response;
-		}
-
-		@Override
-		public MessagingResponse onFail(MessagingResponse response) {
-			Debug.debug("[MSG_SEND_FAILED]", response);
-			return response;
-		}
-
-		@Override
-		public void onThrow(Throwable t) {
-			t.printStackTrace();
-		}
-	};
-
 	private final JsonObject param = new JsonObject();
 	private final SMSSender sender;
 	private final TargetLoc target;
@@ -50,7 +30,7 @@ public class PhoneMessage {
 	}
 
 	public final static PhoneMessage create(SMSSender sender, String receiverPhone) {
-		TargetLoc target = sender.config().target(receiverPhone);
+		TargetLoc target = TargetLoc.select(receiverPhone);
 		PhoneMessage result = new PhoneMessage(sender, target);
 
 		result.param.put("member", generateId())
@@ -62,16 +42,13 @@ public class PhoneMessage {
 		return result;
 	}
 
-	public PhoneMessage from(String fromNum) {
+	public PhoneMessage from(String exchangeNo, String prefixNo, String postfixNo) {
 
 		if (target.isDomestic()) {
-			String[] fromNums = StringUtils.split(fromNum, "-");
-			Preconditions.checkArgument(fromNums.length == 3, "Phone number format is XXX-XXXX-XXXX");
-
-			param.put("from_num1", fromNums[0]).put("from_num2", fromNums[1]).put("from_num3", fromNums[2]);
+			param.put("from_num1", exchangeNo).put("from_num2", prefixNo).put("from_num3", postfixNo);
 
 		} else {
-			param.put("from_num", StringUtils.replace(fromNum, "-", ""));
+			param.put("from_num", exchangeNo + prefixNo + postfixNo);
 		}
 
 		return this;
@@ -113,7 +90,7 @@ public class PhoneMessage {
 	}
 
 	public Future<MessagingResponse> send() throws IOException {
-		return sender.send(this, DefaultResponseHandler);
+		return sender.send(this, ResponseHandler.DefaultResponseHandler);
 	}
 
 	public <T> Future<T> send(ResponseHandler<T> rhandler) throws IOException {
@@ -147,4 +124,58 @@ public class PhoneMessage {
 		return param.asString("to_message");
 	}
 
+}
+
+
+enum TargetLoc {
+	Domestic {
+		public String deptCode() {
+			return "8J-N2W-G1";
+		}
+		public String userCode() {
+			return "ioncom2";
+		}
+		public String handlerURL() {
+			return "https://toll.surem.com:440/message/direct_call_sms_return_post.asp";
+		}
+
+		public String senderPhoneKey() {
+			return "group_name";
+		}
+		
+		public boolean isDomestic() {
+			return true ;
+		}
+		
+	}, International {
+		public String deptCode() {
+			return "JM-BWB-P6";
+		}
+		public String userCode() {
+			return "ioncom";
+		}
+		public String handlerURL() {
+			return "https://toll.surem.com:440/message/direct_INTL_return_post.asp";
+		}
+		public String senderPhoneKey() {
+			return "group_name";
+		}
+		public boolean isDomestic() {
+			return false ;
+		}
+		
+	} ;
+	
+	public abstract String deptCode() ;
+	public abstract String userCode() ;
+	public abstract String handlerURL() ;
+	public abstract String senderPhoneKey() ;
+	public abstract boolean isDomestic() ;
+	public String callBackURL(){
+		return "http://127.0.0.1/callback" ;
+	}
+	
+	public static TargetLoc select(String receiverPhone){
+		return receiverPhone.startsWith("+") ? TargetLoc.International : TargetLoc.Domestic ;
+	}
 }

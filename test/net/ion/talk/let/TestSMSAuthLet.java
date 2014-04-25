@@ -5,7 +5,6 @@ import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.util.Debug;
 import net.ion.framework.util.RandomUtil;
-import net.ion.message.sms.sender.SMSConfig;
 import net.ion.message.sms.sender.SMSSender;
 import net.ion.nradon.Radon;
 import net.ion.radon.aclient.NewClient;
@@ -31,7 +30,7 @@ public class TestSMSAuthLet extends TestCase{
     public void setUp() throws Exception {
         super.setUp();
 		this.repoEntry = RepositoryEntry.test();
-		SMSSender smsSender = new SMSConfig().createSender(NewClient.create());
+		SMSSender smsSender = SMSSender.create(NewClient.create());
 
 		Configuration configuration = ConfigurationBuilder.newBuilder()	
 			.aradon()
