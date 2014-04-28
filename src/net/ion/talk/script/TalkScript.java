@@ -136,16 +136,16 @@ public class TalkScript {
 
 
 	private String loadPackageScript(File file)  {
+		String packName = FilenameUtils.getBaseName(file.getName());
 		try {
 			String script = FileUtil.readFileToString(file);
-			String packName = FilenameUtils.getBaseName(file.getName());
 			packages.put(packName, sengine.eval(script));
-			return packName;
 		} catch (IOException e) {
-			throw new IllegalStateException(e) ;
+			e.printStackTrace(); 
 		} catch (ScriptException e) {
-			throw new IllegalStateException(e) ;
+			e.printStackTrace(); 
 		}
+		return packName;
 	}
 
 	public TalkScript addScript(String packName, String script) throws ScriptException{
@@ -192,7 +192,8 @@ public class TalkScript {
 			if (pack == null) return ehander.ehandle(new IOException("not found package : " + fullFnName) , fullFnName, params) ;
 
 			Object result = ((Invocable) sengine).invokeMethod(pack, fnName, params);
-			if(result instanceof NativeJavaObject) return shandler.success(((NativeJavaObject)result).unwrap());
+			if(result instanceof NativeJavaObject) result = ((NativeJavaObject)result).unwrap() ;  
+			result = ObjectUtil.coalesce(result, "undefined") ;
 			  
 			return shandler.success(result);
 		} catch (ScriptException ex) {

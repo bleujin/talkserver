@@ -11,6 +11,19 @@ new function(){
 			.inner('friends').property('name', params.asStrings('friends')).build().toJsonObject();
 	}, 
 	
+	this.refTos = function(params){
+		session.tranSync(function(wsession){
+			wsession.pathBy("/bleujin").property("name", "bleujin").refTos("self", ["/bleujin"]) ;
+		}) ;
+	}, 
+	
+	this.langError = function(params){
+		session.tranSync(function(wsession){
+			wsession.pathBy("/bleujin").property("name", "bleujin").refTos("self", ["/bleujin"]) ;
+//			wsession.pathBy("/bleujin").property("name", "bleujin").refTos("self", ["/bleujin")]) ;
+		}) ;
+	}, 
+	
 	this.onexception = function(params){
 		return rb.notsuchMethod() ;
 	}
