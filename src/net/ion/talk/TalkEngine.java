@@ -54,7 +54,7 @@ public class TalkEngine implements WebSocketHandler {
 
 	private final TreeContext context;
 	private final ScheduledExecutorService worker;
-	private AtomicReference<Boolean> started = new AtomicReference<Boolean>();
+	private AtomicReference<Boolean> started = new AtomicReference<Boolean>(Boolean.FALSE);
 
 	protected TalkEngine(TreeContext context) {
 		if (context == null)
@@ -63,8 +63,6 @@ public class TalkEngine implements WebSocketHandler {
 		this.context = context;
 		this.worker = context.getAttributeObject(ScheduledExecutorService.class.getCanonicalName(), ScheduledExecutorService.class);
 		context.putAttribute(TalkEngine.class.getCanonicalName(), this);
-		
-		started.set(Boolean.FALSE);
 	}
 
 	public static TalkEngine testCreate() throws Exception {

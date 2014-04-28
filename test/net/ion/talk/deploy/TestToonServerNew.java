@@ -37,6 +37,8 @@ public class TestToonServerNew extends TestCase {
 		ToonServer tserver = ToonServer.testWithLoginLet(); 
 		tserver.ready();
 		tserver.startRadon();
+		
+		
 		tserver.talkEngine().registerHandler(new UserConnectionHandler()).registerHandler(ServerHandler.test()).registerHandler(new WebSocketScriptHandler()) ;
 
 		NewClient nc = tserver.getAttribute(NewClient.class.getCanonicalName(), NewClient.class);
