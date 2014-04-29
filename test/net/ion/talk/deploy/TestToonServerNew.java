@@ -1,11 +1,15 @@
 package net.ion.talk.deploy;
 
+import java.io.File;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 import junit.framework.TestCase;
+import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.node.ReadSession;
 import net.ion.framework.util.Debug;
+import net.ion.framework.util.FileUtil;
 import net.ion.framework.util.InfinityThread;
 import net.ion.radon.aclient.NewClient;
 import net.ion.radon.aclient.websocket.WebSocket;
@@ -33,15 +37,19 @@ import net.ion.talk.util.NetworkUtil;
 public class TestToonServerNew extends TestCase {
 
 	public void testRunInfinite() throws Exception {
-		ToonServer tserver = ToonServer.testWithLoginLet(); 
-		tserver.ready();
-		tserver.startRadon();
+		String filePath = "./resource/craken";
+		FileUtil.deleteDirectory(new File(filePath));
 		
+		RepositoryEntry rentry = RepositoryEntry.testSoloFile(filePath) ;
+		ScheduledExecutorService worker = Executors.newScheduledThreadPool(10) ;
+
+		final ToonServer tserver = ToonServer.testCreate(rentry, worker);
+		
+		tserver.ready().startRadon();
 		
 		tserver.talkEngine().registerHandler(new UserConnectionHandler()).registerHandler(ServerHandler.test()).registerHandler(new WebSocketScriptHandler()) ;
 
 		NewClient nc = tserver.getAttribute(NewClient.class.getCanonicalName(), NewClient.class);
-		ScheduledExecutorService worker = tserver.getAttribute(ScheduledExecutorService.class.getCanonicalName(), ScheduledExecutorService.class);
 		BotManager botManager = tserver.getAttribute(BotManager.class.getCanonicalName(), BotManager.class);
 		ReadSession rsession = tserver.readSession();
 		
@@ -55,6 +63,17 @@ public class TestToonServerNew extends TestCase {
         botManager.registerBot(new BBot(tserver.readSession(), worker));
         botManager.registerBot(new ChatBot(tserver.readSession()));
 
+        
+        Runtime.getRuntime().addShutdownHook(new Thread(){
+        	public void run(){
+        		try {
+					tserver.stop();
+				} catch (Exception e) {
+					e.printStackTrace();
+				} 
+        	}
+        });
+        
         new InfinityThread().startNJoin();
     }
 

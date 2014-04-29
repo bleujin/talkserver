@@ -16,18 +16,12 @@ public class PushMessage {
         this.receiver = receiver;
     }
 
-    public boolean send(String message) {
+    public boolean send(String message) throws InterruptedException, ExecutionException {
         return send(message, PushResponseHandler.DEFAULT);
     }
 
-    public <T> T send(String message, PushResponseHandler<T> handler) {
-        try {
-            return sendAsync(message, handler).get();
-        } catch (InterruptedException e) {
-            throw new IllegalThreadStateException(e.getMessage());
-        } catch (ExecutionException e) {
-            throw new IllegalThreadStateException(e.getMessage());
-        }
+    public <T> T send(String message, PushResponseHandler<T> handler) throws InterruptedException, ExecutionException {
+    	return sendAsync(message, handler).get();
     }
 
     public String getReceiver() {

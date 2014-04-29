@@ -1,5 +1,6 @@
 package net.ion.talk.handler.engine;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -46,10 +47,10 @@ public class ServerHandler implements TalkHandler {
 	}
 
 	@Override
-	public void onEngineStart(TalkEngine tengine) throws Exception {
+	public void onEngineStart(TalkEngine tengine) throws IOException {
 		this.session = tengine.readSession();
 
-		session.tranSync(new TransactionJob<Void>() {
+		session.tran(new TransactionJob<Void>() {
 			@Override
 			public Void handle(WriteSession wsession) throws Exception {
 				wsession.pathBy("/servers/" + hostName).property("host", serverHost).property("port", port);
@@ -65,7 +66,7 @@ public class ServerHandler implements TalkHandler {
 	@Override
 	public void onEngineStop(TalkEngine tengine) {
 		try {
-			this.session.tranSync(new TransactionJob<Void>() {
+			this.session.tran(new TransactionJob<Void>() {
 				@Override
 				public Void handle(WriteSession wsession) throws Exception {
 					wsession.pathBy("/servers/" + hostName).removeSelf();

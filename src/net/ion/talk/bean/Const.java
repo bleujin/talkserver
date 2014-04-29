@@ -33,6 +33,7 @@ public class Const {
         public static final String CausedEvent = "causedBy";
         public static final String Filter = "filter";
         public static final String FilterEnabled = "filterEnabled";
+		public static final String Time = "time";
 
     }
 

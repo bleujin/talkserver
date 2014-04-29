@@ -37,7 +37,7 @@ public class TestConnectToServer extends TestCase {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		this.tserver = ToonServer.testWithLoginLet();
+		this.tserver = ToonServer.testCreate();
 		tserver.ready().talkEngine().registerHandler(new EchoHandler());
 
 		tserver.readSession().tranSync(new TransactionJob<Object>() {

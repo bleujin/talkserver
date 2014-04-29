@@ -8,6 +8,7 @@ import java.util.GregorianCalendar;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import net.ion.craken.aradon.NodeLet;
@@ -35,25 +36,36 @@ import net.ion.talk.script.TalkScript;
 
 public class ToonServer {
 
-	public static ToonServer testWithLoginLet() throws Exception {
-		return new ToonServer().init();
-	}
-
 	private enum Status {
 		INITED, READY, STARTED, STOPED ;
 	}
 	
-	private RepositoryEntry repoEntry;
 	private Aradon aradon;
 	private Radon radon;
 	private ConfigurationBuilder cbuilder;
 
 	private AtomicReference<Status> status = new AtomicReference<ToonServer.Status>(Status.STOPED) ;
 	
+	private RepositoryEntry repoEntry;
+	private ScheduledExecutorService worker;
+
+	private ToonServer(RepositoryEntry rentry, ScheduledExecutorService worker){
+		this.repoEntry = rentry ;
+		this.worker = worker ;
+	}
+
+	public static ToonServer testCreate() throws Exception {
+		return testCreate(RepositoryEntry.test(), Executors.newScheduledThreadPool(10)) ;
+	}
+
+	public static ToonServer testCreate(RepositoryEntry rentry, ScheduledExecutorService worker) throws Exception {
+		return new ToonServer(rentry, worker).init();
+	}
+
+	
+	
 	private ToonServer init() throws Exception {
-		this.repoEntry = RepositoryEntry.test();
 		CrakenVerifier verifier = CrakenVerifier.test(repoEntry.login());
-		ScheduledExecutorService worker = Executors.newScheduledThreadPool(10) ;
 		
 		TalkScript tscript = TalkScript.create(repoEntry.login(), worker).readDir(new File("./script"), true) ;
 		NewClient nc = NewClient.create(ClientConfig.newBuilder().setMaxRequestRetry(5).setMaxRequestRetry(2).build());
@@ -125,12 +137,15 @@ public class ToonServer {
 		return this;
 	}
 
-	public void stop() throws InterruptedException, ExecutionException {
+	public ToonServer stop() throws InterruptedException, ExecutionException {
 		repoEntry.shutdown();
+		worker.shutdown(); 
+		worker.awaitTermination(2, TimeUnit.SECONDS) ;
 		if (aradon != null) aradon.stop();
 		if (radon != null) radon.stop().get();
 		
 		status.set(Status.STOPED);
+		return this ;
 	}
 
 	public Aradon aradon() {

@@ -10,13 +10,17 @@ import net.ion.radon.core.annotation.PathParam;
 import net.ion.radon.core.let.InnerRequest;
 import net.ion.talk.bot.BotManager;
 import net.ion.talk.bot.EmbedBot;
+import net.ion.talk.responsebuilder.TalkResponse;
 import net.ion.talk.responsebuilder.TalkResponseBuilder;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Post;
 import org.restlet.resource.ResourceException;
+
+import com.google.common.base.Objects.ToStringHelper;
 
 /**
  * Created with IntelliJ IDEA.
@@ -66,12 +70,11 @@ public class EmbedBotLet implements IServiceLet{
 
         try {
             Event.valueOf(messageBean.event).call(bot, messageBean);
+            return TalkResponseBuilder.makeResponse("/bot/" + botId, messageBean.toString()).transformer(TalkResponse.ToStringRepresentation) ;
         } catch (IllegalArgumentException e) {
-            return new StringRepresentation(TalkResponseBuilder.failResponse(e));
+            return TalkResponseBuilder.failResponse(e).transformer(TalkResponse.ToStringRepresentation);
         }
-        String response = TalkResponseBuilder.makeResponse(new ObjectId().toString(), "");
 
-        return new StringRepresentation(response);
     }
 
 
@@ -81,6 +84,10 @@ public class EmbedBotLet implements IServiceLet{
         private String roomId;
         private String message;
         private String messageId;
+        
+        public String toString(){
+        	return ToStringBuilder.reflectionToString(this) ;
+        }
     }
 
 }

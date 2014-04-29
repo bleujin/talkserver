@@ -1,5 +1,7 @@
 package net.ion.talk.let;
 
+import java.io.IOException;
+
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
@@ -13,6 +15,7 @@ import net.ion.radon.core.annotation.AnContext;
 import net.ion.radon.core.annotation.AnRequest;
 import net.ion.radon.core.annotation.FormParam;
 import net.ion.radon.core.let.InnerRequest;
+import net.ion.talk.responsebuilder.TalkResponse;
 import net.ion.talk.responsebuilder.TalkResponseBuilder;
 
 import org.restlet.representation.Representation;
@@ -29,32 +32,24 @@ import org.restlet.resource.Post;
 public class SMSAuthLet implements IServiceLet {
 
     @Post
-    public Representation auth(@AnContext TreeContext context, @AnRequest InnerRequest request, @FormParam("phone") final String phone) {
+    public Representation auth(@AnContext TreeContext context, @AnRequest InnerRequest request, @FormParam("phone") final String phone) throws IOException {
         SMSSender smsSender = context.getAttributeObject(SMSSender.class.getCanonicalName(), SMSSender.class);
         RepositoryEntry rentry = context.getAttributeObject(RepositoryEntry.EntryName, RepositoryEntry.class);
 
         final int code = RandomUtil.nextInt(999999)+1;
 
-        try {
-            ReadSession rsession = rentry.login();
-            rsession.tranSync(new TransactionJob<Object>() {
-                @Override
-                public Object handle(WriteSession wsession) throws Exception {
-                    wsession.pathBy("/auth/sms/"+phone).property("code", code);
-                    return null;
-                }
-            });
+        ReadSession rsession = rentry.login();
+        rsession.tran(new TransactionJob<Void>() {
+            @Override
+            public Void handle(WriteSession wsession) throws Exception {
+                wsession.pathBy("/auth/sms/"+phone).property("code", code);
+                return null;
+            }
+        });
 
-            smsSender.toPhoneNo(phone).from("02", "3430", "1200").message("툰톡 인증번호는 [" + code + "] 입니다.").send();
+        smsSender.toPhoneNo(phone).from("02", "3430", "1200").message("툰톡 인증번호는 [" + code + "] 입니다.").send();
 
-        } catch (Exception e) {
-            return new StringRepresentation(TalkResponseBuilder.failResponse(e));
-        }
-
-
-        String response = TalkResponseBuilder.makeResponse(new ObjectId().toString(), "인증번호를 발송하였습니다.");
-
-        return new StringRepresentation(response);
+        return TalkResponseBuilder.makeResponse("/user/smsauth", "인증번호를 발송하였습니다.").transformer(TalkResponse.ToStringRepresentation);
     }
 
 }

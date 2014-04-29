@@ -28,14 +28,6 @@ public abstract class TalkMessage {
 	public abstract String toPlainMessage() ;
 	
 	public abstract boolean isScript() ;
-
-	public String successMesage(Object result) {
-		return JsonObject.create().put("id", id()).put("status", "success").put("result", ObjectUtil.toString(result)).put("script", script()).toString() ;
-	}
-
-	public String failMesage(Exception ex) {
-		return JsonObject.create().put("id", id()).put("status", "failure").put("result", ex.getMessage()).put("script", script()).toString() ;
-	}
 }
 
 

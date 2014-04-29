@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import net.ion.framework.parse.gson.JsonObject;
+import net.ion.framework.parse.gson.JsonParser;
 import net.ion.framework.util.NumberUtil;
 import net.ion.framework.util.ObjectUtil;
 import net.ion.radon.core.let.MultiValueMap;
@@ -61,7 +62,9 @@ public class ParameterMap {
 		}
 	}
 	
-	
+	public JsonObject asJson(){
+		return JsonParser.fromMap(inner) ;
+	}
 
 	
 	public String asString(String name, int index){

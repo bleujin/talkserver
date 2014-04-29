@@ -20,12 +20,16 @@ import net.ion.framework.util.ObjectId;
 import net.ion.radon.core.let.MultiValueMap;
 import net.ion.radon.core.representation.JsonObjectRepresentation;
 import net.ion.talk.ParameterMap;
+import net.ion.talk.let.ScriptExecLet;
 import net.ion.talk.responsebuilder.TalkResponseBuilder;
 
 public class TestCaseScript extends TestBaseCrud {
 	private ScheduledExecutorService ses;
 	private TalkScript ts;
 
+	
+	
+	
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -36,28 +40,9 @@ public class TestCaseScript extends TestBaseCrud {
 	
 	public void testWhenNullReturnInExecScript() throws Exception {
 		ParameterMap params = ParameterMap.BLANK ;
-		final String scriptId = new ObjectId().toString() ;
 		final String returnType = "json" ;
 		
-		Representation rep = ts.callFn("test/refTos", params, new ScriptSuccessHandler<Representation>() {
-			@Override
-			public Representation success(Object result) {
-		        if ("json".equals(returnType)){
-		        	return new JsonObjectRepresentation(TalkResponseBuilder.makeResponse(scriptId, result));
-		        } else if("string".equals(returnType)) {
-		        	return new StringRepresentation(TalkResponseBuilder.makeResponse(scriptId, result));
-		        } else {
-		        	return new InputRepresentation((InputStream) result);
-		        }
-			}
-		}, 
-		new ScriptExceptionHandler<Representation>() {
-			@Override
-			public Representation ehandle(Exception ex, String fullFnName, ParameterMap params) {
-                return new JsonObjectRepresentation(TalkResponseBuilder.failResponse(ex));
-			}
-		}) ;
-		
+		Representation rep = ts.callFn("test/refTos", params, ScriptExecLet.MakeDefaultResponseHandler(returnType)) ;
 		Debug.line(rep, rep.getText());
 	}
 	

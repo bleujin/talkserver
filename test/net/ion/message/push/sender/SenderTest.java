@@ -70,7 +70,7 @@ public class SenderTest extends BaseTest {
 	}
 
 
-	public void testBeforeSendHandler() {
+	public void testBeforeSendHandler() throws Exception {
 		senderForAPNS.bforeSendHandler(new BeforeSendHandler() {
 			@Override
 			public void handle(PushMessage message) {

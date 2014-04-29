@@ -37,7 +37,7 @@ public class AppleMessage {
         return this;
     }
 
-    public <T> T push(PushResponseHandler<T> handler) throws Exception {
+    public <T> T push(PushResponseHandler<T> handler) {
         return apnsSender.push(this, handler);
     }
 
