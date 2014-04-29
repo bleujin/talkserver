@@ -32,8 +32,8 @@ public class DisconnectedAccount extends Account {
     }
 
     @Override
-    public Object onMessage(final String notifyId, TalkResponse response) throws ExecutionException, InterruptedException {
-        return pusher.sendTo(accountId()).sendAsync(response.pushMessage(), new PushResponseHandler<Boolean>() {
+    public void onMessage(final String notifyId, TalkResponse response)  {
+        pusher.sendTo(accountId()).sendAsync(response.pushMessage(), new PushResponseHandler<Boolean>() {
 			@Override
 			public Boolean onAPNSSuccess(AppleMessage amsg, PushedNotifications results) {
 //                rsession.tran(new TransactionJob<Object>() {

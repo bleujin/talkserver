@@ -23,10 +23,8 @@ public class ConnectedUserAccount extends Account {
     }
 
     @Override
-    public Object onMessage(final String notifyId, TalkResponse response) throws Exception {
+    public void onMessage(final String notifyId, TalkResponse response) {
         uconn.sendMessage(response.talkMessage());
-
-        return null;
     }
 
     public UserConnection userConnection(){

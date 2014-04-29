@@ -69,9 +69,8 @@ public class TestNotifySendHandler extends TestCase {
 
             return new Account(userId, null) {
                 @Override
-                public Object onMessage(String notifyId, TalkResponse response) throws Exception {
+                public void onMessage(String notifyId, TalkResponse response) {
                     FakeAccountManager.this.notifyId = notifyId;
-                    return notifyId;
                 }
             };
         }

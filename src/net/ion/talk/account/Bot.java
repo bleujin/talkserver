@@ -29,13 +29,17 @@ public class Bot extends Account {
     }
 
     @Override
-    public Object onMessage(String notifyId, TalkResponse response) throws IOException, ExecutionException, InterruptedException {
-        return buildRequest(response).execute(new AsyncCompletionHandler<Object>() {
-            @Override
-            public Object onCompleted(Response response) throws Exception {
-                return response.getStatusCode();
-            }
-        }).get();
+    public void onMessage(String notifyId, TalkResponse response)  {
+        try {
+			buildRequest(response).execute(new AsyncCompletionHandler<Integer>() {
+			    @Override
+			    public Integer onCompleted(Response response) throws Exception {
+			        return response.getStatusCode();
+			    }
+			});
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
     }
 
     private NewClient.BoundRequestBuilder buildRequest(TalkResponse response) {

@@ -18,7 +18,7 @@ public abstract class Account {
         ConnectedUser, DisconnectedUser, NotFoundUser, Bot
     }
 
-    public abstract Object onMessage(String notifyId, TalkResponse response) throws Exception;
+    public abstract void onMessage(String notifyId, TalkResponse response) ;
 
     public Type type(){
         return type;
@@ -35,8 +35,7 @@ public abstract class Account {
 
     public static Account NotFoundUser = new Account("notFound", Type.NotFoundUser) {
         @Override
-        public Object onMessage(String notifyId, TalkResponse s) {
-            return null;
+        public void onMessage(String notifyId, TalkResponse s) {
         }
 
     };

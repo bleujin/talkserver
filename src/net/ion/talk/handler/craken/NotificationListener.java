@@ -50,14 +50,9 @@ public class NotificationListener implements WorkspaceListener{
 
 			if(pvalue != null && pvalue.stringValue().equals(this.memberId)){
 				TalkResponse tresponse = TalkResponseBuilder.create().newInner().property("notifyId", notifyId).build() ;
-                try {
-                    am.newAccount(userId).onMessage(notifyId, tresponse);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                am.newAccount(userId).onMessage(notifyId, tresponse);
             }
 		}
-				
 	}
 
 	@Override
