@@ -1,7 +1,6 @@
 package net.ion.talk.deploy;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 import junit.framework.TestCase;

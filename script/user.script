@@ -141,13 +141,13 @@ new function(){
 	this.smsAuthBy = function(params){
 		var code = session.ghostBy("/auth/sms/" + params.asString("phone")).property("code").stringValue();
 		
-		if(code == params.asString("code")){
+		if(code.equals(params.asString("code"))){
 			session.tranSync(function(wsession){
 		    	wsession.pathBy("/auth/sms/" + params.asString("phone")).removeSelf();
 		  	});
-		  	return rb.create().newInner().property("auth","valid").build().toJsonObject();
+		  	return "valid";
 		}else{
-			return rb.create().newInner().property("auth","invalid").build().toJsonObject();
+			return "invalid";
 		}
 	}
 
