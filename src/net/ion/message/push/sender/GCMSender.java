@@ -1,10 +1,11 @@
 package net.ion.message.push.sender;
 
+import java.io.IOException;
+
+import net.ion.message.push.sender.handler.PushResponseHandler;
+
 import com.google.android.gcm.server.Message;
 import com.google.android.gcm.server.Result;
-import net.ion.message.push.message.google.GoogleMessage;
-
-import java.io.IOException;
 
 public class GCMSender {
 
@@ -18,15 +19,19 @@ public class GCMSender {
         return new GCMSender(apiKey);
     }
 
-    public GoogleMessage sendTo(String token) {
-        return GoogleMessage.create(token, this);
+    public GoogleMessage sendTo(String receiver, String token) {
+        return GoogleMessage.create(this, receiver, token);
     }
 
-    public PushResponse send(GoogleMessage message) throws IOException {
-        Message payload = message.toPayload();
+    <T> T send(GoogleMessage gmsg, PushResponseHandler<T> handler) {
+    	Result result = null ;
+		try {
+			Message payload = gmsg.toPayload();
+			result = sender.sendNoRetry(payload, gmsg.token());
+			return  result.getMessageId() != null ? handler.onGoogleSuccess(gmsg, result) : handler.onGoogleFail(gmsg, result) ;
+		} catch (IOException ex) {
+			return handler.onGoogleThrow(gmsg, ex, result) ;
+		}
 
-        Result result = sender.sendNoRetry(payload, message.getReceiver());
-
-        return PushResponse.from(result);
     }
 }

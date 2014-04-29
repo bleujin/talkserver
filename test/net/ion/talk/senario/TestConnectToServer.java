@@ -93,8 +93,8 @@ public class TestConnectToServer extends TestCase {
 		websocket.sendTextMessage("Hello");
 		count.await();
 
+		nc.close(); 
 		assertEquals("Hello", received.get());
-
 	}
 
 }

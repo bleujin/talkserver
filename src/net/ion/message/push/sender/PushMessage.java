@@ -1,29 +1,26 @@
 package net.ion.message.push.sender;
 
-import net.ion.message.push.sender.handler.DefaultResponseHandler;
-import net.ion.message.push.sender.handler.ResponseHandler;
-
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+
+import net.ion.message.push.sender.handler.PushResponseHandler;
 
 public class PushMessage {
 
     private Pusher sender;
-    private String[] receivers;
+    private String receiver;
     private String message;
 
-    public PushMessage(Pusher sender, String[] receivers) {
+    public PushMessage(Pusher sender, String receiver) {
         this.sender = sender;
-        this.receivers = receivers;
+        this.receiver = receiver;
     }
 
-    public List<PushResponse> send(String message) {
-        return send(message, DefaultResponseHandler.create(this));
+    public boolean send(String message) {
+        return send(message, PushResponseHandler.DEFAULT);
     }
 
-    public <T> T send(String message, ResponseHandler<T> handler) {
+    public <T> T send(String message, PushResponseHandler<T> handler) {
         try {
             return sendAsync(message, handler).get();
         } catch (InterruptedException e) {
@@ -33,26 +30,26 @@ public class PushMessage {
         }
     }
 
-    public String[] getReceivers() {
-        return receivers;
+    public String getReceiver() {
+        return receiver;
     }
 
     public String getMessage() {
         return message;
     }
 
-    public <T> Future<T> sendAsync(String message, ResponseHandler<T> handler) {
+    public <T> Future<T> sendAsync(String message, PushResponseHandler<T> handler) {
         this.message = message;
         return sender.send(this, handler);
     }
 
-    public Future<List<PushResponse>> sendAsync(String message) {
-        return sendAsync(message, DefaultResponseHandler.create(this));
+    public Future<Boolean> sendAsync(String message) {
+        return sendAsync(message, PushResponseHandler.DEFAULT);
     }
 
-    public <T> Future<T> sendSchedule(String message, int sendAfter, TimeUnit timeUnit, ResponseHandler<T> handler) throws InterruptedException {
-        Thread.sleep(TimeUnit.MILLISECONDS.convert(sendAfter, timeUnit));
-
-        return sendAsync(message, handler);
-    }
+//    public <T> Future<T> sendSchedule(String message, int sendAfter, TimeUnit timeUnit, ResponseHandler<T> handler) throws InterruptedException {
+//        Thread.sleep(TimeUnit.MILLISECONDS.convert(sendAfter, timeUnit));
+//
+//        return sendAsync(message, handler);
+//    }
 }

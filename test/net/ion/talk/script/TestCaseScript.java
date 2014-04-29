@@ -2,8 +2,11 @@ package net.ion.talk.script;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
@@ -67,10 +70,43 @@ public class TestCaseScript extends TestBaseCrud {
 	
 	public void xtestIfLangErrorWhenReloaded() throws Exception {
 		ParameterMap params = ParameterMap.BLANK ;
+		Executors.newFixedThreadPool(3) ;
 		
 		while(true){
 			Thread.sleep(1000);
 			Debug.line(ts.callFn("test/langError", params));
 		}
 	}
+	
+	public void testThreadPool() throws Exception {
+		
+		ExecutorService es = Executors.newScheduledThreadPool(2) ;
+		Callable<Void> call = new Callable<Void>() {
+			@Override
+			public Void call() {
+				int i = 0 ;
+				boolean loop = true ;
+				while(loop){
+					try {
+						Thread.sleep(1);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					i++ ;
+				}
+				return null;
+			}
+		};
+
+		es.submit(call) ;
+		es.submit(call) ;
+		es.submit(call) ;
+		
+		es.shutdown() ;
+		es.awaitTermination(2, TimeUnit.SECONDS) ;
+		es.shutdownNow() ;
+		
+	}
+	
+	
 }

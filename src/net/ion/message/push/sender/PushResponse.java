@@ -3,6 +3,7 @@ package net.ion.message.push.sender;
 import com.google.android.gcm.server.Result;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
+
 import javapns.notification.PushedNotification;
 
 import java.util.List;
@@ -14,12 +15,25 @@ public class PushResponse {
 
     private List<Throwable> occuredExceptions = Lists.newArrayList();
 
+    private String receiver;
+    private PushResponse(String receiver){
+    	this.receiver = receiver ;
+    }
+    
+    public String receiver(){
+    	return receiver ;
+    }
+    
     public boolean isSuccess() {
         return success;
     }
 
-    public static PushResponse from(PushedNotification result) {
-        PushResponse response = new PushResponse();
+    public String getResponseMessage() {
+        return responseMessage;
+    }
+
+    public static PushResponse fromAPNS(AppleMessage amsg, PushedNotification result) {
+        PushResponse response = new PushResponse(amsg.receiver());
         response.success = result.isSuccessful();
 
         if (!response.success) {
@@ -29,12 +43,8 @@ public class PushResponse {
         return response;
     }
 
-    public String getResponseMessage() {
-        return responseMessage;
-    }
-
-    public static PushResponse from(Result result) {
-        PushResponse response = new PushResponse();
+    public static PushResponse fromGoogle(GoogleMessage gmsg, Result result) {
+        PushResponse response = new PushResponse(gmsg.receiver());
 
         response.success = result.getMessageId() != null;
         if(response.success) {
@@ -46,9 +56,6 @@ public class PushResponse {
         return response;
     }
 
-    public static PushResponse create() {
-        return new PushResponse();
-    }
 
     @Override
     public String toString() {

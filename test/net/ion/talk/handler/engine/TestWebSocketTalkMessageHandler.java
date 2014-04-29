@@ -50,12 +50,12 @@ public class TestWebSocketTalkMessageHandler extends TestCase {
 	public void testSuceessSendMessage() throws Exception {
 		tengine.onOpen(ryun);
 		tengine.onMessage(ryun, "{\"script\":\"/user/registerWith\", \"id\":\"userRegister\",\"params\":{\"userId\":\"ryun\", \"phone\":\"0101234568\",\"nickname\":\"ryuneeee\",\"pushId\":\"lolem ipsum pushId\",\"deviceOS\":\"android\",\"friends\":[\"alex\",\"lucy\"]}}");
-		try {
-			Debug.line(ryun.recentMsg());
-			fail();
-		} catch (Exception e) {
-
-		}
+		JsonObject jso = JsonObject.fromString(ryun.recentMsg()) ;
+		
+		assertEquals("userRegister", jso.asString("id"));
+		assertEquals("success", jso.asString("status"));
+		assertEquals("undefined", jso.asString("result"));
+		assertEquals("/user/registerWith", jso.asString("script"));
 	}
 
 	public void testInvalidScriptName() throws Exception {

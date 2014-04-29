@@ -1,17 +1,16 @@
 package net.ion.talk.account;
 
-import net.ion.craken.node.ReadNode;
-import net.ion.craken.node.ReadSession;
-import net.ion.craken.node.TransactionJob;
-import net.ion.craken.node.WriteSession;
-import net.ion.framework.util.Debug;
-import net.ion.message.push.sender.PushResponse;
-import net.ion.message.push.sender.Pusher;
-import net.ion.message.push.sender.handler.ResponseHandler;
-import net.ion.talk.responsebuilder.TalkResponse;
-
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+
+import com.google.android.gcm.server.Result;
+
+import javapns.notification.PushedNotifications;
+import net.ion.craken.node.ReadSession;
+import net.ion.message.push.sender.AppleMessage;
+import net.ion.message.push.sender.GoogleMessage;
+import net.ion.message.push.sender.Pusher;
+import net.ion.message.push.sender.handler.PushResponseHandler;
+import net.ion.talk.responsebuilder.TalkResponse;
 
 
 /**
@@ -23,52 +22,66 @@ import java.util.concurrent.Future;
  */
 public class DisconnectedAccount extends Account {
 
-    private final Pusher sender;
+    private final Pusher pusher;
     private final ReadSession rsession;
 
-    DisconnectedAccount(String userId, ReadSession rsession, Pusher sender) {
+    DisconnectedAccount(String userId, ReadSession rsession, Pusher pusher) {
         super(userId, Type.DisconnectedUser);
-        this.sender = sender;
+        this.pusher = pusher;
         this.rsession = rsession;
     }
 
     @Override
     public Object onMessage(final String notifyId, TalkResponse response) throws ExecutionException, InterruptedException {
-        return sender.sendTo(accountId()).sendAsync(response.pushMessage(), new ResponseHandler<Object>() {
-            @Override
-            public <T> T result() {
-                return null;
-            }
-
-            @Override
-            public void onSuccess(PushResponse response) {
-                try {
-                    rsession.tranSync(new TransactionJob<Object>() {
-                        @Override
-                        public Object handle(WriteSession wsession) throws Exception {
-                            wsession.pathBy("/notifies/" + accountId() + "/" + notifyId).removeSelf();
-                            return null;
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFail(PushResponse response) {
-            }
-
-            @Override
-            public void onThrow(String receiver, String token, Throwable t) {
-            }
+        return pusher.sendTo(accountId()).sendAsync(response.pushMessage(), new PushResponseHandler<Boolean>() {
+			@Override
+			public Boolean onAPNSSuccess(AppleMessage amsg, PushedNotifications results) {
+//                rsession.tran(new TransactionJob<Object>() {
+//                    @Override
+//                    public Object handle(WriteSession wsession) throws Exception {
+//                        wsession.pathBy("/notifies/" + accountId() + "/" + notifyId).removeSelf();
+//                        return null;
+//                    }
+//                });
+                
+				return Boolean.TRUE;
+			}
+			@Override
+			public Boolean onAPNSFail(AppleMessage amsg, PushedNotifications results) {
+				return Boolean.FALSE;
+			}
+			@Override
+			public Boolean onAPNSThrow(AppleMessage amsg, Exception ex, PushedNotifications results) {
+				ex.printStackTrace();
+				return Boolean.FALSE;
+			}
+			@Override
+			public Boolean onGoogleSuccess(GoogleMessage gmsg, Result result) {
+//              rsession.tran(new TransactionJob<Object>() {
+//              @Override
+//              public Object handle(WriteSession wsession) throws Exception {
+//                  wsession.pathBy("/notifies/" + accountId() + "/" + notifyId).removeSelf();
+//                  return null;
+//              }
+//          });				
+				return Boolean.TRUE;
+			}
+			@Override
+			public Boolean onGoogleFail(GoogleMessage gmsg, Result result) {
+				return Boolean.FALSE;
+			}
+			@Override
+			public Boolean onGoogleThrow(GoogleMessage gmsg, Exception ex, Result result) {
+				ex.printStackTrace();
+				return Boolean.FALSE;
+			}
         });
 
 
     }
 
     Pusher sender(){
-        return sender;
+        return pusher;
     }
 
 }

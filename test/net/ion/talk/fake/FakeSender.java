@@ -1,10 +1,13 @@
 package net.ion.talk.fake;
 
+import java.util.concurrent.Future;
+
+import org.infinispan.util.concurrent.WithinThreadExecutor;
+
 import net.ion.message.push.sender.PushMessage;
 import net.ion.message.push.sender.Pusher;
-import net.ion.message.push.sender.handler.ResponseHandler;
-
-import java.util.concurrent.Future;
+import net.ion.message.push.sender.PusherConfig;
+import net.ion.message.push.sender.handler.PushResponseHandler;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,11 +20,11 @@ public class FakeSender extends Pusher {
     private String message;
 
     public FakeSender(){
-        super(null, null, null);
+        super(null, new WithinThreadExecutor(), PusherConfig.createTest());
     }
 
     @Override
-    public <T> Future<T> send(final PushMessage pushMessage, ResponseHandler<T> handler) {
+    public <T> Future<T> send(final PushMessage pushMessage, PushResponseHandler<T> handler) {
 
         message = pushMessage.getMessage();
         return null;

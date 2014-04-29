@@ -1,9 +1,14 @@
 package net.ion.message.push.sender;
 
+import org.apache.commons.lang.StringUtils;
+
+import net.ion.message.push.sender.handler.PushResponseHandler;
 import javapns.Push;
+import javapns.communication.exceptions.CommunicationException;
+import javapns.communication.exceptions.KeystoreException;
+import javapns.devices.exceptions.InvalidDeviceTokenFormatException;
 import javapns.devices.implementations.basic.BasicDevice;
 import javapns.notification.*;
-import net.ion.message.push.message.apns.AppleMessage;
 
 public class APNSSender {
 
@@ -21,12 +26,20 @@ public class APNSSender {
         return new APNSSender(keyStore, password, isProduction);
     }
 
-    public PushResponse push(String token, PushNotificationPayload payload) throws Exception {
-        PushedNotifications results = Push.payload(payload, this.keyStore, this.password, this.isProduction, new BasicDevice(token));
-        return PushResponse.from(results.get(0));
+    public AppleMessage sendTo(String receiver, String token) {
+        return new AppleMessage(this, receiver, token);
     }
 
-    public AppleMessage sendTo(String token) {
-        return new AppleMessage(this, token);
-    }
+	<T> T push(AppleMessage amsg, PushResponseHandler<T> handler) {
+		PushedNotifications results = null ;
+		try {
+			results = Push.payload(amsg.toPayload(), this.keyStore, this.password, this.isProduction, new BasicDevice(amsg.token()));
+			PushedNotification firstResult = results.get(0) ;
+			return firstResult.isSuccessful() ? handler.onAPNSSuccess(amsg, results) : handler.onAPNSFail(amsg, results) ;
+		} catch (IllegalArgumentException ex) {
+			return handler.onAPNSThrow(amsg, ex, results) ;
+		} catch (Exception ex) {
+			return handler.onAPNSThrow(amsg, ex, results) ;
+		}
+	}
 }

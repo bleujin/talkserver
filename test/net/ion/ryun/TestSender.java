@@ -2,11 +2,13 @@ package net.ion.ryun;
 
 import junit.framework.TestCase;
 import net.ion.message.push.sender.Pusher;
-import net.ion.message.push.sender.SenderConfig;
+import net.ion.message.push.sender.PusherConfig;
 import net.ion.talk.handler.craken.NotifyStrategy;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
+import org.infinispan.util.concurrent.WithinThreadExecutor;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,10 +25,10 @@ public class TestSender extends TestCase {
 
     public void testWithInThread() throws Exception {
 
-        SenderConfig config = SenderConfig.newBuilder().googleConfig(GCM_API_KEY).appleConfig(KEY_STORE_PATH, PASSWORD, false).retryAttempts(3).retryAfter(5, TimeUnit.SECONDS).build();
+        PusherConfig config = PusherConfig.newBuilder().googleConfig(GCM_API_KEY).appleConfig(KEY_STORE_PATH, PASSWORD, false).build();
 //        Sender sender = Sender.create(new NotifyStrategy(null), Executors.newCachedThreadPool(), config);
-        Pusher sender = Pusher.create(config, new NotifyStrategy(null));
-        sender.sendTo("test").sendAsync("");
+        Pusher pusher = Pusher.create(config, new NotifyStrategy(null));
+        pusher.sendTo("test").sendAsync("");
 
     }
 }

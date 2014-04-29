@@ -49,7 +49,7 @@ public class TestToonServerNew extends TestCase {
 		
 		rsession.workspace().cddm().add(new UserInAndOutRoomHandler());
 		rsession.workspace().cddm().add(new TalkMessageHandler(nc));
-		rsession.workspace().addListener(new NotificationListener(AccountManager.create(tserver.talkEngine(), NotifyStrategy.createSender(worker, rsession))));
+		rsession.workspace().addListener(new NotificationListener(AccountManager.create(tserver.talkEngine(), NotifyStrategy.createPusher(worker, rsession))));
 
 
         botManager.registerBot(new EchoBot(tserver.readSession(), worker));

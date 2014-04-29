@@ -89,7 +89,7 @@ public class TalkEngine implements WebSocketHandler {
 
 
 		final TalkEngine result = new TalkEngine(context);
-		Pusher pusher = NotifyStrategy.createSender(worker, repo.login());
+		Pusher pusher = NotifyStrategy.createPusher(worker, repo.login());
 		context.putAttribute(AccountManager.class.getCanonicalName(), AccountManager.create(result, pusher));
 
 		return result;

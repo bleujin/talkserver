@@ -1,8 +1,10 @@
-package net.ion.message.push.message.google;
+package net.ion.message.push.sender;
 
 import com.google.android.gcm.server.Message;
-import net.ion.message.push.sender.GCMSender;
-import net.ion.message.push.sender.PushResponse;
+
+import net.ion.framework.util.ObjectUtil;
+import net.ion.message.push.sender.handler.PushResponseHandler;
+
 import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
@@ -17,14 +19,16 @@ public class GoogleMessage {
 
     private GCMSender sender;
     private String receiver;
+    private String token;
 
-    private GoogleMessage(String receiver, GCMSender sender) {
+    private GoogleMessage(GCMSender sender, String receiver, String token) {
         this.sender = sender;
-        this.receiver = receiver;
+        this.receiver = receiver ;
+        this.token = token;
     }
 
-    public static GoogleMessage create(String receiver, GCMSender sender) {
-        return new GoogleMessage(receiver, sender);
+    public static GoogleMessage create(GCMSender sender, String receiver, String token) {
+        return new GoogleMessage(sender, receiver, token);
     }
 
     public GoogleMessage message(String message) {
@@ -47,41 +51,25 @@ public class GoogleMessage {
         return this;
     }
 
-    public PushResponse push() throws IOException {
-        checkValidity();
-        return this.sender.send(this);
+    public <T> T push(PushResponseHandler<T> handler) {
+        if (StringUtils.isBlank(this.message)) return handler.onGoogleThrow(this, new IllegalArgumentException("Message is null"), null) ;
+        if (this.message.length() > MAX_MESSAGE_BYTES) return handler.onGoogleThrow(this, new IllegalArgumentException("Message is larger than 4096 bytes"), null) ;
+
+        return this.sender.send(this, handler);
     }
 
-    private void checkValidity() {
-        messageNotEmpty();
-        tooLargeMessage();
+    private final int MAX_MESSAGE_BYTES = 1024;
+
+    public String token() {
+        return token;
+    }
+    
+    public String receiver(){
+    	return receiver ;
     }
 
-    private final int MAX_MESSAGE_BYTES = 4096;
-
-    private void tooLargeMessage() {
-        try {
-
-            if(this.message.getBytes("UTF-8").length > MAX_MESSAGE_BYTES) {
-                throw new IllegalStateException("Message is larger than 4096 bytes");
-            }
-
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalArgumentException(e);
-        }
-    }
-
-    private void messageNotEmpty() {
-        if (StringUtils.isEmpty(this.message)) {
-            throw new IllegalStateException("message is null");
-        }
-    }
-
-    public String getReceiver() {
-        return receiver;
-    }
-
-    public Message toPayload() {
+    
+    Message toPayload() {
 
         Message.Builder builder = new Message.Builder();
 

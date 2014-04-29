@@ -1,10 +1,10 @@
 package net.ion.message.push.sender;
 
-import junit.framework.TestCase;
-import net.ion.framework.util.MapUtil;
-import net.ion.message.push.sender.handler.ResponseHandler;
+import com.google.android.gcm.server.Result;
 
-import java.util.Map;
+import javapns.notification.PushedNotifications;
+import junit.framework.TestCase;
+import net.ion.message.push.sender.handler.PushResponseHandler;
 
 /**
  * Author: Ryunhee Han Date: 2014. 1. 23.
@@ -18,33 +18,40 @@ public class BaseTest extends TestCase {
 	public static String KEY_STORE_PATH = "./resource/keystore/toontalk.p12";
 	public static String PASSWORD = "toontalk";
 
-	public ResponseHandler<Map<String, Integer>> testResponseHandler = new ResponseHandler<Map<String, Integer>>() {
-
-		private Map<String, Integer> countMap = MapUtil.newMap();
-		int failCount = 0;
-		int exceptionCount = 0;
+	public PushResponseHandler<Boolean> IsSuccessResponseHandler = new PushResponseHandler<Boolean>() {
 
 		@Override
-		public Map<String, Integer> result() {
-			countMap.put("failCount", failCount);
-			countMap.put("exceptionCount", exceptionCount);
-			return countMap;
+		public Boolean onAPNSSuccess(AppleMessage amsg, PushedNotifications results) {
+			return true;
 		}
 
 		@Override
-		public void onSuccess(PushResponse response) {
-
+		public Boolean onAPNSFail(AppleMessage amsg, PushedNotifications results) {
+			return false;
 		}
 
 		@Override
-		public void onFail(PushResponse response) {
-			failCount++;
+		public Boolean onAPNSThrow(AppleMessage amsg, Exception ex, PushedNotifications results) {
+			// TODO Auto-generated method stub
+			return null;
 		}
 
 		@Override
-		public void onThrow(String receiver, String token, Throwable t) {
-			exceptionCount++;
+		public Boolean onGoogleSuccess(GoogleMessage gmsg, Result result) {
+			return true;
 		}
+
+		@Override
+		public Boolean onGoogleFail(GoogleMessage gmsg, Result result) {
+			return false;
+		}
+
+		@Override
+		public Boolean onGoogleThrow(GoogleMessage gmsg, Exception ex, Result result) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
 	};
 
 	public String createDummyMessage(int bytes) {

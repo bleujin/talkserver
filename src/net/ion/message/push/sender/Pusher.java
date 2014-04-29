@@ -1,115 +1,60 @@
 package net.ion.message.push.sender;
 
-import net.ion.framework.util.Debug;
-import net.ion.message.push.sender.handler.BeforeSendHandler;
-import net.ion.message.push.sender.handler.ResponseHandler;
-import net.ion.message.push.sender.strategy.PushStrategy;
-
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
+import net.ion.message.push.sender.handler.BeforeSendHandler;
+import net.ion.message.push.sender.handler.PushResponseHandler;
+import net.ion.message.push.sender.strategy.PushStrategy;
+
 public class Pusher {
 
     private PushStrategy strategy;
-    private SenderConfig config;
+    private PusherConfig config;
 
     private APNSSender apnsSender;
     private GCMSender gcmSender;
     private ExecutorService es;
     private BeforeSendHandler beforeHandler;
 
-    protected Pusher(PushStrategy strategy, ExecutorService es, SenderConfig config) {
+    protected Pusher(PushStrategy strategy, ExecutorService es, PusherConfig config) {
         this.strategy = strategy;
         this.es = es;
         this.config = config;
+        this.gcmSender = GCMSender.create(config.getGoogleAPIKey());
+        this.apnsSender = APNSSender.create(config.getApnsKeyStore(), config.getApnsPassword(), config.isApnsIsProduction());
     }
 
-    public static Pusher create(PushStrategy strategy, ExecutorService es, SenderConfig provider) {
-        return new Pusher(strategy, es, provider);
+    public static Pusher create(PusherConfig sconfig, PushStrategy strategy) {
+        return new Pusher(strategy, sconfig.getExecutorService(), sconfig);
     }
 
-    public static Pusher create(SenderConfig config, PushStrategy strategy) {
-        Pusher sender = new Pusher(strategy, config.getExecutorService(), config);
-        sender.gcmSender = GCMSender.create(config.getGoogleAPIKey());
-        sender.apnsSender = APNSSender.create(config.getApnsKeyStore(), config.getApnsPassword(), config.isApnsIsProduction());
-
-        return sender;
+    public PushMessage sendTo(String receiver) {
+        return new PushMessage(this, receiver);
     }
 
-    public PushMessage sendTo(String... receivers) {
-        return new PushMessage(this, receivers);
-    }
-
-    public <T> Future<T> send(final PushMessage pushMessage, final ResponseHandler<T> handler) {
+    public <T> Future<T> send(final PushMessage pushMessage, final PushResponseHandler<T> handler) {
 
         Callable<T> sendTask = new Callable<T>() {
             @Override
             public T call() throws Exception {
+            	String receiver  = pushMessage.getReceiver() ;
+                String token = strategy.deviceId(receiver);
 
-                long retryIntervalInMillis = config.getRetryAfter() * 1000;
-
-                for (String receiver : pushMessage.getReceivers()) {
-                    String token = strategy.deviceId(receiver);
-                    int failCount = 0;
-
-                    PushResponse response = null;
-
-                    if(beforeHandler != null) {
-                        beforeHandler.handle(pushMessage);
-                    }
-
-                    do {
-                        try {
-                            response = doSend(receiver, token);
-
-                            if (response.isSuccess()) {
-                                handler.onSuccess(response);
-                                break;
-                            } else if (!response.isSuccess()) {
-                                failCount++;
-                                handler.onFail(response);
-                            }
-
-                        } catch (Throwable t) {
-                            failCount++;
-                            handler.onThrow(receiver, token, t);
-                        }
-
-                        if(shouldRetry(failCount)) {
-                            Thread.sleep(retryIntervalInMillis);
-                        }
-
-                    } while (shouldRetry(failCount));
-                }
-
-                return handler.result();
-            }
-
-            private boolean shouldRetry(int failCount) {
-                return failCount < config.getRetryCount();
-            }
-
-            private PushResponse doSend(String receiver, String token) throws Exception {
                 PushResponse response = null;
 
-                if (strategy.vender(receiver).isApple()) {
-                    response = apnsSender.sendTo(token)
-                            .message(pushMessage.getMessage())
-                            .badge(strategy.getBadge())
-                            .sound(strategy.getSound()).push();
-                } else if (strategy.vender(receiver).isGoogle()) {
-                    response = gcmSender.sendTo(token)
-                            .message(pushMessage.getMessage())
-                            .delayWhenIdle(strategy.getDelayWhenIdle())
-                            .timeToLive(strategy.getTimeToLive())
-                            .collapseKey(strategy.getCollapseKey())
-                            .push();
-                } else {
-                    throw new IllegalArgumentException("not supported vendor");
+                if(beforeHandler != null) {
+                    beforeHandler.handle(pushMessage);
                 }
 
-                return response;
+                if (strategy.vender(receiver).isApple()) {
+                    return apnsSender.sendTo(receiver, token).message(pushMessage.getMessage()).badge(strategy.getBadge()).sound(strategy.getSound()).push(handler);
+                } else if (strategy.vender(receiver).isGoogle()) {
+                    return gcmSender.sendTo(receiver, token).message(pushMessage.getMessage()).delayWhenIdle(strategy.getDelayWhenIdle()).timeToLive(strategy.getTimeToLive()).collapseKey(strategy.getCollapseKey()).push(handler);
+                } else {
+                    throw new IllegalArgumentException("not supported vendor : " + strategy.vender(receiver));
+                }
             }
         };
 
