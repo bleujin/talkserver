@@ -41,6 +41,7 @@ public class TestToonServerNew extends TestCase {
 		FileUtil.deleteDirectory(new File(filePath));
 		
 		RepositoryEntry rentry = RepositoryEntry.testSoloFile(filePath) ;
+//		RepositoryEntry rentry = RepositoryEntry.test() ;
 		ScheduledExecutorService worker = Executors.newScheduledThreadPool(10) ;
 
 		final ToonServer tserver = ToonServer.testCreate(rentry, worker);
