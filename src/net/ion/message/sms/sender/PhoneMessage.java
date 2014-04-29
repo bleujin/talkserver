@@ -3,20 +3,18 @@ package net.ion.message.sms.sender;
 import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.Future;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.ion.framework.parse.gson.JsonObject;
-import net.ion.framework.util.Debug;
 import net.ion.message.sms.response.MessagingResponse;
 import net.ion.message.sms.response.ResponseHandler;
 import net.ion.radon.aclient.Request;
 import net.ion.radon.aclient.RequestBuilder;
 
 import org.apache.commons.lang.CharUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.kr.utils.StringUtil;
 import org.restlet.data.Method;
-
-import com.google.common.base.Preconditions;
 
 public class PhoneMessage {
 
@@ -74,9 +72,7 @@ public class PhoneMessage {
 	}
 
 	public Request toRequest() {
-		if (isNotValid()) {
-			throw new IllegalArgumentException("message too short or too large : " + messageContent());
-		}
+		checkValidity();
 
 		RequestBuilder builder = new RequestBuilder().setUrl(target.handlerURL()).setMethod(Method.POST);
 		Set<String> keys = param.toMap().keySet();
@@ -96,7 +92,6 @@ public class PhoneMessage {
 	public <T> Future<T> send(ResponseHandler<T> rhandler) throws IOException {
 		return sender.send(this, rhandler);
 	}
-
 	
 	public PhoneMessage message(String message) {
 		param.put("to_message", toUnicode(message));
@@ -114,10 +109,31 @@ public class PhoneMessage {
 
 		return builder.toString();
 	}
+	
+	private void checkValidity() {
+		checkMessageLength();
+		checkPhoneNumFormat();
+	}
+	
+	private void checkPhoneNumFormat() {
+		if(!target.isDomestic()) {
+			String phoneNum = param.asString(target.senderPhoneKey());
+			Pattern p = Pattern.compile("\\+[0-9]{1,2}\\-[0-9]+");
+			Matcher m = p.matcher(phoneNum);
+			
+			if(!m.matches()) {
+				throw new IllegalArgumentException("Invalid internation message format: should be +1-12345678 or +62-12345678");
+			}
+		}
+	}
 
-	private boolean isNotValid() {
+	private void checkMessageLength() {
 		String messageContent = param.asString("to_message");
-		return StringUtil.length(messageContent) < 1 || StringUtil.length(messageContent) > 360;
+		boolean isInvalid = StringUtil.length(messageContent) < 1 || StringUtil.length(messageContent) > 360;
+		
+		if(isInvalid) {
+			throw new IllegalArgumentException("message too short or too large : " + messageContent());			
+		}
 	}
 
 	private String messageContent() {
