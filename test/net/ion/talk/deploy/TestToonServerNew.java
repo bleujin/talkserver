@@ -2,6 +2,7 @@ package net.ion.talk.deploy;
 
 import java.io.File;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -43,10 +44,9 @@ public class TestToonServerNew extends TestCase {
 		RepositoryEntry rentry = RepositoryEntry.testSoloFile(filePath) ;
 		ScheduledExecutorService worker = Executors.newScheduledThreadPool(10) ;
 
-		ToonServer tserver = ToonServer.testCreate(rentry, worker);
+		final ToonServer tserver = ToonServer.testCreate(rentry, worker);
 		
-		tserver.ready();
-		tserver.startRadon();
+		tserver.ready().startRadon();
 		
 		tserver.talkEngine().registerHandler(new UserConnectionHandler()).registerHandler(ServerHandler.test()).registerHandler(new WebSocketScriptHandler()) ;
 
@@ -64,6 +64,17 @@ public class TestToonServerNew extends TestCase {
         botManager.registerBot(new BBot(tserver.readSession(), worker));
         botManager.registerBot(new ChatBot(tserver.readSession()));
 
+        
+        Runtime.getRuntime().addShutdownHook(new Thread(){
+        	public void run(){
+        		try {
+					tserver.stop();
+				} catch (Exception e) {
+					e.printStackTrace();
+				} 
+        	}
+        });
+        
         new InfinityThread().startNJoin();
     }
 

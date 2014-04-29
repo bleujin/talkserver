@@ -1,5 +1,9 @@
 package net.ion.talk.senario;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -110,5 +114,14 @@ public class TestPnC extends TestCase {
 	}
 	
 	
+	public void testTime() throws Exception {
+		long time = Calendar.getInstance().getTime().getTime() ;
+		Debug.line(new Date(time),TimeZone.getTimeZone("GMT"), TimeZone.getAvailableIDs()) ;
+		
+		GregorianCalendar g = new GregorianCalendar(TimeZone.getTimeZone("Etc/GMT+0")) ;
+		Debug.line(g.getTimeInMillis(), System.currentTimeMillis(), new Date().getTime());
+		
+		
+	}
 	
 }

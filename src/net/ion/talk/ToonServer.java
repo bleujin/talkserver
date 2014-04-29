@@ -8,6 +8,7 @@ import java.util.GregorianCalendar;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import net.ion.craken.aradon.NodeLet;
@@ -57,11 +58,12 @@ public class ToonServer {
 		return testCreate(RepositoryEntry.test(), Executors.newScheduledThreadPool(10)) ;
 	}
 
-	
 	public static ToonServer testCreate(RepositoryEntry rentry, ScheduledExecutorService worker) throws Exception {
 		return new ToonServer(rentry, worker).init();
 	}
 
+	
+	
 	private ToonServer init() throws Exception {
 		CrakenVerifier verifier = CrakenVerifier.test(repoEntry.login());
 		
@@ -135,12 +137,15 @@ public class ToonServer {
 		return this;
 	}
 
-	public void stop() throws InterruptedException, ExecutionException {
+	public ToonServer stop() throws InterruptedException, ExecutionException {
 		repoEntry.shutdown();
+		worker.shutdown(); 
+		worker.awaitTermination(2, TimeUnit.SECONDS) ;
 		if (aradon != null) aradon.stop();
 		if (radon != null) radon.stop().get();
 		
 		status.set(Status.STOPED);
+		return this ;
 	}
 
 	public Aradon aradon() {
