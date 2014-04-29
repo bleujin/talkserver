@@ -1,6 +1,7 @@
 package net.ion.talk.handler.engine;
 
 import net.ion.craken.node.ReadSession;
+import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.util.ObjectUtil;
 import net.ion.framework.util.StringUtil;
 import net.ion.talk.ParameterMap;
@@ -9,8 +10,7 @@ import net.ion.talk.TalkEngine.Reason;
 import net.ion.talk.TalkMessage;
 import net.ion.talk.UserConnection;
 import net.ion.talk.handler.TalkHandler;
-import net.ion.talk.script.ScriptExceptionHandler;
-import net.ion.talk.script.ScriptSuccessHandler;
+import net.ion.talk.script.ScriptResponseHandler;
 import net.ion.talk.script.TalkScript;
 
 /**
@@ -36,17 +36,17 @@ public class WebSocketScriptHandler implements TalkHandler {
 			return;
 		}
 		
-		tscript.callFn(tmsg.script(), ObjectUtil.coalesce(tmsg.params(), ParameterMap.BLANK), new ScriptSuccessHandler<Void>() {
+		tscript.callFn(tmsg.script(), ObjectUtil.coalesce(tmsg.params(), ParameterMap.BLANK), new ScriptResponseHandler<Void>() {
 			@Override
-			public Void success(Object result) {
+			public Void onSuccess(String fullName, ParameterMap pmap, Object result) {
 				if (result == null ||  StringUtil.isBlank(result.toString())) return null ;
-				uconn.sendMessage(tmsg.successMesage(result)) ;
+				JsonObject forSend = JsonObject.create().put("id", tmsg.id()).put("status", "success").put("result", ObjectUtil.toString(result)).put("script", tmsg.script()).put("parameters", pmap.asJson()) ;
+				uconn.sendMessage(forSend.toString()) ;
 				return null ;
 			}
-		}, new ScriptExceptionHandler<Void>(){
-			@Override
-			public Void ehandle(Exception ex, String fullFnName, ParameterMap params) {
-				uconn.sendMessage(tmsg.failMesage(ex)) ;
+			public Void onThrow(String fullName, ParameterMap pmap, Exception ex) {
+				JsonObject forSend = JsonObject.create().put("id", tmsg.id()).put("status", "failure").put("result", ex.getMessage()).put("script", tmsg.script()).put("parameters", pmap.asJson());
+				uconn.sendMessage(forSend.toString()) ;
 				return null;
 			}
 		});

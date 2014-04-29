@@ -175,7 +175,7 @@ public class TalkScript {
 	}
 
 	
-	public <T> T callFn(String fullFnName, ParameterMap params, ScriptSuccessHandler<T> shandler, ScriptExceptionHandler<T> ehander) {
+	public <T> T callFn(String fullFnName, ParameterMap params, ScriptResponseHandler<T> shandler) {
 		try {
 			
 			String[] names = StringUtil.split(fullFnName, '/') ;
@@ -184,24 +184,24 @@ public class TalkScript {
 			String fnName = names[1];
 
 			Object pack = packages.get(packName);
-			if (pack == null) return ehander.ehandle(new IOException("not found package : " + fullFnName) , fullFnName, params) ;
+			if (pack == null) return shandler.onThrow(fullFnName, params, new IOException("not found package : " + fullFnName)) ;
 
 			Object result = ((Invocable) sengine).invokeMethod(pack, fnName, params);
 			if(result instanceof NativeJavaObject) result = ((NativeJavaObject)result).unwrap() ;  
 			result = ObjectUtil.coalesce(result, "undefined") ;
 			  
-			return shandler.success(result);
+			return shandler.onSuccess(fullFnName, params, result);
 		} catch (ScriptException ex) {
-			return ehander.ehandle(ex, fullFnName, params) ;
+			return shandler.onThrow(fullFnName, params, ex) ;
 		} catch (IndexOutOfBoundsException ex) {
-			return ehander.ehandle(ex, fullFnName, params) ;
+			return shandler.onThrow(fullFnName, params, ex) ;
 		} catch (NoSuchMethodException ex) {
-			return ehander.ehandle(ex, fullFnName, params) ;
+			return shandler.onThrow(fullFnName, params, ex) ;
 		}
 		
 	}
 
-	public Object callFn(String fullFnName,  ParameterMap params) throws IOException{
-		return callFn(fullFnName, params,  ScriptSuccessHandler.ReturnNative, ScriptExceptionHandler.ReturnExceptionHandler) ;
+	public Object callFn(String fullFnName,  ParameterMap params) {
+		return callFn(fullFnName, params,  ScriptResponseHandler.ReturnNative) ;
 	}
 }

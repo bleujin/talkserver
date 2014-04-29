@@ -96,6 +96,7 @@ public class TestScriptExecLet extends TestCase {
 		assertEquals("oregon", obj.get("location").getAsString());
 		assertEquals(10000.0, obj.get("money").getAsDouble());
 		assertEquals("joshua", obj.get("friends").getAsJsonObject().get("name").getAsString());
+		Debug.line(response.getTextBody()) ;
 		
 	}
 

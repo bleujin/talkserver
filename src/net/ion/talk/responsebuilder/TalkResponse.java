@@ -1,9 +1,14 @@
 package net.ion.talk.responsebuilder;
 
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
+
 import net.ion.framework.parse.gson.JsonArray;
 import net.ion.framework.parse.gson.JsonElement;
 import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.util.Debug;
+import net.ion.framework.util.ObjectUtil;
+import net.ion.radon.core.representation.JsonObjectRepresentation;
 
 import com.google.common.base.Function;
 
@@ -13,7 +18,19 @@ import com.google.common.base.Function;
  */
 public class TalkResponse {
 
-    private JsonElement element;
+	public final static Function<JsonElement, Representation> ToJsonRepresentation = new Function<JsonElement, Representation>() {
+		@Override
+		public Representation apply(JsonElement jele) {
+			return new JsonObjectRepresentation(jele);
+		}
+	};
+	public final static Function<JsonElement, Representation> ToStringRepresentation = new Function<JsonElement, Representation>() {
+		@Override
+		public Representation apply(JsonElement jele) {
+			return new StringRepresentation(ObjectUtil.toString(jele));
+		}
+	};
+    
     public static Function<JsonElement, JsonObject> FnJsonObject = new Function<JsonElement, JsonObject>(){
     	@Override
     	public JsonObject apply(JsonElement ele) {
@@ -34,6 +51,7 @@ public class TalkResponse {
     	}
     };
     
+    private JsonElement element;
     private TalkResponse(JsonElement element) {
         this.element = element;
     }

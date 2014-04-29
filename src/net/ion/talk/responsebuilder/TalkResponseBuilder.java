@@ -2,6 +2,7 @@ package net.ion.talk.responsebuilder;
 
 import net.ion.craken.node.ReadNode;
 import net.ion.framework.parse.gson.JsonElement;
+import net.ion.framework.util.ObjectUtil;
 import net.ion.talk.ToonServer;
 
 /**
@@ -33,29 +34,19 @@ public class TalkResponseBuilder {
 		return created;
 	}
 
-    public static String makeResponse(String id, Object result) {
-
-        result = result instanceof JsonElement ? result : result.toString();
-
-        BasicBuilder response = TalkResponseBuilder.create().newInner()
+    public static TalkResponse makeResponse(String id, Object result) {
+        return TalkResponseBuilder.create().newInner()
                 .property("createAt", ToonServer.GMTTime())
-//                .property("id", id)
-                .property("result", result);
-
-        if (result instanceof Throwable)
-            response.property("status", "failure");
-        else
-            response.property("status", "success");
-
-        return response.build().toString();
+                .property("status", "success")
+                .property("result", result instanceof JsonElement ? result : ObjectUtil.toString(result, "undefined")).build();
     }
 
-    public static String failResponse(Exception e) {
+    public static TalkResponse failResponse(Exception e) {
         return TalkResponseBuilder.create().newInner()
                 .property("status", "failure")
                 .property("result", e.getMessage())
                 .property("createdAt", ToonServer.GMTTime())
-                .build().toString();
+                .build();
     }
 
 
