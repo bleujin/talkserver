@@ -11,8 +11,15 @@ new function(){
 		     }
 		});
 		return members.length ;	
-	}, 
-	
+	},
+	 
+	this.updateWith = function(params){
+		session.tranSync(function(wsession){		       
+		   wsession.pathBy("/rooms/" + params.asString("roomId")).property("title", params.asString("title"));
+		});
+		return "Hi" ;
+	},
+		
 	this.banWith = function(params){
 		var members= params.asStrings("members");
 		session.tranSync(function(wsession){
@@ -26,9 +33,9 @@ new function(){
 	
 	this.infoBy = function(params) {
 		var room = session.pathBy("/rooms/"+params.asString("roomId"));
-		var members = room.child("members").childrenNames();
-
-		return rb.create().newInner().property(room, "name").property("members", members).build().toJsonElement().toString();
+		var members = room.child("members").children();
+		
+		return rb.create().newInner().property(room, "title").property("roomId",params.asString("roomId")).inlist("members").property(members,"user.userId,user.nickname").build().toJsonElement().toString();
 	}, 
 	
 	this.listNotifyDataBy = function(params){
@@ -37,7 +44,7 @@ new function(){
 		var messageId = notify.ref("message").fqn().name();
 		var message = session.pathBy("/rooms/" + roomId + "/messages/" + messageId);
 		
-		return rb.create().newInner().property(message, "message, sender,requestId, clientScript,event").property("roomId",roomId).property("notifyId",params.asString("notifyId")).property("messageId",message.fqn().name()).build().toJsonElement().toString();
+		return rb.create().newInner().property(message, "message, sender,requestId, clientScript,event,time").property("roomId",roomId).property("notifyId",params.asString("notifyId")).property("messageId",message.fqn().name()).build().toJsonElement().toString();
 	}, 
 	
 	this.listUnreadMessageBy = function(params){
@@ -46,7 +53,7 @@ new function(){
 
 		unreadMessages;
 
-		return rb.create().newInner().inlist("messages", unreadMessages,"message, sender,requestId, clientScript,event, messageId").property("roomId", roomId).build().toJsonElement().toString();
+		return rb.create().newInner().inlist("messages", unreadMessages,"message, sender,requestId, clientScript,event, messageId,time").property("roomId", roomId).build().toJsonElement().toString();
 	}, 
 	
 	this.removeNotifyDataWith = function(params){
@@ -65,19 +72,23 @@ new function(){
 
 		var receivers = params.asStrings("receivers");
 		var randomId = new net.ion.framework.util.ObjectId().toString();
-		
+		var time= new Date().getTime();
 		session.tranSync(function(wsession){
 			var msgNode=wsession.pathBy("/rooms/" + params.asString("roomId")+"/messages/"+randomId)
 				.property("message",params.asString("message"))
 				.property("messageId", randomId)
 				.property("sender",params.asString("sender"))
+				.property("senderNickname",params.asString("senderNickname"))
 				.property("clientScript",params.asString("clientScript"))
 				.property("event","onMessage")
-				.property("requestId",params.asString("requestId"));
+				.property("requestId",params.asString("requestId"))
+				.property("time",time.toString());
+						
 				for(var i=0;i< receivers.length;i++){
 				       msgNode.append("receivers", receivers[i]);
 				}
 		});	
+		return params.asString("requestId");
 	}
 
 } ;

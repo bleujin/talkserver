@@ -2,7 +2,6 @@ package net.ion.talk.deploy;
 
 import java.io.File;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 

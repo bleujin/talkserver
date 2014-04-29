@@ -5,9 +5,9 @@ new function(){
 		session.tranSync(function(wsession){
 			for(var i=0;i<friends.length;i++){
 				if(wsession.pathBy("/users").hasChild(friends[i])){
-					wsession.pathBy("/users/"+params.asString("userId")).refTos("friends","/users/"+friends[i]);
+					wsession.pathBy("/users/"+params.asString("userId")).refTos("friends",["/users/"+friends[i]]);
 					if(!(wsession.pathBy("/users/"+friends[i]).hasRef("friends",wsession.pathBy("/users/"+params.asString("userId")).fqn()))){
-						wsession.pathBy("/users/"+friends[i]).refTos("recommendFriends","/users/"+params.asString("userId"));
+						wsession.pathBy("/users/"+friends[i]).refTos("recommendFriends",["/users/"+params.asString("userId")]);
 					}
 				}
 			}
@@ -19,7 +19,7 @@ new function(){
 		
 		session.tranSync(function(wsession){
 		     for(var i=0;i<friends.length;i++){
-		          wsession.pathBy("/users/"+params.asString("userId")).unRefTos("friends","/users/"+friends[i]);
+		          wsession.pathBy("/users/"+params.asString("userId")).unRefTos("friends",["/users/"+friends[i]]);
 		     }
 		});
 		return friends ;
@@ -29,7 +29,7 @@ new function(){
 		var friends= params.asStrings("friends");
 		session.tranSync(function(wsession){
 		     for(var i=0;i<friends.length;i++){
-		          wsession.pathBy("/users/"+params.asString("userId")).unRefTos("recommendFriends","/users/"+friends[i]);
+		          wsession.pathBy("/users/"+params.asString("userId")).unRefTos("recommendFriends",["/users/"+friends[i]]);
 		     }
 		}); 
 	}, 
@@ -57,10 +57,10 @@ new function(){
 				
 			    session.tranSync(function(wsession){
 			      	if(wsession.pathBy("/users").hasChild(findUser.fqn().name())) //addFriends
-			        	wsession.pathBy("/users/"+params.asString("userId")).refTos("friends","/users/"+ findUser.fqn().name());
+			        	wsession.pathBy("/users/"+params.asString("userId")).refTos("friends",["/users/"+ findUser.fqn().name()]);
 			        
 			    	if(!(wsession.pathBy("/users/"+findUser.fqn().name()).hasRef("friends",wsession.pathBy("/users/"+params.asString("userId")).fqn())))  //recommend
-			        	wsession.pathBy("/users/"+findUser.fqn().name()).refTos("recommendFriends","/users/"+params.asString("userId"));
+			        	wsession.pathBy("/users/"+findUser.fqn().name()).refTos("recommendFriends",["/users/"+params.asString("userId")]);
 			    });
 			
 			} catch(e){ }
