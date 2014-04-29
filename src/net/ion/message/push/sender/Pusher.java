@@ -18,16 +18,16 @@ public class Pusher {
     private ExecutorService es;
     private BeforeSendHandler beforeHandler;
 
-    protected Pusher(PushStrategy strategy, ExecutorService es, PusherConfig config) {
+    protected Pusher(PushStrategy strategy, PusherConfig config) {
         this.strategy = strategy;
-        this.es = es;
         this.config = config;
+        this.es = config.getExecutorService();
         this.gcmSender = GCMSender.create(config.getGoogleAPIKey());
         this.apnsSender = APNSSender.create(config.getApnsKeyStore(), config.getApnsPassword(), config.isApnsIsProduction());
     }
 
     public static Pusher create(PusherConfig sconfig, PushStrategy strategy) {
-        return new Pusher(strategy, sconfig.getExecutorService(), sconfig);
+        return new Pusher(strategy, sconfig);
     }
 
     public PushMessage sendTo(String receiver) {
@@ -41,8 +41,6 @@ public class Pusher {
             public T call() throws Exception {
             	String receiver  = pushMessage.getReceiver() ;
                 String token = strategy.deviceId(receiver);
-
-                PushResponse response = null;
 
                 if(beforeHandler != null) {
                     beforeHandler.handle(pushMessage);
@@ -61,7 +59,7 @@ public class Pusher {
         return es.submit(sendTask);
     }
 
-    public void setBeforeSendHandler(BeforeSendHandler handler) {
+    public void bforeSendHandler(BeforeSendHandler handler) {
         this.beforeHandler = handler;
     }
 }

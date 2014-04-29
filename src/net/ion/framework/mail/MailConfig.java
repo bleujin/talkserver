@@ -1,9 +1,6 @@
 package net.ion.framework.mail;
 
 import java.util.Properties;
-import java.util.concurrent.ExecutorService;
-
-import org.infinispan.util.concurrent.WithinThreadExecutor;
 
 import net.ion.framework.mail.ReceiveConfigBuilder.Protocol;
 import net.ion.framework.util.StringUtil;

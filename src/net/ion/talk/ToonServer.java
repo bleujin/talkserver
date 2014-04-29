@@ -1,7 +1,6 @@
 package net.ion.talk;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -15,7 +14,6 @@ import net.ion.craken.aradon.NodeLet;
 import net.ion.craken.aradon.UploadLet;
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.node.ReadSession;
-import net.ion.message.push.sender.Pusher;
 import net.ion.message.sms.sender.SMSSender;
 import net.ion.nradon.Radon;
 import net.ion.radon.aclient.ClientConfig;
@@ -25,11 +23,8 @@ import net.ion.radon.core.EnumClass;
 import net.ion.radon.core.EnumClass.IMatchMode;
 import net.ion.radon.core.config.ConfigurationBuilder;
 import net.ion.radon.core.security.ChallengeAuthenticator;
-import net.ion.talk.account.AccountManager;
 import net.ion.talk.bot.BotManager;
 import net.ion.talk.filter.CrakenVerifier;
-import net.ion.talk.handler.TalkHandler;
-import net.ion.talk.handler.craken.NotifyStrategy;
 import net.ion.talk.let.EmbedBotLet;
 import net.ion.talk.let.LoginLet;
 import net.ion.talk.let.ResourceLet;

@@ -1,8 +1,5 @@
 package net.ion.framework.mail;
 
-import java.util.Properties;
-
-import net.ion.framework.util.StringUtil;
 
 public class SendConfigBuilder {
 

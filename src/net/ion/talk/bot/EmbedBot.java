@@ -1,16 +1,14 @@
 package net.ion.talk.bot;
 
+import java.util.Set;
+
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteNode;
 import net.ion.craken.node.WriteSession;
 import net.ion.craken.tree.PropertyValue;
-import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.util.ObjectId;
 import net.ion.talk.bean.Const;
-
-import java.util.Set;
-import java.util.concurrent.Callable;
 
 /**
  * Created with IntelliJ IDEA.

@@ -1,15 +1,11 @@
 package net.ion.talk.filter;
 
-import java.io.IOException;
-
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
 
-import net.ion.framework.util.Debug;
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.security.User;
 import org.restlet.security.Verifier;
 
 public class CrakenVerifier implements Verifier {

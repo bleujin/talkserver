@@ -1,6 +1,5 @@
 package net.ion.talk.script;
 
-import net.ion.talk.ParameterMap;
 
 public interface ScriptSuccessHandler<T> {
 	public final static ScriptSuccessHandler<Object> ReturnNative = new ScriptSuccessHandler<Object>() {

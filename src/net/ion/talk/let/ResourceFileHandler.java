@@ -12,7 +12,6 @@ import net.ion.nradon.HttpRequest;
 import net.ion.nradon.HttpResponse;
 import net.ion.nradon.handler.AbstractResourceHandler;
 import net.ion.nradon.handler.FileEntry;
-import net.ion.nradon.handler.SimpleStaticFileHandler;
 import net.ion.nradon.handler.StaticFile;
 import net.ion.nradon.handler.TemplateEngine;
 import net.ion.nradon.helpers.ClassloaderResourceHelper;

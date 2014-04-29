@@ -4,7 +4,6 @@ import javapns.notification.PushNotificationPayload;
 import net.ion.framework.parse.gson.JsonObject;
 import net.ion.message.push.sender.handler.PushResponseHandler;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.kr.utils.StringUtil;
 import org.json.JSONException;
 
@@ -17,9 +16,9 @@ public class AppleMessage {
 	private String receiver;
 
     public AppleMessage(APNSSender apnsSender, String receiver, String token) {
+    	this.apnsSender = apnsSender;
+    	this.receiver = receiver ; 
         this.token = token;
-        this.receiver = receiver ; 
-        this.apnsSender = apnsSender;
     }
 
 
@@ -55,6 +54,10 @@ public class AppleMessage {
         }
 
         return payload;
+    }
+    
+    public APNSSender sender(){
+    	return apnsSender ;
     }
 
     public String token(){

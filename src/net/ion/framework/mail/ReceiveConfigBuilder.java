@@ -1,7 +1,5 @@
 package net.ion.framework.mail;
 
-import net.ion.framework.mail.ReceiveConfigBuilder.Protocol;
-import net.ion.framework.util.StringUtil;
 
 
 public class ReceiveConfigBuilder {

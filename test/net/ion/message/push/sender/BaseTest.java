@@ -18,7 +18,7 @@ public class BaseTest extends TestCase {
 	public static String KEY_STORE_PATH = "./resource/keystore/toontalk.p12";
 	public static String PASSWORD = "toontalk";
 
-	public PushResponseHandler<Boolean> IsSuccessResponseHandler = new PushResponseHandler<Boolean>() {
+	public PushResponseHandler<Boolean> ConfirmResponseHandler = new PushResponseHandler<Boolean>() {
 
 		@Override
 		public Boolean onAPNSSuccess(AppleMessage amsg, PushedNotifications results) {
@@ -31,7 +31,7 @@ public class BaseTest extends TestCase {
 		}
 
 		@Override
-		public Boolean onAPNSThrow(AppleMessage amsg, Exception ex, PushedNotifications results) {
+		public Boolean onAPNSThrow(AppleMessage amsg, Exception ex) {
 			// TODO Auto-generated method stub
 			return null;
 		}
@@ -47,7 +47,7 @@ public class BaseTest extends TestCase {
 		}
 
 		@Override
-		public Boolean onGoogleThrow(GoogleMessage gmsg, Exception ex, Result result) {
+		public Boolean onGoogleThrow(GoogleMessage gmsg, Exception ex) {
 			// TODO Auto-generated method stub
 			return null;
 		}

@@ -1,10 +1,10 @@
 package net.ion.message.push.sender;
 
-import net.ion.message.push.sender.strategy.PushStrategy;
-import org.infinispan.util.concurrent.WithinThreadExecutor;
-
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
+
+import net.ion.message.push.sender.strategy.PushStrategy;
+
+import org.infinispan.util.concurrent.WithinThreadExecutor;
 
 public class PusherConfig {
 

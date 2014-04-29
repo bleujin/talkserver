@@ -2,8 +2,6 @@ package net.ion.talk.account;
 
 import java.util.concurrent.ExecutionException;
 
-import com.google.android.gcm.server.Result;
-
 import javapns.notification.PushedNotifications;
 import net.ion.craken.node.ReadSession;
 import net.ion.message.push.sender.AppleMessage;
@@ -11,6 +9,8 @@ import net.ion.message.push.sender.GoogleMessage;
 import net.ion.message.push.sender.Pusher;
 import net.ion.message.push.sender.handler.PushResponseHandler;
 import net.ion.talk.responsebuilder.TalkResponse;
+
+import com.google.android.gcm.server.Result;
 
 
 /**
@@ -51,7 +51,7 @@ public class DisconnectedAccount extends Account {
 				return Boolean.FALSE;
 			}
 			@Override
-			public Boolean onAPNSThrow(AppleMessage amsg, Exception ex, PushedNotifications results) {
+			public Boolean onAPNSThrow(AppleMessage amsg, Exception ex) {
 				ex.printStackTrace();
 				return Boolean.FALSE;
 			}
@@ -71,7 +71,7 @@ public class DisconnectedAccount extends Account {
 				return Boolean.FALSE;
 			}
 			@Override
-			public Boolean onGoogleThrow(GoogleMessage gmsg, Exception ex, Result result) {
+			public Boolean onGoogleThrow(GoogleMessage gmsg, Exception ex) {
 				ex.printStackTrace();
 				return Boolean.FALSE;
 			}

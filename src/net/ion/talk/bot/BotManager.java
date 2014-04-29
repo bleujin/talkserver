@@ -1,12 +1,12 @@
 package net.ion.talk.bot;
 
+import java.util.Map;
+
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
 import net.ion.framework.util.MapUtil;
 import net.ion.talk.bean.Const;
-
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.

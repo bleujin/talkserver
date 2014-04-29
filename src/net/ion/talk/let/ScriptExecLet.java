@@ -2,8 +2,6 @@ package net.ion.talk.let;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.ref.Reference;
-import java.util.concurrent.atomic.AtomicReference;
 
 import net.ion.framework.util.ObjectId;
 import net.ion.framework.util.StringUtil;

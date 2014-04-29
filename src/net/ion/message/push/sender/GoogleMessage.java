@@ -1,14 +1,10 @@
 package net.ion.message.push.sender;
 
-import com.google.android.gcm.server.Message;
-
-import net.ion.framework.util.ObjectUtil;
 import net.ion.message.push.sender.handler.PushResponseHandler;
 
 import org.apache.commons.lang.StringUtils;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import com.google.android.gcm.server.Message;
 
 public class GoogleMessage {
 
@@ -16,6 +12,8 @@ public class GoogleMessage {
     private String collapseKey;
     private boolean delayWhileIdle = false;
     private String message;
+
+    private final int MAX_MESSAGE_BYTES = 1024;
 
     private GCMSender sender;
     private String receiver;
@@ -52,14 +50,17 @@ public class GoogleMessage {
     }
 
     public <T> T push(PushResponseHandler<T> handler) {
-        if (StringUtils.isBlank(this.message)) return handler.onGoogleThrow(this, new IllegalArgumentException("Message is null"), null) ;
-        if (this.message.length() > MAX_MESSAGE_BYTES) return handler.onGoogleThrow(this, new IllegalArgumentException("Message is larger than 4096 bytes"), null) ;
+        if (StringUtils.isBlank(this.message)) return handler.onGoogleThrow(this, new IllegalArgumentException("Message is null")) ;
+        if (this.message.length() > MAX_MESSAGE_BYTES) return handler.onGoogleThrow(this, new IllegalArgumentException("Message is larger than 4096 bytes")) ;
 
         return this.sender.send(this, handler);
     }
 
-    private final int MAX_MESSAGE_BYTES = 1024;
 
+    public GCMSender sender(){
+    	return sender ;
+    }
+    
     public String token() {
         return token;
     }

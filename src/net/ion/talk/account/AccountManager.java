@@ -1,5 +1,7 @@
 package net.ion.talk.account;
 
+import java.io.IOException;
+
 import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.tree.PropertyValue;
@@ -7,8 +9,6 @@ import net.ion.message.push.sender.Pusher;
 import net.ion.radon.aclient.NewClient;
 import net.ion.talk.TalkEngine;
 import net.ion.talk.UserConnection;
-
-import java.io.IOException;
 
 /**
  * Created with IntelliJ IDEA.

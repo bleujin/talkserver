@@ -1,30 +1,29 @@
 package net.ion.message.sms.response;
 
-import net.ion.framework.util.Debug;
+import net.ion.message.sms.sender.PhoneMessage;
+import net.ion.radon.aclient.Response;
 
 public interface ResponseHandler<T> {
 	
-	public static ResponseHandler<MessagingResponse> DefaultResponseHandler = new ResponseHandler<MessagingResponse>() {
+	public static ResponseHandler<Response> DefaultResponseHandler = new ResponseHandler<Response>() {
 		@Override
-		public MessagingResponse onSuccess(MessagingResponse response) {
-			Debug.debug("[MSG_SEND_SUCCESS]", response.getResponse("euc-kr"));
+		public Response onSuccess(PhoneMessage pmessage, Response response) {
 			return response;
 		}
 
 		@Override
-		public MessagingResponse onFail(MessagingResponse response) {
-			Debug.debug("[MSG_SEND_FAILED]", response);
+		public Response onFail(PhoneMessage pmessage, Response response) {
 			return response;
 		}
 
 		@Override
-		public void onThrow(Throwable t) {
+		public void onThrow(PhoneMessage pmessage, Throwable t) {
 			t.printStackTrace();
 		}
 	};
 
-    public T onSuccess(MessagingResponse response);
-    public T onFail(MessagingResponse response);
-    public void onThrow(Throwable t);
+    public T onSuccess(PhoneMessage pmessage, Response response);
+    public T onFail(PhoneMessage pmessage, Response response);
+    public void onThrow(PhoneMessage pmessage, Throwable t);
 
 }

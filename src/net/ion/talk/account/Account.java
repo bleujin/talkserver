@@ -2,9 +2,6 @@ package net.ion.talk.account;
 
 import net.ion.talk.responsebuilder.TalkResponse;
 
-import java.io.IOException;
-import java.util.concurrent.ExecutionException;
-
 /**
  * Created with IntelliJ IDEA.
  * User: Ryun

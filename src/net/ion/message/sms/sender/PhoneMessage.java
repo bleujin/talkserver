@@ -7,10 +7,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.ion.framework.parse.gson.JsonObject;
-import net.ion.message.sms.response.MessagingResponse;
 import net.ion.message.sms.response.ResponseHandler;
 import net.ion.radon.aclient.Request;
 import net.ion.radon.aclient.RequestBuilder;
+import net.ion.radon.aclient.Response;
 
 import org.apache.commons.lang.CharUtils;
 import org.apache.lucene.analysis.kr.utils.StringUtil;
@@ -85,7 +85,7 @@ public class PhoneMessage {
 		return builder.build();
 	}
 
-	public Future<MessagingResponse> send() throws IOException {
+	public Future<Response> send() throws IOException {
 		return sender.send(this, ResponseHandler.DefaultResponseHandler);
 	}
 

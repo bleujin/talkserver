@@ -20,7 +20,7 @@ public class FakeSender extends Pusher {
     private String message;
 
     public FakeSender(){
-        super(null, new WithinThreadExecutor(), PusherConfig.createTest());
+        super(null, PusherConfig.createTest());
     }
 
     @Override

@@ -1,8 +1,10 @@
 package net.ion.craken.aradon.render;
 
-import com.google.common.base.Function;
 import net.ion.craken.node.ReadNode;
+
 import org.restlet.representation.Representation;
+
+import com.google.common.base.Function;
 
 public interface RenderFunction {
 

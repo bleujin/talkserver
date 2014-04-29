@@ -1,26 +1,14 @@
 package net.ion.talk.handler.craken;
 
-import net.ion.craken.listener.AsyncCDDHandler;
+import java.util.Map;
+
 import net.ion.craken.listener.CDDHandler;
 import net.ion.craken.listener.CDDModifiedEvent;
 import net.ion.craken.listener.CDDRemovedEvent;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
-import net.ion.craken.node.crud.TreeNodeKey;
-import net.ion.craken.tree.PropertyId;
-import net.ion.craken.tree.PropertyValue;
-import net.ion.framework.parse.gson.JsonElement;
-import net.ion.framework.util.Debug;
 import net.ion.framework.util.ObjectId;
-import net.ion.framework.util.StringUtil;
 import net.ion.talk.bean.Const;
-import net.ion.talk.responsebuilder.TalkResponseBuilder;
-
-import org.infinispan.atomic.AtomicMap;
-import org.infinispan.notifications.cachelistener.event.CacheEntryModifiedEvent;
-import org.infinispan.notifications.cachelistener.event.CacheEntryRemovedEvent;
-
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.

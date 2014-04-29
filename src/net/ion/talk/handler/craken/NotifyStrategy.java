@@ -1,7 +1,6 @@
 package net.ion.talk.handler.craken;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import net.ion.craken.node.ReadSession;
 import net.ion.message.push.sender.Pusher;

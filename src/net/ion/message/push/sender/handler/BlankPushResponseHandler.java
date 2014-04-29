@@ -1,10 +1,10 @@
 package net.ion.message.push.sender.handler;
 
-import com.google.android.gcm.server.Result;
-
 import javapns.notification.PushedNotifications;
 import net.ion.message.push.sender.AppleMessage;
 import net.ion.message.push.sender.GoogleMessage;
+
+import com.google.android.gcm.server.Result;
 
 public class BlankPushResponseHandler implements PushResponseHandler<Void> {
 
@@ -19,7 +19,7 @@ public class BlankPushResponseHandler implements PushResponseHandler<Void> {
 	}
 
 	@Override
-	public Void onAPNSThrow(AppleMessage amsg, Exception ex, PushedNotifications results) {
+	public Void onAPNSThrow(AppleMessage amsg, Exception ex) {
 		return null;
 	}
 
@@ -34,7 +34,7 @@ public class BlankPushResponseHandler implements PushResponseHandler<Void> {
 	}
 
 	@Override
-	public Void onGoogleThrow(GoogleMessage gmsg, Exception ex, Result result) {
+	public Void onGoogleThrow(GoogleMessage gmsg, Exception ex) {
 		return null;
 	}
 

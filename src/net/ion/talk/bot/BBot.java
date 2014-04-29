@@ -1,20 +1,18 @@
 package net.ion.talk.bot;
 
-import net.ion.craken.node.ReadSession;
-import net.ion.craken.node.TransactionJob;
-import net.ion.craken.node.WriteNode;
-import net.ion.craken.node.WriteSession;
-import net.ion.framework.mail.*;
-import net.ion.framework.util.ObjectId;
-import net.ion.framework.util.StringUtil;
-import net.ion.talk.bean.Const;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ScheduledExecutorService;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.util.Set;
-import java.util.concurrent.*;
+
+import net.ion.craken.node.ReadSession;
+import net.ion.framework.mail.MailConfigBuilder;
+import net.ion.framework.mail.Mailer;
+import net.ion.framework.mail.MessageCreater;
+import net.ion.framework.util.StringUtil;
 
 /**
  * Created with IntelliJ IDEA.

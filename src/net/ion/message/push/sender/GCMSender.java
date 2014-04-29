@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import net.ion.message.push.sender.handler.PushResponseHandler;
 
-import com.google.android.gcm.server.Message;
 import com.google.android.gcm.server.Result;
 
 public class GCMSender {
@@ -24,13 +23,11 @@ public class GCMSender {
     }
 
     <T> T send(GoogleMessage gmsg, PushResponseHandler<T> handler) {
-    	Result result = null ;
 		try {
-			Message payload = gmsg.toPayload();
-			result = sender.sendNoRetry(payload, gmsg.token());
+			Result result = sender.sendNoRetry(gmsg.toPayload(), gmsg.token());
 			return  result.getMessageId() != null ? handler.onGoogleSuccess(gmsg, result) : handler.onGoogleFail(gmsg, result) ;
 		} catch (IOException ex) {
-			return handler.onGoogleThrow(gmsg, ex, result) ;
+			return handler.onGoogleThrow(gmsg, ex) ;
 		}
 
     }

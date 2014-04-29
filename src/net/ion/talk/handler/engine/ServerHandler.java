@@ -1,18 +1,16 @@
 package net.ion.talk.handler.engine;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
-import net.ion.framework.util.Debug;
 import net.ion.talk.TalkEngine;
 import net.ion.talk.TalkEngine.Reason;
-import net.ion.talk.handler.TalkHandler;
 import net.ion.talk.TalkMessage;
 import net.ion.talk.UserConnection;
+import net.ion.talk.handler.TalkHandler;
 
 public class ServerHandler implements TalkHandler {
 

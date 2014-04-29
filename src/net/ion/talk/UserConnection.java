@@ -2,9 +2,7 @@ package net.ion.talk;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
 
-import net.ion.framework.util.Debug;
 import net.ion.framework.util.ObjectUtil;
 import net.ion.nradon.WebSocketConnection;
 import net.ion.talk.TalkEngine.Reason;

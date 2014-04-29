@@ -53,7 +53,7 @@ public class SenderTest extends BaseTest {
 	}
 
 	public void testGcm_async() throws ExecutionException, InterruptedException {
-		Future<Boolean> result = senderForGCM.sendTo("airkjh").sendAsync("안녕", IsSuccessResponseHandler);
+		Future<Boolean> result = senderForGCM.sendTo("airkjh").sendAsync("안녕", ConfirmResponseHandler);
 		assertTrue(result.get());
 	}
 
@@ -64,14 +64,14 @@ public class SenderTest extends BaseTest {
 		PusherConfig retryConfig = PusherConfig.newBuilder().appleConfig(KEY_STORE_PATH, PASSWORD, true).googleConfig("").build();
 
 		Pusher sender = retryConfig.createPusher(TestStrategies.airkjhAPNSStrategy());
-		Boolean result = sender.sendTo(invalidUserId).sendAsync("모두 실패!!", IsSuccessResponseHandler).get();
+		Boolean result = sender.sendTo(invalidUserId).sendAsync("모두 실패!!", ConfirmResponseHandler).get();
 		// invalid token is considered as failed request, not exception
 		assertFalse(result);
 	}
 
 
 	public void testBeforeSendHandler() {
-		senderForAPNS.setBeforeSendHandler(new BeforeSendHandler() {
+		senderForAPNS.bforeSendHandler(new BeforeSendHandler() {
 			@Override
 			public void handle(PushMessage message) {
 				SimpleDateFormat sdf = new SimpleDateFormat("hh-mm-ss");

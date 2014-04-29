@@ -5,8 +5,8 @@ import java.util.concurrent.ExecutionException;
 
 import junit.framework.TestCase;
 import net.ion.framework.util.Debug;
-import net.ion.message.sms.response.MessagingResponse;
 import net.ion.radon.aclient.NewClient;
+import net.ion.radon.aclient.Response;
 
 public class SMSSenderTest extends TestCase {
 
@@ -43,18 +43,18 @@ public class SMSSenderTest extends TestCase {
 		String jinikNum_indonesia = "+62-81295139955";
 
 		PhoneMessage internationalSMS = sender.toPhoneNo(jinikNum_indonesia).message("파이날 테스트! 이게 성공하면 더 이상은 안보냄!");
-		MessagingResponse response = internationalSMS.send().get();
+		Response response = internationalSMS.send().get();
 
-		assertTrue(response.getReponse().indexOf("<input type=\"hidden\" name=\"Result\" value=\"SUCCESS\">") > -1);
+		assertTrue(response.getTextBody().indexOf("<input type=\"hidden\" name=\"Result\" value=\"SUCCESS\">") > -1);
 	}
 	
 	public void testKoreaPhoneUsingInternational() throws InterruptedException, ExecutionException, IOException {
 		String airkjhNum = "+82-1091399660";
 		
 		PhoneMessage internationalSMS = sender.toPhoneNo(airkjhNum).message("파이날 테스트! 이게 성공하면 더 이상은 안보냄!");
-		MessagingResponse response = internationalSMS.send().get();
+		Response response = internationalSMS.send().get();
 
-		assertTrue(response.getReponse().indexOf("<input type=\"hidden\" name=\"Result\" value=\"SUCCESS\">") > -1);
+		assertTrue(response.getTextBody().indexOf("<input type=\"hidden\" name=\"Result\" value=\"SUCCESS\">") > -1);
 		
 	}
 

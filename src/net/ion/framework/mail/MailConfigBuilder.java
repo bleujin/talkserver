@@ -2,9 +2,6 @@ package net.ion.framework.mail;
 
 import java.util.Properties;
 
-import javax.mail.Session;
-import javax.mail.Store;
-
 public class MailConfigBuilder {
 
 	private Properties props;

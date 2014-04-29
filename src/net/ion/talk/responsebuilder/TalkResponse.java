@@ -1,11 +1,11 @@
 package net.ion.talk.responsebuilder;
 
-import com.google.common.base.Function;
-
 import net.ion.framework.parse.gson.JsonArray;
 import net.ion.framework.parse.gson.JsonElement;
 import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.util.Debug;
+
+import com.google.common.base.Function;
 
 /**
  * Author: Ryunhee Han

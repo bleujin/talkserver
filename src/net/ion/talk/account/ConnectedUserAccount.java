@@ -1,10 +1,6 @@
 package net.ion.talk.account;
 
-import com.google.common.base.Predicate;
-import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.ReadSession;
-import net.ion.craken.node.TransactionJob;
-import net.ion.craken.node.WriteSession;
 import net.ion.talk.UserConnection;
 import net.ion.talk.responsebuilder.TalkResponse;
 
