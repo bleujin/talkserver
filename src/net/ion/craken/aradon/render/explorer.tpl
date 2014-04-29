@@ -110,7 +110,6 @@
 <body>
 <form id="myForm" action="/admin/upload" enctype="multipart/form-data" method="post">
     <input type="hidden" name="path" value="" />
-    <input type="hidden" name="workspace" value="${workspace}"/>
     <div>
         <div id="codeEditor" style="width: 800px; height: 600px;"></div>
         <input type="button" name="update" value="Update" onclick="javascript:updateNode()"/> Or
@@ -128,13 +127,13 @@
     </div>
     <h3>Parent</h3>
     <ul>
-        <li><a href='/admin/repository/${workspace}/html${self.parent().fqn()}'>${self.parent().fqn()}</a></li>
+        <li><a href='/admin/repository/html${self.parent().fqn()}'>${self.parent().fqn()}</a></li>
     </ul>
     <h3>Children</h3>
     <div id="children">
 	<ul>
 	${foreach self.children() child }
-		    <li><a href='/admin/repository/${workspace}/html${child.fqn}'>${child.fqn}</a></li>
+		    <li><a href='/admin/repository/html${child.fqn}'>${child.fqn}</a></li>
 	${end}</ul>
     </div>
 

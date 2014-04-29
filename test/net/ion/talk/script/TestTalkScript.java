@@ -1,9 +1,15 @@
 package net.ion.talk.script;
 
 import java.io.File;
+import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+
+import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.SimpleScriptContext;
 
 import org.restlet.representation.Representation;
 
@@ -51,5 +57,17 @@ public class TestTalkScript extends TestBaseCrud {
 		
 		Representation rep = rows.toHandle(new HTMLFormater()) ;
 		Debug.line(rep.getText()); 
+	}
+	
+	public void testDate() throws Exception {
+		ScriptEngineManager manager = new ScriptEngineManager();
+		ScriptEngine sengine = manager.getEngineByName("JavaScript");
+
+		ScriptContext bindings = new SimpleScriptContext();
+		bindings.setAttribute("session", session, ScriptContext.ENGINE_SCOPE);
+		Object result = sengine.eval("new Date().getTime().toString();", bindings) ;
+		Date d = new Date() ;
+		d.setTime(Long.parseLong(result.toString())) ;
+		Debug.line(new Date().getTime(), result, d) ; 
 	}
 }
