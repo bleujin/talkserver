@@ -2,6 +2,7 @@ package net.ion.message.push.sender;
 
 import java.util.concurrent.ExecutorService;
 
+import net.ion.framework.util.ObjectUtil;
 import net.ion.message.push.sender.strategy.PushStrategy;
 
 import org.infinispan.util.concurrent.WithinThreadExecutor;
@@ -15,15 +16,16 @@ public class PusherConfig {
 
     private ExecutorService es;
 
-    private PusherConfig(String apnsKeyStore, String apnsPassword, boolean apnsIsProduction, String googleAPIKey) {
+    private PusherConfig(ExecutorService es, String apnsKeyStore, String apnsPassword, boolean apnsIsProduction, String googleAPIKey) {
+    	this.es = es ;
     	this.apnsKeyStore = apnsKeyStore ;
     	this.apnsPassword = apnsPassword ;
     	this.apnsIsProduction = apnsIsProduction ;
     	this.googleAPIKey = googleAPIKey ;
     }
 
-    public static SenderConfigBuilder newBuilder() {
-        return new SenderConfigBuilder();
+    public static PusherConfigBuilder newBuilder() {
+        return new PusherConfigBuilder();
     }
 
     public static PusherConfig createTest() {
@@ -54,7 +56,7 @@ public class PusherConfig {
         return es;
     }
 
-    public static class SenderConfigBuilder {
+    public static class PusherConfigBuilder {
 
         private String keystore;
         private String password;
@@ -62,29 +64,27 @@ public class PusherConfig {
         private String apiKey;
         private ExecutorService es;
 
-        public SenderConfigBuilder appleConfig(String keystore, String password, boolean isProduction) {
+        public PusherConfigBuilder appleConfig(String keystore, String password, boolean isProduction) {
             this.keystore = keystore;
             this.password = password;
             this.production = isProduction;
             return this;
         }
 
-        public SenderConfigBuilder googleConfig(String apiKey) {
+        public PusherConfigBuilder googleConfig(String apiKey) {
             this.apiKey = apiKey;
             return this;
         }
 
-        public SenderConfigBuilder executor(ExecutorService es) {
+        public PusherConfigBuilder executor(ExecutorService es) {
             this.es = es;
             return this;
         }
 
         public PusherConfig build() {
-            PusherConfig config = new PusherConfig(this.keystore, this.password, this.production, this.apiKey);
-            if (this.es == null) {
-                config.es = new WithinThreadExecutor();
-            }
-
+        	if (this.es == null) this.es = new WithinThreadExecutor() ; 
+            PusherConfig config = new PusherConfig(this.es, this.keystore, this.password, this.production, this.apiKey);
+            
             return config;
         }
 
