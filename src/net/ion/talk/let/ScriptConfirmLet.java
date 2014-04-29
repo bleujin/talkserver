@@ -19,7 +19,7 @@ import org.restlet.resource.Get;
 /**
  * Author: Ryunhee Han Date: 2013. 12. 26.
  */
-public class ScriptEditLet implements IServiceLet {
+public class ScriptConfirmLet implements IServiceLet {
 
 	@Get
 	public StringRepresentation viewScript(@AnContext TreeContext context, @AnRequest InnerRequest request) throws IOException {
@@ -27,7 +27,7 @@ public class ScriptEditLet implements IServiceLet {
 		ReadSession session = ts.session() ;
 		ReadNode node = session.root() ;
 		
-		String result = node.transformer(new ScriptTemplate(session.workspace().parseEngine(), ts.fullFnNames())) ;
+		String result = node.transformer(new ScriptTemplate(session.workspace().parseEngine(), ts.fullFnNames(), "viewscript.tpl")) ;
 		return new StringRepresentation(result, MediaType.TEXT_HTML, Language.valueOf("UTF-8"));
 	}
 

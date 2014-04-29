@@ -12,7 +12,7 @@ public class TestNodeLet extends TestCrakenBase {
 
     public void testFirst() throws Exception {
 
-        let.upsertNode(r, session.workspace().wsName(), "/bleujin", "{'name':'airkjh', 'int': 1, 'long': 3, 'boolean': false, 'arrStr':['a','b','c'], 'arrInt': [1,2,3]}");
+        let.upsertNode(session, "/bleujin", "{'name':'airkjh', 'int': 1, 'long': 3, 'boolean': false, 'arrStr':['a','b','c'], 'arrInt': [1,2,3]}");
 
         ReadNode node = session.pathBy("/bleujin");
         assertEquals("airkjh", node.property("name").stringValue());
@@ -28,8 +28,8 @@ public class TestNodeLet extends TestCrakenBase {
     }
 
     public void testArrayUpdateNotAppend() throws Exception {
-        let.upsertNode(r, session.workspace().wsName(), "/airkjh", "{'a':[1,2,3]}");
-        let.upsertNode(r, session.workspace().wsName(), "/airkjh", "{'a':[4,5,6]}");
+        let.upsertNode(session, "/airkjh", "{'a':[1,2,3]}");
+        let.upsertNode(session, "/airkjh", "{'a':[4,5,6]}");
 
         ReadNode node = session.pathBy("/airkjh");
         assertEquals(3, node.property("a").asSet().size());
@@ -39,7 +39,7 @@ public class TestNodeLet extends TestCrakenBase {
     public void testInvalid() {
         try {
             // JsonObject as property value is prohibitted
-            let.upsertNode(r, session.workspace().wsName(), "/airkjh", "{'a':{'b':'c'}}");
+            let.upsertNode(session, "/airkjh", "{'a':{'b':'c'}}");
             fail();
         } catch (Exception e) {
             // success
@@ -49,8 +49,8 @@ public class TestNodeLet extends TestCrakenBase {
 
     public void testDeleteNode() throws Exception {
 
-        let.upsertNode(r, session.workspace().wsName(), "/airkjh", "{'a':[1,2,3]}");
-        let.deleteNode(r, session.workspace().wsName(), "/airkjh");
+        let.upsertNode(session, "/airkjh", "{'a':[1,2,3]}");
+        let.deleteNode(session, "/airkjh");
 
         assertFalse(session.exists("/airkjh"));
 
@@ -65,7 +65,7 @@ public class TestNodeLet extends TestCrakenBase {
             }
         });
 
-        let.upsertNode(r, "test", "/airkjh_prop_update.name", "{'name':'airkjh2'}");
+        let.upsertNode(session, "/airkjh_prop_update.name", "{'name':'airkjh2'}");
         ReadNode updatedNode = session.pathBy("/airkjh_prop_update");
 
         assertEquals("airkjh2", updatedNode.property("name").stringValue());
@@ -81,7 +81,7 @@ public class TestNodeLet extends TestCrakenBase {
             }
         });
 
-        let.upsertNode(r, "test", "/airkjh_prop_delete", "{'name':'airkjh2'}");
+        let.upsertNode(session, "/airkjh_prop_delete", "{'name':'airkjh2'}");
         ReadNode updatedNode = session.pathBy("/airkjh_prop_delete");
 
         assertEquals("airkjh2", updatedNode.property("name").stringValue());

@@ -16,22 +16,24 @@ public class ScriptTemplate implements Function<ReadNode, String> {
 
 	private Engine engine;
 	private List<String> fnNames;
+	private String tplName;
 
-	ScriptTemplate(Engine engine, List<String> fnNames) {
+	ScriptTemplate(Engine engine, List<String> fnNames, String tplName) {
 		this.engine = engine;
 		this.fnNames = fnNames ;
+		this.tplName = tplName ;
 	}
 	
-	public static ScriptTemplate test(Engine engine, List<String> fnNames){
-		return new ScriptTemplate(engine, fnNames) ;
+	public static ScriptTemplate test(Engine engine, List<String> fnNames, String tplName){
+		return new ScriptTemplate(engine, fnNames, tplName) ;
 	}
 
 	@Override
 	public String apply(ReadNode node) {
 
         try {
-			InputStream input = ScriptTemplate.class.getResourceAsStream("viewscript.tpl");
-			if (input == null) throw new FileNotFoundException("viewscript.tpl") ;
+			InputStream input = ScriptTemplate.class.getResourceAsStream(tplName);
+			if (input == null) throw new FileNotFoundException(tplName) ;
 			return engine.transform(IOUtil.toStringWithClose(input), MapUtil.<String, Object> chainMap().put("self", node).put("fnNames", fnNames).toMap());
 		} catch (IOException e) {
 			throw new IllegalStateException(e);

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.aradon.render.Renderer;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.Repository;
@@ -31,38 +32,37 @@ import org.restlet.resource.Post;
 public class NodeLet implements IServiceLet {
 
 	@Get
-	public Representation pathBy(@ContextParam("repository") Repository repository, @PathParam("workspace") String workspace, @PathParam("renderType") String renderType, @AnRequest Request req) throws IOException {
-		ReadSession session = repository.login(workspace);
+	public Representation pathBy(@ContextParam("repository") RepositoryEntry repository, @PathParam("renderType") String renderType, @AnRequest Request req) throws IOException {
+		ReadSession session = repository.login();
 		String uri = getRequestURIOnly(req);
-		
 		return Renderer.create(session).from(uri, renderType).render();
 	}
 
 	@Post
-	public String upsert(@ContextParam("repository") Repository repository, @PathParam("workspace") String workspace, @FormParam("body") String body, @AnRequest Request req) throws Exception {
+	public String upsert(@ContextParam("repository") RepositoryEntry repository, @FormParam("body") String body, @AnRequest Request req) throws Exception {
 		String uri = getRequestURIOnly(req);
 
-		upsertNode(repository, workspace, uri, body);
+		ReadSession session = repository.login();
+		upsertNode(session, uri, body);
 
 		return "success";
 	}
 
 	@Delete
-	public String delete(@ContextParam("repository") Repository repository, @PathParam("workspace") String workspace, @AnRequest Request req) throws Exception {
+	public String delete(@ContextParam("repository") RepositoryEntry repository,  @AnRequest Request req) throws Exception {
 
 		final String nodePath = getNodePathFrom(req);
 
-		deleteNode(repository, workspace, nodePath);
+		ReadSession session = repository.login();
+		deleteNode(session, nodePath);
 
 		return "success";
 	}
 
-	void upsertNode(Repository repository, String workspace, String uri, String body) throws Exception {
+	void upsertNode(ReadSession session, String uri, String body) throws Exception {
 		final String nodePath = getNodePathFrom(uri);
 		final JsonObject json = JsonParser.fromString(body).getAsJsonObject();
 		final String paramToUpdate = StringUtil.substringAfterLast(uri, ".");
-
-		ReadSession session = repository.login(workspace);
 
 		session.tranSync(new TransactionJob<Void>() {
 			@Override
@@ -123,8 +123,7 @@ public class NodeLet implements IServiceLet {
 		}, InternalServerErrorHandler.DEFAULT);
 	}
 
-	void deleteNode(Repository repository, String workspace, final String nodePath) throws Exception {
-		ReadSession session = repository.login(workspace);
+	void deleteNode(ReadSession session, final String nodePath) throws Exception {
 		session.tranSync(new TransactionJob<Void>() {
 			@Override
 			public Void handle(WriteSession wsession) throws Exception {

@@ -9,12 +9,12 @@ import org.infinispan.util.concurrent.WithinThreadExecutor;
 
 public class PusherConfig {
 
-    private String apnsKeyStore;
-    private String apnsPassword;
-    private boolean apnsIsProduction;
-    private String googleAPIKey;
+    private final String apnsKeyStore;
+    private final String apnsPassword;
+    private final boolean apnsIsProduction;
+    private final String googleAPIKey;
 
-    private ExecutorService es;
+    private final ExecutorService es;
 
     private PusherConfig(ExecutorService es, String apnsKeyStore, String apnsPassword, boolean apnsIsProduction, String googleAPIKey) {
     	this.es = es ;
@@ -82,9 +82,8 @@ public class PusherConfig {
         }
 
         public PusherConfig build() {
-        	if (this.es == null) this.es = new WithinThreadExecutor() ; 
-            PusherConfig config = new PusherConfig(this.es, this.keystore, this.password, this.production, this.apiKey);
-            
+            PusherConfig config = new PusherConfig(ObjectUtil.coalesce(this.es, new WithinThreadExecutor()), this.keystore, this.password, this.production, this.apiKey);
+
             return config;
         }
 
