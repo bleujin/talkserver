@@ -5,7 +5,7 @@
 </head>
 <body>
 	<h3>Self</h3>
-	<a href='/admin/repository/${workspace}/html${parent.fqn}'>${parent.fqn}</a>
+	<a href='/admin/repository/html${parent.fqn}/'>${parent.fqn}</a>
 	<br/>
 <pre>${selfjson}</pre>	
     <div id="children">
