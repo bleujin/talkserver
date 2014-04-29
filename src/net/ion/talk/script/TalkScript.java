@@ -8,12 +8,15 @@ import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 
 import javax.script.Invocable;
+import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import javax.script.SimpleScriptContext;
 
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.script.FileAlterationMonitor;
+import net.ion.framework.db.Rows;
 import net.ion.framework.util.Debug;
 import net.ion.framework.util.FileUtil;
 import net.ion.framework.util.ListUtil;
@@ -203,5 +206,13 @@ public class TalkScript {
 
 	public Object callFn(String fullFnName,  ParameterMap params) {
 		return callFn(fullFnName, params,  ScriptResponseHandler.ReturnNative) ;
+	}
+
+	public Rows viewRows(ReadSession session, String script) throws ScriptException {
+		ScriptContext bindings = new SimpleScriptContext();
+		bindings.setAttribute("session", session, ScriptContext.ENGINE_SCOPE);
+		Object result = sengine.eval(script, bindings) ;
+		if (result instanceof Rows) return Rows.class.cast(result) ;
+		throw new ScriptException("return type must be rows.class") ;
 	}
 }

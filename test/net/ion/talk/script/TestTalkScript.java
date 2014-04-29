@@ -5,9 +5,16 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
+import org.restlet.representation.Representation;
+
 import sun.org.mozilla.javascript.internal.NativeObject;
 import sun.org.mozilla.javascript.internal.Scriptable;
+import net.ion.craken.node.TransactionJob;
+import net.ion.craken.node.WriteSession;
 import net.ion.craken.node.crud.TestBaseCrud;
+import net.ion.framework.db.Rows;
+import net.ion.framework.db.bean.ResultSetHandler;
+import net.ion.framework.rest.HTMLFormater;
 import net.ion.framework.util.Debug;
 
 public class TestTalkScript extends TestBaseCrud {
@@ -27,4 +34,22 @@ public class TestTalkScript extends TestBaseCrud {
 		Debug.line(ts.fullFnNames());
 	}
 
+	
+	public void testRunScript() throws Exception {
+		
+		session.tran(new TransactionJob<Void>() {
+			@Override
+			public Void handle(WriteSession wsession) throws Exception {
+				wsession.pathBy("/bleujin").property("name", "bleujin") ;
+				wsession.pathBy("/hero").property("name", "hero") ;
+				return null;
+			}
+		}) ;
+		
+		String script = "session.root().children().toAdRows('name') ;" ;
+		Rows rows = ts.viewRows(session, script) ;
+		
+		Representation rep = rows.toHandle(new HTMLFormater()) ;
+		Debug.line(rep.getText()); 
+	}
 }

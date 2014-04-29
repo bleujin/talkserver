@@ -30,7 +30,8 @@ import net.ion.talk.let.EmbedBotLet;
 import net.ion.talk.let.LoginLet;
 import net.ion.talk.let.ResourceLet;
 import net.ion.talk.let.SMSAuthLet;
-import net.ion.talk.let.ScriptEditLet;
+import net.ion.talk.let.ScriptConfirmLet;
+import net.ion.talk.let.ScriptDoLet;
 import net.ion.talk.let.ScriptExecLet;
 import net.ion.talk.script.TalkScript;
 
@@ -88,7 +89,7 @@ public class ToonServer {
 						.path("smsAuth").addUrlPattern("/SMSAuth").matchMode(IMatchMode.STARTWITH).handler(SMSAuthLet.class)
 						
 					.restSection("script")
-						.path("script").addUrlPattern("/").matchMode(EnumClass.IMatchMode.STARTWITH).handler(ScriptEditLet.class)
+						.path("script").addUrlPattern("/").matchMode(EnumClass.IMatchMode.EQUALS).handler(ScriptConfirmLet.class)
 						
 					.restSection("execute")
 						.path("execute").addUrlPattern("/").matchMode(IMatchMode.STARTWITH).handler(ScriptExecLet.class)
@@ -100,9 +101,10 @@ public class ToonServer {
 						.path("bot").addUrlPattern("/{botId}").matchMode(IMatchMode.STARTWITH).handler(EmbedBotLet.class)
 
 						
-					.restSection("admin").addAttribute("baseDir", "./resource/template").addAttribute("repository", repoEntry.repository())
-						.path("node").addUrlPattern("/repository/{workspace}/{renderType}").matchMode(IMatchMode.STARTWITH).handler(NodeLet.class)
+					.restSection("admin").addAttribute("baseDir", "./resource/template")
+						.path("node").addUrlPattern("/repository/{renderType}").matchMode(IMatchMode.STARTWITH).handler(NodeLet.class)
 						.path("template").addUrlPattern("/template").matchMode(EnumClass.IMatchMode.STARTWITH).handler(ResourceLet.class)
+						.path("doscript").addUrlPattern("/script").matchMode(EnumClass.IMatchMode.EQUALS).handler(ScriptDoLet.class)
 						.path("upload").addUrlPattern("/upload").matchMode(IMatchMode.STARTWITH).handler(UploadLet.class).toBuilder() ;
 						
 //					.restSection("websocket").addAttribute(TalkHandlerGroup.class.getCanonicalName(), talkHandlerGroup)

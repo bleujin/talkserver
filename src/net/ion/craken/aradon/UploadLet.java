@@ -2,6 +2,7 @@ package net.ion.craken.aradon;
 
 import java.io.IOException;
 
+import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.Repository;
 import net.ion.craken.node.TransactionJob;
@@ -23,10 +24,10 @@ import org.restlet.resource.ResourceException;
 public class UploadLet implements IServiceLet {
 
 	@Post
-	public Representation upsert(@ContextParam("repository") Repository repository, @AnRequest Request request, @FormParam("workspace") String workspace, @FormParam("path") final String nodePath, @FormParam("uploadFile") final FileItem fileItem) throws Exception {
+	public Representation upsert(@ContextParam("repository") RepositoryEntry repository, @AnRequest Request request, @FormParam("path") final String nodePath, @FormParam("uploadFile") final FileItem fileItem) throws Exception {
 
 		if (isMultipartRequest(request)) {
-			writeBlob(repository, workspace, nodePath, fileItem);
+			writeBlob(repository, nodePath, fileItem);
 			return new JsonObjectRepresentation("{\"success\":true}");
 
 		} else {
@@ -34,8 +35,8 @@ public class UploadLet implements IServiceLet {
 		}
 	}
 
-	private void writeBlob(Repository repository, String workspace, final String nodePath, final FileItem fileItem) throws IOException, Exception {
-		ReadSession session = repository.login(workspace);
+	private void writeBlob(RepositoryEntry rentry, final String nodePath, final FileItem fileItem) throws IOException, Exception {
+		ReadSession session = rentry.login();
 		session.tranSync(new TransactionJob<Void>() {
 			@Override
 			public Void handle(WriteSession wsession) throws Exception {

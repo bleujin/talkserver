@@ -11,16 +11,13 @@ import net.ion.framework.util.InfinityThread;
 import net.ion.nradon.Radon;
 import net.ion.radon.aclient.NewClient;
 import net.ion.radon.core.Aradon;
+import net.ion.radon.core.EnumClass;
 import net.ion.radon.core.EnumClass.IMatchMode;
 import net.ion.radon.util.AradonTester;
 import net.ion.talk.script.TalkScript;
 import net.ion.talk.util.NetworkUtil;
 
-/**
- * Author: Ryunhee Han Date: 2013. 12. 26.
- */
-public class TestScriptEditLet extends TestCase {
-
+public class TestScriptDoLet extends TestCase {
 	
 	private Radon radon;
 	private NewClient nc;
@@ -28,7 +25,10 @@ public class TestScriptEditLet extends TestCase {
 
 	@Override
 	public void setUp() throws Exception {
-		Aradon aradon = AradonTester.create().register("script", "/", "script", IMatchMode.EQUALS, ScriptConfirmLet.class).getAradon();
+		Aradon aradon = AradonTester.create()
+					.register("script", "/do", "script", IMatchMode.EQUALS, ScriptDoLet.class)
+					.register("resource", "/{path}", "resource",  IMatchMode.STARTWITH, ResourceLet.class)
+					.getAradon();
 
 		this.repo = RepositoryImpl.inmemoryCreateWithTest() ;
 		ReadSession rsession = repo.login("test");
@@ -50,9 +50,9 @@ public class TestScriptEditLet extends TestCase {
 	}
 	
 	public void testViewPage() throws Exception {
-		net.ion.radon.aclient.Response response = nc.prepareGet(NetworkUtil.httpAddress(9000, "/script/")).execute().get() ;
+		net.ion.radon.aclient.Response response = nc.prepareGet(NetworkUtil.httpAddress(9000, "/script/do")).execute().get() ;
 		assertEquals(200, response.getStatus().getCode());
-		Debug.line(response.getStatusText());
+		Debug.line(response.getStatusText(), response.getTextBody());
 	}
 	
 	public void xtestDeploy() throws Exception {
