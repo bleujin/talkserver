@@ -68,7 +68,30 @@ new function(){
 
 		var user = session.pathBy("/users/" + params.asString("userId"));
 		return rb.create().newInner().inlist("friends", user.refs("friends").toList(), "phone,nickname,userId,stateMessage,country").build().toJsonElement().toString();
-	}, 
+	},
+	
+	 this.testSyncWith = function(params){
+		var phones = params.asStrings("phone");
+
+		var jb = rb.create().newInner().inlist("friends");
+
+		for(var i=0;i<phones.length;i++){
+			if(session.exists("/phones/"+phones)){
+				var findUser = session.pathBy("/phones/"+phones[i]).refs("users").toList();			
+				for(var j=0; j < findUser.size();j++ ){
+				 session.tranSync(function(wsession){
+			      	if(wsession.pathBy(findUser.get(j).exists())) //addFriends
+			        	wsession.pathBy("/users/"+params.asString("userId")).refTos("friends",[findUser.get(j)]);
+			        
+			    	if(!(wsession.pathBy(findUser.get(j)).hasRef("friends",wsession.pathBy("/users/"+params.asString("userId")).fqn())))  //recommend
+			        	wsession.pathBy(findUser.get(j)).refTos("recommendFriends",["/users/"+params.asString("userId")]);
+			    });
+				}
+			}
+				var user = session.pathBy("/users/" + params.asString("userId"));
+		return rb.create().newInner().inlist("friends", user.refs("friends").toList(), "phone,nickname,userId,stateMessage,country").build().toJsonElement().toString();
+		}
+	},
 
 
 	this.recommendBy = function(params){
