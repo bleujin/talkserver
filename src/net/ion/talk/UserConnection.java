@@ -6,11 +6,13 @@ import java.util.Map;
 import net.ion.framework.util.ObjectUtil;
 import net.ion.nradon.WebSocketConnection;
 import net.ion.talk.TalkEngine.Reason;
+import net.ion.talk.engine.HeartBeat;
+import net.ion.talk.util.CalUtil;
 
 public class UserConnection {
 
 	private WebSocketConnection inner;
-    private long lastHeartBeat = 0;
+    private long sessionTime = 0;
 
 
     protected UserConnection(WebSocketConnection inner) {
@@ -72,22 +74,12 @@ public class UserConnection {
         return accessToken().equals(accessToken);
     }
 
-
-
-    public boolean isOverTime(long gmtTime) {
-        long heartBeatGap = gmtTime - lastHeartBeat;
-
-        if(heartBeatGap < TalkEngine.HEARTBEAT_WATING){
-            return false;
-        }else if(heartBeatGap < TalkEngine.HEARTBEAT_KILLING){
-            sendMessage("HEARTBEAT");
-            return false;
-        }else{
-            return true ;
-        }
-    }
-
     public void updateHeartBeat() {
-        lastHeartBeat = ToonServer.GMTTime();
+        sessionTime = CalUtil.gmtTime() ;
     }
+    
+    public long sessionTime(){
+    	return sessionTime ;
+    }
+    
 }

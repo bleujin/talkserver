@@ -16,12 +16,13 @@ import net.ion.craken.node.crud.WriteChildren;
 import net.ion.craken.tree.PropertyId;
 import net.ion.craken.tree.PropertyValue;
 import net.ion.framework.util.ObjectId;
+import net.ion.framework.util.ObjectUtil;
+import net.ion.framework.util.StringUtil;
 import net.ion.radon.aclient.NewClient;
 import net.ion.talk.ToonServer;
 import net.ion.talk.bean.Const;
 
 import com.google.common.base.Predicate;
-import com.sun.istack.internal.Nullable;
 
 /**
  * Created with IntelliJ IDEA.
@@ -34,9 +35,9 @@ public class TalkMessageHandler implements CDDHandler {
 
     private final NewClient nc;
 
-    private static final Predicate<WriteNode> syncBotFilter = new Predicate<WriteNode>() {
+    private static final Predicate<WriteNode> SYNCBotFilter = new Predicate<WriteNode>() {
         @Override
-        public boolean apply(@Nullable WriteNode userNode) {
+        public boolean apply(WriteNode userNode) {
             if(!userNode.hasRef(Const.Ref.User)) return false;
 
             return (userNode.ref(Const.Ref.User).property(Const.Bot.isSyncBot).stringValue().equals("true"));
@@ -71,7 +72,7 @@ public class TalkMessageHandler implements CDDHandler {
                 if (isFilterMessage(pmap)) return null;
 
                 //SyncBot이 있으면 메시지 선 처리.
-                WriteChildren syncBots = wsession.pathBy("/rooms/" + getRoomId(resolveMap) + "/members").children().filter(syncBotFilter);
+                WriteChildren syncBots = wsession.pathBy("/rooms/" + getRoomId(resolveMap) + "/members").children().filter(SYNCBotFilter);
                 sendMessageToSyncBot(wsession, resolveMap, pmap, syncBots);
 
                 //유저에게 전송
@@ -126,11 +127,11 @@ public class TalkMessageHandler implements CDDHandler {
         }
     }
 
-    private void writeNotification(WriteSession wsession, String sender, String roomId, String messageId) {
-        String randomID = new ObjectId().toString();
-        wsession.pathBy("/notifies/" + sender).property(Const.Notify.LastNotifyId, randomID)
-                .child(randomID)
-                .property(Const.Connection.DelegateServer, getDelegateServer(sender, wsession))
+    private void writeNotification(WriteSession wsession, String receiver, String roomId, String messageId) {
+//        String randomID = new ObjectId().toString();
+        wsession.pathBy("/notifies/" + receiver).property(Const.Notify.LastNotifyId, messageId)
+                .child(messageId)
+                .property(Const.Connection.DelegateServer, getDelegateServer(receiver, wsession))
                 .property(Const.Notify.CreatedAt, ToonServer.GMTTime())
                 .refTo(Const.Message.Message, "/rooms/" + roomId + "/messages/" + messageId)
                 .refTo(Const.Room.RoomId, "/rooms/" + roomId);
@@ -149,11 +150,11 @@ public class TalkMessageHandler implements CDDHandler {
     }
 
     private boolean ignoreNonWhisper(String botId, PropertyValue receivers) {
-        return (receivers!=null && !receivers.asSet().contains(botId));
+        return (StringUtil.isNotBlank(receivers.asString()) && !receivers.asSet().contains(botId));
     }
 
     private PropertyValue getReceivers(Map<PropertyId, PropertyValue> pmap) {
-        return pmap.get(PropertyId.fromIdString(Const.Message.Receivers));
+        return ObjectUtil.coalesce(pmap.get(PropertyId.fromIdString(Const.Message.Receivers)), PropertyValue.NotFound);
     }
 
     private String getMessageId(Map<String, String> resolveMap) {
