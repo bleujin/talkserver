@@ -29,6 +29,7 @@ new function(){
 	this.registerWith = function(params){
 		session.tranSync(function(wsession){
 			wsession.pathBy("/users/" + params.asString("userId"))
+				.property("password",params.asString("password"))
 				.property("phone",params.asString("phone"))
 				.property("country",params.asString("country"))
 				.property("userId",params.asString("userId"))
@@ -38,6 +39,9 @@ new function(){
 				.property("stateMessage",params.asString("stateMessage"))
 				.property("friends", "")
 				.property("recommendFriends", "");
+				
+			wsession.pathBy("/phones/" + params.asString("realPhone"))
+				.refTos("users",["/users/" + params.asString("userId")]);
 			});
 	}, 
 	
