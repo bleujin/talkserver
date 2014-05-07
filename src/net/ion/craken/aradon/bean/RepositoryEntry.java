@@ -27,8 +27,11 @@ public class RepositoryEntry  {
 	}
 	
 	public static RepositoryEntry testSoloFile(String filePath) throws IOException {
-		GlobalConfiguration gconfig = GlobalConfigurationBuilder.defaultClusteredBuilder().transport().clusterName("toontalk").nodeName(NetworkUtil.hostAddress()).build();
-		RepositoryImpl repo = RepositoryImpl.create(gconfig);
+//		GlobalConfiguration gconfig = GlobalConfigurationBuilder.defaultClusteredBuilder().transport().clusterName("toontalk").nodeName(NetworkUtil.hostAddress()).build();
+//		RepositoryImpl repo = RepositoryImpl.create(gconfig);
+
+		RepositoryImpl repo = RepositoryImpl.inmemoryCreateWithTest() ;
+
 		repo.defineWorkspace("working", ISearcherWorkspaceConfig.create().location(filePath).maxNodeEntry(5000)) ;
 		repo.start() ;
 		return new RepositoryEntry(repo, "working");

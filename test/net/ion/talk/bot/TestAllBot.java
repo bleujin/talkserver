@@ -11,7 +11,7 @@ public class TestAllBot extends TestCase {
 		TestSuite result = new TestSuite("Test All Bot");
 
         result.addTestSuite(TestBotManager.class);
-        result.addTestSuite(TestBBot.class);
+//        result.addTestSuite(TestBBot.class);
         result.addTestSuite(TestChatBot.class);
         result.addTestSuite(TestEchoBot.class);
         result.addTestSuite(TestEmbedBot.class);
