@@ -86,10 +86,13 @@ new function(){
 				.property("event","onMessage")
 				.property("requestId",params.asString("requestId"))
 				.property("time",time.toString());
+
+		       msgNode.append("receivers", receivers);
+				
 						
-				for(var i=0;i< receivers.length;i++){
-				       msgNode.append("receivers", receivers[i]);
-				}
+//				for(var i=0;i< receivers.length;i++){
+//				       msgNode.append("receivers", receivers);
+//				}
 		});	
 		return params.asString("requestId");
 	}

@@ -51,13 +51,14 @@ public class TestToonServerNew extends TestCase {
 		tserver.talkEngine().registerHandler(new UserConnectionHandler()).registerHandler(ServerHandler.test()).registerHandler(new WebSocketScriptHandler()) ;
 
 		NewClient nc = tserver.getAttribute(NewClient.class.getCanonicalName(), NewClient.class);
+		AccountManager am = tserver.getAttribute(AccountManager.class.getCanonicalName(), AccountManager.class);
 		BotManager botManager = tserver.getAttribute(BotManager.class.getCanonicalName(), BotManager.class);
 		ReadSession rsession = tserver.readSession();
 		
 		
 		rsession.workspace().cddm().add(new UserInAndOutRoomHandler());
 		rsession.workspace().cddm().add(new TalkMessageHandler(nc));
-		rsession.workspace().addListener(new NotificationListener(AccountManager.create(tserver.talkEngine(), NotifyStrategy.createPusher(worker, rsession))));
+		rsession.workspace().addListener(new NotificationListener(am));
 
 
         botManager.registerBot(new EchoBot(tserver.readSession(), worker));

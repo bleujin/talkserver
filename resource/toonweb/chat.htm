@@ -22,34 +22,24 @@
 	// Everything below is the same as using standard WebSocket.
 	function initChat(){
 
-		webClient.chat = function(){
+		webClient.sender = '$config.sender$' ;
+		webClient.senderNickname = 'bleujin' ;
+		webClient.roomId = '$config.roomId$' ;
 
-			var chatMsg = {head:{}, body:{}} ;
+		webClient.chat = function(){
+			// id, script, params[
+			var chatMsg = {id:'' + new Date().getUTCMilliseconds(), script:'/room/sendMessageWith', params:{}} ;
 			var input = document.getElementById("input") ;
-			chatMsg.head.command = 'app.message'
-			chatMsg.head.sender = '$config.sender$' ;
-			chatMsg.head.topicid = '$config.topicId$' ;
-			chatMsg.head.request = new Date().getUTCMilliseconds() + '' + '$config.sender$' ;
-			chatMsg.head.receiver = '$config.receiver$' ;
-			chatMsg.head.created = new Date().getUTCMilliseconds() ;
-			chatMsg.head.msgid = new Date().getUTCMilliseconds() ;
-			
-			chatMsg.body.expression = '0000000078' ; // default const
-			chatMsg.body.message = input.value ;
-			chatMsg.body.nickname = '$config.sender$' ;
-			chatMsg.body.sound = 'ttas.wav' ;
-			chatMsg.body.background = '' ;
-			chatMsg.body.action = '' ;
-			chatMsg.body.account = '' ;
-			chatMsg.body.code = '01' ;
-			chatMsg.body.groupid = '' ;
-			chatMsg.body.balloon = '' ;
-			chatMsg.body.push = input.value ;
-			chatMsg.body.additional = '' ;
-			//receivers 
+			chatMsg.params.receivers = ''
+			chatMsg.params.roomId = this.roomId ;
+			chatMsg.params.message = input.value ;
+			chatMsg.params.sender = this.sender ;
+			chatMsg.params.senderNickname = this.senderNickname ;
+			chatMsg.params.clientScript = '' ;
+			chatMsg.params.requestId = '/123456' ;
 			
 			this.getWebSocket().send(this.jsonToString(chatMsg));
-			this.output('Send : ' + input.value, 'send') ;
+//			this.output(input.value, 'send') ;
 			input.value = "";
 			input.focus();
 		} ;
@@ -59,13 +49,14 @@
         	this.getWebSocket().close();
 		} ;
 
-		webClient.output = function(str, align) {
+		webClient.output = function(message, align) {
 	    	var log = document.getElementById("outputDiv");
-	    	var escaped = str.replace(/&/, "&amp;").replace(/</, "&lt;").replace(/>/, "&gt;").replace(/"/, "&quot;"); // "
+	    	alert(message) ;
+	    	var escaped = message.replace(/&/, "&amp;").replace(/</, "&lt;").replace(/>/, "&gt;").replace(/"/, "&quot;"); // "
 	    	if (align == 'received') {
 	    		log.innerHTML = "<div align='right' style=\"width:500; padding:7; background-color:dfdfdf \">" + escaped + "</div><br>" + log.innerHTML;
 	    	} else {
-	    		log.innerHTML = "<div align='left' style=\"width:500; padding:7; background-color:efefef \">" + escaped + "</div><br>" + log.innerHTML;
+	    		log.innerHTML = "<div align='left' style=\"width:500; padding:7; background-color:efefef \">" + "Send : " + escaped + "</div><br>" + log.innerHTML;
 	    	} 
 	    } ;
 		
@@ -86,6 +77,17 @@
 		    }
 		} ;
 		
+		
+	  	webClient.command = function(script, params){
+			// id, script, params[
+			var cmdMsg = {} ;
+			cmdMsg.id = new Date().getUTCMilliseconds() ;
+			cmdMsg.script = script ;
+			cmdMsg.params = params ;
+			this.getWebSocket().send(this.jsonToString(cmdMsg));
+		} ;
+	  	
+		
 
    		var ws = new WebSocket('$config.address$') ;
 		
@@ -93,25 +95,33 @@
 	  		webClient.output("open") ;
 	  		
 	  	} ;
+	  	
    		ws.onmessage = function(e){
-   			var msg = eval('(' + e.data + ')') ;
    			console.log(e.data) ;
+   			if ('HEARTBEAT' == e.data) {
+   				ws.send('HEARTBEAT') ;
+   				return ;
+   			}
+   			// {notifyId:...}
+   			var msg = eval('(' + e.data + ')') ;
+   			if (msg.script == undefined && msg.notifyId != ''){
+   				webClient.command('/room/listNotifyDataBy', {'notifyId':msg.notifyId, 'userId':webClient.sender}) ;
+   				return ;
+   			}
+   			if (msg.status != 'success'){
+   				console.error(e.data) ;
+   				return ;
+   			}
    			
-   			var msgText = (typeof msg.body != 'undefined') ? msg.body.message : '' ;
+   			if (msg.script == '/room/sendMessageWith') return ; // return sendMessageWith
+   			if (msg.script == '/room/listNotifyDataBy') {
+   				alert(msg.result.message) ;
+   				// webClient.output(msg.result.message, (msg.params.userid == webClient.sender) ? 'send' : 'received') ;
+   				return ;
+   			}
    			
-   			
-			if ( typeof msg.head != 'undefined' && msg.head.command == 'ping'){
-				ws.send('{head:{command:"app.keepalive"}, body:{sender:"$config.sender$"}}'); // reply
-			} else if (typeof msg.head != 'undefined' && msg.aradon.senderName == '$config.sender$') {
-	  			; 
-			} else {
-				webClient.output("received from " + ((msg.aradon != null) ? msg.aradon.senderName : '') + " : " + msgText, 'received'); // e.data contains received string.
-			} 
-			
-			if (msg.head != null && msg.head.aradon == 'reply') {
-//				webClient.output("received from " + ((msg.aradon != null) ? msg.aradon.senderName : '') + " : " + msgText, 'received'); // e.data contains received string.
-				ws.send(e.data) ;
-			} 
+
+
    		} ;
    		
    		ws.onclose = function(){
@@ -137,7 +147,8 @@
 		<table width=600 align=center><tr><td><div id="outputDiv" style="overflow:scroll; width:600; height:380"></div></td></tr></table>
 		</td></tr>
 	<tr><td height=120 background="/toonweb/img/bottom_bg.png" valign="center">
-		<table width='95%' align=center><tr><td width="100%"><textarea id="input" cols="60" rows="3" style="width:95%; font-size:16px"></textarea></td><td align=right><input type=image src="/toonweb/img/send_bt.png" onclick="webClient.chat(); return false;"/></td></tr></table>
+		<table width='95%' align=center><tr><td width="100%"><textarea id="input" cols="60" rows="3" style="width:95%; font-size:16px"></textarea></td>
+		<td align=right><input type=image src="/toonweb/img/send_bt.png" onclick="webClient.chat(); return false;"/></td></tr></table>
 	</td></tr>
 </form>
 </table>

@@ -24,8 +24,10 @@ import net.ion.radon.core.EnumClass;
 import net.ion.radon.core.EnumClass.IMatchMode;
 import net.ion.radon.core.config.ConfigurationBuilder;
 import net.ion.radon.core.security.ChallengeAuthenticator;
+import net.ion.talk.account.AccountManager;
 import net.ion.talk.bot.BotManager;
 import net.ion.talk.filter.CrakenVerifier;
+import net.ion.talk.handler.craken.NotifyStrategy;
 import net.ion.talk.let.EmbedBotLet;
 import net.ion.talk.let.LoginLet;
 import net.ion.talk.let.ResourceLet;
@@ -43,12 +45,12 @@ public class ToonServer {
 	
 	private Aradon aradon;
 	private Radon radon;
-	private ConfigurationBuilder cbuilder;
 
 	private AtomicReference<Status> status = new AtomicReference<ToonServer.Status>(Status.STOPED) ;
 	
 	private RepositoryEntry repoEntry;
 	private ScheduledExecutorService worker;
+	private TalkEngine talkEngine;
 
 	private ToonServer(RepositoryEntry rentry, ScheduledExecutorService worker){
 		this.repoEntry = rentry ;
@@ -72,8 +74,8 @@ public class ToonServer {
 		NewClient nc = NewClient.create(ClientConfig.newBuilder().setMaxRequestRetry(5).setMaxRequestRetry(2).build());
 		
 		SMSSender smsSender = SMSSender.create(nc);
-
-		this.cbuilder = ConfigurationBuilder.newBuilder()	
+		
+		ConfigurationBuilder cbuilder = ConfigurationBuilder.newBuilder()	
 				.aradon()
 					.addAttribute(RepositoryEntry.EntryName, repoEntry)
 					.addAttribute(ScheduledExecutorService.class.getCanonicalName(), worker)
@@ -106,7 +108,13 @@ public class ToonServer {
 						.path("template").addUrlPattern("/template").matchMode(EnumClass.IMatchMode.STARTWITH).handler(ResourceLet.class)
 						.path("doscript").addUrlPattern("/script").matchMode(EnumClass.IMatchMode.EQUALS).handler(ScriptDoLet.class)
 						.path("upload").addUrlPattern("/upload").matchMode(IMatchMode.STARTWITH).handler(UploadLet.class).toBuilder() ;
-						
+
+		this.aradon = Aradon.create(cbuilder.build());
+		this.radon = aradon.toRadon(9000);
+		
+		this.talkEngine = new TalkEngine(aradon.getServiceContext()) ;
+		radon.add("/websocket/{id}/{accessToken}", talkEngine) ;
+		
 //					.restSection("websocket").addAttribute(TalkHandlerGroup.class.getCanonicalName(), talkHandlerGroup)
 //						.wspath("websocket").addUrlPattern("/{id}/{accessToken}").handler(TalkEngine.class).toBuilder();
 
@@ -119,12 +127,7 @@ public class ToonServer {
 	}
 
 	public ToonServer ready() throws Exception {
-		this.aradon = Aradon.create(cbuilder.build());
-		this.radon = aradon.toRadon(9000);
-		
-		TalkEngine talkEngine = new TalkEngine(aradon.getServiceContext()) ;
-		talkEngine.startEngine() ;
-		radon.add("/websocket/{id}/{accessToken}", talkEngine) ;
+		this.talkEngine.startEngine() ;
 		
 		status.set(Status.READY);
 		return this;

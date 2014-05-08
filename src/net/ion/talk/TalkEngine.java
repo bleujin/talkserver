@@ -17,6 +17,8 @@ import java.util.regex.Pattern;
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.node.ReadSession;
 import net.ion.framework.logging.LogBroker;
+import net.ion.framework.util.DateUtil;
+import net.ion.framework.util.Debug;
 import net.ion.framework.util.ListUtil;
 import net.ion.framework.util.MapUtil;
 import net.ion.message.push.sender.Pusher;
@@ -28,10 +30,12 @@ import net.ion.radon.aclient.NewClient;
 import net.ion.radon.core.TreeContext;
 import net.ion.talk.account.AccountManager;
 import net.ion.talk.bot.BotManager;
+import net.ion.talk.engine.HeartBeat;
 import net.ion.talk.handler.TalkHandler;
 import net.ion.talk.handler.craken.NotifyStrategy;
 import net.ion.talk.responsebuilder.TalkResponse;
 import net.ion.talk.script.TalkScript;
+import net.ion.talk.util.CalUtil;
 
 import org.restlet.Context;
 import org.restlet.routing.VirtualHost;
@@ -42,10 +46,6 @@ public class TalkEngine implements WebSocketHandler {
 		OK, NOTALLOW, DOPPLE, TIMEOUT, CLIENT, INTERNAL;
 	}
 
-	public static int HEARTBEAT_WATING = 15000;
-	public static int HEARTBEAT_KILLING = 30000;
-	public static int HEARTBEAT_DELAY = 1000;
-
 	private static final Pattern hearbeatPtn = Pattern.compile("^HEARTBEAT$");
 
 	protected ConnManager cmanager = ConnManager.create();
@@ -54,25 +54,34 @@ public class TalkEngine implements WebSocketHandler {
 
 	private final TreeContext context;
 	private final ScheduledExecutorService worker;
-	private AtomicReference<Boolean> started = new AtomicReference<Boolean>(Boolean.FALSE);
 
-	protected TalkEngine(TreeContext context) {
+	private AtomicReference<Boolean> started = new AtomicReference<Boolean>(Boolean.FALSE);
+	private HeartBeat heartBeat ;
+
+
+	protected TalkEngine(TreeContext context) throws IOException {
+		
 		if (context == null)
 			throw new IllegalStateException("context is null");
 
 		this.context = context;
 		this.worker = context.getAttributeObject(ScheduledExecutorService.class.getCanonicalName(), ScheduledExecutorService.class);
 		context.putAttribute(TalkEngine.class.getCanonicalName(), this);
+		this.heartBeat = new HeartBeat(worker) ;
+		
 	}
 
 	public static TalkEngine testCreate() throws Exception {
+		RepositoryEntry repo = RepositoryEntry.test();
+		repo.start(); 
+		return testCreate(repo) ;
+	}
+
+	public static TalkEngine testCreate(RepositoryEntry repo) throws Exception {
 
 		TreeContext context = TreeContext.createRootContext(new VirtualHost(new Context())) ;
 		ScheduledExecutorService worker = Executors.newScheduledThreadPool(5);
 		context.putAttribute(ScheduledExecutorService.class.getCanonicalName(), worker) ;
-		
-		RepositoryEntry repo = RepositoryEntry.test();
-		repo.start(); 
 		
 		TalkScript ts = TalkScript.create(repo.login(), worker);
 		ts.readDir(new File("./script"), true);
@@ -117,37 +126,45 @@ public class TalkEngine implements WebSocketHandler {
 	}
 
 	public TalkEngine startEngine() throws Exception {
+		context.putAttribute(AccountManager.class.getCanonicalName(),AccountManager.create(this, NotifyStrategy.createPusher(worker, readSession()))) ;
+
 		for (TalkHandler handler : handlers) {
 			handler.onEngineStart(this);
 		}
 
-		started.set(Boolean.TRUE);
 
-		worker.schedule(new HeartBeatJob(), TalkEngine.HEARTBEAT_DELAY, TimeUnit.MILLISECONDS);
+		started.set(Boolean.TRUE);
+		heartBeat.startBeat(new Runnable(){
+			@Override
+			public void run() {
+				cmanager.handle(new ConnHandler<Void>(){
+					@Override
+					public Void handle(UserConnection conn) {
+						if (heartBeat.isOverTime(conn)) {
+							for (TalkHandler handler : handlers) {
+								handler.onClose(TalkEngine.this, conn);
+							}
+							cmanager.remove(conn, Reason.TIMEOUT) ;
+						}
+						return null;
+					}
+				}) ;
+			}
+			
+		});
+		
 		return this;
 	}
 
-	class HeartBeatJob implements Callable<Void> {
-		@Override
-		public Void call() {
-			final long gmtTime = GregorianCalendar.getInstance().getTime().getTime();
-			cmanager.handle(new ConnHandler<Void>(){
-				@Override
-				public Void handle(UserConnection conn) {
-					if (conn.isOverTime(gmtTime)) cmanager.remove(conn, Reason.TIMEOUT) ;
-					return null;
-				}
-			}) ;
-			
-			if (started.get()) worker.schedule(this, TalkEngine.HEARTBEAT_DELAY, TimeUnit.MILLISECONDS);
-			return null ;
-		}
+	public HeartBeat heartBeat(){
+		return heartBeat ;
 	}
-
+	
 	public void stopEngine() {
 		for (TalkHandler handler : handlers) {
 			handler.onEngineStop(this);
 		}
+		heartBeat.endBeat(); 
 		started.set(Boolean.FALSE);
 
 		RepositoryEntry r = context().getAttributeObject(RepositoryEntry.EntryName, RepositoryEntry.class);
@@ -185,7 +202,9 @@ public class TalkEngine implements WebSocketHandler {
 
 	@Override
 	public void onClose(WebSocketConnection conn) {
-		final UserConnection found = cmanager.findBy(conn);
+		final UserConnection found = cmanager.findBy(conn); // if server do close
+		if (found == null) return ;
+		
 		for (TalkHandler handler : handlers) {
 			handler.onClose(this, found);
 		}
@@ -247,9 +266,6 @@ public class TalkEngine implements WebSocketHandler {
 		return logger;
 	}
 
-	public void remove(UserConnection uconn, Reason reason) {
-		connManger().remove(uconn, reason);
-	}
 
 	public boolean existUser(String id) {
 		return connManger().contains(id);
@@ -284,7 +300,7 @@ class ConnManager {
 	private ConnManager() {
 	}
 
-	public UserConnection findBy(String id) {
+	UserConnection findBy(String id) {
 		return conns.get(id);
 	}
 
@@ -296,14 +312,14 @@ class ConnManager {
 		return new ConnManager();
 	}
 
-	public UserConnection add(UserConnection uconn) {
+	UserConnection add(UserConnection uconn) {
 		UserConnection existConn = conns.put(uconn.id(), uconn);
 		if (existConn != null)
 			existConn.close(TalkEngine.Reason.DOPPLE);
 		return uconn;
 	}
 	
-	public <T> List<T> handle(ConnHandler<T> handler){
+	<T> List<T> handle(ConnHandler<T> handler){
 		ArrayList<UserConnection> copyed = new ArrayList<UserConnection>(conns.values()) ;
 		List<T> result = ListUtil.newList() ;
 		for (UserConnection uconn : copyed) {
@@ -312,18 +328,17 @@ class ConnManager {
 		return result ;
 	}
 
-	public UserConnection remove(UserConnection uconn, TalkEngine.Reason reason) {
+	UserConnection remove(UserConnection uconn, TalkEngine.Reason reason) {
+		Debug.line(uconn, uconn.id(), reason);
+		
+
 		conns.remove(uconn.id());
 		uconn.close(reason);
 		return uconn;
 	}
 
-	public boolean contains(String id) {
+	boolean contains(String id) {
 		return conns.containsKey(id);
-	}
-
-	public boolean contains(WebSocketConnection conn) {
-		return conns.containsValue(conn);
 	}
 
 }
