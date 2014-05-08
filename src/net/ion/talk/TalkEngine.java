@@ -7,6 +7,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -28,6 +29,7 @@ import net.ion.nradon.WebSocketHandler;
 import net.ion.radon.aclient.ClientConfig;
 import net.ion.radon.aclient.NewClient;
 import net.ion.radon.core.TreeContext;
+import net.ion.talk.TalkEngine.Reason;
 import net.ion.talk.account.AccountManager;
 import net.ion.talk.bot.BotManager;
 import net.ion.talk.engine.HeartBeat;
@@ -141,10 +143,7 @@ public class TalkEngine implements WebSocketHandler {
 					@Override
 					public Void handle(UserConnection conn) {
 						if (heartBeat.isOverTime(conn)) {
-							for (TalkHandler handler : handlers) {
-								handler.onClose(TalkEngine.this, conn);
-							}
-							cmanager.remove(conn, Reason.TIMEOUT) ;
+							conn.close(Reason.TIMEOUT);
 						}
 						return null;
 					}
@@ -187,28 +186,28 @@ public class TalkEngine implements WebSocketHandler {
 
 	@Override
 	public void onOpen(WebSocketConnection conn) {
-		UserConnection created = UserConnection.create(conn);
+		UserConnection created = cmanager.add(conn);
 		created.updateHeartBeat();
-		cmanager.add(created);
 
 		for (TalkHandler handler : handlers) {
 			Reason reason = handler.onConnected(this, created);
 			if (reason != Reason.OK) {
-				cmanager.remove(created, reason);
-				break;
+				created.close(reason);
+				return;
 			}
 		}
 	}
 
 	@Override
 	public void onClose(WebSocketConnection conn) {
-		final UserConnection found = cmanager.findBy(conn); // if server do close
-		if (found == null) return ;
+		if (conn == null) return ;
+		
+		final UserConnection found = UserConnection.create(conn); // if server do close
 		
 		for (TalkHandler handler : handlers) {
 			handler.onClose(this, found);
 		}
-		cmanager.remove(found, Reason.CLIENT);
+		cmanager.remove(conn, Reason.CLIENT);
 	}
 
 	@Override
@@ -267,7 +266,7 @@ public class TalkEngine implements WebSocketHandler {
 	}
 
 
-	public boolean existUser(String id) {
+	public boolean isConnected(String id) {
 		return connManger().contains(id);
 	}
 
@@ -275,11 +274,11 @@ public class TalkEngine implements WebSocketHandler {
 		return connManger().findBy(id);
 	}
 
-	public UserConnection getUserConnection(WebSocketConnection wconn) {
+	private UserConnection getUserConnection(WebSocketConnection wconn) {
 		return connManger().findBy(wconn);
 	}
 
-	public void sendMessage(String userId, Pusher sender, TalkResponse tresponse) {
+	private void sendMessage(String userId, Pusher sender, TalkResponse tresponse) {
 		UserConnection uconn = findConnection(userId);
 		if (uconn != null) {
 			uconn.sendMessage(tresponse.talkMessage());
@@ -295,50 +294,51 @@ interface ConnHandler<T> {
 
 class ConnManager {
 
-	private Map<String, UserConnection> conns = MapUtil.newMap();
+	private CopyOnWriteArraySet<WebSocketConnection> conns = new CopyOnWriteArraySet<WebSocketConnection>() ;
 
 	private ConnManager() {
 	}
 
 	UserConnection findBy(String id) {
-		return conns.get(id);
+		for(WebSocketConnection conn : conns){
+			if (id.equals(conn.data("id"))) return UserConnection.create(conn) ;
+		}
+		return UserConnection.NOTFOUND ;
 	}
 
 	public UserConnection findBy(WebSocketConnection wconn) {
-		return conns.get(wconn.getString("id"));
+		return UserConnection.create(wconn) ;
 	}
 
-	public static ConnManager create() {
+	static ConnManager create() {
 		return new ConnManager();
 	}
 
-	UserConnection add(UserConnection uconn) {
-		UserConnection existConn = conns.put(uconn.id(), uconn);
-		if (existConn != null)
-			existConn.close(TalkEngine.Reason.DOPPLE);
-		return uconn;
+	UserConnection add(WebSocketConnection wconn) {
+		UserConnection existConn = findBy(wconn.data("id").toString()) ;
+		if (existConn != UserConnection.NOTFOUND) {
+			existConn.close(Reason.DOPPLE); 
+		}
+		conns.add(wconn);
+		return UserConnection.create(wconn) ;
 	}
 	
 	<T> List<T> handle(ConnHandler<T> handler){
-		ArrayList<UserConnection> copyed = new ArrayList<UserConnection>(conns.values()) ;
 		List<T> result = ListUtil.newList() ;
-		for (UserConnection uconn : copyed) {
-			result.add(handler.handle(uconn)) ;
+		for (WebSocketConnection conn : conns) {
+			result.add(handler.handle(UserConnection.create(conn))) ;
 		}
 		return result ;
 	}
 
-	UserConnection remove(UserConnection uconn, TalkEngine.Reason reason) {
-		Debug.line(uconn, uconn.id(), reason);
+	void remove(WebSocketConnection uconn, TalkEngine.Reason reason) {
+		Debug.line(uconn, uconn.data("id"), reason);
 		
-
-		conns.remove(uconn.id());
-		uconn.close(reason);
-		return uconn;
+		conns.remove(uconn);
 	}
 
 	boolean contains(String id) {
-		return conns.containsKey(id);
+		return findBy(id) != UserConnection.NOTFOUND ;
 	}
 
 }

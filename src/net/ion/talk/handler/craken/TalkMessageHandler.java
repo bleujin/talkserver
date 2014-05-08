@@ -40,7 +40,7 @@ public class TalkMessageHandler implements CDDHandler {
         public boolean apply(WriteNode userNode) {
             if(!userNode.hasRef(Const.Ref.User)) return false;
 
-            return (userNode.ref(Const.Ref.User).property(Const.Bot.isSyncBot).stringValue().equals("true"));
+            return userNode.ref(Const.Ref.User).property(Const.Bot.isSyncBot).asBoolean();
         }
     };
 

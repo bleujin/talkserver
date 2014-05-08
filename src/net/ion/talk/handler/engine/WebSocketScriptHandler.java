@@ -1,6 +1,7 @@
 package net.ion.talk.handler.engine;
 
 import net.ion.craken.node.ReadSession;
+import net.ion.framework.parse.gson.JsonElement;
 import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.util.ObjectUtil;
 import net.ion.framework.util.StringUtil;
@@ -40,7 +41,11 @@ public class WebSocketScriptHandler implements TalkHandler {
 			@Override
 			public Void onSuccess(String fullName, ParameterMap pmap, Object result) {
 				if (result == null ||  StringUtil.isBlank(result.toString())) return null ;
-				JsonObject forSend = JsonObject.create().put("id", tmsg.id()).put("status", "success").put("result", ObjectUtil.toString(result)).put("script", tmsg.script()).put("params", pmap.asJson()) ;
+				
+				JsonObject forSend = JsonObject.create()
+							.put("id", tmsg.id())
+							.put("status", "success")
+							.put("result", result instanceof JsonElement ? (JsonElement)result : ObjectUtil.toString(result)).put("script", tmsg.script()).put("params", pmap.asJson()) ;
 				uconn.sendMessage(forSend.toString()) ;
 				return null ;
 			}

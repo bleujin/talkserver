@@ -35,7 +35,7 @@ new function(){
 		var room = session.pathBy("/rooms/"+params.asString("roomId"));
 		var members = room.child("members").children();
 		
-		return rb.create().newInner().property(room, "title").property("roomId",params.asString("roomId")).inlist("members").property(members,"user.userId,user.nickname").build().toJsonElement().toString();
+		return rb.create().newInner().property(room, "title").property("roomId",params.asString("roomId")).inlist("members").property(members,"user.userId,user.nickname").build().toJsonElement();
 	}, 
 	
 	this.listNotifyDataBy = function(params){
@@ -44,16 +44,14 @@ new function(){
 		var messageId = notify.ref("message").fqn().name();
 		var message = session.pathBy("/rooms/" + roomId + "/messages/" + messageId);
 		
-		return rb.create().newInner().property(message, "message, sender,requestId, clientScript,event,time").property("roomId",roomId).property("notifyId",params.asString("notifyId")).property("messageId",message.fqn().name()).build().toJsonElement().toString();
+		return rb.create().newInner().property(message, "message, sender,requestId, clientScript,event,time").property("roomId",roomId).property("notifyId",params.asString("notifyId")).property("messageId",message.fqn().name()).build().toJsonElement();
 	}, 
 	
 	this.listUnreadMessageBy = function(params){
 		var roomId=params.asString("roomId");
 		var unreadMessages = session.pathBy("/rooms/" + roomId + "/messages").children().where("this.messageId > '" + params.asString("messageId") + "'");
 
-		unreadMessages;
-
-		return rb.create().newInner().inlist("messages", unreadMessages,"message, sender,requestId, clientScript,event, messageId,time").property("roomId", roomId).build().toJsonElement().toString();
+		return rb.create().newInner().inlist("messages", unreadMessages,"message, sender,requestId, clientScript,event, messageId,time").property("roomId", roomId).build().toJsonElement();
 	}, 
 	
 	this.removeNotifyDataWith = function(params){
