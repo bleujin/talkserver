@@ -1,5 +1,5 @@
 new function(){
-	
+	//현제 gps값 등록
 	this.addGPSWith = function(params){
 		session.tranSync(function(wsession){
 			wsession.pathBy("/users/" + params.asString("userId")+"/connection")
@@ -8,7 +8,7 @@ new function(){
 		});
 	}, 
 	
-
+	// 유저 (닉네임,상태 메세지) 수정 
 	this.editProfileWith = function(params){
 		session.tranSync(function(wsession){
 			wsession.pathBy("/users/" + params.asString("userId"))
@@ -18,14 +18,13 @@ new function(){
 		
 	}, 
 	
+	// 유저아이디로 정보 가져오기
 	this.infoBy = function(params){
 		var user = session.pathBy("/users/" + params.asString("userId"));
-		return rb.create().newInner().property(user, "nickname, phone,pushId,stateMessage,country").build().toJsonObject().toString();
+		return rb.create().newInner().property(user, "nickname, phone,pushId,stateMessage,country").build().toJsonElement();
 	}, 
 	
-	
-	
-	
+	// 회원 가입	
 	this.registerWith = function(params){
 		session.tranSync(function(wsession){
 			wsession.pathBy("/users/" + params.asString("userId"))
@@ -48,7 +47,7 @@ new function(){
 	
 	
 	
-	
+	// 이용약관 정보 받아오기
 	this.registerTermBy = function(params){
 		rb.create().newInner().property("personal_contents",
 		"툰톡 개인정보취급방침 \n \n(주)아이온커뮤니케이션즈(이하 “회사”)가 툰톡 서비스 제공과 관련하여 정보통신망 이용촉진 및 정보보호 등에 관한 법률 등 관련 법령상에 따라 아래와 같이 개인정보를 수집, 이용 및 위탁함에 동의한다. \n \n" + 
@@ -112,12 +111,12 @@ new function(){
 		"제 22조 해외이용 \n“회사”는 대한민국 내에 설치된 서버를 기반으로 “서비스”을 제공 관리하고 있다. 따라서 “회사”는 “회원”이 대한민국의 영토 이외의 지역에서 “서비스”을 이용하고자 하는 경우 “서비스”의 품질 또는 사용성을 보장하지 않는다. 따라서 “회원”은 대한민국 “서비스”의 이용과정에서 현지 법령을 준수할 책임은 “회원”에게 있다. \n \n" +
 		"제 23조 준거법 및 재판관할 \n1.	“회사”와 “회원”간의 제기된 소송은 대한민국 준거법으로 한다. \n" +
 		"2.	“회사”와 “회원”간의 발생한 분쟁에 관한 소송은 민사소송법 상의 법원을 관할법원으로 한다. \n \n부칙 \n본 약관은 2012년 12월 10일부터 적용된다.")
-		.build().toJsonElement().toString();
+		.build().toJsonElement();
 	}, 
 	
 	
 	
-	
+	// 핸드폰번호로 친구 찾기
 	this.searchBy = function(params){
 		var phones = params.asStrings("phone");
 	 	var jb = rb.create().newInner().inlist("friends");
@@ -136,12 +135,12 @@ new function(){
 		
 		}
 		
-		return jb.build().toJsonElement().toString();
+		return jb.build().toJsonElement();
 	}, 
 	
 	
 	
-	
+	//인증 번호 확인
 	this.smsAuthBy = function(params){
 		var code = session.ghostBy("/auth/sms/" + params.asString("phone")).property("code").stringValue();
 		
@@ -149,9 +148,10 @@ new function(){
 			session.tranSync(function(wsession){
 		    	wsession.pathBy("/auth/sms/" + params.asString("phone")).removeSelf();
 		  	});
-		  	return "valid";
+		    return rb.create().newInner().property("auth","valid").build().toJsonElement();
+
 		}else{
-			return "invalid";
+			return rb.create().newInner().property("auth","invalid").build().toJsonElement();
 		}
 	}
 
