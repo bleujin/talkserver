@@ -69,7 +69,7 @@ public class TestClientLet extends TestCase {
 					.start().get();
 		
 		this.talkEngine = TalkEngine.testCreate(rentry) ;
-		talkEngine.startEngine() ;
+		
 		radon.add("/websocket/{id}/{accessToken}", talkEngine) ;
 	}
 
@@ -82,6 +82,7 @@ public class TestClientLet extends TestCase {
 	}
 
 	public void testPost() throws Exception {
+		talkEngine.startEngine() ;
 		NewClient nc = NewClient.create();
 		Realm realm = new RealmBuilder().setPrincipal("bleujin").setPassword("1234").build();
 		Request request = new RequestBuilder(Method.POST).setRealm(realm).setUrl("http://localhost:9000/session/bleujin@i-on.net/roomroom").build();
@@ -92,20 +93,10 @@ public class TestClientLet extends TestCase {
 	}
 	
 	public void testRun() throws Exception {
-		
-		NewClient nc = talkEngine.context().getAttributeObject(NewClient.class.getCanonicalName(), NewClient.class);
+		talkEngine.init().startEngine() ;
 		ReadSession rsession = talkEngine.readSession();
-		AccountManager am = talkEngine.context().getAttributeObject(AccountManager.class.getCanonicalName(), AccountManager.class);
-
 		
-		talkEngine.registerHandler(new UserConnectionHandler()).registerHandler(ServerHandler.test()).registerHandler(new WebSocketScriptHandler()) ;
-
-		rsession.workspace().cddm().add(new UserInAndOutRoomHandler());
-		rsession.workspace().cddm().add(new TalkMessageHandler(nc));
-		rsession.workspace().addListener(new NotificationListener(am));		
-		
-		ReadSession session = rentry.login();
-		session.tran(new TransactionJob<Void>() {
+		rsession.tran(new TransactionJob<Void>() {
 			@Override
 			public Void handle(WriteSession wsession) throws Exception {
 				wsession.pathBy("/rooms/roomroom/members/bleujin@i-on.net") ;
@@ -113,8 +104,6 @@ public class TestClientLet extends TestCase {
 			}
 		});
 		
-		
-		talkEngine.heartBeat().delaySecond(15) ;
 		new InfinityThread().startNJoin(); 
 	}
 }

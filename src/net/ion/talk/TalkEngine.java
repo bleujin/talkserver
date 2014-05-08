@@ -2,6 +2,7 @@ package net.ion.talk;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -34,7 +35,13 @@ import net.ion.talk.account.AccountManager;
 import net.ion.talk.bot.BotManager;
 import net.ion.talk.engine.HeartBeat;
 import net.ion.talk.handler.TalkHandler;
+import net.ion.talk.handler.craken.NotificationListener;
 import net.ion.talk.handler.craken.NotifyStrategy;
+import net.ion.talk.handler.craken.TalkMessageHandler;
+import net.ion.talk.handler.craken.UserInAndOutRoomHandler;
+import net.ion.talk.handler.engine.ServerHandler;
+import net.ion.talk.handler.engine.UserConnectionHandler;
+import net.ion.talk.handler.engine.WebSocketScriptHandler;
 import net.ion.talk.responsebuilder.TalkResponse;
 import net.ion.talk.script.TalkScript;
 import net.ion.talk.util.CalUtil;
@@ -126,9 +133,25 @@ public class TalkEngine implements WebSocketHandler {
 		handlers.remove(handler);
 		return this;
 	}
+	
+	public TalkEngine init() throws Exception {
+		NewClient nc = context().getAttributeObject(NewClient.class.getCanonicalName(), NewClient.class);
+		ReadSession rsession = readSession();
+		AccountManager am = context().getAttributeObject(AccountManager.class.getCanonicalName(), AccountManager.class);
+
+		registerHandler(new UserConnectionHandler()).registerHandler(ServerHandler.test()).registerHandler(new WebSocketScriptHandler()) ;
+
+		rsession.workspace().cddm().add(new UserInAndOutRoomHandler());
+		rsession.workspace().cddm().add(new TalkMessageHandler(nc));
+		rsession.workspace().addListener(new NotificationListener(am));		
+
+		heartBeat().delaySecond(15) ;
+		return this;
+	}
+
 
 	public TalkEngine startEngine() throws Exception {
-		context.putAttribute(AccountManager.class.getCanonicalName(),AccountManager.create(this, NotifyStrategy.createPusher(worker, readSession()))) ;
+		context.putAttribute(AccountManager.class.getCanonicalName(), AccountManager.create(this, NotifyStrategy.createPusher(worker, readSession()))) ;
 
 		for (TalkHandler handler : handlers) {
 			handler.onEngineStart(this);
@@ -274,18 +297,7 @@ public class TalkEngine implements WebSocketHandler {
 		return connManger().findBy(id);
 	}
 
-	private UserConnection getUserConnection(WebSocketConnection wconn) {
-		return connManger().findBy(wconn);
-	}
 
-	private void sendMessage(String userId, Pusher sender, TalkResponse tresponse) {
-		UserConnection uconn = findConnection(userId);
-		if (uconn != null) {
-			uconn.sendMessage(tresponse.talkMessage());
-		} else {
-			sender.sendTo(userId).sendAsync(tresponse.pushMessage());
-		}
-	}
 }
 
 interface ConnHandler<T> {

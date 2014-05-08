@@ -21,12 +21,17 @@
 	
 	
 	var roomObj = new function(){
-		this.message = function(message, align) {
+		this.prefixString = '' ;
+		this.prefix = function(prefixString){
+			this.prefixString = prefixString ;
+		}
+	
+		this.message = function(message) {
 			var log = document.getElementById("outputDiv");
 	    	var escaped = message.replace(/&/, "&amp;").replace(/</, "&lt;").replace(/>/, "&gt;").replace(/"/, "&quot;"); // "
-	    	if (align == 'received') {
+	    	if (this.prefixString == 'received') {
 	    		log.innerHTML = "<div align='right' style=\"width:500; padding:7; background-color:dfdfdf \">" + escaped + "</div><br>" + log.innerHTML;
-	    	} else if (align == 'send') {
+	    	} else if (this.prefixString == 'send') {
 	    		log.innerHTML = "<div align='left' style=\"width:500; padding:7; background-color:efefef \">" + "Send : " + escaped + "</div><br>" + log.innerHTML;
 	    	} else {
 	    		log.innerHTML = "<div align='left' style=\"width:500; padding:7; background-color:efefef \">" + escaped + "</div><br>" + log.innerHTML;
@@ -101,25 +106,7 @@
 			cmdMsg.params = params ;
 			this.getWebSocket().send(this.jsonToString(cmdMsg));
 		} ;
-	  	
-	  	webClient.room = function(){
-	  		var client = this ;
-	  		var result = {} ;
-	  		result.message = function(message, align) {
-	  			var log = document.getElementById("outputDiv");
-		    	var escaped = message.replace(/&/, "&amp;").replace(/</, "&lt;").replace(/>/, "&gt;").replace(/"/, "&quot;"); // "
-		    	if (align == 'received') {
-		    		log.innerHTML = "<div align='right' style=\"width:500; padding:7; background-color:dfdfdf \">" + escaped + "</div><br>" + log.innerHTML;
-		    	} else if (align == 'send') {
-		    		log.innerHTML = "<div align='left' style=\"width:500; padding:7; background-color:efefef \">" + "Send : " + escaped + "</div><br>" + log.innerHTML;
-		    	} else {
-		    		log.innerHTML = "<div align='left' style=\"width:500; padding:7; background-color:efefef \">" + escaped + "</div><br>" + log.innerHTML;
-		    	}
-	  		} ;
-	  		return result ;
-	  	} ;
-	  	
-		
+
 
    		var ws = new WebSocket('$config.address$') ;
 		
@@ -148,7 +135,7 @@
    			if (msg.script == '/room/sendMessageWith') return ; // return sendMessageWith
    			if (msg.script == '/room/listNotifyDataBy') {
    				// alert(msg.result.message) ;
-   				// webClient.output(msg.result.message, (msg.params.userid == webClient.sender) ? 'send' : 'received') ;
+   				client.room().prefix((msg.params.userid == webClient.sender) ? 'send' : 'received') ;
    				var args = msg.result ;
    				eval(msg.result.clientScript) ;
    				return ;

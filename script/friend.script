@@ -1,5 +1,5 @@
 new function(){
-
+	//친구 등록 (추천 친구 리스트에서 친구 추가시 사용)
 	this.addWith = function(params){
 		var friends= params.asStrings("friends");
 		session.tranSync(function(wsession){
@@ -14,6 +14,7 @@ new function(){
 		});
 	}, 
 	
+	// 친구 리스트 에서 삭제
 	this.deleteWith = function(params){
 		var friends= params.asStrings("friends");
 		
@@ -25,6 +26,7 @@ new function(){
 		return friends ;
 	}, 
 	
+	//추천 친구 리스트에서 삭제(추천친구 등록 후 에 호출)
 	this.deleteRecommendWith = function(params){
 		var friends= params.asStrings("friends");
 		session.tranSync(function(wsession){
@@ -34,72 +36,46 @@ new function(){
 		}); 
 	}, 
 	
-	
+	//친구 리스트 
 	this.listBy = function(params){
 		var user = session.pathBy("/users/" + params.asString("userId"));
-		return rb.create().newInner().inlist("friends", user.refs("friends").toList(), "phone,nickname,userId,stateMessage,country").build().toJsonElement().toString();
+		return rb.create().newInner().inlist("friends", user.refs("friends").toList(), "phone,nickname,userId,stateMessage,country").build().toJsonElement();
 	}, 
 		
-
-	this.syncWith = function(params){
+	// 전화 번호로 친구등록 (검색시 전화번호는 국가코드+전화번호로 되어있음,친구 등록시 상배당이 친구로 안해 두면 추천 친구로 등록됨)
+	
+	 this.syncWith = function(params){
 		var phones = params.asStrings("phone");
 
 		var jb = rb.create().newInner().inlist("friends");
-
-		for(var i=0;i<phones.length;i++){
-			var findUser = session.pathBy("/users/").childQuery("phone:"+phones[i]).find().first();
 		
-			//if not exists.
-			try{  
-				if(findUser==null){
-				 continue;
+		for(var i=0;i<phones.length;i++){
+			if(session.exists("/phones/"+phones[i])){
+			 	
+				var findUser = session.pathBy("/phones/"+phones[i]).refs("users").toList();			
+				for(var j=0; j < findUser.size();j++ ){						
+				  session.tranSync(function(wsession){
+			      if(wsession.exists("/users/"+findUser.get(j).fqn().name())) //addFriends
+			        	wsession.pathBy("/users/"+params.asString("userId")).refTos("friends",["/users/"+findUser.get(j).fqn().name()]);
+			      if(!(wsession.pathBy("/users/"+findUser.get(j).fqn().name()).hasRef("friends",wsession.pathBy("/users/"+params.asString("userId")).fqn())))  //recommend
+			        	wsession.pathBy("/users/"+findUser.get(j).fqn().name()).refTos("recommendFriends",["/users/"+params.asString("userId")]);
+			       });			
 				}
 				
-			    session.tranSync(function(wsession){
-			      	if(wsession.pathBy("/users").hasChild(findUser.fqn().name())) //addFriends
-			        	wsession.pathBy("/users/"+params.asString("userId")).refTos("friends",["/users/"+ findUser.fqn().name()]);
-			        
-			    	if(!(wsession.pathBy("/users/"+findUser.fqn().name()).hasRef("friends",wsession.pathBy("/users/"+params.asString("userId")).fqn())))  //recommend
-			        	wsession.pathBy("/users/"+findUser.fqn().name()).refTos("recommendFriends",["/users/"+params.asString("userId")]);
-			    });
-			
-			} catch(e){ }
-		}
-
-		var user = session.pathBy("/users/" + params.asString("userId"));
-		return rb.create().newInner().inlist("friends", user.refs("friends").toList(), "phone,nickname,userId,stateMessage,country").build().toJsonElement().toString();
-	},
-	
-	 this.testSyncWith = function(params){
-		var phones = params.asStrings("phone");
-
-		var jb = rb.create().newInner().inlist("friends");
-
-		for(var i=0;i<phones.length;i++){
-			if(session.exists("/phones/"+phones)){
-				var findUser = session.pathBy("/phones/"+phones[i]).refs("users").toList();			
-				for(var j=0; j < findUser.size();j++ ){
-				 session.tranSync(function(wsession){
-			      	if(wsession.pathBy(findUser.get(j).exists())) //addFriends
-			        	wsession.pathBy("/users/"+params.asString("userId")).refTos("friends",[findUser.get(j)]);
-			        
-			    	if(!(wsession.pathBy(findUser.get(j)).hasRef("friends",wsession.pathBy("/users/"+params.asString("userId")).fqn())))  //recommend
-			        	wsession.pathBy(findUser.get(j)).refTos("recommendFriends",["/users/"+params.asString("userId")]);
-			    });
-				}
 			}
-				var user = session.pathBy("/users/" + params.asString("userId"));
-		return rb.create().newInner().inlist("friends", user.refs("friends").toList(), "phone,nickname,userId,stateMessage,country").build().toJsonElement().toString();
+	
 		}
+		var user = session.pathBy("/users/" + params.asString("userId"));
+		return rb.create().newInner().inlist("friends", user.refs("friends").toList(), "phone,nickname,userId,stateMessage,country").build().toJsonElement();
 	},
 
-
+	//추천 친구 리스트 (친구 리스트와 봇 리스트가 따로 되어 있음)
 	this.recommendBy = function(params){
 		var user = session.pathBy("/users/" + params.asString("userId"));
 		var children = session.pathBy("/bots").children();
 	
 		return rb.create().newInner().inlist("friends", user.refs("recommendFriends").toList(),"phone,nickname,userId,stateMessage")
-			.root().inlist("bots", children, "bot.userId,bot.nickname,bot.phone,bot.stateMessage").property("clientScript","client.friends().listRecomendFriends();").build().toJsonElement().toString();
+			.root().inlist("bots", children, "bot.userId,bot.nickname,bot.phone,bot.stateMessage").property("clientScript","client.friends().listRecomendFriends();").build().toJsonElement();
 	}
 
 } ;
