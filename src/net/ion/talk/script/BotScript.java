@@ -27,6 +27,7 @@ import net.ion.framework.util.ObjectUtil;
 import net.ion.framework.util.StringUtil;
 import net.ion.radon.aclient.NewClient;
 import net.ion.talk.ParameterMap;
+import net.ion.talk.bot.connect.BotClient;
 import net.ion.talk.responsebuilder.TalkResponseBuilder;
 
 import org.apache.commons.io.DirectoryWalker;
@@ -56,6 +57,8 @@ public class BotScript {
 		sengine.put("session", rsession);
 		sengine.put("rb", TalkResponseBuilder.create()) ;
 		sengine.put("nc", nc) ;
+		sengine.put("bc", BotClient.create(nc));
+		
 		this.rsession = rsession ;
 	}
 

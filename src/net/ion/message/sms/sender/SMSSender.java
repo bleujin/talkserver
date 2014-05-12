@@ -19,10 +19,19 @@ public class SMSSender {
 	public static SMSSender create(NewClient nc){
 		return new SMSSender(nc) ;
 	}
-	
 
 	public PhoneMessage toPhoneNo(String receiverPhone) {
-		return PhoneMessage.create(this, receiverPhone);
+		boolean isDomestic = !receiverPhone.startsWith("+");
+		return PhoneMessage.create(this, receiverPhone, isDomestic);
+	}
+	
+	public PhoneMessage toPhoneNo(String exchangeNo, String prefixNo, String postfixNo) {
+		return PhoneMessage.create(this, exchangeNo + prefixNo + postfixNo, true);
+	}
+	
+	public PhoneMessage toPhoneNo(String nationalCode, String exchangeNo, String prefixNo, String postfixNo) {
+		String receiverPhone = String.format("+%s-%s%s%s", nationalCode, exchangeNo, prefixNo, postfixNo);
+		return PhoneMessage.create(this, receiverPhone, false);
 	}
 
 	public <T> Future<T> send(final PhoneMessage message, final ResponseHandler<T> handler) throws IOException {
@@ -37,5 +46,4 @@ public class SMSSender {
 			}
 		});
 	}
-
 }

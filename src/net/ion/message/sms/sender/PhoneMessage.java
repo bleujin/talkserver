@@ -3,8 +3,6 @@ package net.ion.message.sms.sender;
 import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.Future;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import net.ion.framework.parse.gson.JsonObject;
 import net.ion.message.sms.response.ResponseHandler;
@@ -21,30 +19,32 @@ public class PhoneMessage {
 	private final JsonObject param = new JsonObject();
 	private final SMSSender sender;
 	private final TargetLoc target;
+	
+	private boolean isDomestic = true;
 
-	private PhoneMessage(SMSSender sender, TargetLoc target) {
+	private PhoneMessage(SMSSender sender, TargetLoc target, boolean isDomestic) {
 		this.sender = sender;
 		this.target = target;
+		this.isDomestic = isDomestic;
 	}
 
-	public final static PhoneMessage create(SMSSender sender, String receiverPhone) {
-		TargetLoc target = TargetLoc.select(receiverPhone);
-		PhoneMessage result = new PhoneMessage(sender, target);
+	final static PhoneMessage create(SMSSender sender, String receiverPhone, boolean isDomestic) {
+		TargetLoc target = isDomestic ? TargetLoc.Domestic : TargetLoc.International;
+		PhoneMessage message = new PhoneMessage(sender, target, isDomestic);
 
-		result.param.put("member", generateId())
+		message.param.put("member", generateId())
 			.put("group_name", receiverPhone)
 			.put("deptcode", target.deptCode())
 			.put("usercode", target.userCode())
 			.put("encoding", "UNICODE")
 			.put("to_message", "");
-		return result;
+		return message;
 	}
 
 	public PhoneMessage from(String exchangeNo, String prefixNo, String postfixNo) {
 
-		if (target.isDomestic()) {
+		if (isDomestic) {
 			param.put("from_num1", exchangeNo).put("from_num2", prefixNo).put("from_num3", postfixNo);
-
 		} else {
 			param.put("from_num", exchangeNo + prefixNo + postfixNo);
 		}
@@ -72,7 +72,9 @@ public class PhoneMessage {
 	}
 
 	public Request toRequest() {
-		checkValidity();
+		if(isInvalidMessageLength()) {
+			throw new IllegalArgumentException("message too short or too large : " + messageContent());			
+		} 
 
 		RequestBuilder builder = new RequestBuilder().setUrl(target.handlerURL()).setMethod(Method.POST);
 		Set<String> keys = param.toMap().keySet();
@@ -109,35 +111,18 @@ public class PhoneMessage {
 
 		return builder.toString();
 	}
-	
-	private void checkValidity() {
-		checkMessageLength();
-		checkPhoneNumFormat();
-	}
-	
-	private void checkPhoneNumFormat() {
-		if(!target.isDomestic()) {
-			String phoneNum = param.asString(target.senderPhoneKey());
-			Pattern p = Pattern.compile("\\+[0-9]{1,2}\\-[0-9]+");
-			Matcher m = p.matcher(phoneNum);
-			
-			if(!m.matches()) {
-				throw new IllegalArgumentException("Invalid internation message format: should be +1-12345678 or +62-12345678");
-			}
-		}
-	}
 
-	private void checkMessageLength() {
+	private boolean isInvalidMessageLength() {
 		String messageContent = param.asString("to_message");
-		boolean isInvalid = StringUtil.length(messageContent) < 1 || StringUtil.length(messageContent) > 360;
-		
-		if(isInvalid) {
-			throw new IllegalArgumentException("message too short or too large : " + messageContent());			
-		}
+		return StringUtil.length(messageContent) < 1 || StringUtil.length(messageContent) > 360;
 	}
 
 	private String messageContent() {
 		return param.asString("to_message");
+	}
+	
+	boolean isDomestic() {
+		return isDomestic;
 	}
 
 }
@@ -159,10 +144,6 @@ enum TargetLoc {
 			return "group_name";
 		}
 		
-		public boolean isDomestic() {
-			return true ;
-		}
-		
 	}, International {
 		public String deptCode() {
 			return "JM-BWB-P6";
@@ -176,9 +157,6 @@ enum TargetLoc {
 		public String senderPhoneKey() {
 			return "group_name";
 		}
-		public boolean isDomestic() {
-			return false ;
-		}
 		
 	} ;
 	
@@ -186,12 +164,7 @@ enum TargetLoc {
 	public abstract String userCode() ;
 	public abstract String handlerURL() ;
 	public abstract String senderPhoneKey() ;
-	public abstract boolean isDomestic() ;
 	public String callBackURL(){
 		return "http://127.0.0.1/callback" ;
-	}
-	
-	public static TargetLoc select(String receiverPhone){
-		return receiverPhone.startsWith("+") ? TargetLoc.International : TargetLoc.Domestic ;
 	}
 }
