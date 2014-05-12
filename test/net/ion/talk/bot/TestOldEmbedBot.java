@@ -12,7 +12,7 @@ import net.ion.craken.tree.PropertyValue;
  * Time: 오전 9:54
  * To change this template use File | Settings | File Templates.
  */
-public class TestEmbedBot extends TestCrakenBase{
+public class TestOldEmbedBot extends TestCrakenBase{
 
     private String roomId = "testRoom";
     private String user = "ryun";
@@ -43,7 +43,7 @@ public class TestEmbedBot extends TestCrakenBase{
 
     private class FakeBot extends EmbedBot{
         protected FakeBot() {
-            super("fakeBot", "FakeBot", "stateMessage", "http://localhost", TestEmbedBot.this.rsession);
+            super("fakeBot", "FakeBot", "stateMessage", "http://localhost", TestOldEmbedBot.this.rsession);
         }
 
         @Override

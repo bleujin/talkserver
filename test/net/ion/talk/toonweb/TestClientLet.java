@@ -4,6 +4,8 @@ import org.restlet.data.Method;
 
 import junit.framework.TestCase;
 import net.ion.bleujin.restlet.TestComponentAsServer;
+import net.ion.craken.aradon.NodeLet;
+import net.ion.craken.aradon.UploadLet;
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
@@ -19,8 +21,10 @@ import net.ion.radon.aclient.RequestBuilder;
 import net.ion.radon.aclient.Realm.RealmBuilder;
 import net.ion.radon.aclient.Response;
 import net.ion.radon.core.Aradon;
+import net.ion.radon.core.EnumClass;
 import net.ion.radon.core.EnumClass.ILocation;
 import net.ion.radon.core.EnumClass.IMatchMode;
+import net.ion.radon.core.config.ConfigurationBuilder;
 import net.ion.radon.util.AradonTester;
 import net.ion.talk.TalkEngine;
 import net.ion.talk.account.AccountManager;
@@ -33,6 +37,8 @@ import net.ion.talk.handler.craken.UserInAndOutRoomHandler;
 import net.ion.talk.handler.engine.ServerHandler;
 import net.ion.talk.handler.engine.UserConnectionHandler;
 import net.ion.talk.handler.engine.WebSocketScriptHandler;
+import net.ion.talk.let.ResourceLet;
+import net.ion.talk.let.ScriptDoLet;
 
 public class TestClientLet extends TestCase {
 
@@ -55,14 +61,31 @@ public class TestClientLet extends TestCase {
 			}
 		});
 
+		ConfigurationBuilder cbuilder = ConfigurationBuilder.newBuilder()
+				.aradon().addAttribute(RepositoryEntry.EntryName, rentry)
+				.sections()
+					.restSection("admin").addAttribute("baseDir", "./resource/template")
+						.path("node").addUrlPattern("/repository/{renderType}").matchMode(IMatchMode.STARTWITH).handler(NodeLet.class)
+						.path("template").addUrlPattern("/template").matchMode(EnumClass.IMatchMode.STARTWITH).handler(ResourceLet.class)
+						.path("doscript").addUrlPattern("/script").matchMode(EnumClass.IMatchMode.EQUALS).handler(ScriptDoLet.class)
+						.path("upload").addUrlPattern("/upload").matchMode(IMatchMode.STARTWITH).handler(UploadLet.class)
+					.restSection("session")
+						.path("client").addUrlPattern("/{userId}/{roomId}").handler(ClientLet.class)
+					.restSection("toonweb")
+						.path("toonweb").addUrlPattern("/").matchMode(IMatchMode.STARTWITH).handler(ToonWebResourceLet.class).toBuilder();
+						
+
+		Aradon aradon = Aradon.create(cbuilder.build()) ;
 		
-		Aradon aradon = AradonTester.create()
-				.register("session", "/{userId}/{roomId}", ClientLet.class)
-				.register("toonweb", "/", "resource", IMatchMode.STARTWITH, ToonWebResourceLet.class)
-				.mergeSection("session").putAttribute(RepositoryEntry.EntryName, rentry)
-//				.addFilter(ILocation.PRE, new ToonAuthenticator("toon"))
-				
-				.getAradon();
+		
+//		Aradon aradon = AradonTester.create()
+//				.register("session", "/{userId}/{roomId}", ClientLet.class)
+//				.register("toonweb", "/", "resource", IMatchMode.STARTWITH, ToonWebResourceLet.class)
+//				.mergeSection("session").putAttribute(RepositoryEntry.EntryName, rentry) 
+////				.addFilter(ILocation.PRE, new ToonAuthenticator("toon"))
+//				
+//				.getAradon();
+
 
 		
 		this.radon = aradon.toRadon(9000)
@@ -99,7 +122,8 @@ public class TestClientLet extends TestCase {
 		rsession.tran(new TransactionJob<Void>() {
 			@Override
 			public Void handle(WriteSession wsession) throws Exception {
-				wsession.pathBy("/rooms/roomroom/members/bleujin@i-on.net") ;
+				wsession.pathBy("/users/hero@i-on.net") ;
+				wsession.pathBy("/rooms/roomroom/members/hero@i-on.net") ;
 				return null;
 			}
 		});

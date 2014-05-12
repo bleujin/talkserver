@@ -2,6 +2,7 @@ package net.ion.talk.fake;
 
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.framework.util.MapUtil;
+import net.ion.framework.util.ObjectUtil;
 import net.ion.nradon.WebSocketConnection;
 import net.ion.radon.aclient.NewClient;
 import net.ion.radon.core.Aradon;
@@ -39,6 +40,6 @@ public class FakeTalkEngine extends TalkEngine {
 
 	@Override
 	public UserConnection findConnection(String id) {
-		return connMap.get(id);
+		return ObjectUtil.coalesce(connMap.get(id), UserConnection.NOTFOUND);
 	}
 }

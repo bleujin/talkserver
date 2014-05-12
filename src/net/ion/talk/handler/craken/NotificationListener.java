@@ -9,6 +9,7 @@ import net.ion.craken.node.crud.TreeNodeKey;
 import net.ion.craken.tree.PropertyId;
 import net.ion.craken.tree.PropertyValue;
 import net.ion.talk.account.AccountManager;
+import net.ion.talk.bean.Const.Connection;
 import net.ion.talk.bean.Const.User;
 import net.ion.talk.responsebuilder.TalkResponse;
 import net.ion.talk.responsebuilder.TalkResponseBuilder;
@@ -46,8 +47,8 @@ public class NotificationListener implements WorkspaceListener{
 			final String notifyId = resolveMap.get("notifyId");
 
 			AtomicMap<PropertyId, PropertyValue> pmap = event.getValue() ;
-			PropertyValue pvalue = pmap.get(PropertyId.fromIdString(User.DelegateServer)) ;
-
+			PropertyValue pvalue = pmap.get(PropertyId.fromIdString(Connection.DelegateServer)) ;
+			
 			if(pvalue != null && pvalue.stringValue().equals(this.memberId)){
 				TalkResponse tresponse = TalkResponseBuilder.create().newInner().property("notifyId", notifyId).build() ;
                 am.newAccount(userId).onMessage(notifyId, tresponse);

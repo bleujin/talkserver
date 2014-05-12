@@ -9,6 +9,7 @@ import net.ion.talk.TalkEngine;
 import net.ion.talk.TalkEngine.Reason;
 import net.ion.talk.TalkMessage;
 import net.ion.talk.UserConnection;
+import net.ion.talk.bean.Const.Connection;
 import net.ion.talk.bean.Const.User;
 import net.ion.talk.handler.TalkHandler;
 /**
@@ -33,9 +34,8 @@ public class UserConnectionHandler implements TalkHandler {
             rsession.tranSync(new TransactionJob<Void>() {
                 @Override
                 public Void handle(WriteSession wsession) {
-                    wsession.pathBy("/connections/"+uconn.id())
+                    wsession.pathBy("/connections/"+uconn.id()).property(Connection.DelegateServer, rsession.workspace().repository().memberId())
                             .refTo("user","/users/"+uconn.id());
-                    wsession.pathBy("/users/"+uconn.id()).property(User.DelegateServer, rsession.workspace().repository().memberId());
                     wsession.pathBy("/users/"+uconn.id()).unset(User.AccessToken);
                     return null;
                 }

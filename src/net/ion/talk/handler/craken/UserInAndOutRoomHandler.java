@@ -11,6 +11,9 @@ import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
 import net.ion.framework.util.ObjectId;
 import net.ion.talk.bean.Const;
+import net.ion.talk.bean.Const.Message;
+import net.ion.talk.bean.Const.Room;
+import net.ion.talk.bean.Const.User;
 
 /**
  * Created with IntelliJ IDEA.
@@ -36,18 +39,21 @@ public class UserInAndOutRoomHandler implements CDDHandler {
             @Override
             public Void handle(WriteSession wsession) throws Exception {
 
-                String randomID = new ObjectId().toString();
+                String messageId = new ObjectId().toString();
 
 //                String sender = wsession.pathBy("/rooms/" + roomId + "/members/"+userId).property(Const.Message.Sender).stringValue();
 
+//                if (wsession.exists("/bots/" + userId)) return null ;
+                
                 wsession.pathBy("/rooms/" + roomId + "/messages/")
-                        .child(randomID)
-                        .property(Const.Message.Event, Const.Event.onEnter)
-                        .property(Const.Room.RoomId, roomId)
-                        .property(Const.Message.Time, Calendar.getInstance().getTimeInMillis())
-                        .property(Const.Message.Message, userId + "님이 입장하셨습니다.")
-                        .property(Const.Message.Sender, userId)
-                        .property(Const.Message.MessageId, randomID);
+                        .child(messageId)
+                        .property(Message.Event, Const.Event.onEnter)
+                        .property(Room.RoomId, roomId)
+                        .property(Message.Time, Calendar.getInstance().getTimeInMillis())
+                        .property(Message.Message, userId + "님이 입장하셨습니다.")
+                        .property(Message.ClientScript, Message.DefaultOnMessageClientScript) 
+                        .property(Message.Sender, userId)
+                        .property(Message.MessageId, messageId);
 
                 return null;
             }
@@ -57,15 +63,15 @@ public class UserInAndOutRoomHandler implements CDDHandler {
     @Override
     public TransactionJob<Void> deleted(Map<String, String> resolveMap, CDDRemovedEvent event) {
 
-        final String roomId = resolveMap.get(Const.Room.RoomId);
-        final String userId = resolveMap.get(Const.User.UserId);
+        final String roomId = resolveMap.get(Room.RoomId);
+        final String userId = resolveMap.get(User.UserId);
         return new TransactionJob<Void>() {
             @Override
             public Void handle(WriteSession wsession) throws Exception {
 
 //                String sender = wsession.pathBy("/rooms/" + roomId + "/members/"+userId).property(Const.Message.Sender).stringValue();
 
-                String randomID = new ObjectId().toString();
+                String messageId = new ObjectId().toString();
 
 
 //                wsession.pathBy("/rooms/1234/messages/testMessage")
@@ -74,13 +80,14 @@ public class UserInAndOutRoomHandler implements CDDHandler {
 //                        .property(Const.Message.Event, Const.Event.onExit);
                 //will define message
                 wsession.pathBy("/rooms/" + roomId + "/messages/")
-                        .child(randomID)
-                        .property(Const.Message.Event, Const.Event.onExit)
-                        .property(Const.Room.RoomId, roomId)
-                        .property(Const.Message.Time, Calendar.getInstance().getTimeInMillis())
-                        .property(Const.Message.Message, userId + "님이 퇴장하셨습니다.")
-                        .property(Const.Message.Sender, userId)
-                        .property(Const.Message.MessageId, randomID);
+                        .child(messageId)
+                        .property(Message.Event, Const.Event.onExit)
+                        .property(Room.RoomId, roomId)
+                        .property(Message.Time, Calendar.getInstance().getTimeInMillis())
+                        .property(Message.Message, userId + "님이 퇴장하셨습니다.")
+                        .property(Message.ClientScript, Message.DefaultOnMessageClientScript) 
+                        .property(Message.Sender, userId)
+                        .property(Message.MessageId, messageId);
                 return null;
             }
         };

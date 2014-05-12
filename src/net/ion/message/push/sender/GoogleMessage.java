@@ -68,6 +68,10 @@ public class GoogleMessage {
     public String receiver(){
     	return receiver ;
     }
+    
+    public String message(){
+    	return message ;
+    }
 
     
     Message toPayload() {

@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
  * Time: 오전 11:34
  * To change this template use File | Settings | File Templates.
  */
-public class TestBBot extends TestCrakenBase{
+public class TestOldBBot extends TestCrakenBase{
 
     private BBot bBot;
     private String roomId = "test";

@@ -48,10 +48,10 @@ public class TestEngineContext extends TestCase {
 	public void testConnectionManger() throws InterruptedException {
 		engine.onOpen(bleujin);
 
-		assertTrue(engine.findConnection("bleujin") != null);
+		assertTrue(engine.findConnection("bleujin") != UserConnection.NOTFOUND);
 		engine.onMessage(bleujin, "hello");
 		engine.onClose(bleujin);
-		assertTrue(engine.findConnection("bleujin") == null);
+		assertTrue(engine.findConnection("bleujin") == UserConnection.NOTFOUND);
 //        new InfinityThread().startNJoin();
 	}
 

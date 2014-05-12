@@ -143,6 +143,6 @@ public class NodeLet implements IServiceLet {
 	}
 
 	private String getRequestURIOnly(Request req) {
-		return StringUtils.removeEnd(req.getResourceRef().getRemainingPart(), "?");
+		return StringUtils.substringBeforeLast(req.getResourceRef().getRemainingPart(), "?");
 	}
 }

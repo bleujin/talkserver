@@ -32,7 +32,10 @@ import net.ion.radon.aclient.NewClient;
 import net.ion.radon.core.TreeContext;
 import net.ion.talk.TalkEngine.Reason;
 import net.ion.talk.account.AccountManager;
+import net.ion.talk.bot.BBot;
 import net.ion.talk.bot.BotManager;
+import net.ion.talk.bot.ChatBot;
+import net.ion.talk.bot.EchoBot;
 import net.ion.talk.engine.HeartBeat;
 import net.ion.talk.handler.TalkHandler;
 import net.ion.talk.handler.craken.NotificationListener;
@@ -43,6 +46,7 @@ import net.ion.talk.handler.engine.ServerHandler;
 import net.ion.talk.handler.engine.UserConnectionHandler;
 import net.ion.talk.handler.engine.WebSocketScriptHandler;
 import net.ion.talk.responsebuilder.TalkResponse;
+import net.ion.talk.script.BotScript;
 import net.ion.talk.script.TalkScript;
 import net.ion.talk.util.CalUtil;
 
@@ -108,7 +112,10 @@ public class TalkEngine implements WebSocketHandler {
 
 		final TalkEngine result = new TalkEngine(context);
 		Pusher pusher = NotifyStrategy.createPusher(worker, repo.login());
-		context.putAttribute(AccountManager.class.getCanonicalName(), AccountManager.create(result, pusher));
+		final BotScript bs = BotScript.create(repo.login(), worker, nc) ;
+		bs.readDir(new File("./bot"), true) ;
+		context.putAttribute(BotScript.class.getCanonicalName(), bs) ;
+		context.putAttribute(AccountManager.class.getCanonicalName(), AccountManager.create(bs, result, pusher));
 
 		return result;
 	}
@@ -143,7 +150,18 @@ public class TalkEngine implements WebSocketHandler {
 
 		rsession.workspace().cddm().add(new UserInAndOutRoomHandler());
 		rsession.workspace().cddm().add(new TalkMessageHandler(nc));
-		rsession.workspace().addListener(new NotificationListener(am));		
+		rsession.workspace().addListener(new NotificationListener(am));
+
+		final BotScript bs = BotScript.create(rsession, worker, nc) ;
+		bs.readDir(new File("./bot"), true) ;
+		context.putAttribute(BotScript.class.getCanonicalName(), bs) ;
+		context.putAttribute(AccountManager.class.getCanonicalName(), AccountManager.create(bs, this, NotifyStrategy.createPusher(worker, readSession()))) ;
+
+//		BotManager botManager = context().getAttributeObject(BotManager.class.getCanonicalName(), BotManager.class);
+//
+//        botManager.registerBot(new EchoBot(rsession, worker));
+//        botManager.registerBot(new BBot(rsession, worker));
+//        botManager.registerBot(new ChatBot(rsession));
 
 		heartBeat().delaySecond(15) ;
 		return this;
@@ -151,7 +169,6 @@ public class TalkEngine implements WebSocketHandler {
 
 
 	public TalkEngine startEngine() throws Exception {
-		context.putAttribute(AccountManager.class.getCanonicalName(), AccountManager.create(this, NotifyStrategy.createPusher(worker, readSession()))) ;
 
 		for (TalkHandler handler : handlers) {
 			handler.onEngineStart(this);

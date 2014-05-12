@@ -12,6 +12,8 @@ import java.util.concurrent.ExecutionException;
 
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.node.ReadSession;
+import net.ion.craken.node.TransactionJob;
+import net.ion.craken.node.WriteSession;
 import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.util.IOUtil;
 import net.ion.framework.util.MapUtil;
@@ -41,7 +43,7 @@ public class ClientLet implements IServiceLet {
 	@Get @Post
 	public Representation viewPage(
 				@ContextParam("repository") RepositoryEntry rentry, @AnRequest InnerRequest request,
-				@PathParam("userId") String userId, @PathParam("roomId") String roomId) throws IOException, InterruptedException, ExecutionException{
+				@PathParam("userId") final String userId, @PathParam("roomId") final String roomId) throws IOException, InterruptedException, ExecutionException{
 
 		ReadSession session = rentry.login() ;
 		String websocketURI = LoginLet.targetAddress(session, userId) ;
@@ -59,6 +61,15 @@ public class ClientLet implements IServiceLet {
 		Map<String, String> configMap = MapUtil.<String>chainKeyMap().put("address", websocketURI).put("sender", userId).put("roomId", roomId).toMap() ;
 		
 		st.setAttribute("config", configMap);
+		
+		session.tran(new TransactionJob<Void>() {
+			@Override
+			public Void handle(WriteSession wsession) throws Exception {
+				wsession.pathBy("/rooms/" + roomId + "/members/" + userId) ;
+				return null;
+			}
+		});
+		
 
 		return new StringRepresentation(st.toString(), MediaType.TEXT_HTML, Language.ALL);
 	}

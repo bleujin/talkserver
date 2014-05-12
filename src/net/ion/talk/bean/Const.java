@@ -9,7 +9,7 @@ public class Const {
 		public static final String DeviceOS = "deviceOS";
 		public static final String PushId = "pushId";
 		public static final String Password = "password";
-		public static String DelegateServer = "delegateServer" ;
+//		public static String DelegateServer = "delegateServer" ;
 	}
 
     public static class Bot {
@@ -28,6 +28,9 @@ public class Const {
         public static final String NotifyId = "notifyId";
         public static final String Receivers = "receivers";
         public static final String ClientScript = "clientScript";
+
+        public static final String DefaultOnMessageClientScript = "client.room().message(args.message);";
+
         public static final String RequestId = "requestId";
         public static final String MessageId = "messageId";
         public static final String CausedEvent = "causedBy";

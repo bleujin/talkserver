@@ -35,7 +35,7 @@ public class TestNotifySendHandler extends TestCase {
         listener.memberId = "testWS";
 
         AtomicHashMap<PropertyId, PropertyValue> value = new AtomicHashMap<PropertyId, PropertyValue>();
-        value.put(PropertyId.fromIdString(Const.User.DelegateServer), PropertyValue.createPrimitive("testWS"));
+        value.put(PropertyId.fromIdString(Const.Connection.DelegateServer), PropertyValue.createPrimitive("testWS"));
 
         FakeEvent fakeEvent = new FakeEvent();
         fakeEvent.setKey(new TreeNodeKey(Fqn.fromString("/notifies/"+userId+"/"+notifyId), TreeNodeKey.Type.DATA));
@@ -55,7 +55,7 @@ public class TestNotifySendHandler extends TestCase {
         public String userId;
 
         public FakeAccountManager() throws Exception {
-            super(null, null);
+            super(null, null, null);
         }
 
         @Override

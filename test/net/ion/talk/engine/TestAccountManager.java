@@ -6,6 +6,7 @@ import net.ion.radon.util.AradonTester;
 import net.ion.talk.account.Account;
 import net.ion.talk.account.AccountManager;
 import net.ion.talk.account.Bot;
+import net.ion.talk.account.BotAccount;
 import net.ion.talk.account.ConnectedUserAccount;
 import net.ion.talk.account.DisconnectedAccount;
 import net.ion.talk.account.Account.Type;
@@ -15,6 +16,7 @@ import net.ion.talk.fake.FakeSender;
 import net.ion.talk.fake.FakeTalkEngine;
 import net.ion.talk.fake.FakeUserConnection;
 import net.ion.talk.responsebuilder.TalkResponse;
+import net.ion.talk.script.BotScript;
 
 /**
  * Created with IntelliJ IDEA.
@@ -34,7 +36,7 @@ public class TestAccountManager extends TestCrakenBase{
         super.setUp();
         fakeEngine = new FakeTalkEngine(rentry);
         sender = new FakeSender();
-        am = AccountManager.create(fakeEngine, sender);
+        am = AccountManager.create(BotScript.DUMMY, fakeEngine, sender);
     }
 
     public void testIsConnectedUser() throws Exception {
@@ -61,7 +63,7 @@ public class TestAccountManager extends TestCrakenBase{
         String bot = "echoBot";
         createBotToCraken(bot, "http://localhost:9000", false);
         Account account = am.newAccount(bot);
-        assertTrue(account instanceof Bot);
+        assertTrue(account instanceof BotAccount);
     }
 
     public void testSendToConnectedUser() throws Exception {

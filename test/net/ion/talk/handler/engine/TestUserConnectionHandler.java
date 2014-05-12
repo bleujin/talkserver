@@ -46,7 +46,7 @@ public class TestUserConnectionHandler extends TestCase {
 
         engine.onOpen(ryun);
         assertTrue(rsession.exists("/connections/" + ryun.getString("id")));
-        assertEquals(rsession.workspace().repository().memberId(), rsession.pathBy("/users/" + ryun.getString("id")).property("delegateServer").stringValue());
+        assertEquals(rsession.workspace().repository().memberId(), rsession.pathBy("/connections/" + ryun.getString("id")).property("delegateServer").stringValue());
 
         engine.onClose(ryun);
         assertFalse(rsession.exists("/connections/" + ryun.getString("id")));
