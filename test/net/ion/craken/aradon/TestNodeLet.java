@@ -85,6 +85,6 @@ public class TestNodeLet extends TestCrakenBase {
         ReadNode updatedNode = session.pathBy("/airkjh_prop_delete");
 
         assertEquals("airkjh2", updatedNode.property("name").stringValue());
-        assertEquals(false, updatedNode.hasProperty(PropertyId.fromIdString("age")));
+        assertEquals(false, updatedNode.hasProperty("age"));
     }
 }

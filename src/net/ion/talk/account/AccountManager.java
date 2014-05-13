@@ -9,6 +9,8 @@ import net.ion.message.push.sender.Pusher;
 import net.ion.radon.aclient.NewClient;
 import net.ion.talk.TalkEngine;
 import net.ion.talk.UserConnection;
+import net.ion.talk.bean.Const;
+import net.ion.talk.script.BotScript;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,11 +23,13 @@ public class AccountManager{
 
 
     private final Pusher pusher;
+    private BotScript bs;
     private final TalkEngine tengine;
     private ReadSession session;
     private NewClient newClient;
 
-    protected AccountManager(TalkEngine tengine, Pusher pusher) throws IOException {
+    protected AccountManager(BotScript bs, TalkEngine tengine, Pusher pusher) throws IOException {
+    	this.bs = bs ;
         this.tengine = tengine;
         this.pusher = pusher;
         init();
@@ -36,22 +40,23 @@ public class AccountManager{
         this.newClient = tengine.context().getAttributeObject(NewClient.class.getCanonicalName(), NewClient.class);
     }
 
-    public static AccountManager create(TalkEngine tengine, Pusher sender) throws IOException {
-        return new AccountManager(tengine, sender);
+    public static AccountManager create(BotScript bs, TalkEngine tengine, Pusher sender) throws IOException {
+        return new AccountManager(bs, tengine, sender);
     }
 
     public Account newAccount(String userId) {
 
         UserConnection uconn = tengine.findConnection(userId);
 
-        if(uconn!=null){
+        if(uconn != UserConnection.NOTFOUND){
             return new ConnectedUserAccount(userId, session, uconn);
-        }else if(session.exists("/users/"+userId)){
-            ReadNode user = session.pathBy("/users/" + userId);
-            return user.property("requestURL") == PropertyValue.NotFound ? new DisconnectedAccount(userId, session, pusher) : new Bot(userId, session, newClient);
+        } else if(uconn == UserConnection.NOTFOUND && session.exists("/bots/"+userId)){
+            return new BotAccount(bs, session, userId);
+        } else if (uconn == UserConnection.NOTFOUND && session.exists("/users/"+userId)){
+            return new DisconnectedAccount(userId, session, pusher) ;
         }
 
-        return Account.NotFoundUser;
+        return Account.NotRegisteredUser;
     }
 
 }

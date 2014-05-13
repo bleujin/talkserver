@@ -12,6 +12,7 @@ import net.ion.talk.account.AccountManager;
 import net.ion.talk.bean.Const;
 import net.ion.talk.handler.craken.BrokenMessageHandler;
 import net.ion.talk.handler.craken.NotificationListener;
+import net.ion.talk.script.BotScript;
 
 /**
  * Created with IntelliJ IDEA.
@@ -33,7 +34,7 @@ public class TestBrokenMessageHandler extends TestCase {
         tengine.startEngine();
 
         rsession = tengine.readSession();
-        rsession.workspace().addListener(new NotificationListener(AccountManager.create(tengine, null)));
+        rsession.workspace().addListener(new NotificationListener(AccountManager.create(BotScript.DUMMY, tengine, null)));
 
         rsession.tranSync(new TransactionJob<Object>() {
             @Override

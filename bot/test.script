@@ -1,0 +1,21 @@
+new function(){
+
+	this.onLoad = function(){
+	}, 
+
+	this.onMessage = function(params){
+		return 'Hello' ;		
+	}, 
+	
+	this.onEnter = function(params){
+		return 'Hello' ;		
+	}, 
+	
+	this.onExit = function(params){
+		return 'Hello' ;		
+	}, 
+	
+	this.onFilter = function(params){
+		return 'Hello' ;		
+	}
+}

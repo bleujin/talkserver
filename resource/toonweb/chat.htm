@@ -19,6 +19,76 @@
 		
 	} ;
 	
+	var client = new function(){
+		var roomObj = new function(){
+			this.prefixString = '' ;
+			this.prefix = function(prefixString){
+				this.prefixString = prefixString ;
+			}, 
+		
+			this.message = function(message) {
+				var log = document.getElementById("outputDiv");
+		    	var escaped = message.replace(/&/, "&amp;").replace(/</, "&lt;").replace(/>/, "&gt;").replace(/"/, "&quot;"); // "
+		    	if (this.prefixString == 'received') {
+		    		log.innerHTML = "<div align='right' style=\"width:500; padding:7; background-color:dfdfdf \">" + escaped + "</div><br>" + log.innerHTML;
+		    	} else if (this.prefixString == 'send') {
+		    		log.innerHTML = "<div align='left' style=\"width:500; padding:7; background-color:efefef \">" + "Send : " + escaped + "</div><br>" + log.innerHTML;
+		    	} else {
+		    		log.innerHTML = "<div align='left' style=\"width:500; padding:7; background-color:efefef \">" + escaped + "</div><br>" + log.innerHTML;
+		    	}
+			}, 
+			
+			this.background = function(imgUrl){
+				console.log(imgUrl) ;
+			}, 
+			
+			this.invite = function(inviteMsg) {
+				console.log(inviteMsg) ;
+			}
+		} ;
+
+		var commonObj = new function(){
+			
+		} ; 
+		
+		var utilObj = new function(){
+			this.alert = function(){
+			}
+		} ;
+		
+		
+		
+		this.room =  function(){
+			return roomObj ;
+		}, 
+		
+		this.character = function(id){
+			return new function(){
+				this.id = id ;
+				
+				this.scale = function(percentage) {
+					console.log(this.id + ' ' + percentage) ;
+				}
+			} ;
+		}, 
+		
+		this.common = function(){
+			return commonObj ;
+		}, 
+		
+		this.util = function(){
+			return utilObj ;
+		}, 
+		
+		this.gps = function(){
+			return gpsObj ;
+		}, 
+		
+		this.file = function(){
+		}
+	} ;
+	
+	
 	// Everything below is the same as using standard WebSocket.
 	function initChat(){
 
@@ -35,7 +105,7 @@
 			chatMsg.params.message = input.value ;
 			chatMsg.params.sender = this.sender ;
 			chatMsg.params.senderNickname = this.senderNickname ;
-			chatMsg.params.clientScript = '' ;
+			chatMsg.params.clientScript = 'client.room().message(args.message);' ;
 			chatMsg.params.requestId = '/123456' ;
 			
 			this.getWebSocket().send(this.jsonToString(chatMsg));
@@ -49,16 +119,6 @@
         	this.getWebSocket().close();
 		} ;
 
-		webClient.output = function(message, align) {
-	    	var log = document.getElementById("outputDiv");
-	    	alert(message) ;
-	    	var escaped = message.replace(/&/, "&amp;").replace(/</, "&lt;").replace(/>/, "&gt;").replace(/"/, "&quot;"); // "
-	    	if (align == 'received') {
-	    		log.innerHTML = "<div align='right' style=\"width:500; padding:7; background-color:dfdfdf \">" + escaped + "</div><br>" + log.innerHTML;
-	    	} else {
-	    		log.innerHTML = "<div align='left' style=\"width:500; padding:7; background-color:efefef \">" + "Send : " + escaped + "</div><br>" + log.innerHTML;
-	    	} 
-	    } ;
 		
 		webClient.jsonToString = function(obj){
 			var t = typeof (obj);
@@ -86,14 +146,12 @@
 			cmdMsg.params = params ;
 			this.getWebSocket().send(this.jsonToString(cmdMsg));
 		} ;
-	  	
-		
+
 
    		var ws = new WebSocket('$config.address$') ;
 		
 	  	ws.onopen = function(){
-	  		webClient.output("open") ;
-	  		
+	  		client.room().message("open") ;
 	  	} ;
 	  	
    		ws.onmessage = function(e){
@@ -115,20 +173,20 @@
    			
    			if (msg.script == '/room/sendMessageWith') return ; // return sendMessageWith
    			if (msg.script == '/room/listNotifyDataBy') {
-   				alert(msg.result.message) ;
-   				// webClient.output(msg.result.message, (msg.params.userid == webClient.sender) ? 'send' : 'received') ;
+   				// alert(msg.result.message) ;
+   				client.room().prefix((msg.result.sender == webClient.sender) ? 'send' : 'received') ;
+   				var args = msg.result ;
+   				eval(msg.result.clientScript) ;
    				return ;
    			}
-   			
-
 
    		} ;
    		
    		ws.onclose = function(){
-   			webClient.output("closed") ;
+   			client.room().message("closed") ;
    		} ;
    		ws.onerror = function(){
-   			webClient.output("error") ;
+   			client.room().message("error") ;
    		} ;
    		
    		webClient.getWebSocket = function(){

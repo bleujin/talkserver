@@ -1,111 +1,176 @@
 package net.ion.talk.bot;
 
+import org.restlet.data.Method;
+
 import junit.framework.TestCase;
+import net.ion.bleujin.restlet.TestComponentAsServer;
+import net.ion.craken.aradon.NodeLet;
+import net.ion.craken.aradon.UploadLet;
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
+import net.ion.craken.node.crud.RepositoryImpl;
 import net.ion.framework.util.Debug;
-import net.ion.framework.util.ObjectId;
-import net.ion.framework.util.StringUtil;
+import net.ion.framework.util.InfinityThread;
+import net.ion.nradon.Radon;
 import net.ion.radon.aclient.NewClient;
-import net.ion.talk.account.Bot;
-import net.ion.talk.bean.Const;
-import net.ion.talk.responsebuilder.TalkResponse;
-import net.ion.talk.responsebuilder.TalkResponseBuilder;
+import net.ion.radon.aclient.Realm;
+import net.ion.radon.aclient.Request;
+import net.ion.radon.aclient.RequestBuilder;
+import net.ion.radon.aclient.Realm.RealmBuilder;
+import net.ion.radon.aclient.Response;
+import net.ion.radon.core.Aradon;
+import net.ion.radon.core.EnumClass;
+import net.ion.radon.core.EnumClass.ILocation;
+import net.ion.radon.core.EnumClass.IMatchMode;
+import net.ion.radon.core.config.ConfigurationBuilder;
+import net.ion.radon.util.AradonTester;
+import net.ion.talk.TalkEngine;
+import net.ion.talk.account.AccountManager;
+import net.ion.talk.bot.BotManager;
+import net.ion.talk.filter.ToonAuthenticator;
+import net.ion.talk.handler.craken.NotificationListener;
+import net.ion.talk.handler.craken.NotifyStrategy;
+import net.ion.talk.handler.craken.TalkMessageHandler;
+import net.ion.talk.handler.craken.UserInAndOutRoomHandler;
+import net.ion.talk.handler.engine.ServerHandler;
+import net.ion.talk.handler.engine.UserConnectionHandler;
+import net.ion.talk.handler.engine.WebSocketScriptHandler;
+import net.ion.talk.let.ResourceLet;
+import net.ion.talk.let.ScriptDoLet;
+import net.ion.talk.script.BotScript;
+import net.ion.talk.script.TalkScript;
+import net.ion.talk.toonweb.ClientLet;
+import net.ion.talk.toonweb.ToonWebResourceLet;
 
-import java.util.Iterator;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+public class TestEchoBot extends TestCase {
 
-/**
- * Created with IntelliJ IDEA. User: Ryun Date: 2014. 2. 25. Time: 오전 11:34 To change this template use File | Settings | File Templates.
- */
-public class TestEchoBot extends TestCrakenBase{
+	private Radon radon;
+	private RepositoryEntry rentry;
+	private TalkEngine talkEngine;
 
-	private EchoBot echoBot;
-    private ScheduledExecutorService ses;
-    private String roomId = "testRoom";
-
-    @Override
-	public void setUp() throws Exception {
+	@Override
+	protected void setUp() throws Exception {
 		super.setUp();
-        ses = Executors.newScheduledThreadPool(1);
-		echoBot = new EchoBot(rsession, ses);
-		rsession.tranSync(new TransactionJob<Object>() {
+		this.rentry = RepositoryEntry.test();
+		ReadSession session = rentry.login();
+
+		session.tranSync(new TransactionJob<Void>() {
 			@Override
-			public Object handle(WriteSession wsession) throws Exception {
-				wsession.pathBy("/rooms/"+roomId+"/members/"+echoBot.id);
+			public Void handle(WriteSession wsession) throws Exception {
+//				wsession.pathBy("/servers/home").property("host", "61.250.201.157").property("port", 9000);
+				wsession.pathBy("/users/bleujin").property("password", "1234");
 				return null;
 			}
 		});
+
+		ConfigurationBuilder cbuilder = ConfigurationBuilder.newBuilder()
+				.aradon().addAttribute(RepositoryEntry.EntryName, rentry)
+				.sections()
+					.restSection("admin").addAttribute("baseDir", "./resource/template")
+						.path("node").addUrlPattern("/repository/{renderType}").matchMode(IMatchMode.STARTWITH).handler(NodeLet.class)
+						.path("template").addUrlPattern("/template").matchMode(EnumClass.IMatchMode.STARTWITH).handler(ResourceLet.class)
+						.path("doscript").addUrlPattern("/script").matchMode(EnumClass.IMatchMode.EQUALS).handler(ScriptDoLet.class)
+						.path("upload").addUrlPattern("/upload").matchMode(IMatchMode.STARTWITH).handler(UploadLet.class)
+					.restSection("session")
+						.path("client").addUrlPattern("/{userId}/{roomId}").handler(ClientLet.class)
+					.restSection("toonweb")
+						.path("toonweb").addUrlPattern("/").matchMode(IMatchMode.STARTWITH).handler(ToonWebResourceLet.class).toBuilder();
+						
+
+		Aradon aradon = Aradon.create(cbuilder.build()) ;
+		
+		
+		this.radon = aradon.toRadon(9000)
+					.start().get();
+		
+		this.talkEngine = TalkEngine.testCreate(rentry) ;
+		
+		radon.add("/websocket/{id}/{accessToken}", talkEngine) ;
 	}
 
-    public void testOnEnter() throws Exception {
-		echoBot.onEnter(roomId, "ryun");
-        WatingJobOnShutdown();
-		assertEquals("Hello! ryun", getFirstMsgByRoomId(roomId));
+	@Override
+	protected void tearDown() throws Exception {
+		this.talkEngine.stopEngine(); 
+		this.rentry.shutdown();
+		this.radon.stop();
+		super.tearDown();
 	}
-
-    public void testOnExit() throws Exception {
-		echoBot.onExit(roomId, "ryun");
-        WatingJobOnShutdown();
-		assertEquals("Bye! ryun", getFirstMsgByRoomId(roomId));
-
+	
+	public void testonLoad() throws Exception {
+		talkEngine.init().startEngine() ;
+		ReadSession session = talkEngine.readSession();
+		
+		assertEquals(true, session.exists("/bots/echo"));
+		assertEquals(true, session.exists("/users/echo"));
+		
+		assertEquals("echo bot", session.pathBy("/users/echo").property("nickname").asString()) ;
 	}
+	
+	
+	public void testOnEnter() throws Exception {
+		talkEngine.init().startEngine() ;
+		ReadSession session = talkEngine.readSession();
 
-    public void testOnSelfEnter() throws Exception {
-        echoBot.onEnter(roomId, echoBot.id());
-        WatingJobOnShutdown();
-        assertEquals("Hello I'm EchoBot. please type: /help", getFirstMsgByRoomId(roomId));
-    }
+		session.tran(new TransactionJob<Void>() {
+			@Override
+			public Void handle(WriteSession wsession) throws Exception {
+				wsession.pathBy("/users/bleujin") ;
+				wsession.pathBy("/rooms/roomroom/members/echo") ;
+				return null;
+			}
+		});
 
-    public void testOnSelfExit() throws Exception {
-        echoBot.onExit(roomId, echoBot.id());
-        WatingJobOnShutdown();
-        assertEquals("Bye~ see you later!", getFirstMsgByRoomId(roomId));
-    }
-
-    public void testOnMessage() throws Exception {
-		echoBot.onMessage(roomId, "ryun", "Everybody Hello!");
-        WatingJobOnShutdown();
-		assertEquals("Everybody Hello!", getFirstMsgByRoomId(roomId));
+		session.tran(new TransactionJob<Void>() {
+			@Override
+			public Void handle(WriteSession wsession) throws Exception {
+				wsession.pathBy("/rooms/roomroom/members/bleujin") ;
+				return null;
+			}
+		}) ;
+		session.workspace().cddm().await(); 
+		Thread.sleep(500); // wait workspace Listener(NotificationListener)
+		
+		assertEquals(3, session.pathBy("/rooms/roomroom/messages").children().count()) ;
+		assertEquals(2, session.pathBy("/notifies/bleujin").children().count()) ;
+		
+		session.pathBy("/rooms/roomroom/messages").children().debugPrint();
+//		new InfinityThread().startNJoin(); 
 	}
+	
+	
 
-    public void testOnDelayedMessage() throws Exception {
-        echoBot.onMessage(roomId, "ryun", "/delay 1");
-        Thread.sleep(500);
-        assertEquals("ryun 사용자에게는 봇이 1초 후에 반응합니다.", getFirstMsgByRoomId(roomId));
+	public void testOnMessage() throws Exception {
+		talkEngine.init().startEngine() ;
+		ReadSession session = talkEngine.readSession();
+		
+		session.tran(new TransactionJob<Void>() {
+			@Override
+			public Void handle(WriteSession wsession) throws Exception {
+				wsession.pathBy("/users/bleujin") ;
 
-        clearMessagesInRoom(roomId);
-        echoBot.onMessage(roomId, "ryun", "Hello");
-        Thread.sleep(1500);
-        assertEquals("Hello", getFirstMsgByRoomId(roomId));
-        WatingJobOnShutdown();
-
-    }
-
-    //Echobot이 가지고 있는 ScheduledExecutor이 job을 끝내는 시간동안 기다림
-    private void WatingJobOnShutdown() throws InterruptedException {
-        ses.shutdown();
-        ses.awaitTermination(2, TimeUnit.SECONDS);
-    }
-
-    private String getFirstMsgByRoomId(String roomId) {
-        ReadNode messageNode = rsession.pathBy("/rooms/"+roomId+"/messages/").children().firstNode();
-        return messageNode.property(Const.Message.Message).stringValue();
-    }
-
-    private void clearMessagesInRoom(final String roomId){
-        rsession.tran(new TransactionJob<Object>() {
-            @Override
-            public Object handle(WriteSession wsession) throws Exception {
-                wsession.pathBy("/rooms/"+roomId+"/messages").removeSelf();
-                return null;
-            }
-        });
-    }
-
+				wsession.pathBy("/rooms/roomroom/members/echo") ;
+				wsession.pathBy("/rooms/roomroom/members/bleujin") ;
+				return null;
+			}
+		});
+		
+		session.tran(new TransactionJob<Void>() {
+			@Override
+			public Void handle(WriteSession wsession) throws Exception {
+				wsession.pathBy("/rooms/roomroom/messages/123456").property("message", "Hello World").property("event", "onMessage")
+					.refTo("sender", "/users/bleujin") ;
+				return null;
+			}
+		}) ;
+		
+		session.workspace().cddm().await(); 
+		
+		assertEquals("Hello World", session.pathBy("/notifies/bleujin/123456").ref("message").property("message").asString()) ; 
+	}
+	
+	
+	
 }

@@ -16,7 +16,7 @@ import net.ion.talk.bean.Const;
  * Time: 오전 11:34
  * To change this template use File | Settings | File Templates.
  */
-public class TestChatBot extends TestCrakenBase{
+public class TestOldChatBot extends TestCrakenBase{
 
     private ChatBot chatBot;
 

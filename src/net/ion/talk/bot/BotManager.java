@@ -39,7 +39,7 @@ public class BotManager {
                         .property(Const.Bot.RequestURL, bot.requestURL())
                         .property(Const.Bot.isSyncBot, bot.isSyncBot());
 
-                wsession.pathBy("/bots/"+bot.id()).refTo("bot", "/users/"+bot.id());
+                wsession.pathBy("/bots/"+bot.id()).refTo("user", "/users/"+bot.id());
                 return null;
             }
         });

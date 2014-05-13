@@ -1,0 +1,44 @@
+new function(){
+
+	this.onLoad = function(){
+		session.tran(function(wsession){
+			wsession.pathBy("/users/echo").property("userId", "echo").property("nickname", "echo bot").property("stateMessage", "normal") ;
+		}) ;
+	}, 
+	
+	this.sendMessage = function(oriSender, event, bm){
+		var roomId = bm.roomId() ;
+		var selfBotId = bm.botId() ;
+
+
+		if ("echo" == oriSender) return ;
+		
+		var memberList = session.pathBy("/rooms/" + roomId + "/members").childrenNames().toArray();
+        session.tran(function(wsession) {
+            var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + bm.newMsgId())
+                    .property("message", bm.message())
+                    .property("sender", selfBotId)
+                    .property("roomId", roomId)
+                    .property("event", 'onMessage')
+                    .property("clientScript", bm.clientScript())
+                    .property("messageId", bm.messageId());
+
+        }) ;
+	}, 
+	
+	this.onMessage = function(bm){
+		this.sendMessage(bm.sender(), "onMessage", bm) ;
+	}, 
+	
+	this.onEnter = function(bm){
+		this.sendMessage(bm.sender(), "onEnter", bm.message("Hello I'm EchoBot. please type: /help")) ;
+	}, 
+	
+	this.onExit = function(params){
+//		this.sendMessage(bm.sender(), "onExit", bm.message("Bye")) ;
+	}, 
+	
+	this.onFilter = function(params){
+
+	}
+}

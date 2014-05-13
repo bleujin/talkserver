@@ -10,11 +10,10 @@ public class TestAllBot extends TestCase {
 	public static TestSuite suite() {
 		TestSuite result = new TestSuite("Test All Bot");
 
-        result.addTestSuite(TestBotManager.class);
-//        result.addTestSuite(TestBBot.class);
-        result.addTestSuite(TestChatBot.class);
-        result.addTestSuite(TestEchoBot.class);
-        result.addTestSuite(TestEmbedBot.class);
+//        result.addTestSuite(TestOldBBot.class);
+        result.addTestSuite(TestOldChatBot.class);
+        result.addTestSuite(TestOldEchoBot.class);
+        result.addTestSuite(TestOldEmbedBot.class);
 
 		return result;
 	}

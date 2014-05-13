@@ -1,9 +1,11 @@
 package net.ion.talk.account;
 
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Logger;
 
 import javapns.notification.PushedNotifications;
 import net.ion.craken.node.ReadSession;
+import net.ion.framework.logging.LogBroker;
 import net.ion.message.push.sender.AppleMessage;
 import net.ion.message.push.sender.GoogleMessage;
 import net.ion.message.push.sender.Pusher;
@@ -24,6 +26,7 @@ public class DisconnectedAccount extends Account {
 
     private final Pusher pusher;
     private final ReadSession rsession;
+    private Logger logger = LogBroker.getLogger(DisconnectedAccount.class) ;
 
     DisconnectedAccount(String userId, ReadSession rsession, Pusher pusher) {
         super(userId, Type.DisconnectedUser);
@@ -48,11 +51,12 @@ public class DisconnectedAccount extends Account {
 			}
 			@Override
 			public Boolean onAPNSFail(AppleMessage amsg, PushedNotifications results) {
+				logger.warning(accountId() + ":"+ results.getFailedNotifications().toString());
 				return Boolean.FALSE;
 			}
 			@Override
 			public Boolean onAPNSThrow(AppleMessage amsg, Exception ex) {
-				ex.printStackTrace();
+				logger.severe(accountId() + ":"+ ex.getMessage());
 				return Boolean.FALSE;
 			}
 			@Override
@@ -68,11 +72,12 @@ public class DisconnectedAccount extends Account {
 			}
 			@Override
 			public Boolean onGoogleFail(GoogleMessage gmsg, Result result) {
+				logger.warning(accountId() + ":"+ gmsg.message() + result.toString());
 				return Boolean.FALSE;
 			}
 			@Override
 			public Boolean onGoogleThrow(GoogleMessage gmsg, Exception ex) {
-				ex.printStackTrace();
+				logger.severe(accountId() + ":"+ gmsg.message() + ex.getMessage());
 				return Boolean.FALSE;
 			}
         });

@@ -59,7 +59,7 @@ public class TestCrakenBase extends TestCase {
         rsession.tran(new TransactionJob<Object>() {
             @Override
             public Object handle(WriteSession wsession) throws Exception {
-                wsession.pathBy("/users/"+botId).property("requestURL", requestURL).property(Const.Bot.isSyncBot, isSync);
+                wsession.pathBy("/bots/"+botId).property(Const.Bot.isSyncBot, isSync);
                 return null;
             }
         });
