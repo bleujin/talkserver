@@ -87,7 +87,8 @@ public class TalkMessageHandler implements CDDHandler {
                 for(String userId : users){
                     //귓속말에 자기 자신이 없으면 continue;
                     Set receivers = getReceivers(pmap).asSet() ;
-                    if (receivers.size() == 0 || receivers.contains(userId))  
+//                    pmap.get(PropertyId.fromIdString(Const.Message.Receivers)).asSet();
+                    if (StringUtil.isBlank(getReceivers(pmap).asString()) || receivers.contains(userId))  
                     	writeNotification(wsession, userId, roomId, messageId);
                 }
                 
