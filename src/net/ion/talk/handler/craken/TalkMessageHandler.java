@@ -90,7 +90,7 @@ public class TalkMessageHandler implements CDDHandler {
     private void ifUserOnExit(WriteSession wsession, Map<String,String> resolveMap, Map<PropertyId,PropertyValue> pmap) {
         //유저 퇴장시 방의 유저에게 퇴장 Notify 생성
         if(PropertyValue.createPrimitive(Const.Event.onExit).equals(pmap.get(PropertyId.fromIdString(Const.Message.Event)))){
-            String sender = pmap.get(PropertyId.fromIdString(Const.Message.Sender)).stringValue();
+            String sender = pmap.get(PropertyId.fromIdString(Const.Message.Message)).stringValue();
             writeNotification(wsession, sender, getRoomId(resolveMap), getMessageId(resolveMap));
         }
     }

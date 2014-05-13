@@ -45,8 +45,8 @@ public class UserInAndOutRoomHandler implements CDDHandler {
                         .property(Const.Message.Event, Const.Event.onEnter)
                         .property(Const.Room.RoomId, roomId)
                         .property(Const.Message.Time, Calendar.getInstance().getTimeInMillis())
-                        .property(Const.Message.Message, userId + "님이 입장하셨습니다.")
-                        .property(Const.Message.Sender, userId)
+                        .property(Const.Message.Message, userId)
+                        .refTo(Const.Message.Sender, userId)
                         .property(Const.Message.MessageId, randomID);
 
                 return null;
@@ -78,8 +78,8 @@ public class UserInAndOutRoomHandler implements CDDHandler {
                         .property(Const.Message.Event, Const.Event.onExit)
                         .property(Const.Room.RoomId, roomId)
                         .property(Const.Message.Time, Calendar.getInstance().getTimeInMillis())
-                        .property(Const.Message.Message, userId + "님이 퇴장하셨습니다.")
-                        .property(Const.Message.Sender, userId)
+                        .property(Const.Message.Message, userId)
+                        .refTo(Const.Message.Sender, userId)
                         .property(Const.Message.MessageId, randomID);
                 return null;
             }
