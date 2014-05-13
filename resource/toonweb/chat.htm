@@ -1,4 +1,3 @@
-
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -6,14 +5,31 @@
 	<title>Sample of Toontalk</title>
 	
 	<!-- Include these three JS files: -->
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+	<script type="text/javascript" src="http://www.jeasyui.com/easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="/toonweb/common_lang.js"></script>
 	<script type="text/javascript" src="/toonweb/swfobject.js"></script>
 	<script type="text/javascript" src="/toonweb/web_socket.js"></script>
 
-	<script type="text/javascript">
+	
+</head>
+<body onload="initChat();" leftmargin=0 topmargin=0>
+
+<table border=0 cellpadding=0 cellspacing=0 width=640 background="/toonweb/img/body_bg_pattern.png">
+	<tr><td height=166 background="/toonweb/img/top_bg.png"></td></tr>
+	<tr><td height=425 style="background-image: url(/toonweb/img/body_logo.png) ; background-repeat:no-repeat; background-position:center center">
+		<table width=600 align=center><tr><td><div id="outputDiv" style="overflow:scroll; width:600; height:380"></div></td></tr></table>
+		
+		
+		</td></tr>
+	<tr><td height=120 background="/toonweb/img/bottom_bg.png" align="center">
+		<input type="text" id="message" style="width:95%; font-size:16px" /></td></tr>
+</table>
+
+<script type="text/javascript">
 
     WEB_SOCKET_SWF_LOCATION = "/toonweb/WebSocketMain.swf";  // Set URL of your WebSocketMain.swf here:
     WEB_SOCKET_DEBUG = true;  // Set this to dump debug message from Flash to console.log:
-
 
 	var webClient = {
 		
@@ -99,19 +115,19 @@
 		webClient.chat = function(){
 			// id, script, params[
 			var chatMsg = {id:'' + new Date().getUTCMilliseconds(), script:'/room/sendMessageWith', params:{}} ;
-			var input = document.getElementById("input") ;
+			var msgText = document.getElementById("message").value ;
+
 			chatMsg.params.receivers = ''
 			chatMsg.params.roomId = this.roomId ;
-			chatMsg.params.message = input.value ;
+			chatMsg.params.message = msgText  ;
 			chatMsg.params.sender = this.sender ;
 			chatMsg.params.senderNickname = this.senderNickname ;
 			chatMsg.params.clientScript = 'client.room().message(args.message);' ;
 			chatMsg.params.requestId = '/123456' ;
 			
 			this.getWebSocket().send(this.jsonToString(chatMsg));
-//			this.output(input.value, 'send') ;
-			input.value = "";
-			input.focus();
+			document.getElementById("message").value = "";
+			document.getElementById("message").focus();
 		} ;
 
 
@@ -171,6 +187,12 @@
    				return ;
    			}
    			
+   			if (msg.script.startWith('/commands/')){
+   				client.room().message(msg.result) ;
+   				return ;
+   			}
+   			
+   			
    			if (msg.script == '/room/sendMessageWith') return ; // return sendMessageWith
    			if (msg.script == '/room/listNotifyDataBy') {
    				// alert(msg.result.message) ;
@@ -194,24 +216,15 @@
    		} ;
 	}
 
-  </script>
-</head>
-<body onload="initChat();" leftmargin=0 topmargin=0>
 
-<table border=0 cellpadding=0 cellspacing=0 width=640 background="/toonweb/img/body_bg_pattern.png">
-<form onsubmit="webClient.chat(); return false;">
-	<tr><td height=166 background="/toonweb/img/top_bg.png"></td></tr>
-	<tr><td height=425 style="background-image: url(/toonweb/img/body_logo.png) ; background-repeat:no-repeat; background-position:center center">
-		<table width=600 align=center><tr><td><div id="outputDiv" style="overflow:scroll; width:600; height:380"></div></td></tr></table>
-		</td></tr>
-	<tr><td height=120 background="/toonweb/img/bottom_bg.png" valign="center">
-		<table width='95%' align=center><tr><td width="100%"><textarea id="input" cols="60" rows="3" style="width:95%; font-size:16px"></textarea></td>
-		<td align=right><input type=image src="/toonweb/img/send_bt.png" onclick="webClient.chat(); return false;"/></td></tr></table>
-	</td></tr>
-</form>
-</table>
+	jQuery("#message").keydown(function(event) {
+		if (event.which == 13) {
+	  		webClient.chat();			
+		}
 
-
+	});
+	
+</script>
 
 </body>
 </html>

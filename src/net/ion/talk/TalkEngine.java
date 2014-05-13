@@ -44,6 +44,7 @@ import net.ion.talk.handler.craken.TalkMessageHandler;
 import net.ion.talk.handler.craken.UserInAndOutRoomHandler;
 import net.ion.talk.handler.engine.ServerHandler;
 import net.ion.talk.handler.engine.UserConnectionHandler;
+import net.ion.talk.handler.engine.WebCommandHandler;
 import net.ion.talk.handler.engine.WebSocketScriptHandler;
 import net.ion.talk.responsebuilder.TalkResponse;
 import net.ion.talk.script.BotScript;
@@ -144,18 +145,24 @@ public class TalkEngine implements WebSocketHandler {
 	public TalkEngine init() throws Exception {
 		NewClient nc = context().getAttributeObject(NewClient.class.getCanonicalName(), NewClient.class);
 		ReadSession rsession = readSession();
-		AccountManager am = context().getAttributeObject(AccountManager.class.getCanonicalName(), AccountManager.class);
-
-		registerHandler(new UserConnectionHandler()).registerHandler(ServerHandler.test()).registerHandler(new WebSocketScriptHandler()) ;
-
-		rsession.workspace().cddm().add(new UserInAndOutRoomHandler());
-		rsession.workspace().cddm().add(new TalkMessageHandler(nc));
-		rsession.workspace().addListener(new NotificationListener(am));
 
 		final BotScript bs = BotScript.create(rsession, worker, nc) ;
 		bs.readDir(new File("./bot"), true) ;
 		context.putAttribute(BotScript.class.getCanonicalName(), bs) ;
 		context.putAttribute(AccountManager.class.getCanonicalName(), AccountManager.create(bs, this, NotifyStrategy.createPusher(worker, readSession()))) ;
+
+		AccountManager am = context().getAttributeObject(AccountManager.class.getCanonicalName(), AccountManager.class);
+
+		registerHandler(new UserConnectionHandler()).registerHandler(ServerHandler.test()).registerHandler(new WebSocketScriptHandler()).registerHandler(new WebCommandHandler()) ;
+
+		rsession.workspace().cddm().add(new UserInAndOutRoomHandler());
+		rsession.workspace().cddm().add(new TalkMessageHandler(nc));
+		rsession.workspace().addListener(new NotificationListener(am));
+
+		TalkScript ts = TalkScript.create(rsession, worker);
+		ts.readDir(new File("./script"), true);
+		context.putAttribute(TalkScript.class.getCanonicalName(), ts);
+		
 
 //		BotManager botManager = context().getAttributeObject(BotManager.class.getCanonicalName(), BotManager.class);
 //

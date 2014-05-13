@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import net.ion.framework.util.ObjectUtil;
+import net.ion.nradon.HttpRequest;
 import net.ion.nradon.WebSocketConnection;
 import net.ion.talk.TalkEngine.Reason;
 import net.ion.talk.util.CalUtil;
@@ -49,6 +50,10 @@ public class UserConnection {
 
 	void close(Reason reason) {
 		inner.close() ;
+	}
+	
+	public HttpRequest request(){
+		return inner.httpRequest() ;
 	}
 
 	

@@ -32,15 +32,15 @@ public class WebSocketScriptHandler implements TalkHandler {
 
 	@Override
 	public void onMessage(TalkEngine tengine, final UserConnection uconn, ReadSession rsession, final TalkMessage tmsg) {
-		if (!tmsg.isScript()) {
-			uconn.sendMessage(tmsg.toPlainMessage()); // echo
+		if (!tmsg.isNormalMessage() || tmsg.isCommandUserMessage()) {
+//			uconn.sendMessage(tmsg.toPlainMessage()); // echo
 			return;
 		}
 		
 		tscript.callFn(tmsg.script(), ObjectUtil.coalesce(tmsg.params(), ParameterMap.BLANK), new ScriptResponseHandler<Void>() {
 			@Override
 			public Void onSuccess(String fullName, ParameterMap pmap, Object result) {
-				if (result == null ||  StringUtil.isBlank(result.toString())) return null ;
+				if (result == null ||  StringUtil.isBlank(result.toString()) || "undefined".equals(result)) return null ;
 				
 				JsonObject forSend = JsonObject.create()
 							.put("id", tmsg.id())

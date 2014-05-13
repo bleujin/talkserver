@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Set;
 
+import net.ion.framework.util.ObjectUtil;
 import net.ion.nradon.WebSocketConnection;
 import net.ion.talk.toonweb.Remote;
 
@@ -43,6 +44,16 @@ public abstract class DynamicProxyClientMaker implements ClientMaker {
 				if (method.getName().equals("source")) {
 					return connection ;
 				}
+				if (method.getName().equals("userId")) {
+					return connection.data("username") ;
+				}
+				
+				if (method.getName().equals("data") && args.length == 1){
+					return connection.data(ObjectUtil.toString(args[0])) ;
+				} else if (method.getName().equals("data") && args.length == 2){
+					return connection.data(ObjectUtil.toString(args[0]), ObjectUtil.toString(args[1])) ;
+				}
+				
 				if (method.getDeclaringClass() == Object.class) {
 					return method.invoke(connection, args);
 				} else if (method.getDeclaringClass() == Exporter.class) {

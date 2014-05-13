@@ -8,6 +8,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import junit.framework.TestCase;
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.node.ReadSession;
+import net.ion.craken.node.TransactionJob;
+import net.ion.craken.node.WriteSession;
 import net.ion.framework.util.Debug;
 import net.ion.framework.util.FileUtil;
 import net.ion.framework.util.InfinityThread;
@@ -18,6 +20,7 @@ import net.ion.talk.ParameterMap;
 import net.ion.talk.TalkMessage;
 import net.ion.talk.ToonServer;
 import net.ion.talk.account.AccountManager;
+import net.ion.talk.bean.Const.User;
 import net.ion.talk.bot.BBot;
 import net.ion.talk.bot.BotManager;
 import net.ion.talk.bot.ChatBot;
@@ -45,26 +48,19 @@ public class TestToonServerNew extends TestCase {
 		ScheduledExecutorService worker = Executors.newScheduledThreadPool(10) ;
 
 		final ToonServer tserver = ToonServer.testCreate(rentry, worker);
-		
 		tserver.ready().startRadon();
 		
-		tserver.talkEngine().registerHandler(new UserConnectionHandler()).registerHandler(ServerHandler.test()).registerHandler(new WebSocketScriptHandler()) ;
-
-		NewClient nc = tserver.getAttribute(NewClient.class.getCanonicalName(), NewClient.class);
-		AccountManager am = tserver.getAttribute(AccountManager.class.getCanonicalName(), AccountManager.class);
-		BotManager botManager = tserver.getAttribute(BotManager.class.getCanonicalName(), BotManager.class);
-		ReadSession rsession = tserver.readSession();
-		
-		
-		rsession.workspace().cddm().add(new UserInAndOutRoomHandler());
-		rsession.workspace().cddm().add(new TalkMessageHandler(nc));
-		rsession.workspace().addListener(new NotificationListener(am));
-
-
-        botManager.registerBot(new EchoBot(tserver.readSession(), worker));
-        botManager.registerBot(new BBot(tserver.readSession(), worker));
-        botManager.registerBot(new ChatBot(tserver.readSession()));
-
+		ReadSession rsession = tserver.talkEngine().readSession();
+		rsession.tran(new TransactionJob<Void>() {
+			@Override
+			public Void handle(WriteSession wsession) throws Exception {
+				wsession.pathBy("/users/hero@i-on.net").property(User.Password, "1").property(User.NickName, "hero").property(User.StateMessage, "-_-;").property(User.Phone, "1042216492") ;
+				wsession.pathBy("/users/bleujin@i-on.net").property(User.Password, "1").property(User.NickName, "bleujin").property(User.StateMessage, "-_-a").property(User.Phone, "1042216492") ;
+				
+				wsession.pathBy("/rooms/roomroom/members/hero@i-on.net") ;
+				return null;
+			}
+		});
         
         Runtime.getRuntime().addShutdownHook(new Thread(){
         	public void run(){

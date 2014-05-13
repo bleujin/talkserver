@@ -4,15 +4,21 @@ import net.ion.nradon.WebSocketConnection;
 
 
 @Remote
-interface ChatClient {
+public interface ChatClient {
+
+	public final static ChatClient DUMMY = null;
 
 	WebSocketConnection source() ;
+	
+	String userId() ;
 	
     void say(String username, String message);
 
     void leave(String username);
 
-    void join(String username);
+    void entry(String username);
 
     void echo(String msg) ;
+    
+    void listrooms(String rooms) ;
 }

@@ -9,7 +9,10 @@ public class Const {
 		public static final String DeviceOS = "deviceOS";
 		public static final String PushId = "pushId";
 		public static final String Password = "password";
+		public static final String NickName = "nickname";
+		public static final String StateMessage = "stateMessage";
 //		public static String DelegateServer = "delegateServer" ;
+		public static final String Phone = "phone";
 	}
 
     public static class Bot {

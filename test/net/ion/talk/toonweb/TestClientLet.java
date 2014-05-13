@@ -28,6 +28,7 @@ import net.ion.radon.core.config.ConfigurationBuilder;
 import net.ion.radon.util.AradonTester;
 import net.ion.talk.TalkEngine;
 import net.ion.talk.account.AccountManager;
+import net.ion.talk.bean.Const.User;
 import net.ion.talk.bot.BotManager;
 import net.ion.talk.filter.ToonAuthenticator;
 import net.ion.talk.handler.craken.NotificationListener;
@@ -60,7 +61,6 @@ public class TestClientLet extends TestCase {
 				return null;
 			}
 		});
-
 		ConfigurationBuilder cbuilder = ConfigurationBuilder.newBuilder()
 				.aradon().addAttribute(RepositoryEntry.EntryName, rentry)
 				.sections()
@@ -70,7 +70,9 @@ public class TestClientLet extends TestCase {
 						.path("doscript").addUrlPattern("/script").matchMode(EnumClass.IMatchMode.EQUALS).handler(ScriptDoLet.class)
 						.path("upload").addUrlPattern("/upload").matchMode(IMatchMode.STARTWITH).handler(UploadLet.class)
 					.restSection("session")
+						.addPreFilter(new ToonAuthenticator("user"))
 						.path("client").addUrlPattern("/{userId}/{roomId}").handler(ClientLet.class)
+						
 					.restSection("toonweb")
 						.path("toonweb").addUrlPattern("/").matchMode(IMatchMode.STARTWITH).handler(ToonWebResourceLet.class).toBuilder();
 						
@@ -122,7 +124,9 @@ public class TestClientLet extends TestCase {
 		rsession.tran(new TransactionJob<Void>() {
 			@Override
 			public Void handle(WriteSession wsession) throws Exception {
-				wsession.pathBy("/users/hero@i-on.net") ;
+				wsession.pathBy("/users/hero@i-on.net").property(User.Password, "1").property(User.NickName, "hero").property(User.StateMessage, "-_-;").property(User.Phone, "1042216492") ;
+				wsession.pathBy("/users/bleujin@i-on.net").property(User.Password, "1").property(User.NickName, "bleujin").property(User.StateMessage, "-_-a").property(User.Phone, "1042216492") ;
+				
 				wsession.pathBy("/rooms/roomroom/members/hero@i-on.net") ;
 				return null;
 			}

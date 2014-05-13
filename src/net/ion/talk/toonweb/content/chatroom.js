@@ -54,22 +54,21 @@ function connect() {
         echo:function(message) {
         	logText(message) ;
         }, 
-        join: function(username) {
-            logText("* User '" + username + "' joined.");
+        entry: function(username) {
+            logText("* User '" + username + "' entried.");
         },
         leave: function(username) {
             logText("* User '" + username + "' left.");
         }, 
         
-        
-        
-        
-        list : function(){}, join : function() {}, leave : function() {}, whisper : function(){}, 
-        me : function(){}, whois : function(){}
-        
-        
-        
-        
+
+        listrooms : function(rooms){
+        	logText(rooms + " listed") ;
+        }, 
+        leave : function(){}, 
+        whisper : function(){}, 
+        me : function(){}, 
+        whois : function(){}
         
     }, {
         serverClientFormat: 'csv'
@@ -81,8 +80,7 @@ function connect() {
         if (e.keyCode == 13) { // enter key pressed
             var text = entry.value;
             if (text) {
-	               	chatServer.say(text);
-                }
+               	chatServer.say(text);
             }
             entry.value = '';
         }

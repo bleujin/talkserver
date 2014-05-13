@@ -1,0 +1,30 @@
+new function(){
+
+	this.create = function(client, params){
+		var roomId = new net.ion.framework.util.ObjectId().toString() ;
+		session.tran(function(wsession){
+			var members = wsession.pathBy("/openrooms/" + roomId).child("members") ;
+			members.child(client.userId()) ;
+			members.child(params[0]) ;
+		}) ;
+		client.data("roomId", roomId) ;
+	}, 
+	
+	this.list = function(client, params){
+		// ex) list rooms, list friends, 
+		client.listrooms(session.pathBy("/openrooms").children().toString()) ;		
+	}, 
+	
+	this.whisper = function(client, params){
+		
+	}, 
+	
+	this.whoami = function(source, params){
+		var user = session.ghostBy("/users/" + source.id()) ;
+		source.sendMessage(rb.makeCommandResponse("/commands/whoami", "id:" + source.id() + ", nick:" + user.property("nickname").asString()).talkMessage()) ;
+	}, 
+	
+	this.time = function(source, params){
+		source.sendMessage(rb.makeCommandResponse("/commands/time", new java.util.Date().toString()).talkMessage()) ;
+	} 
+} ;

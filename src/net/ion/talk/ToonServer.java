@@ -27,6 +27,7 @@ import net.ion.radon.core.security.ChallengeAuthenticator;
 import net.ion.talk.account.AccountManager;
 import net.ion.talk.bot.BotManager;
 import net.ion.talk.filter.CrakenVerifier;
+import net.ion.talk.filter.ToonAuthenticator;
 import net.ion.talk.handler.craken.NotifyStrategy;
 import net.ion.talk.let.EmbedBotLet;
 import net.ion.talk.let.LoginLet;
@@ -36,6 +37,8 @@ import net.ion.talk.let.ScriptConfirmLet;
 import net.ion.talk.let.ScriptDoLet;
 import net.ion.talk.let.ScriptExecLet;
 import net.ion.talk.script.TalkScript;
+import net.ion.talk.toonweb.ClientLet;
+import net.ion.talk.toonweb.ToonWebResourceLet;
 
 public class ToonServer {
 
@@ -79,10 +82,8 @@ public class ToonServer {
 				.aradon()
 					.addAttribute(RepositoryEntry.EntryName, repoEntry)
 					.addAttribute(ScheduledExecutorService.class.getCanonicalName(), worker)
-					.addAttribute(TalkScript.class.getCanonicalName(), tscript)
 					.addAttribute(NewClient.class.getCanonicalName(), nc)
 					.addAttribute(SMSSender.class.getCanonicalName(), smsSender)
-					.addAttribute(BotManager.class.getCanonicalName(), BotManager.create(repoEntry.login()))
 				.sections()
 					.restSection("auth").addPreFilter(new ChallengeAuthenticator("users", verifier))
 						.path("login").addUrlPattern("/login").matchMode(IMatchMode.STARTWITH).handler(LoginLet.class)
@@ -101,7 +102,13 @@ public class ToonServer {
 						
 					.restSection("bot")
 						.path("bot").addUrlPattern("/{botId}").matchMode(IMatchMode.STARTWITH).handler(EmbedBotLet.class)
-
+						
+					.restSection("session")
+						.addPreFilter(new ToonAuthenticator("user"))
+						.path("client").addUrlPattern("/{userId}/{roomId}").handler(ClientLet.class)
+						
+					.restSection("toonweb")
+						.path("toonweb").addUrlPattern("/").matchMode(IMatchMode.STARTWITH).handler(ToonWebResourceLet.class)
 						
 					.restSection("admin").addAttribute("baseDir", "./resource/template")
 						.path("node").addUrlPattern("/repository/{renderType}").matchMode(IMatchMode.STARTWITH).handler(NodeLet.class)
@@ -127,7 +134,7 @@ public class ToonServer {
 	}
 
 	public ToonServer ready() throws Exception {
-		this.talkEngine.startEngine() ;
+		this.talkEngine.init().startEngine() ;
 		
 		status.set(Status.READY);
 		return this;

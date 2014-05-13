@@ -1,6 +1,7 @@
 package net.ion.talk;
 
 import net.ion.framework.parse.gson.JsonObject;
+import net.ion.framework.parse.gson.JsonUtil;
 import net.ion.framework.util.ObjectUtil;
 import net.ion.framework.util.StringUtil;
 
@@ -11,7 +12,7 @@ public abstract class TalkMessage {
 			JsonObject json = JsonObject.fromString(jsonText);
 			return new TalkScriptMessage(json.asString("id"), json.asString("script"), ParameterMap.create(json.asJsonObject("params"))).plainMessage(jsonText);
 		} catch (Exception notJson) {
-			return new PlainTalkMessage(jsonText);
+			return new IllegalTalkMessage(jsonText);
 		}
 	}
 
@@ -27,7 +28,11 @@ public abstract class TalkMessage {
 
 	public abstract String toPlainMessage() ;
 	
-	public abstract boolean isScript() ;
+	public abstract boolean isNormalMessage() ;
+	
+	public abstract String userMessage() ;
+	
+	public abstract boolean isCommandUserMessage() ;
 }
 
 
@@ -65,18 +70,27 @@ class TalkScriptMessage extends TalkMessage {
 		return plainMessage;
 	}
 	
-	public boolean isScript() {
+	public String userMessage(){
+		return params.asString("message") ;
+	}
+	
+	public boolean isCommandUserMessage(){
+		return userMessage().startsWith("/") ;
+	}
+	
+	public boolean isNormalMessage() {
 		return StringUtil.isNotBlank(id) && StringUtil.isNotBlank(scriptPath) ;
 	}
 }
 
 
 
-class PlainTalkMessage extends TalkMessage{
+
+class IllegalTalkMessage extends TalkMessage{
 
 	private String msg;
 
-	public PlainTalkMessage(String msg) {
+	public IllegalTalkMessage(String msg) {
 		this.msg = msg ;
 	}
 
@@ -100,8 +114,14 @@ class PlainTalkMessage extends TalkMessage{
 		return msg;
 	}
 
-	public boolean isScript() {
+	public boolean isNormalMessage() {
 		return false ;
 	}
 
+	public boolean isCommandUserMessage() {
+		return false ;
+	}
+	public String userMessage() {
+		return StringUtil.EMPTY ;
+	}
 }
