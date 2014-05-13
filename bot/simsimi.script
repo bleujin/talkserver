@@ -21,9 +21,10 @@ new function() {
 					var selfBotId = bm.botId() ;
 					var resp = eval('(' + jsonResponse + ')');
 					
+					
 		            var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + bm.newMsgId())
 		                    .property("message", resp.response)
-		                    .property("sender", selfBotId)
+		                    .refTo("sender", "/users/"+selfBotId)
 		                    .property("roomId", roomId)
 		                    .property("event", 'onMessage')
 		                    .property("clientScript", bm.clientScript())
@@ -45,11 +46,12 @@ new function() {
         session.tran(function(wsession) {
             var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + bm.newMsgId())
                     .property("message", "Hello I'm SimSimI")
-                    .property("sender", selfBotId)
+                    .refTo("sender","/users/"+ selfBotId)
                     .property("roomId", roomId)
                     .property("event", 'onMessage')
                     .property("clientScript", bm.clientScript())
                     .property("messageId", bm.messageId());
+                    
 
         }) ;
 		

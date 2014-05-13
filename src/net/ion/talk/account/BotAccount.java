@@ -33,7 +33,7 @@ public class BotAccount extends Account{
         			.clientScript(Message.DefaultOnMessageClientScript)
         			.message(messageNode.property(Const.Message.Message).asString())
         			.roomId( messageNode.parent().parent().fqn().name())
-        			.sender(messageNode.property(Const.Message.Sender).asString())
+        			.sender(messageNode.ref(Const.Message.Sender).property(Const.User.UserId).asString())
         			.messageId(messageNode.fqn().name()) ;
 		bs.callFn(accountId() + "." + eventName, bm) ;
 	}

@@ -101,7 +101,7 @@ new function(){
 			var msgNode=wsession.pathBy("/rooms/" + params.asString("roomId")+"/messages/"+randomId)
 				.property("message",params.asString("message"))
 				.property("messageId", randomId)
-				.refTo("sender","users/"+params.asString("sender"))
+				.refTo("sender","/users/"+params.asString("sender"))
 				.property("clientScript",params.asString("clientScript"))
 				.property("event","onMessage")
 				.property("requestId",params.asString("requestId"))
