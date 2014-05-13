@@ -17,7 +17,7 @@ new function(){
         session.tran(function(wsession) {
             var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + bm.newMsgId())
                     .property("message", bm.message())
-                    .property("sender", selfBotId)
+                    .refTo("sender", "/users/"+selfBotId)
                     .property("roomId", roomId)
                     .property("event", 'onMessage')
                     .property("clientScript", bm.clientScript())

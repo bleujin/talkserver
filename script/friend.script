@@ -75,7 +75,7 @@ new function(){
 		var children = session.pathBy("/bots").children();
 	
 		return rb.create().newInner().inlist("friends", user.refs("recommendFriends").toList(),"phone,nickname,userId,stateMessage")
-			.root().inlist("bots", children, "bot.userId,bot.nickname,bot.phone,bot.stateMessage").property("clientScript","client.friends().listRecomendFriends();").build().toJsonElement();
+			.root().inlist("bots", children, "user.userId,user.nickname,user.phone,user.stateMessage").property("clientScript","client.friends().listRecomendFriends();").build().toJsonElement();
 	}
 
 } ;

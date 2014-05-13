@@ -86,8 +86,8 @@ public class UserInAndOutRoomHandler implements CDDHandler {
                         .property(Room.RoomId, roomId)
                         .property(Message.Time, Calendar.getInstance().getTimeInMillis())
                         .property(Message.Message, userId)
-                        .refTo(Message.ClientScript, Message.DefaultOnMessageClientScript) 
-                        .property(Message.Sender, userId)
+                        .property(Message.ClientScript, Message.DefaultOnMessageClientScript) 
+                        .refTo(Message.Sender, userId)
                         .property(Message.MessageId, messageId);
 
                 return null;
