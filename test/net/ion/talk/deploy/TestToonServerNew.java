@@ -43,8 +43,8 @@ public class TestToonServerNew extends TestCase {
 		String filePath = "./resource/craken";
 		FileUtil.deleteDirectory(new File(filePath));
 		
-		RepositoryEntry rentry = RepositoryEntry.testSoloFile(filePath) ;
-//		RepositoryEntry rentry = RepositoryEntry.test() ;
+//		RepositoryEntry rentry = RepositoryEntry.testSoloFile(filePath) ;
+		RepositoryEntry rentry = RepositoryEntry.test() ;
 		ScheduledExecutorService worker = Executors.newScheduledThreadPool(10) ;
 
 		final ToonServer tserver = ToonServer.testCreate(rentry, worker);
@@ -56,8 +56,6 @@ public class TestToonServerNew extends TestCase {
 			public Void handle(WriteSession wsession) throws Exception {
 				wsession.pathBy("/users/hero@i-on.net").property(User.Password, "1").property(User.NickName, "hero").property(User.StateMessage, "-_-;").property(User.Phone, "1042216492") ;
 				wsession.pathBy("/users/bleujin@i-on.net").property(User.Password, "1").property(User.NickName, "bleujin").property(User.StateMessage, "-_-a").property(User.Phone, "1042216492") ;
-				
-				wsession.pathBy("/rooms/roomroom/members/hero@i-on.net") ;
 				return null;
 			}
 		});
