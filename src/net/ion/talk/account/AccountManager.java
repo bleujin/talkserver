@@ -1,15 +1,19 @@
 package net.ion.talk.account;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.tree.PropertyValue;
+import net.ion.framework.logging.LogBroker;
 import net.ion.message.push.sender.Pusher;
 import net.ion.radon.aclient.NewClient;
 import net.ion.talk.TalkEngine;
 import net.ion.talk.UserConnection;
+import net.ion.talk.account.Account.Type;
 import net.ion.talk.bean.Const;
+import net.ion.talk.responsebuilder.TalkResponse;
 import net.ion.talk.script.BotScript;
 
 /**
@@ -26,8 +30,16 @@ public class AccountManager{
     private BotScript bs;
     private final TalkEngine tengine;
     private ReadSession session;
-    private NewClient newClient;
+    private Logger log = LogBroker.getLogger(AccountManager.class) ;
 
+    private Account NotRegisteredUser = new Account("notFound", Type.NotFoundUser) {
+        @Override
+        public void onMessage(String notifyId, TalkResponse s) {
+        	log.warning("not registed user");
+        }
+    };
+
+    
     protected AccountManager(BotScript bs, TalkEngine tengine, Pusher pusher) throws IOException {
     	this.bs = bs ;
         this.tengine = tengine;
@@ -37,7 +49,6 @@ public class AccountManager{
 
     protected void init() throws IOException {
         session = tengine.readSession();
-        this.newClient = tengine.context().getAttributeObject(NewClient.class.getCanonicalName(), NewClient.class);
     }
 
     public static AccountManager create(BotScript bs, TalkEngine tengine, Pusher sender) throws IOException {
@@ -56,7 +67,7 @@ public class AccountManager{
             return new DisconnectedAccount(userId, session, pusher) ;
         }
 
-        return Account.NotRegisteredUser;
+        return NotRegisteredUser;
     }
 
 }

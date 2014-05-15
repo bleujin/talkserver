@@ -17,7 +17,7 @@
 		<a href="#" class="easyui-linkbutton" onclick="addTab('easyui','http://jeasyui.com/')">easyui</a>
 	</div>
 	<div id="zone" class="easyui-tabs" style="width:400px;height:250px;">
-		<div title="Home">
+		<div title="Home" id='Home'>
 		</div>
 	</div>
 	
@@ -30,7 +30,7 @@
 			if ($('#zone').tabs('exists', title)){
 				$('#zone').tabs('select', title);
 			} else {
-				var content = '<div id="#' + title + '" style="overflow:scroll; width:600; height:380"></div>'; //'<iframe scrolling="auto" frameborder="0"  src="'+url+'" style="width:100%;height:100%;"></iframe>';
+				var content = '<div id="' + title + '" style="overflow:scroll; width:600; height:380"></div>'; //'<iframe scrolling="auto" frameborder="0"  src="'+url+'" style="width:100%;height:100%;"></iframe>';
 				$('#zone').tabs('add',{
 					title:title,
 					content:content,
@@ -41,12 +41,111 @@
 		
 		jQuery("#message").keydown(function(event) {
 			if (event.which == 13) {
-		  		addTab($("#message").val()) ;
-		  		alert($('#zone').tabs('getSelected').panel('options').title) ;			
+				var msg = $("#message").val() ;
+				if (msg.startWith("/join ")){
+					var roomId = msg.substringAfter(" ") ;
+			  		addTab(roomId) ;
+				} else {
+					var divId = $('#zone').tabs('getSelected').panel('options').title ;
+					jQuery("#" + divId).append(msg) ;
+					console.log(divId + msg) ;
+				}
+				$("#message").val('') ;
+				$("#message").focus() ;
+//		  		alert($('#zone').tabs('getSelected').panel('options').title) ;			
 			}
 			
 		});
 		
+				
+				
+		String.prototype.isRequired = function (){
+			return (this.trim() != '' && escape(this).replace(/%u3000/g, "").replace(/%20/g, "").length != 0 );
+		};
+		String.prototype.isNotRequired = function (){
+			return ! this.isRequired();
+		};
+		String.prototype.isEmpty = function (){
+			return this == '' ;
+		};
+		String.prototype.startWith = function (txt){
+			return this.indexOf(txt) == 0 ;
+		};
+		String.prototype.isBlank = function (){
+			return this.trim() == '' ;
+		};
+		String.prototype.isNotBlank = function (){
+			return ! this.isBlank() ;
+		};
+		String.prototype.isNotEmpty = function (){
+			return ! this.isEmpty() ;
+		};
+		
+		String.prototype.trim = function() {
+		    return this.replace(/^\s*|\s*$/g, "");
+		};
+		
+		String.prototype.ltrim = function() {
+		    return this.replace(/^\s*/g, "");
+		};
+		
+		String.prototype.rtrim = function() {
+		    return this.replace(/\s*$/g, "");
+		};
+		
+		String.prototype.toNumber = function(){
+			return this - 0 ;
+		};
+		
+		String.prototype.defaultString = function(defaultStr){
+			return this == '' ? defaultStr : this ;
+		};
+		
+		String.prototype.equalsIgnoreCase = function(_that){
+			return this.toLowerCase() == _that.toLowerCase() ;
+		};
+		
+		String.prototype.substringBefore = function (separator){
+			var strArray = this.split(separator) ;
+			return strArray[0] ;
+		};
+		
+		String.prototype.substringAfter = function (separator){
+			var strArray = this.split(separator) ;
+			return this.substr(strArray[0].length+1) ;
+		};
+		
+		String.prototype.substringBeforeLast = function(separator){
+			var strArray = this.split(separator) ;
+			var result = '' ;
+			for(var i=0; i<strArray.length-1 ; i++){
+				result += (strArray[i] + separator) ;
+			}
+			return result.substring(0, (result.length - separator.length))  ;
+		};
+		
+		String.prototype.substringAfterLast = function (separator){
+			var strArray = this.split(separator) ;
+			return strArray[strArray.length - 1] ;
+		};
+		
+		String.prototype.substringBetween = function(beginStr, endStr) {
+			var beginLoc = this.indexOf(beginStr) ;
+			return this.substring(beginLoc + beginStr.length, this.indexOf(endStr, beginLoc + beginStr.length)) ;
+		};
+		
+		String.prototype.substringBetweenLast = function(beginStr, endStr) {
+			var beginLoc = this.lastIndexOf(beginStr) ;
+			return this.substring(beginLoc + beginStr.length, this.indexOf(endStr, beginLoc + beginStr.length)) ;
+		};
+		
+		String.prototype.repeat = function(num){
+			var result = '' ;
+			for (var i=0 ; i < num ; i++){
+				result += this ;
+			}
+			return result ;
+		};		
 	</script>	
 </body>
 </html>

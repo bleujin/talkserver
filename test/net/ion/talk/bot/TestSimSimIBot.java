@@ -69,24 +69,7 @@ public class TestSimSimIBot extends TestCase {
 		this.radon.stop();
 		super.tearDown();
 	}
-	
-	public void testFirst() throws IOException, InterruptedException, ExecutionException {
-		NewClient nc = talkEngine.context().getAttributeObject(NewClient.class.getCanonicalName(), NewClient.class);
-		String url = "http://sandbox.api.simsimi.com/request.p?key=22441b90-e7a7-4a68-9f5b-6486b0a59676&lc=ko&text=안녕";
-		
-		nc.prepareGet(url).execute(new AsyncCompletionHandler<Void>() {
-			@Override
-			public Void onCompleted(Response response) throws Exception {
-				Debug.line(response.getStatus().getCode());
-				Debug.line(response.getTextBody());
-				return null;
-			}
 
-			public void onThrowable(Throwable ex) {
-				// handler.onThrow(message, ex);
-			}
-		}).get();
-	}	
 
 	public void testOnLoad() throws Exception {
 		talkEngine.init().startEngine();
@@ -132,7 +115,7 @@ public class TestSimSimIBot extends TestCase {
 		talkEngine.init().startEngine();
 		ReadSession session = talkEngine.readSession();
 
-		talkToSimsimi(session, "안녕");
+		talkToSimsimi(session, "안녕 심심이");
 		
 		session.workspace().cddm().await();
 		Thread.sleep(5000);
@@ -146,7 +129,7 @@ public class TestSimSimIBot extends TestCase {
 		talkEngine.init().startEngine();
 		ReadSession session = talkEngine.readSession();
 
-		talkToSimsimi(session, "Hello");
+		talkToSimsimi(session, "Hello sim");
 		
 		session.workspace().cddm().await();
 		Thread.sleep(5000);

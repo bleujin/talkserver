@@ -20,18 +20,18 @@ public class TestBotClient extends TestCase {
 	public void testFirst() throws IOException, InterruptedException, ExecutionException {
 
 		RepositoryImpl repo = RepositoryImpl.inmemoryCreateWithTest();
-		ReadSession session = repo.login("test");
+		final ReadSession session = repo.login("test");
 
-		BotMessage bm = BotMessage.create().botId("simsimi").clientScript(Const.Message.DefaultOnMessageClientScript).message("Hello").sender("simsimi");
+		final BotMessage bm = BotMessage.create().botId("simsimi").clientScript(Const.Message.DefaultOnMessageClientScript).message("Hello").sender("simsimi");
 
 		NewClient nc = NewClient.create(ClientConfig.newBuilder().setMaxRequestRetry(5).setMaxRequestRetry(2).build());
-		BotClient bc = BotClient.create(nc);
+		RestClient bc = RestClient.create(nc, session);
 
 		String url = "http://ip.jsontest.com/";
 
-		BotCompletionHandler handler = new BotCompletionHandler() {
+		BotCompletionHandler<Void> handler = new BotCompletionHandler<Void>() {
 			@Override
-			public void onCompleted(ReadSession session, final BotMessage bm, final JsonObject response) {
+			public Void onCompleted(final JsonObject response) {
 				session.tran(new TransactionJob<Void>() {
 					@Override
 					public Void handle(WriteSession wsession) throws Exception {
@@ -39,15 +39,17 @@ public class TestBotClient extends TestCase {
 						return null;
 					}
 				});
+				return null ;
 			}
 
 			@Override
-			public void onThrowable(Throwable t) {
+			public Void onThrowable(Throwable t) {
 				t.printStackTrace();
+				return null ;
 			}
 		};
 
-		bc.executeGet(url, session, bm, handler).get();
+		bc.request(url).get(handler);
 
 		assertTrue(session.exists("/botclient_result/1234"));
 
@@ -56,4 +58,16 @@ public class TestBotClient extends TestCase {
 		assertEquals("simsimi", node.property("botId").asString());
 	}
 
+	
+	
+	public void testInterface() throws Exception {
+		RepositoryImpl repo = RepositoryImpl.inmemoryCreateWithTest();
+		ReadSession session = repo.login("test");
+		
+		NewClient nc = NewClient.create() ;
+		RestClient.create(nc, session) ;
+	}
+	
+	
+	
 }

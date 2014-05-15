@@ -7,9 +7,16 @@ import net.ion.framework.util.StringUtil;
 
 public abstract class TalkMessage {
 
+	
+	public enum MType {
+		COMMAND, NORMAL, ILLEGAL
+	}
+	
 	public static TalkMessage fromJsonString(String jsonText) {
 		try {
 			JsonObject json = JsonObject.fromString(jsonText);
+			if (StringUtil.isBlank(json.asString("id")) || StringUtil.isBlank(("script"))) return new IllegalTalkMessage(jsonText) ; 
+			
 			return new TalkScriptMessage(json.asString("id"), json.asString("script"), ParameterMap.create(json.asJsonObject("params"))).plainMessage(jsonText);
 		} catch (Exception notJson) {
 			return new IllegalTalkMessage(jsonText);
@@ -28,11 +35,9 @@ public abstract class TalkMessage {
 
 	public abstract String toPlainMessage() ;
 	
-	public abstract boolean isNormalMessage() ;
+	public abstract MType messageType() ;
 	
 	public abstract String userMessage() ;
-	
-	public abstract boolean isCommandUserMessage() ;
 }
 
 
@@ -74,12 +79,8 @@ class TalkScriptMessage extends TalkMessage {
 		return params.asString("message") ;
 	}
 	
-	public boolean isCommandUserMessage(){
-		return userMessage().startsWith("/") ;
-	}
-	
-	public boolean isNormalMessage() {
-		return StringUtil.isNotBlank(id) && StringUtil.isNotBlank(scriptPath) ;
+	public MType messageType() {
+		return userMessage().startsWith("/") ? MType.COMMAND : MType.NORMAL ;
 	}
 }
 
@@ -114,13 +115,10 @@ class IllegalTalkMessage extends TalkMessage{
 		return msg;
 	}
 
-	public boolean isNormalMessage() {
-		return false ;
+	public MType messageType() {
+		return MType.ILLEGAL ;
 	}
 
-	public boolean isCommandUserMessage() {
-		return false ;
-	}
 	public String userMessage() {
 		return StringUtil.EMPTY ;
 	}

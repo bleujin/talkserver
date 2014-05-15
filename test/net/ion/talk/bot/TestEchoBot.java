@@ -37,7 +37,7 @@ import net.ion.talk.handler.craken.TalkMessageHandler;
 import net.ion.talk.handler.craken.UserInAndOutRoomHandler;
 import net.ion.talk.handler.engine.ServerHandler;
 import net.ion.talk.handler.engine.UserConnectionHandler;
-import net.ion.talk.handler.engine.WebSocketScriptHandler;
+import net.ion.talk.handler.engine.TalkScriptHandler;
 import net.ion.talk.let.ResourceLet;
 import net.ion.talk.let.ScriptDoLet;
 import net.ion.talk.script.BotScript;

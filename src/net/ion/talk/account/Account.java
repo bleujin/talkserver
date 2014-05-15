@@ -33,10 +33,4 @@ public abstract class Account {
         this.type = type;
     }
 
-    public static Account NotRegisteredUser = new Account("notFound", Type.NotFoundUser) {
-        @Override
-        public void onMessage(String notifyId, TalkResponse s) {
-        }
-
-    };
 }

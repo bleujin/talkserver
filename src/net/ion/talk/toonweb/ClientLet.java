@@ -43,8 +43,7 @@ public class ClientLet implements IServiceLet {
 
 	@Get @Post
 	public Representation viewPage(
-				@ContextParam("repository") RepositoryEntry rentry, @AnRequest InnerRequest request,
-				@PathParam("roomId") final String roomId) throws IOException, InterruptedException, ExecutionException{
+				@ContextParam("repository") RepositoryEntry rentry, @AnRequest InnerRequest request) throws IOException, InterruptedException, ExecutionException{
 		
 		final String userId = request.getClientInfo().getUser().getIdentifier() ;
 		ReadSession session = rentry.login() ;
@@ -60,7 +59,7 @@ public class ClientLet implements IServiceLet {
 		IOUtil.copyNClose( new FileReader(tplFile), template) ;
 		
 		StringTemplate st = new StringTemplate(template.toString());
-		Map<String, String> configMap = MapUtil.<String>chainKeyMap().put("address", websocketURI).put("sender", userId).put("roomId", roomId).toMap() ;
+		Map<String, String> configMap = MapUtil.<String>chainKeyMap().put("address", websocketURI).put("sender", userId).toMap() ;
 		
 		st.setAttribute("config", configMap);
 		
@@ -68,7 +67,6 @@ public class ClientLet implements IServiceLet {
 			@Override
 			public Void handle(WriteSession wsession) throws Exception {
 				wsession.pathBy("/connections/" + userId).property("source", "web") ;
-				wsession.pathBy("/rooms/" + roomId + "/members/" + userId) ;
 				return null;
 			}
 		});
