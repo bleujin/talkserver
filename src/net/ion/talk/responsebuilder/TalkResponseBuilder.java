@@ -41,13 +41,14 @@ public class TalkResponseBuilder {
                 .property("result", result instanceof JsonElement ? result : ObjectUtil.toString(result, "undefined")).build();
     }
     
-    public static TalkResponse makeCommandResponse(String script, Object result){
+    public static BasicBuilder makeCommandBuilder(String script){
         return TalkResponseBuilder.create().newInner()
                 .property("createAt", ToonServer.GMTTime())
                 .property("status", "success")
-                .property("script", script)
-                .property("result", result instanceof JsonElement ? result : ObjectUtil.toString(result, "undefined")).build();
+                .property("script", script) ;
+//                .property("result", result instanceof JsonElement ? result : ObjectUtil.toString(result, "undefined")).build();
     }
+
 
     public static TalkResponse failResponse(Exception e) {
         return TalkResponseBuilder.create().newInner()

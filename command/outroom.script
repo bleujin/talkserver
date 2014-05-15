@@ -1,30 +1,153 @@
 new function(){
+	var toString = function(obj) {
+	    var str = '';
+	    for (var p in obj) {
+	        if (obj.hasOwnProperty(p)) {
+	            str += p + '::' + obj[p] + '\n';
+	        }
+	    }
+	    return str;
+	} ;
+	
 
-	this.create = function(client, params){
+	this.create = function(client, cparam){
 		var roomId = new net.ion.framework.util.ObjectId().toString() ;
 		session.tran(function(wsession){
 			var members = wsession.pathBy("/openrooms/" + roomId).child("members") ;
 			members.child(client.userId()) ;
-			members.child(params[0]) ;
+			members.child(cparam.remain(0)) ;
 		}) ;
 		client.data("roomId", roomId) ;
 	}, 
 	
-	this.list = function(client, params){
+	this.list = function(client, cparam){
 		// ex) list rooms, list friends, 
 		client.listrooms(session.pathBy("/openrooms").children().toString()) ;		
 	}, 
 	
-	this.whisper = function(client, params){
+	this.whisper = function(client, cparam){
 		
 	}, 
 	
-	this.whoami = function(source, params){
+	this.whoami = function(source, cparam){
 		var user = session.ghostBy("/users/" + source.id()) ;
-		source.sendMessage(rb.makeCommandResponse("/commands/whoami", "id:" + source.id() + ", nick:" + user.property("nickname").asString()).talkMessage()) ;
+		source.sendMessage(rb.makeCommandBuilder("/commands/whoami")
+			.inner("result")
+				.property("clientScript", "client.room().message(args.message);")
+				.property("message", "id:" + source.id() + ", nick:" + user.property("nickname").asString()).build().talkMessage()) ;
 	}, 
 	
-	this.time = function(source, params){
-		source.sendMessage(rb.makeCommandResponse("/commands/time", new java.util.Date().toString()).talkMessage()) ;
+	this.time = function(source, cparam){
+		source.sendMessage(
+			rb.makeCommandBuilder("/commands/time")
+			  .inner("result")
+				.property("clientScript", "client.room().message(args.message);")
+				.property("message", new java.util.Date().toString()).build().talkMessage()) ;
+	}, 
+	
+	this.join = function(source, cparam){
+		var roomId = cparam.remain(0) ;
+		session.tranSync(function(wsession){
+			wsession.pathBy("/openrooms/" + roomId).refTo("room", "/rooms/" + roomId).property("roomId", roomId) ;
+			wsession.pathBy("/rooms/" + roomId + "/members/" + source.id()) ;
+		}) ;
+		// rb.create().newInner().property(room, "title").property("roomId",params.asString("roomId")).inlist("members").property(members,"user.userId,user.nickname").build().toJsonElement();
+		// rb.create().newInner().property("clientScript", "addTab('" + roomId + "');").build().toString()
+
+		source.sendMessage(rb.makeCommandBuilder("/commands/join")
+			.inner("result")
+				.property("clientScript", "client.room().join('" + roomId + "');")
+				.build().talkMessage()) ;				
+	}, 
+	
+	this.bot = function(source, cparam){
+		var botId = cparam.remain(0) ;
+		if (!session.exists("/bots/" + botId)){
+			source.sendMessage(
+			rb.makeCommandBuilder("/commands/bot")
+			  .inner("result")
+				.property("clientScript", "client.room().message(args.message);")
+				.property("message", botId + ' not exists' ).build().talkMessage()) ;
+			return ;
+		} 
+		
+		session.tranSync(function(wsession){
+			wsession.pathBy("/rooms/" + cparam.asString("roomId") + "/members/" + botId) ;
+		}) ;
+		
+		source.sendMessage(
+			rb.makeCommandBuilder("/commands/bot")
+			  .inner("result")
+				.property("clientScript", "client.room().message(args.message);")
+				.property("message", botId + ' invited' ).build().talkMessage()) ;
+		
+	}, 
+	
+	this.members = function(source, cparam){
+		var result = [] ;
+		var children = session.pathBy("/rooms/" + cparam.asString("roomId") + "/members").children().iterator() ;
+		while(children.hasNext()){
+			result.push(children.next().fqn().name()) ;
+		}
+		
+		source.sendMessage(
+			rb.makeCommandBuilder("/commands/members")
+			  .inner("result")
+				.property("clientScript", "client.room().message(args.message);")
+				.property("message", result.join(', ')).build().talkMessage()) ;
+	}, 
+	
+	this.ban = function(source, cparam){
+		var roomId = cparam.asString("roomId") ;
+		var targetId = cparam.remain(0) ;
+		if (!session.exists("/rooms/" + roomId + "/members/" + targetId)){
+			source.sendMessage(
+			rb.makeCommandBuilder("/commands/ban")
+			  .inner("result")
+				.property("clientScript", "client.room().message(args.message);")
+				.property("message", targetId + ' not exists' ).build().talkMessage()) ;
+			return ;
+		} 
+		
+		session.tranSync(function(wsession){
+			wsession.pathBy("/rooms/" + roomId + "/members/" + targetId).removeSelf() ;
+		}) ;
+	}, 
+	
+	this.info = function(source, cparam){
+		var roomId = cparam.asString("roomId") ;
+		
+		var result = {} ;
+		result.topic = session.pathBy("/rooms/" + cparam.asString("roomId")).property("title").asString() ;
+		result.members = [] ;
+		var children = session.pathBy("/rooms/" + cparam.asString("roomId") + "/members").children().iterator() ;
+		while(children.hasNext()){
+			result.members.push(children.next().fqn().name()) ;
+		}
+		
+		source.sendMessage(
+			rb.makeCommandBuilder("/commands/info")
+			  .inner("result")
+				.property("clientScript", "client.room().message(args.message);")
+				.property("sender", "&lt;system&gt;")
+				.property("message", toString(result)).build().talkMessage()) ;
+	}, 
+	
+	
+	this.topic = function(source, cparam){
+		var topic = cparam.remains() ;
+		session.tranSync(function(wsession){
+			wsession.pathBy("/rooms/" + cparam.asString("roomId")).property("title", topic);
+		}) ;
+		
+		source.sendMessage(
+			rb.makeCommandBuilder("/commands/topic")
+			  .inner("result")
+				.property("clientScript", "client.room().message(args.message);")
+				
+				.property("message", 'topic[' + topic + ']' + ' changed').build().talkMessage()) ;
+		
 	} 
+	
+	
 } ;

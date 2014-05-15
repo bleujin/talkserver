@@ -11,7 +11,8 @@ new function(){
 		var selfBotId = bm.botId() ;
 
 
-		if ("echo" == oriSender) return ;
+		// if ("echo" == oriSender) return ;
+		if (session.exists("/bots/" + oriSender)) return ;
 		
 		var memberList = session.pathBy("/rooms/" + roomId + "/members").childrenNames().toArray();
         session.tran(function(wsession) {

@@ -1,6 +1,6 @@
 new function() {
 	// simsimi test key = 22441b90-e7a7-4a68-9f5b-6486b0a59676
-	var serverHost = 'http://sandbox.api.simsimi.com/request.p?key=22441b90-e7a7-4a68-9f5b-6486b0a59676&lc=ko&text=' ;
+	var serverHost = 'http://sandbox.api.simsimi.com/request.p?key=22441b90-e7a7-4a68-9f5b-6486b0a59676&lc=ko' ;
 	
 	
 	this.onLoad = function(){
@@ -13,14 +13,12 @@ new function() {
 	this.onMessage = function(bm){
 		if ("simsimi" == bm.sender()) return ;
 		
-		var url = serverHost + bm.message();
 		var handler = new net.ion.talk.bot.connect.BotCompletionHandler() {
-			onCompleted: function(session, bm, jsonResponse) {
+			onCompleted: function(jsonResponse) {
 				session.tran(function(wsession) {
 					var roomId = bm.roomId() ;
 					var selfBotId = bm.botId() ;
 					var resp = eval('(' + jsonResponse + ')');
-					
 					
 		            var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + bm.newMsgId())
 		                    .property("message", resp.response)
@@ -33,7 +31,7 @@ new function() {
 			}
 		};
 		
-		bc.executeGet(url, session, bm, handler);
+		bc.request(serverHost).addParameter("text", bm.message()).post(handler);
 	},
 	
 	this.onEnter = function(bm){

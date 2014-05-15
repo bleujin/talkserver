@@ -8,6 +8,7 @@ import net.ion.framework.util.StringUtil;
 import net.ion.talk.ParameterMap;
 import net.ion.talk.TalkEngine;
 import net.ion.talk.TalkEngine.Reason;
+import net.ion.talk.TalkMessage.MType;
 import net.ion.talk.TalkMessage;
 import net.ion.talk.UserConnection;
 import net.ion.talk.handler.TalkHandler;
@@ -17,7 +18,7 @@ import net.ion.talk.script.TalkScript;
 /**
  * Created with IntelliJ IDEA. User: Ryun Date: 2014. 2. 5. Time: 오후 3:55 To change this template use File | Settings | File Templates.
  */
-public class WebSocketScriptHandler implements TalkHandler {
+public class TalkScriptHandler implements TalkHandler {
 
 	private TalkScript tscript;
 
@@ -32,10 +33,12 @@ public class WebSocketScriptHandler implements TalkHandler {
 
 	@Override
 	public void onMessage(TalkEngine tengine, final UserConnection uconn, ReadSession rsession, final TalkMessage tmsg) {
-		if (!tmsg.isNormalMessage() || tmsg.isCommandUserMessage()) {
-//			uconn.sendMessage(tmsg.toPlainMessage()); // echo
-			return;
+		if (tmsg.messageType() == MType.COMMAND) return ;
+		if (tmsg.messageType() == MType.ILLEGAL) {
+			uconn.sendMessage("illegal message : " + tmsg.toPlainMessage());
+			return ;
 		}
+
 		
 		tscript.callFn(tmsg.script(), ObjectUtil.coalesce(tmsg.params(), ParameterMap.BLANK), new ScriptResponseHandler<Void>() {
 			@Override

@@ -11,12 +11,13 @@ import net.ion.framework.util.ArrayUtil;
 import net.ion.framework.util.StringUtil;
 import net.ion.talk.TalkEngine;
 import net.ion.talk.TalkEngine.Reason;
+import net.ion.talk.TalkMessage.MType;
 import net.ion.talk.TalkMessage;
 import net.ion.talk.UserConnection;
 import net.ion.talk.handler.TalkHandler;
 import net.ion.talk.script.CommandScript;
 
-public class WebCommandHandler implements TalkHandler{
+public class TalkCommandHandler implements TalkHandler{
 
 	private CommandScript cs;
 
@@ -32,12 +33,12 @@ public class WebCommandHandler implements TalkHandler{
 
 	@Override
 	public void onMessage(TalkEngine tengine, UserConnection uconn, ReadSession rsession, TalkMessage tmsg) {
-		if (! tmsg.isCommandUserMessage()) return ;
+		if (tmsg.messageType() != MType.COMMAND) return ;
 		
 		String agent = uconn.request().header(HttpHeaders.USER_AGENT) ;
-		String[] cmds = StringUtil.split(tmsg.userMessage(), " /") ;
+		CommandParam cparam = CommandParam.create(tmsg) ;
 		
-		cs.outroomFn(cmds[0], uconn, ArrayUtil.subarray(cmds, 1, cmds.length)) ;
+		cs.outroomFn(cparam, uconn) ;
 	}
 
 	@Override

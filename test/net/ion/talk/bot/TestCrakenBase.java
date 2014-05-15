@@ -34,26 +34,6 @@ public class TestCrakenBase extends TestCase {
         return rsession.pathBy("/notifies/"+userId).children().firstNode();
     }
 
-    protected void sendWhisperMessage(final String roomId, final String messageId, final String sender, final String msg, final String ... receivers){
-        rsession.tran(new TransactionJob<Object>() {
-            @Override
-            public Object handle(WriteSession wsession) throws Exception {
-                WriteNode message = wsession.pathBy("/rooms/"+roomId+ "/messages/"+messageId)
-                        .refTo(Const.Message.Sender, "/users/" + sender)
-                        .property(Const.Message.Message, msg)
-                        .property(Const.Message.MessageId, messageId);
-                for(String receiver : receivers){
-                    message.append(Const.Message.Receivers, receiver);
-                }
-                return null;
-            }
-        });
-    }
-
-    protected void sendMessageToRoom(String roomId, String messageId, String sender, String msg) {
-        sendWhisperMessage(roomId, messageId, sender, msg, new String[0]);
-    }
-
 
     protected void createBotToCraken(final String botId, final String requestURL, final boolean isSync) {
         rsession.tran(new TransactionJob<Object>() {

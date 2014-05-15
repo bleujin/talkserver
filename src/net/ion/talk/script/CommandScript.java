@@ -24,6 +24,7 @@ import net.ion.framework.util.ObjectUtil;
 import net.ion.framework.util.StringUtil;
 import net.ion.nradon.WebSocketConnection;
 import net.ion.talk.UserConnection;
+import net.ion.talk.handler.engine.CommandParam;
 import net.ion.talk.responsebuilder.TalkResponseBuilder;
 import net.ion.talk.toonweb.ChatServer;
 import net.ion.talk.toonweb.ChatClient;
@@ -205,7 +206,7 @@ public class CommandScript {
 	}
 
 	
-	public <T> T callFn(String fullFnName, UserConnection source, Object[] args, CommandResponseHandler<T> returnnative) {
+	private <T> T callFn(String fullFnName, UserConnection source, CommandParam cparam, CommandResponseHandler<T> returnnative) {
 		try {
 			
 			String[] names = StringUtil.split(fullFnName, '.') ;
@@ -214,24 +215,24 @@ public class CommandScript {
 			String fnName = names[1];
 
 			Object pack = packages.get(packName);
-			if (pack == null) return returnnative.onThrow(fnName, args, new IOException("not found package : " + fnName)) ;
+			if (pack == null) return returnnative.onThrow(fnName, cparam, new IOException("not found package : " + fnName)) ;
 
-			Object result = ((Invocable) sengine).invokeMethod(pack, fnName, source, args);
+			Object result = ((Invocable) sengine).invokeMethod(pack, fnName, source, cparam);
 			if(result instanceof NativeJavaObject) result = ((NativeJavaObject)result).unwrap() ;  
 			result = ObjectUtil.coalesce(result, "undefined") ;
 			  
-			return returnnative.onSuccess(fullFnName, args, result);
+			return returnnative.onSuccess(fullFnName, cparam, result);
 		} catch (ScriptException ex) {
-			return returnnative.onThrow(fullFnName, args, ex) ;
+			return returnnative.onThrow(fullFnName, cparam, ex) ;
 		} catch (IndexOutOfBoundsException ex) {
-			return returnnative.onThrow(fullFnName, args, ex) ;
+			return returnnative.onThrow(fullFnName, cparam, ex) ;
 		} catch (NoSuchMethodException ex) {
-			return returnnative.onThrow(fullFnName, args, ex) ;
+			return returnnative.onThrow(fullFnName, cparam, ex) ;
 		}
 	}
 
-	public Object outroomFn(String fnName, UserConnection source, Object[] args) {
-		return callFn("outroom." + fnName, source, args, CommandResponseHandler.ReturnNative) ;
+	public Object outroomFn(CommandParam cparam, UserConnection source) {
+		return callFn("outroom." + cparam.fnName(), source, cparam, CommandResponseHandler.ReturnNative) ;
 	}
 
 }
@@ -240,18 +241,18 @@ public class CommandScript {
 interface CommandResponseHandler<T> {
 	public final static CommandResponseHandler<Object> ReturnNative = new CommandResponseHandler<Object>() {
 		@Override
-		public Object onSuccess(String fullName, Object[] args, Object result) {
+		public Object onSuccess(String fullName, CommandParam cparam, Object result) {
 			return result;
 		}
 
 		@Override
-		public Object onThrow(String fullName, Object[] args, Exception ex) {
+		public Object onThrow(String fullName, CommandParam cparam, Exception ex) {
 			ex.printStackTrace(); 
 			return ex;
 		}
 	};
 
-	public T onSuccess(String fullName, Object[] args, Object result) ;
-	public T onThrow(String fullName, Object[] args, Exception ex) ;
+	public T onSuccess(String fullName, CommandParam cparam, Object result) ;
+	public T onThrow(String fullName, CommandParam cparam, Exception ex) ;
 }
 

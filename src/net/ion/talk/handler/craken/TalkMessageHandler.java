@@ -22,6 +22,7 @@ import net.ion.framework.util.StringUtil;
 import net.ion.radon.aclient.NewClient;
 import net.ion.talk.ToonServer;
 import net.ion.talk.bean.Const;
+import net.ion.talk.bean.Const.Message;
 
 import com.google.common.base.Functions;
 import com.google.common.base.Predicate;
@@ -81,13 +82,18 @@ public class TalkMessageHandler implements CDDHandler {
                 //유저에게 전송
                 String roomId = resolveMap.get(Const.Room.RoomId) ;
                 String messageId = resolveMap.get(Const.Message.MessageId) ;
+                PropertyId exPropertyId = PropertyId.normal(Message.ExclusiveSender);
+				boolean exclusiveSender = pmap.containsKey(exPropertyId) ? pmap.get(exPropertyId).asBoolean() : false ;
+                String senderRef = pmap.get(PropertyId.refer(Message.Sender)).asString() ;
                 
 //                Debug.line('x', roomId, wsession.pathBy("/rooms/roomroom/messages/" + messageId).transformer(net.ion.craken.node.convert.Functions.WRITE_TOFLATMAP));
                 Set<String> users = wsession.pathBy("/rooms/" + roomId + "/members").childrenNames();
+                Set receivers = getReceivers(pmap).asSet() ;
+                
                 for(String userId : users){
                     //귓속말에 자기 자신이 없으면 continue;
-                    Set receivers = getReceivers(pmap).asSet() ;
 //                    pmap.get(PropertyId.fromIdString(Const.Message.Receivers)).asSet();
+                	if (exclusiveSender && senderRef.endsWith("/" + userId)) continue ;
                     if (StringUtil.isBlank(getReceivers(pmap).asString()) || receivers.contains(userId))  
                     	writeNotification(wsession, userId, roomId, messageId);
                 }
