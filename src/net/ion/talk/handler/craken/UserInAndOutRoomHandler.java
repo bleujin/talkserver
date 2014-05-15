@@ -49,12 +49,12 @@ public class UserInAndOutRoomHandler implements CDDHandler {
                         .child(messageId)
                         .property(Message.Event, Const.Event.onEnter)
                         .property(Room.RoomId, roomId)
-                        .property(Message.ExclusiveSender, true) 
                         .property(Message.Time, Calendar.getInstance().getTimeInMillis())
                         .property(Message.Message, userId)
                         .property(Message.ClientScript, Message.DefaultOnMessageClientScript) 
-                        .refTo(Message.Sender, "/users/" + userId)
+                        .refTo(Message.Sender, "/users/"+userId)
                         .property(Message.MessageId, messageId);
+
 
                 return null;
             }
@@ -73,15 +73,21 @@ public class UserInAndOutRoomHandler implements CDDHandler {
 //                String sender = wsession.pathBy("/rooms/" + roomId + "/members/"+userId).property(Const.Message.Sender).stringValue();
 
                 String messageId = new ObjectId().toString();
+
+
+//                wsession.pathBy("/rooms/1234/messages/testMessage")
+//                        .property(Const.Message.Message, "Bye")
+//                        .property(Const.Message.Sender, "ryun")
+//                        .property(Const.Message.Event, Const.Event.onExit);
+                //will define message
                 wsession.pathBy("/rooms/" + roomId + "/messages/")
                         .child(messageId)
                         .property(Message.Event, Const.Event.onExit)
                         .property(Room.RoomId, roomId)
-                        .property(Message.ExclusiveSender, true) 
                         .property(Message.Time, Calendar.getInstance().getTimeInMillis())
                         .property(Message.Message, userId)
                         .property(Message.ClientScript, Message.DefaultOnMessageClientScript) 
-                        .refTo(Message.Sender, "/users/" + userId)
+                        .refTo(Message.Sender, "/users/"+userId)
                         .property(Message.MessageId, messageId);
 
                 return null;
