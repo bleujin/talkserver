@@ -2,11 +2,13 @@ new function(){
 	// 방에 초대 (방이 없을때는 방이 생성 됨)
 	this.createWith = function(params){
 		var members= params.asStrings("members");
-
+		var roomId=params.asString("roomId")
 		session.tranSync(function(wsession){
 		     for(var i=0;i<members.length;i++){
-		          if(!wsession.pathBy("/rooms/" + params.asString("roomId")+"/members/").hasChild(members[i])){
-		                 wsession.pathBy("/rooms/" + params.asString("roomId")+"/members/"+members[i]).property("sender",params.asString("sender")).refTo("user", "/users/"+members[i]);
+		     	 if(wsession.exists("/openrooms/"+roomId)){
+		     	 	
+		     	 }else if(!wsession.pathBy("/rooms/" + roomId+"/members/").hasChild(members[i])){
+		                 wsession.pathBy("/rooms/" + roomId+"/members/"+members[i]).property("sender",params.asString("sender")).refTo("user", "/users/"+members[i]);
 		          }
 		     }
 		});
@@ -45,17 +47,16 @@ new function(){
 		var roomId = notify.ref("roomId").fqn().name();
 		var messageId = notify.ref("message").fqn().name();
 		var message = session.pathBy("/rooms/" + roomId + "/messages/" + messageId);
-
 		
 		return rb.create().newInner().property(message, "message, sender.userId as sender,sender.nickname as senderNickname,requestId, clientScript,event,time").property("roomId",roomId).property("notifyId",params.asString("notifyId")).property("messageId",message.fqn().name()).build().toJsonElement();
 	}, 
 	
 	//메세지 아이디 값보다 큰 메세지를 읽어 옴
 	this.listUnreadMessageBy = function(params){
+	
 		var roomId=params.asString("roomId");
 		var unreadMessages = session.pathBy("/rooms/" + roomId + "/messages").children().where("this.messageId > '" + params.asString("messageId") + "'");
-	
-		
+			
 		return rb.create().newInner().inlist("messages", unreadMessages,"message,sender.userId as sender,sender.nickname as senderNickname,requestId, clientScript,event, messageId,time").property("roomId", roomId).build().toJsonElement();
 	},
 	 
@@ -75,20 +76,30 @@ new function(){
 		var roomId =params.asString("roomId");
 		var title =params.asString("title");
 		if(session.exists("/rooms/" + roomId)){
-			session.tranSync(function(wsession){
-			wsession.pathBy("/openRooms/" + roomId).property("title",title).property("roomId",roomId);	
-			    //wsession.pathBy("/openRooms/" + roomId).refTo("room","/rooms/" + roomId);	
-				wsession.pathBy("/rooms/" + roomId).property("title", title);					
+			var randomId = new net.ion.framework.util.ObjectId().toString();
+		    var time= new Date().getTime();
+		    
+			 session.tranSync(function(wsession){
+			 wsession.pathBy("/openrooms/" + roomId).refTo("room","/rooms/"+roomId);	
+			 wsession.pathBy("/rooms/" + roomId).property("title", title).property("roomId",roomId);	
+			 
+			 wsession.pathBy("/rooms/" + roomId+"/messages/"+randomId)
+				.property("message","")
+				.property("roomId",roomId)
+				.property("messageId", randomId)
+				.property("clientScript","client.room().open();")
+				.property("event","onOpen")
+				.property("time",time.toString());			
 			}); 
 		}
-		return rb.create().newInner().property("auth",session.exists("/openRooms/" + roomId)).build().toJsonElement();
+		return rb.create().newInner().property("auth",session.exists("/openrooms/" + roomId)).build().toJsonElement();
 	}, 
 	
 	
 	this.openRoomsWith = function(params){
-		var openRooms = session.pathBy("/openRooms").children();	
+		var openRooms = session.pathBy("/openrooms").children();	
 		
-		return rb.create().newInner().inlist("rooms",openRooms , "title,roomId").build().toJsonElement();
+		return rb.create().newInner().inlist("rooms",openRooms , "room.title,room.roomId").build().toJsonElement();
 	}, 
 	// 메세지 전송
 	this.sendMessageWith = function(params){
