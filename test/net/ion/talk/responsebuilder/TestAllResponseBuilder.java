@@ -11,6 +11,7 @@ public class TestAllResponseBuilder extends TestCase {
 		suite.addTestSuite(TestExpression.class);
 		suite.addTestSuite(TestMakeResponse.class);
 		suite.addTestSuite(TestResponseWrapper.class);
+		suite.addTestSuite(TestCommandBuilder.class);
 
 		return suite;
 	}
