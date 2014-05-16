@@ -47,6 +47,7 @@ public class UserInAndOutRoomHandler implements CDDHandler {
                 
                 wsession.pathBy("/rooms/" + roomId + "/messages/")
                         .child(messageId)
+                        .property(Message.ExclusiveSender, true) 
                         .property(Message.Options, "{event:'onEnter'}")
                         .property(Room.RoomId, roomId)
                         .property(Message.Time, Calendar.getInstance().getTimeInMillis())
@@ -82,6 +83,7 @@ public class UserInAndOutRoomHandler implements CDDHandler {
                 //will define message
                 wsession.pathBy("/rooms/" + roomId + "/messages/")
                         .child(messageId)
+                        .property(Message.ExclusiveSender, true) 
                         .property(Message.Options, "{event:'onExit'}")
                         .property(Room.RoomId, roomId)
                         .property(Message.Time, Calendar.getInstance().getTimeInMillis())

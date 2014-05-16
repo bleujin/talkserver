@@ -45,6 +45,8 @@ public class TestUserInAndOutRoomHandler extends TestCrakenBase {
 	}
 
 	public void testInit() throws Exception {
+		rsession.ghostBy("/notifies/ryun").children().debugPrint(); 
+		
 		assertEquals(1, rsession.ghostBy("/notifies/ryun").children().toList().size());
 		assertEquals(0, rsession.ghostBy("/notifies/alex").children().toList().size());
 	}

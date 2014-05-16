@@ -22,8 +22,6 @@ public class TestBotClient extends TestCase {
 		RepositoryImpl repo = RepositoryImpl.inmemoryCreateWithTest();
 		final ReadSession session = repo.login("test");
 
-		final BotMessage bm = BotMessage.create().botId("simsimi").clientScript(Const.Message.DefaultOnMessageClientScript).message("Hello").sender("simsimi");
-
 		NewClient nc = NewClient.create(ClientConfig.newBuilder().setMaxRequestRetry(5).setMaxRequestRetry(2).build());
 		RestClient bc = RestClient.create(nc, session);
 
@@ -35,7 +33,7 @@ public class TestBotClient extends TestCase {
 				session.tran(new TransactionJob<Void>() {
 					@Override
 					public Void handle(WriteSession wsession) throws Exception {
-						wsession.pathBy("/botclient_result/1234").property("message", bm.message()).property("botId", bm.botId());
+						wsession.pathBy("/botclient_result/1234").property("message","Hello").property("botId", "simsimi");
 						return null;
 					}
 				});
