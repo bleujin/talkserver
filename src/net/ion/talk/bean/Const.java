@@ -25,14 +25,14 @@ public class Const {
 
     public static class Message {
 
-        public static final String Event = "event";
+        public static final String Options = "options";
         public static final String Message = "message";
         public static final String Sender = "sender";
         public static final String NotifyId = "notifyId";
         public static final String Receivers = "receivers";
         public static final String ClientScript = "clientScript";
 
-        public static final String DefaultOnMessageClientScript = "client.room().message(args.message);";
+        public static final String DefaultOnMessageClientScript = "client.room().message(args);";
 
         public static final String RequestId = "requestId";
         public static final String MessageId = "messageId";
@@ -47,14 +47,6 @@ public class Const {
     public static class Room {
         public static final String RoomId = "roomId";
     }
-
-    public static class Event {
-        public static final String onEnter = "onEnter";
-        public static final String onExit = "onExit";
-        public static final String onMessage= "onMessage";
-        public static final String onFilter = "onFilter";
-    }
-
 
     public static class Connection {
         public static final String DelegateServer = "delegateServer";

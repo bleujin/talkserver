@@ -48,7 +48,7 @@ public class Bot extends Account {
         ReadNode messageNode = getMessageByNotifyId(response.toJsonObject().asString(Const.Message.NotifyId));
 
         NewClient.BoundRequestBuilder builder = newClient.preparePost(requestURL);
-        builder.addParameter(Const.Message.Event, messageNode.property(Const.Message.Event).stringValue())
+        builder.addParameter(Const.Message.Options, messageNode.property(Const.Message.Options).stringValue())
                 .addParameter(Const.Message.MessageId, messageNode.fqn().name())
                 .addParameter(Const.Message.Sender, messageNode.property(Const.Message.Sender).stringValue())
                 .addParameter(Const.User.UserId, messageNode.property(Const.User.UserId).stringValue())

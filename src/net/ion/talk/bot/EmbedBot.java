@@ -98,8 +98,8 @@ public abstract class EmbedBot {
                         .property(Const.Message.Message, message)
                         .property(Const.Message.Sender, id())
                         .property(Const.Room.RoomId, roomId)
-                        .property(Const.Message.Event, Const.Event.onMessage)
-                        .property(Const.Message.ClientScript, "client.room().message(args)")
+                        .property(Const.Message.Options, "{event:'onMessage'}")
+                        .property(Const.Message.ClientScript, Const.Message.DefaultOnMessageClientScript)
                         .property(Const.Message.MessageId, randomId);
 
                 for (String member : memberList) {

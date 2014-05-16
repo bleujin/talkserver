@@ -59,7 +59,7 @@ public class TestEmbedBotLet extends TestCase {
 		botManager.registerBot(fakeBot);
 
 		Response response = fake.createRequest("/bot/fakeBot")
-                .addParameter(Const.Message.Event, Const.Event.onEnter)
+                .addParameter(Const.Message.Options, "{event:'onEnter'}")
                 .addParameter(Const.Message.MessageId, "hallo")
                 .addParameter(Const.Message.Sender, "ryuneeee")
                 .addParameter(Const.Room.RoomId, "1")
@@ -72,7 +72,7 @@ public class TestEmbedBotLet extends TestCase {
 	public void testNotFoundBot() throws Exception {
 
 		Response response = fake.createRequest("/bot/notFoundBot")
-                .addParameter(Const.Message.Event, Const.Event.onEnter)
+                .addParameter(Const.Message.Options, "{event:'onEnter'}")
                 .addParameter(Const.Message.MessageId, "hallo")
                 .addParameter(Const.Message.Sender, "ryuneeee")
                 .addParameter(Const.Room.RoomId, "1")
@@ -87,7 +87,7 @@ public class TestEmbedBotLet extends TestCase {
 		botManager.registerBot(fakeBot);
 
 		Response response = fake.createRequest("/bot/fakeBot")
-                .addParameter(Const.Message.Event, "invalidEvent")
+                .addParameter(Const.Message.Options, "{event:'invalidEvent'}")
                 .addParameter(Const.Message.MessageId, "hallo")
                 .addParameter(Const.Message.Sender, "ryuneeee")
                 .addParameter(Const.Room.RoomId, "1")
@@ -102,7 +102,7 @@ public class TestEmbedBotLet extends TestCase {
 		botManager.registerBot(fakeBot);
 
 		Response response = fake.createRequest("/bot/fakeBot")
-                .addParameter(Const.Message.Event, Const.Event.onEnter)
+                .addParameter(Const.Message.Options, "{event:'onEnter'}")
                 .addParameter("Invalid", "Parameter").handle(Method.POST);
 
 		assertEquals(Status.CLIENT_ERROR_BAD_REQUEST.getCode(), response.getStatus().getCode());
