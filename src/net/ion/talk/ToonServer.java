@@ -105,7 +105,7 @@ public class ToonServer {
 						
 					.restSection("session")
 						.addPreFilter(new ToonAuthenticator("user"))
-						.path("client").addUrlPattern("/{userId}/{roomId}").handler(ClientLet.class)
+						.path("client").addUrlPattern("/").matchMode(IMatchMode.STARTWITH).handler(ClientLet.class)
 						
 					.restSection("toonweb")
 						.path("toonweb").addUrlPattern("/").matchMode(IMatchMode.STARTWITH).handler(ToonWebResourceLet.class)

@@ -75,6 +75,8 @@ new function(){
 	this.openWith = function(params){
 		var roomId =params.asString("roomId");
 		var title =params.asString("title");
+		var sender =params.asString("sender");
+		
 		if(session.exists("/rooms/" + roomId)){
 			var randomId = new net.ion.framework.util.ObjectId().toString();
 		    var time= new Date().getTime();
@@ -84,11 +86,12 @@ new function(){
 			 wsession.pathBy("/rooms/" + roomId).property("title", title).property("roomId",roomId);	
 			 
 			 wsession.pathBy("/rooms/" + roomId+"/messages/"+randomId)
-				.property("message","")
+				.property("message",sender)
 				.property("roomId",roomId)
 				.property("messageId", randomId)
-				.property("clientScript","client.room().open();")
+				.property("clientScript","client.room().open(args);")
 				.property("event","onOpen")
+				.refTo("sender","/users/"+sender)
 				.property("time",time.toString());			
 			}); 
 		}
@@ -98,7 +101,6 @@ new function(){
 	
 	this.openRoomsWith = function(params){
 		var openRooms = session.pathBy("/openrooms").children();	
-		
 		return rb.create().newInner().inlist("rooms",openRooms , "room.title,room.roomId").build().toJsonElement();
 	}, 
 	// 메세지 전송
