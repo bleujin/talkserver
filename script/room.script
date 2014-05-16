@@ -117,7 +117,7 @@ new function(){
 				.property("messageId", randomId)
 				.refTo("sender","/users/"+params.asString("sender"))
 				.property("clientScript",params.asString("clientScript"))
-				.property("options","event:'onMessage'}")
+				.property("options","{event:'onMessage'}")
 				.property("requestId",params.asString("requestId"))
 				.property("time",time.toString());
 
