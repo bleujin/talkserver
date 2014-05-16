@@ -14,13 +14,13 @@ new function(){
 		// if ("echo" == oriSender) return ;
 		if (session.exists("/bots/" + oriSender)) return ;
 		
-		var memberList = session.pathBy("/rooms/" + roomId + "/members").childrenNames().toArray();
+		// var memberList = session.pathBy("/rooms/" + roomId + "/members").childrenNames().toArray();
         session.tran(function(wsession) {
             var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + bm.newMsgId())
                     .property("message", bm.message())
                     .refTo("sender", "/users/"+selfBotId)
                     .property("roomId", roomId)
-                    .property("event", 'onMessage')
+                    .property("options", "{event:'onMessage'}")
                     .property("clientScript", bm.clientScript())
                     .property("messageId", bm.messageId());
 

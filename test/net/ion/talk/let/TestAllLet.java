@@ -14,7 +14,6 @@ public class TestAllLet extends TestCase {
 		result.addTestSuite(TestScriptEditLet.class);
 		result.addTestSuite(TestScriptExecLet.class);
 		result.addTestSuite(TestResourceLet.class);
-		result.addTestSuite(TestEmbedBotLet.class);
 
 		return result;
 	}
