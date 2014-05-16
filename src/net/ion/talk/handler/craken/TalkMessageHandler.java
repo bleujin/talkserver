@@ -125,7 +125,7 @@ public class TalkMessageHandler implements CDDHandler {
 
             if(wsession.exists("/bots/"+botId) && wsession.pathBy("/bots/"+botId).ref("bot").property(Const.Bot.isSyncBot).stringValue().equals("true")){
                 nc.preparePost(wsession.pathBy("/users/" + botId).property(Const.Bot.RequestURL).stringValue())
-                        .addParameter(Const.Message.Options, "{event:'onFilter'}")
+                        .addParameter(Const.Message.Options, "{event:\"onFilter\"}")
                         .addParameter(Const.Message.CausedEvent, pmap.get(PropertyId.fromIdString(Const.Message.Options)).stringValue())
                         .addParameter(Const.Message.Sender, pmap.get(PropertyId.fromIdString(Const.Message.Sender)).stringValue())
                         .addParameter(Const.Bot.BotId, botId)

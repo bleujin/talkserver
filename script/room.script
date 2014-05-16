@@ -94,7 +94,7 @@ new function(){
 				.property("roomId",roomId)
 				.property("messageId", randomId)
 				.property("clientScript","client.room().message(args);")
-				.property("options","{event:'onOpen'}")
+				.property("options","{event:\"onOpen\"}")
 				.refTo("sender","/users/"+sender)
 				.property("time",time.toString());			
 
@@ -121,7 +121,7 @@ new function(){
 				.property("messageId", randomId)
 				.refTo("sender","/users/"+params.asString("sender"))
 				.property("clientScript",params.asString("clientScript"))
-				.property("options","{event:'onMessage'}")
+				.property("options","{event:\"onMessage\"}")
 				.property("requestId",params.asString("requestId"))
 				.property("time",time.toString());
 

@@ -98,7 +98,7 @@ public abstract class EmbedBot {
                         .property(Const.Message.Message, message)
                         .property(Const.Message.Sender, id())
                         .property(Const.Room.RoomId, roomId)
-                        .property(Const.Message.Options, "{event:'onMessage'}")
+                        .property(Const.Message.Options, "{event:\"onMessage\"}")
                         .property(Const.Message.ClientScript, Const.Message.DefaultOnMessageClientScript)
                         .property(Const.Message.MessageId, randomId);
 
