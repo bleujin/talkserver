@@ -101,14 +101,8 @@ new function(){
 	
 	
 	this.openRoomsWith = function(params){
-<<<<<<< HEAD
 		var openRooms = session.pathBy("/openrooms").children();	
 		return rb.create().newInner().inlist("rooms",openRooms , "room.title,room.roomId").build().toJsonElement();
-=======
-		var openRooms = session.pathBy("/openRooms").children();	
-		
-		return rb.create().newInner().inlist("rooms",openRooms , "title,roomId").build().toJsonElement();
->>>>>>> 42dcbbb7a987b1bf1cf81690cb6d05850a22221b
 	}, 
 	// 메세지 전송
 	this.sendMessageWith = function(params){
