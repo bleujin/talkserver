@@ -26,7 +26,7 @@ public class BotAccount extends Account{
 	public void onMessage(String notifyId, TalkResponse response) {
 		ReadNode notifyNode = session.pathBy("/notifies/" + accountId() + "/" + notifyId);
         ReadNode messageNode = notifyNode.ref(Const.Message.Message);
-        String eventName = messageNode.property(Const.Message.Event).asString() ;
+        String eventName = messageNode.property(Const.Message.Options).json().asString("event") ;
 
         BotMessage bm = BotMessage.create()
         			.botId(accountId())
