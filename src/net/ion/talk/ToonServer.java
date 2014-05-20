@@ -24,11 +24,13 @@ import net.ion.talk.filter.CrakenVerifier;
 import net.ion.talk.filter.ToonAuthenticator;
 import net.ion.talk.let.EmbedBotLet;
 import net.ion.talk.let.LoginLet;
+import net.ion.talk.let.PhoneAuthLet;
 import net.ion.talk.let.ResourceLet;
-import net.ion.talk.let.SMSAuthLet;
 import net.ion.talk.let.ScriptConfirmLet;
 import net.ion.talk.let.ScriptDoLet;
 import net.ion.talk.let.ScriptExecLet;
+import net.ion.talk.let.UserLet;
+import net.ion.talk.script.TalkScript;
 import net.ion.talk.toonweb.ClientLet;
 import net.ion.talk.toonweb.ReloadLet;
 import net.ion.talk.toonweb.ToonWebResourceLet;
@@ -75,7 +77,8 @@ public class ToonServer {
 						.path("login").addUrlPattern("/login").matchMode(IMatchMode.STARTWITH).handler(LoginLet.class)
 						
 					.restSection("register")
-						.path("smsAuth").addUrlPattern("/SMSAuth").matchMode(IMatchMode.STARTWITH).handler(SMSAuthLet.class)
+						.path("user").addUrlPattern("/user/{email}").matchMode(IMatchMode.STARTWITH).handler(UserLet.class)
+						.path("smsAuth").addUrlPattern("/SMSAuth").matchMode(EnumClass.IMatchMode.STARTWITH).handler(PhoneAuthLet.class)
 						
 					.restSection("script")
 						.path("script").addUrlPattern("/").matchMode(EnumClass.IMatchMode.EQUALS).handler(ScriptConfirmLet.class)

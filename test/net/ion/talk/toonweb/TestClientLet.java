@@ -3,49 +3,37 @@ package net.ion.talk.toonweb;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-import org.restlet.data.Method;
-
 import junit.framework.TestCase;
-import net.ion.bleujin.restlet.TestComponentAsServer;
 import net.ion.craken.aradon.NodeLet;
 import net.ion.craken.aradon.UploadLet;
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
-import net.ion.craken.node.crud.RepositoryImpl;
 import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.util.Debug;
 import net.ion.framework.util.InfinityThread;
-import net.ion.framework.util.ObjectUtil;
 import net.ion.nradon.Radon;
 import net.ion.radon.aclient.NewClient;
 import net.ion.radon.aclient.Realm;
+import net.ion.radon.aclient.Realm.RealmBuilder;
 import net.ion.radon.aclient.Request;
 import net.ion.radon.aclient.RequestBuilder;
-import net.ion.radon.aclient.Realm.RealmBuilder;
 import net.ion.radon.aclient.Response;
 import net.ion.radon.core.Aradon;
 import net.ion.radon.core.EnumClass;
-import net.ion.radon.core.EnumClass.ILocation;
 import net.ion.radon.core.EnumClass.IMatchMode;
 import net.ion.radon.core.config.ConfigurationBuilder;
-import net.ion.radon.util.AradonTester;
 import net.ion.talk.TalkEngine;
-import net.ion.talk.account.AccountManager;
 import net.ion.talk.bean.Const.User;
-import net.ion.talk.bot.BotManager;
 import net.ion.talk.filter.ToonAuthenticator;
-import net.ion.talk.handler.craken.NotificationListener;
-import net.ion.talk.handler.craken.NotifyStrategy;
-import net.ion.talk.handler.craken.TalkMessageHandler;
-import net.ion.talk.handler.craken.UserInAndOutRoomHandler;
-import net.ion.talk.handler.engine.ServerHandler;
-import net.ion.talk.handler.engine.UserConnectionHandler;
-import net.ion.talk.handler.engine.TalkScriptHandler;
+import net.ion.talk.let.PhoneAuthLet;
 import net.ion.talk.let.ResourceLet;
 import net.ion.talk.let.ScriptDoLet;
+import net.ion.talk.let.UserLet;
 import net.ion.talk.responsebuilder.TalkResponseBuilder;
+
+import org.restlet.data.Method;
 
 public class TestClientLet extends TestCase {
 
@@ -81,7 +69,9 @@ public class TestClientLet extends TestCase {
 						.addPreFilter(new ToonAuthenticator("user"))
 						.path("client").addUrlPattern("/").handler(ClientLet.class)
 						.path("reload").addUrlPattern("/reload").handler(ReloadLet.class)
-						
+					.restSection("register")
+						.path("user").addUrlPattern("/user/{email}").matchMode(IMatchMode.STARTWITH).handler(UserLet.class)
+						.path("phoneAuth").addUrlPattern("/phoneAuth").matchMode(EnumClass.IMatchMode.STARTWITH).handler(PhoneAuthLet.class)
 					.restSection("toonweb")
 						.path("toonweb").addUrlPattern("/").matchMode(IMatchMode.STARTWITH).handler(ToonWebResourceLet.class).toBuilder();
 						
@@ -125,8 +115,9 @@ public class TestClientLet extends TestCase {
 			public Void handle(WriteSession wsession) throws Exception {
 				wsession.pathBy("/users/hero@i-on.net").property(User.UserId, "hero@i-on.net").property(User.Password, "1").property(User.NickName, "hero").property(User.StateMessage, "-_-;").property(User.Phone, "1042216492") ;
 				wsession.pathBy("/users/bleujin@i-on.net").property(User.UserId, "bleujin@i-on.net").property(User.Password, "1").property(User.NickName, "bleujin").property(User.StateMessage, "-_-a").property(User.Phone, "1042216492") ;
+				wsession.pathBy("/users/airkjh@i-on.net").property(User.UserId, "airkjh@i-on.net").property(User.Password, "1").property(User.NickName, "airkjh").property(User.StateMessage, "-_-a").property(User.Phone, "1091399660") ;
 				
-				wsession.pathBy("/rooms/roomroom/members/hero@i-on.net") ;
+				wsession.pathBy("/rooms/roomroom/members/airkjh@i-on.net") ;
 				return null;
 			}
 		});

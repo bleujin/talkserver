@@ -75,6 +75,7 @@ public class UserInAndOutRoomHandler implements CDDHandler {
                         .child(messageId)
                         .property(Message.ExclusiveSender, true) 
                         .property(Message.Options, "{event:'onExit'}")
+                        		
                         .property(Room.RoomId, roomId)
                         .property(Message.Time, Calendar.getInstance().getTimeInMillis())
                         .property(Message.Message, userId)

@@ -1,0 +1,70 @@
+new function() {
+	
+	this.onLoad = function() {
+		session.tran(function(wsession){
+			wsession.pathBy("/bots/b@") ;
+			wsession.pathBy("/users/b@").property("userId", "b@").property("nickname", "B@ bot").property("stateMessage", "normal") ;
+		}) ;
+	};
+	
+	this.onEnter = function(bm) {
+		var roomId = bm.roomId() ;
+		var selfBotId = bm.botId() ;
+
+		if ("b@" == bm.sender()) return ;
+		
+		var memberList = session.pathBy("/rooms/" + roomId + "/members").childrenNames().toArray();
+        session.tran(function(wsession) {
+            var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + bm.newMsgId())
+                    .property("message", "Hello I'm B@ Bot")
+                    .refTo("sender","/users/"+ selfBotId)
+                    .property("roomId", roomId)
+                    .property("event", 'onMessage')
+                    .property("clientScript", bm.clientScript())
+                    .property("messageId", bm.messageId());
+                    
+
+        }) ;
+	};
+	
+	var leaveSentMessage = function(bm) {
+		var selfBotId = bm.botId();
+		var roomId = bm.roomId();
+
+		session.tranSync(function(wsession) {
+            var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + bm.newMsgId())
+                    .property("message", "B@ Mail sent")
+                    .refTo("sender","/users/"+ selfBotId)
+                    .property("roomId", roomId)
+                    .property("event", 'onMessage')
+                    .property("clientScript", bm.clientScript())
+                    .property("messageId", bm.messageId());
+		});
+	};
+	
+	this.onMessage = function(bm) {
+		var message = bm.message();
+		var sender = bm.sender();
+		var cmdPrefix = message.substr(0, 2).toUpperCase();
+		
+		if(sender == 'b@' || cmdPrefix != 'B@') return ;
+		
+		var command = message.substr(2);
+		
+		bbotmailer.send(bm.sender(), command);
+		
+		leaveSentMessage(bm);
+	};
+	
+	this.onEnter = function(bm){
+		// do nothing currently
+	}, 
+	
+	this.onExit = function(params){
+		// do nothing currently
+	}, 
+	
+	this.onFilter = function(params){
+		// do nothing currently
+	}	
+}
