@@ -21,7 +21,7 @@ public class MessageCommand {
 	}
 
 	public String fnName(){
-		return cmds[0].substring(1) ;
+		return cmds[0];
 	} 
 
 	public String remain(int index){

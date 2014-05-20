@@ -35,7 +35,6 @@ public class TalkCommandHandler implements TalkHandler{
 	public void onMessage(TalkEngine tengine, UserConnection uconn, ReadSession rsession, TalkMessage tmsg) {
 		if (tmsg.messageType() != MType.COMMAND) return ;
 		
-		String agent = uconn.request().header(HttpHeaders.USER_AGENT) ;
 		CommandParam cparam = CommandParam.create(tmsg) ;
 		
 		cs.outroomFn(cparam, uconn) ;

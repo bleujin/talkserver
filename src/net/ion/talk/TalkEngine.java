@@ -16,6 +16,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+import junit.framework.Assert;
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.node.ReadSession;
 import net.ion.framework.logging.LogBroker;
@@ -73,52 +74,34 @@ public class TalkEngine implements WebSocketHandler {
 	private HeartBeat heartBeat ;
 
 
-	protected TalkEngine(TreeContext context) throws IOException {
+	private TalkEngine(TreeContext context) throws IOException {
 		
-		if (context == null)
-			throw new IllegalStateException("context is null");
-
-		this.context = context;
+		this.context = context ;
 		this.worker = context.getAttributeObject(ScheduledExecutorService.class.getCanonicalName(), ScheduledExecutorService.class);
 		context.putAttribute(TalkEngine.class.getCanonicalName(), this);
 		this.heartBeat = new HeartBeat(worker) ;
-		
+	}
+	
+	
+	public static TalkEngine create(TreeContext context) throws Exception {
+		return testCreate(context) ;
 	}
 
 	public static TalkEngine testCreate() throws Exception {
-		RepositoryEntry repo = RepositoryEntry.test();
-		repo.start(); 
-		return testCreate(repo) ;
+		TreeContext context = TreeContext.createRootContext(new VirtualHost(new Context())) ;
+		context.putAttribute(RepositoryEntry.EntryName, RepositoryEntry.test()) ;
+		context.putAttribute(ScheduledExecutorService.class.getCanonicalName(), Executors.newScheduledThreadPool(5)) ;
+		return testCreate(context) ;
 	}
 
-	public static TalkEngine testCreate(RepositoryEntry repo) throws Exception {
-
-		TreeContext context = TreeContext.createRootContext(new VirtualHost(new Context())) ;
-		ScheduledExecutorService worker = Executors.newScheduledThreadPool(5);
-		context.putAttribute(ScheduledExecutorService.class.getCanonicalName(), worker) ;
+	
+	public static TalkEngine testCreate(TreeContext context) throws Exception {
+		if (context == null)
+			throw new IllegalStateException("context is null");
 		
-		TalkScript ts = TalkScript.create(repo.login(), worker);
-		ts.readDir(new File("./script"), true);
-
-		context.putAttribute(RepositoryEntry.EntryName, repo);
-		context.putAttribute(TalkScript.class.getCanonicalName(), ts);
-
-		NewClient nc = NewClient.create(ClientConfig.newBuilder().setMaxRequestRetry(5).setMaxRequestRetry(2).build());
-		context.putAttribute(NewClient.class.getCanonicalName(), nc);
-
-		SMSSender smsSender = SMSSender.create(nc);
-		context.putAttribute(SMSSender.class.getCanonicalName(), smsSender);
-		context.putAttribute(BotManager.class.getCanonicalName(), BotManager.create(repo.login()));
-
-
-		final TalkEngine result = new TalkEngine(context);
-		Pusher pusher = NotifyStrategy.createPusher(worker, repo.login());
-		final BotScript bs = BotScript.create(repo.login(), worker, nc) ;
-		bs.readDir(new File("./bot"), true) ;
-		context.putAttribute(BotScript.class.getCanonicalName(), bs) ;
-		context.putAttribute(AccountManager.class.getCanonicalName(), AccountManager.create(bs, result, pusher));
-
-		return result;
+		Assert.assertNotNull(context.getAttributeObject(ScheduledExecutorService.class.getCanonicalName(), ScheduledExecutorService.class)) ;
+		Assert.assertNotNull(context.getAttributeObject(RepositoryEntry.EntryName, RepositoryEntry.class)) ;
+		return new TalkEngine(context) ;
 	}
 
 	public TreeContext context() {
@@ -137,13 +120,20 @@ public class TalkEngine implements WebSocketHandler {
 		return this;
 	}
 
+	
+	
 	public TalkEngine unregisterHandler(TalkHandler handler) {
 		handlers.remove(handler);
 		return this;
 	}
 	
 	public TalkEngine init() throws Exception {
-		NewClient nc = context().getAttributeObject(NewClient.class.getCanonicalName(), NewClient.class);
+		NewClient nc = NewClient.create(ClientConfig.newBuilder().setMaxRequestRetry(5).setMaxRequestRetry(2).build());
+		SMSSender smsSender = SMSSender.create(nc);
+		
+		context().putAttribute(NewClient.class.getCanonicalName(), nc) ;
+		context().putAttribute(SMSSender.class.getCanonicalName(), smsSender) ;
+		
 		ReadSession rsession = readSession();
 
 		final BotScript bs = BotScript.create(rsession, worker, nc) ;
@@ -162,13 +152,6 @@ public class TalkEngine implements WebSocketHandler {
 		TalkScript ts = TalkScript.create(rsession, worker);
 		ts.readDir(new File("./script"), true);
 		context.putAttribute(TalkScript.class.getCanonicalName(), ts);
-		
-
-//		BotManager botManager = context().getAttributeObject(BotManager.class.getCanonicalName(), BotManager.class);
-//
-//        botManager.registerBot(new EchoBot(rsession, worker));
-//        botManager.registerBot(new BBot(rsession, worker));
-//        botManager.registerBot(new ChatBot(rsession));
 
 		heartBeat().delaySecond(15) ;
 		return this;
@@ -216,6 +199,7 @@ public class TalkEngine implements WebSocketHandler {
 		RepositoryEntry r = context().getAttributeObject(RepositoryEntry.EntryName, RepositoryEntry.class);
 		r.shutdown();
 		
+		worker.shutdown(); 
 		
 		NewClient nc = context().getAttributeObject(NewClient.class.getCanonicalName(), NewClient.class);
 		if (nc != null)
@@ -233,7 +217,7 @@ public class TalkEngine implements WebSocketHandler {
 
 	@Override
 	public void onOpen(WebSocketConnection conn) {
-		UserConnection created = cmanager.add(conn);
+		UserConnection created = cmanager.singleConnection(conn); 
 		created.updateHeartBeat();
 
 		for (TalkHandler handler : handlers) {
@@ -321,6 +305,11 @@ public class TalkEngine implements WebSocketHandler {
 		return connManger().findBy(id);
 	}
 
+	public TalkEngine clearHandler() {
+		handlers.clear(); 
+		return this;
+	}
+
 
 }
 
@@ -336,10 +325,13 @@ class ConnManager {
 	}
 
 	UserConnection findBy(String id) {
+		List<WebSocketConnection> found = ListUtil.newList() ;
 		for(WebSocketConnection conn : conns){
-			if (id.equals(conn.data("id"))) return UserConnection.create(conn) ;
+			if (id.equals(conn.data("id"))) found.add(conn) ;
 		}
-		return UserConnection.NOTFOUND ;
+		if (found.size() == 0) return UserConnection.NOTFOUND ;
+		else if (found.size() == 1) return UserConnection.create(found.get(0)) ;
+		else return DoppleUserConnection.create(found);
 	}
 
 	public UserConnection findBy(WebSocketConnection wconn) {
@@ -350,11 +342,11 @@ class ConnManager {
 		return new ConnManager();
 	}
 
-	UserConnection add(WebSocketConnection wconn) {
-		UserConnection existConn = findBy(wconn.data("id").toString()) ;
-		if (existConn != UserConnection.NOTFOUND) {
-			existConn.close(Reason.DOPPLE); 
-		}
+	UserConnection singleConnection(WebSocketConnection wconn) {
+//		UserConnection existConn = findBy(wconn.data("id").toString()) ;
+//		if (existConn != UserConnection.NOTFOUND) {
+//			existConn.close(Reason.DOPPLE); 
+//		}
 		conns.add(wconn);
 		return UserConnection.create(wconn) ;
 	}
@@ -374,7 +366,10 @@ class ConnManager {
 	}
 
 	boolean contains(String id) {
-		return findBy(id) != UserConnection.NOTFOUND ;
+		for(WebSocketConnection conn : conns){
+			if (id.equals(conn.data("id"))) return true ;
+		}
+		return false ;
 	}
 
 }

@@ -1,11 +1,13 @@
 package net.ion.talk.account;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
 import javapns.notification.PushedNotifications;
 import net.ion.craken.node.ReadSession;
 import net.ion.framework.logging.LogBroker;
+import net.ion.framework.parse.gson.JsonObject;
 import net.ion.message.push.sender.AppleMessage;
 import net.ion.message.push.sender.GoogleMessage;
 import net.ion.message.push.sender.Pusher;
@@ -29,14 +31,15 @@ public class DisconnectedAccount extends Account {
     private Logger logger = LogBroker.getLogger(DisconnectedAccount.class) ;
 
     DisconnectedAccount(String userId, ReadSession rsession, Pusher pusher) {
-        super(userId, Type.DisconnectedUser);
+        super(userId, Type.DISCONNECTED_USER);
         this.pusher = pusher;
         this.rsession = rsession;
     }
 
     @Override
-    public void onMessage(final String notifyId, TalkResponse response)  {
-        pusher.sendTo(accountId()).sendAsync(response.pushMessage(), new PushResponseHandler<Boolean>() {
+    public void onMessage(final String notifyId)  {
+    	String message = new JsonObject().put("notifyId", notifyId).toString() ;
+        Future<Boolean> result = pusher.sendTo(accountId()).sendAsync(message, new PushResponseHandler<Boolean>() {
 			@Override
 			public Boolean onAPNSSuccess(AppleMessage amsg, PushedNotifications results) {
 //                rsession.tran(new TransactionJob<Object>() {
@@ -81,8 +84,7 @@ public class DisconnectedAccount extends Account {
 				return Boolean.FALSE;
 			}
         });
-
-
+        
     }
 
     Pusher sender(){

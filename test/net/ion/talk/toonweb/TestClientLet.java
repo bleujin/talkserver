@@ -1,5 +1,8 @@
 package net.ion.talk.toonweb;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+
 import org.restlet.data.Method;
 
 import junit.framework.TestCase;
@@ -11,8 +14,10 @@ import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
 import net.ion.craken.node.crud.RepositoryImpl;
+import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.util.Debug;
 import net.ion.framework.util.InfinityThread;
+import net.ion.framework.util.ObjectUtil;
 import net.ion.nradon.Radon;
 import net.ion.radon.aclient.NewClient;
 import net.ion.radon.aclient.Realm;
@@ -40,6 +45,7 @@ import net.ion.talk.handler.engine.UserConnectionHandler;
 import net.ion.talk.handler.engine.TalkScriptHandler;
 import net.ion.talk.let.ResourceLet;
 import net.ion.talk.let.ScriptDoLet;
+import net.ion.talk.responsebuilder.TalkResponseBuilder;
 
 public class TestClientLet extends TestCase {
 
@@ -62,7 +68,9 @@ public class TestClientLet extends TestCase {
 			}
 		});
 		ConfigurationBuilder cbuilder = ConfigurationBuilder.newBuilder()
-				.aradon().addAttribute(RepositoryEntry.EntryName, rentry)
+				.aradon()
+					.addAttribute(RepositoryEntry.EntryName, rentry)
+					.addAttribute(ScheduledExecutorService.class.getCanonicalName(), Executors.newScheduledThreadPool(3))
 				.sections()
 					.restSection("admin").addAttribute("baseDir", "./resource/template")
 						.path("node").addUrlPattern("/repository/{renderType}").matchMode(IMatchMode.STARTWITH).handler(NodeLet.class)
@@ -71,29 +79,20 @@ public class TestClientLet extends TestCase {
 						.path("upload").addUrlPattern("/upload").matchMode(IMatchMode.STARTWITH).handler(UploadLet.class)
 					.restSection("session")
 						.addPreFilter(new ToonAuthenticator("user"))
-						.path("client").addUrlPattern("/").matchMode(EnumClass.IMatchMode.STARTWITH).handler(ClientLet.class)
+						.path("client").addUrlPattern("/").handler(ClientLet.class)
+						.path("reload").addUrlPattern("/reload").handler(ReloadLet.class)
 						
 					.restSection("toonweb")
 						.path("toonweb").addUrlPattern("/").matchMode(IMatchMode.STARTWITH).handler(ToonWebResourceLet.class).toBuilder();
 						
 
 		Aradon aradon = Aradon.create(cbuilder.build()) ;
-		
-		
-//		Aradon aradon = AradonTester.create()
-//				.register("session", "/{userId}/{roomId}", ClientLet.class)
-//				.register("toonweb", "/", "resource", IMatchMode.STARTWITH, ToonWebResourceLet.class)
-//				.mergeSection("session").putAttribute(RepositoryEntry.EntryName, rentry) 
-////				.addFilter(ILocation.PRE, new ToonAuthenticator("toon"))
-//				
-//				.getAradon();
-
-
+	
 		
 		this.radon = aradon.toRadon(9000)
 					.start().get();
 		
-		this.talkEngine = TalkEngine.testCreate(rentry) ;
+		this.talkEngine = TalkEngine.testCreate(aradon.getServiceContext()) ;
 		
 		radon.add("/websocket/{id}/{accessToken}", talkEngine) ;
 	}
@@ -134,4 +133,28 @@ public class TestClientLet extends TestCase {
 		
 		new InfinityThread().startNJoin(); 
 	}
+	
+	
+	
+	
+	public void xtestResponseBuilder() throws Exception {
+		ReadSession rsession = talkEngine.readSession();
+		rsession.tran(new TransactionJob<Void>(){
+			@Override
+			public Void handle(WriteSession wsession) throws Exception {
+				wsession.pathBy("/bleujin").property("options", "{event:'Hello'}") ;
+				return null;
+			}
+		}) ;
+		
+		Debug.line(rsession.pathBy("/bleujin").property("options").asString()) ;
+		
+		JsonObject json = TalkResponseBuilder.create().newInner().property(rsession.pathBy("/bleujin"), "options").build().toJsonObject();
+		Debug.line(json) ;
+			
+		JsonObject fromJson = JsonObject.fromString(json.toString()) ;
+		Debug.line(fromJson.asJsonObject("options")) ;
+		
+	}
+	
 }

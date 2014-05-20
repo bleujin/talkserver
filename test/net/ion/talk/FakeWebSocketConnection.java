@@ -1,8 +1,11 @@
 package net.ion.talk;
 
+import java.io.IOException;
+import java.net.SocketAddress;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.concurrent.Executor;
 
 import net.ion.framework.util.Debug;
@@ -13,19 +16,37 @@ import net.ion.nradon.HttpRequest;
 import net.ion.nradon.WebSocketConnection;
 
 import org.jboss.netty.channel.ChannelFuture;
+import org.restlet.data.Cookie;
+import org.restlet.data.MediaType;
+import org.restlet.representation.Representation;
 
 public class FakeWebSocketConnection implements WebSocketConnection {
 
 	private Map<String, Object> datas = MapUtil.newMap();
 	private List<String> received = ListUtil.newList();
     private boolean closed;
+	private String agent;
 
+    private FakeWebSocketConnection() {}
+    
     public static FakeWebSocketConnection create(String id) {
 		final FakeWebSocketConnection result = new FakeWebSocketConnection();
 		result.data("id", id);
+		
 		return result;
 	}
 
+    public static FakeWebSocketConnection createFromApp(String id) {
+		final FakeWebSocketConnection result = new FakeWebSocketConnection();
+		result.data("id", id);
+		result.agent = "AradonClient" ;
+		
+		return result;
+	}
+
+
+
+    
 	@Override
 	public WebSocketConnection close() {
         closed = true;
@@ -101,8 +122,163 @@ public class FakeWebSocketConnection implements WebSocketConnection {
 
 	@Override
 	public HttpRequest httpRequest() {
-		// TODO Auto-generated method stub
-		return null;
+		return new HttpRequest() {
+			
+			@Override
+			public Set<String> dataKeys() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public Object data(String s) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public Map<String, Object> data() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public HttpRequest uri(String s) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public String uri() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public long timestamp() {
+				// TODO Auto-generated method stub
+				return 0;
+			}
+			
+			@Override
+			public SocketAddress remoteAddress() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public List<String> queryParams(String s) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public Set<String> queryParamKeys() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public String queryParam(String s) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public List<String> postParams(String s) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public Set<String> postParamKeys() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public String postParam(String s) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public String method() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public Object id() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public List<String> headers(String s) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public String header(String s) {
+				return FakeWebSocketConnection.this.agent;
+			}
+			
+			@Override
+			public boolean hasHeader(String s) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+			
+			@Override
+			public HttpRequest data(String s, Object obj) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public List<Cookie> cookies() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public String cookieValue(String s) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public Cookie cookie(String s) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public Representation bodyAsRepresentation(MediaType mediatype) throws IOException {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public byte[] bodyAsBytes() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public String body() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public List<Entry<String, String>> allHeaders() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+		};
 	}
 
 	@Override

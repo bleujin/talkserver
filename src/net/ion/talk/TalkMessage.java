@@ -38,6 +38,8 @@ public abstract class TalkMessage {
 	public abstract MType messageType() ;
 	
 	public abstract String userMessage() ;
+	
+	public abstract TalkMessage setParam(String name, Object value) ;
 }
 
 
@@ -73,6 +75,11 @@ class TalkScriptMessage extends TalkMessage {
 	
 	public String toPlainMessage() {
 		return plainMessage;
+	}
+	
+	public TalkScriptMessage setParam(String name, Object value){
+		params.set(name, value) ;
+		return this ;
 	}
 	
 	public String userMessage(){
@@ -121,5 +128,9 @@ class IllegalTalkMessage extends TalkMessage{
 
 	public String userMessage() {
 		return StringUtil.EMPTY ;
+	}
+	
+	public TalkMessage setParam(String name, Object value) {
+		return this ;
 	}
 }

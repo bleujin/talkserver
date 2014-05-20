@@ -2,6 +2,7 @@ package net.ion.talk.engine;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
+import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.node.ReadSession;
 import net.ion.message.sms.sender.SMSSender;
 import net.ion.radon.aclient.NewClient;
@@ -21,7 +22,8 @@ public class TestEngineContext extends TestCase {
 
 	@Override
 	protected void setUp() throws Exception {
-		this.engine = TalkEngine.testCreate().registerHandler(new DummyHandler());
+		this.engine = TalkEngine.testCreate()
+					.init().clearHandler().registerHandler(new DummyHandler());
 	}
 
 	@Override
@@ -33,7 +35,6 @@ public class TestEngineContext extends TestCase {
 	public void testContext() throws Exception {
 		assertNotNull(engine.contextAttribute(NewClient.class)) ;
 		assertNotNull(engine.contextAttribute(SMSSender.class)) ;
-		assertNotNull(engine.contextAttribute(BotManager.class)) ;
 		
 		engine.startEngine() ;
 		assertNotNull(engine.contextAttribute(AccountManager.class)) ;

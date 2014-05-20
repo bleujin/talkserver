@@ -27,6 +27,7 @@ import net.ion.radon.core.annotation.FormParam;
 import net.ion.radon.core.annotation.PathParam;
 import net.ion.radon.core.let.InnerRequest;
 import net.ion.talk.TalkEngine;
+import net.ion.talk.bean.Const.User;
 import net.ion.talk.let.LoginLet;
 
 import org.antlr.stringtemplate.StringTemplate;
@@ -58,8 +59,10 @@ public class ClientLet implements IServiceLet {
 		final StringWriter template = new StringWriter();
 		IOUtil.copyNClose( new FileReader(tplFile), template) ;
 		
+		
+		String nickName = session.pathBy("/users/" + userId).property(User.NickName).asString() ;
 		StringTemplate st = new StringTemplate(template.toString());
-		Map<String, String> configMap = MapUtil.<String>chainKeyMap().put("address", websocketURI).put("sender", userId).toMap() ;
+		Map<String, String> configMap = MapUtil.<String>chainKeyMap().put("address", websocketURI).put("sender", userId).put("nickName", nickName).toMap() ;
 		
 		st.setAttribute("config", configMap);
 		
@@ -70,6 +73,8 @@ public class ClientLet implements IServiceLet {
 				return null;
 			}
 		});
+		
+		
 		
 		return new StringRepresentation(st.toString(), MediaType.TEXT_HTML, Language.ALL);
 	}

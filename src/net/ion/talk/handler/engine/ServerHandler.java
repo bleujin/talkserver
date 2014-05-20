@@ -2,11 +2,15 @@ package net.ion.talk.handler.engine;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Enumeration;
 
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
+import net.ion.framework.util.Debug;
 import net.ion.talk.TalkEngine;
 import net.ion.talk.TalkEngine.Reason;
 import net.ion.talk.TalkMessage;
@@ -28,7 +32,7 @@ public class ServerHandler implements TalkHandler {
 
 	public static ServerHandler test() throws UnknownHostException {
 		InetAddress address = InetAddress.getLocalHost();
-		return new ServerHandler(address.getHostName(), address.getHostAddress(), 9000);
+		return new ServerHandler(address.getHostName(), currentIp(), 9000);
 	}
 
 	public String serverHost() {
@@ -84,6 +88,37 @@ public class ServerHandler implements TalkHandler {
 
 	public String hostName() {
 		return hostName;
+	}
+
+	private static String currentIp() throws UnknownHostException {
+		Enumeration netInterfaces = null;
+		try {
+			netInterfaces = NetworkInterface.getNetworkInterfaces();
+		} catch (SocketException e) {
+			return getLocalIp();
+		}
+
+		while (netInterfaces.hasMoreElements()) {
+			NetworkInterface ni = (NetworkInterface) netInterfaces.nextElement();
+			Enumeration address = ni.getInetAddresses();
+			if (address == null) {
+				return getLocalIp();
+			}
+			while (address.hasMoreElements()) {
+				InetAddress addr = (InetAddress) address.nextElement();
+				if (!addr.isLoopbackAddress() && !addr.isSiteLocalAddress() && !addr.isAnyLocalAddress()) {
+					String ip = addr.getHostAddress();
+					if (ip.indexOf(".") != -1 && ip.indexOf(":") == -1) {
+						return ip;
+					}
+				}
+			}
+		}
+		return getLocalIp();
+	}
+
+	private static String getLocalIp() throws UnknownHostException {
+		return InetAddress.getLocalHost().getHostAddress();
 	}
 
 }

@@ -26,8 +26,9 @@
 		</div>
 		</td></tr>
 	<tr><td height=40>
-		<input type="text" id="message" style="width:85%; font-size:16px" /></td></tr>
+		<input type="text" id="message" style="width:75%; font-size:16px" /><a href='javascript://' onclick='webClient.close();'>Close</a></td></tr>
 </table>
+
 
 <script type="text/javascript">
 
@@ -61,17 +62,20 @@
 				var selectedScreenId = jQuery('#zone').tabs('getSelected').panel('options').title ;
 				var roomId = args.roomId || selectedScreenId ;
 				
-				if (roomId != selectedScreenId){
+				if (roomId.startWith('@')){   // whisper
+					
+					
+				} else if (roomId != selectedScreenId){
 					var onClickMsg = "webClient.chat(\"/join " + roomId + "\")"  ;
 					this.mwindow({title:'New Message', msg:"<a href='#' onclick='" + onClickMsg + "'>" + args.message + "</a><br/>from:" + args.sender + " ,room:" + roomId}) ;
 					selectedScreenId = roomId ;
 				}
-				if (\$('#' +roomId) == null) return ;
+				if ( (!roomId.startWith('@')) && \$('#' +roomId) == null) return ;
 				
 				var currentScreen = jQuery("#" + selectedScreenId) ;
 				
 		    	//var escaped = args.message.replace(/&/, "&amp;").replace(/</, "&lt;").replace(/>/, "&gt;").replace(/"/, "&quot;");
-		    	var escaped = args.message ;  
+		    	var escaped = args.html || args.message ;  
 		    	var sender = '&lt;' + (args.sender || 'system') + '&gt;' ;
 		    	 
 		    	if (args.sender == webClient.sender) {
@@ -100,7 +104,8 @@
 						content:content,
 						closable:true
 					});
-				}
+				} ;
+				webClient.command('/room/listUnreadMessageBy', {'roomId':title, 'messageId':'0'}) ;
 			} ;
 		} ;
 
@@ -142,6 +147,20 @@
 		}, 
 		
 		this.file = function(){
+		}, 
+		
+		this.reload = function(){
+			\$.ajax({
+				type:'post', async:true, url:'/session/reload', 
+				success : function(data){
+					console.log(data) ;	
+					webClient.reconnect(data) ;
+				}, 
+				error : function(request,status,error){
+					console.log('error' + status + error);
+					\$.messager.alert('Alert', 'Not Connect Server', 'error');
+				}
+			}) ;
 		}
 	} ;
 	
@@ -150,10 +169,20 @@
 	function initChat(){
 
 		webClient.sender = '$config.sender$' ;
-		webClient.senderNickname = 'bleujin' ;
+		webClient.senderNickname = '$config.nickName$' ;
+		webClient.status = 'ready' ;
 
 		webClient.chat = function(argMessage){
 			// id, script, params[
+			if (! this.connected()){ 
+				client.reload() ;
+				setTimeout(function(){ 
+					if (webClient.connected()) webClient.chat(argMessage);
+					else \$.messager.alert('Alert', 'Not Connect Server', 'error');
+				}, 1000) ; 
+				return ;
+			}
+			
 			var msgText = argMessage ? argMessage : \$("#message").val() ;
 			
 			var chatMsg = {id:'' + new Date().getUTCMilliseconds(), script:'/room/sendMessageWith', params:{}} ;
@@ -162,14 +191,14 @@
 			if (currentDivId == 'Home' && !msgText.startWith('/')){
 				client.room().alertMsg({content:'not in room'}) ;
 			} else {
-				chatMsg.params.receivers = ''
-				chatMsg.params.roomId = currentDivId ;
+				chatMsg.params.receivers = '';
+				chatMsg.params.roomId = (currentDivId == 'Home') ? '' :  currentDivId ;
 				chatMsg.params.message = msgText  ;
 				chatMsg.params.sender = this.sender ;
 				chatMsg.params.senderNickname = this.senderNickname ;
 				chatMsg.params.clientScript = 'client.room().message(args);' ;
-				chatMsg.params.requestId = '/123456' ;
-				
+				chatMsg.params.requestId = chatMsg.id ;
+				console.log(this.jsonToString(chatMsg)) ;
 				this.getWebSocket().send(this.jsonToString(chatMsg));
 			}
 			jQuery("#message").val("");
@@ -209,71 +238,94 @@
 			this.getWebSocket().send(this.jsonToString(cmdMsg));
 		} ;
 
+		webClient.close = function(){
+			this.getWebSocket().close() ;
+		} ;
 
-   		var ws = new WebSocket('$config.address$') ;
 		
-	  	ws.onopen = function(){
-	  		client.room().message({message:"open"}) ;
-	  	} ;
-	  	
-   		ws.onmessage = function(e){
-   			console.log(e.data) ;
-   			if ('HEARTBEAT' == e.data) {
-   				ws.send('HEARTBEAT') ;
-   				return ;
-   			}
-   			// {notifyId:...}
-   			var msg = eval('(' + e.data + ')') ;
-   			if (msg.script == undefined && msg.notifyId != ''){
-   				webClient.command('/room/listNotifyDataBy', {'notifyId':msg.notifyId, 'userId':webClient.sender}) ;
-   				return ;
-   			}
-   			if (msg.status != 'success'){
-   				console.error(e.data) ;
-   				return ;
-   			}
+		webClient.connected = function(){
+			return this.status == 'connected' ;
+		}
+	
 
-   			if (msg.script.startWith('/commands/')){
-   				var args = msg.result || {} ;
-   				eval(msg.result.clientScript) ;
-   				return ;
-   			}
+   		var ws ;
+   		
+   		webClient.initWebsocket = function(wsaddress){
+   			ws = new WebSocket(wsaddress) ;
    			
-   			if (msg.script == '/room/sendMessageWith') return ; // return sendMessageWith
-   			if (msg.script == '/room/listNotifyDataBy') {
-   				// alert(msg.result.message) ;
-   				var args = msg.result || {} ;
-   				eval(msg.result.clientScript) ;
-   				return ;
-   			}
-
+		  	ws.onopen = function(){
+		  		client.room().message({message:"open"}) ;
+		  		webClient.status = 'connected' ;
+		  	} ;
+		  	
+	   		ws.onmessage = function(e){
+	   			console.log(e.data) ;
+	   			if ('HEARTBEAT' == e.data) {
+	   				ws.send('HEARTBEAT') ;
+	   				return ;
+	   			}
+	   			// {notifyId:...}
+	   			var msg = eval('(' + e.data + ')') ;
+	   			if (msg.script == undefined && msg.notifyId != ''){
+	   				webClient.command('/room/listNotifyDataBy', {'notifyId':msg.notifyId, 'userId':webClient.sender}) ;
+	   				return ;
+	   			}
+	   			if (msg.status != 'success'){
+	   				console.error(e.data) ;
+	   				return ;
+	   			}
+	
+	   			if (msg.script.startWith('/commands/')){
+	   				var args = msg.result || {} ;
+	   				eval(msg.result.clientScript) ;
+	   				return ;
+	   			}
+	   			
+	   			if (msg.script == '/room/sendMessageWith') return ; // return sendMessageWith
+	   			if (msg.script == '/room/listNotifyDataBy') {
+	   				// alert(msg.result.message) ;
+	   				var args = msg.result || {} ;
+	   				eval(msg.result.clientScript) ;
+	   				return ;
+	   			}
+	
+	   		} ;
+	   		
+	   		ws.onclose = function(){
+	   			webClient.status = 'closed' ;
+	   			client.room().message({message:"closed.. retry connect"}) ;
+	   			client.reload() ;
+	   			
+	   		} ;
+	   		ws.onerror = function(){
+	   			client.room().message({message:"error"}) ;
+	   			
+	   		} ;
+	   		
+	   		
    		} ;
    		
-   		ws.onclose = function(){
-   			client.room().message({message:"closed.. retry connect"}) ;
-   			ws = new WebSocket('$config.address$') ;
-   		} ;
-   		ws.onerror = function(){
-   			client.room().message({message:"error"}) ;
-   		} ;
+   		webClient.initWebsocket('$config.address$') ;
    		
    		webClient.getWebSocket = function(){
    			return ws ;
    		} ;
    		
+   		webClient.reconnect = function(address){
+   			this.initWebsocket(address); 
+   		}
+   		
 	} ;
 
-
+	jQuery("#message").keydown(function(event) {
+		if (event.which == 13) {
+			var msg = jQuery("#message").val() ;
+			var divId = jQuery('#zone').tabs('getSelected').panel('options').title ;
+			// jQuery("#" + divId).append(msg) ;
+	  		webClient.chat();			
+		}
 		
-		jQuery("#message").keydown(function(event) {
-			if (event.which == 13) {
-				var msg = jQuery("#message").val() ;
-				var divId = jQuery('#zone').tabs('getSelected').panel('options').title ;
-				// jQuery("#" + divId).append(msg) ;
-		  		webClient.chat();			
-			}
-			
-		});
+	});
 
 	window.onload = initChat ;
 	

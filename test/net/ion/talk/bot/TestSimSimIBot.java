@@ -2,6 +2,8 @@ package net.ion.talk.bot;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 import junit.framework.TestCase;
 import net.ion.craken.aradon.NodeLet;
@@ -11,6 +13,7 @@ import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
 import net.ion.framework.util.Debug;
+import net.ion.framework.util.InfinityThread;
 import net.ion.nradon.Radon;
 import net.ion.radon.aclient.AsyncCompletionHandler;
 import net.ion.radon.aclient.NewClient;
@@ -20,6 +23,7 @@ import net.ion.radon.core.EnumClass;
 import net.ion.radon.core.EnumClass.IMatchMode;
 import net.ion.radon.core.config.ConfigurationBuilder;
 import net.ion.talk.TalkEngine;
+import net.ion.talk.bean.Const.User;
 import net.ion.talk.let.ResourceLet;
 import net.ion.talk.let.ScriptDoLet;
 import net.ion.talk.toonweb.ClientLet;
@@ -47,9 +51,19 @@ public class TestSimSimIBot extends TestCase {
 			}
 		});
 
-		ConfigurationBuilder cbuilder = ConfigurationBuilder.newBuilder().aradon().addAttribute(RepositoryEntry.EntryName, rentry).sections().restSection("admin").addAttribute("baseDir", "./resource/template").path("node").addUrlPattern("/repository/{renderType}").matchMode(IMatchMode.STARTWITH)
-				.handler(NodeLet.class).path("template").addUrlPattern("/template").matchMode(EnumClass.IMatchMode.STARTWITH).handler(ResourceLet.class).path("doscript").addUrlPattern("/script").matchMode(EnumClass.IMatchMode.EQUALS).handler(ScriptDoLet.class).path("upload")
-				.addUrlPattern("/upload").matchMode(IMatchMode.STARTWITH).handler(UploadLet.class).restSection("session").path("client").addUrlPattern("/{userId}/{roomId}").handler(ClientLet.class).toBuilder();
+		ConfigurationBuilder cbuilder = ConfigurationBuilder.newBuilder()
+					.aradon()
+						.addAttribute(RepositoryEntry.EntryName, rentry)
+						.addAttribute(ScheduledExecutorService.class.getCanonicalName(), Executors.newScheduledThreadPool(5))
+				.sections()
+					.restSection("admin")
+						.addAttribute("baseDir", "./resource/template")
+						.path("node").addUrlPattern("/repository/{renderType}").matchMode(IMatchMode.STARTWITH).handler(NodeLet.class)
+						.path("template").addUrlPattern("/template").matchMode(EnumClass.IMatchMode.STARTWITH).handler(ResourceLet.class)
+						.path("doscript").addUrlPattern("/script").matchMode(EnumClass.IMatchMode.EQUALS).handler(ScriptDoLet.class)
+						.path("upload").addUrlPattern("/upload").matchMode(IMatchMode.STARTWITH).handler(UploadLet.class)
+					.restSection("session")
+						.path("client").addUrlPattern("/{userId}/{roomId}").handler(ClientLet.class).toBuilder();
 		// .restSection("toonweb")
 		// .path("toonweb").addUrlPattern("/").matchMode(IMatchMode.STARTWITH).handler(ToonWebResourceLet.class).toBuilder();
 
@@ -57,7 +71,7 @@ public class TestSimSimIBot extends TestCase {
 
 		this.radon = aradon.toRadon(9000).start().get();
 
-		this.talkEngine = TalkEngine.testCreate(rentry);
+		this.talkEngine = TalkEngine.testCreate(aradon.getServiceContext()).init();
 
 		radon.add("/websocket/{id}/{accessToken}", talkEngine);
 	}
@@ -65,14 +79,13 @@ public class TestSimSimIBot extends TestCase {
 	@Override
 	protected void tearDown() throws Exception {
 		this.talkEngine.stopEngine();
-		this.rentry.shutdown();
-		this.radon.stop();
+		this.radon.stop().get();
 		super.tearDown();
 	}
 
 
 	public void testOnLoad() throws Exception {
-		talkEngine.init().startEngine();
+		talkEngine.startEngine();
 		ReadSession session = talkEngine.readSession();
 
 		assertEquals(true, session.exists("/bots/simsimi"));
@@ -82,13 +95,13 @@ public class TestSimSimIBot extends TestCase {
 	}
 
 	public void testOnEnter() throws Exception {
-		talkEngine.init().startEngine();
+		talkEngine.startEngine();
 		ReadSession session = talkEngine.readSession();
 
 		session.tran(new TransactionJob<Void>() {
 			@Override
 			public Void handle(WriteSession wsession) throws Exception {
-				wsession.pathBy("/users/bleujin");
+				wsession.pathBy("/users/bleujin").property(User.UserId, "bleujin");
 				wsession.pathBy("/rooms/roomroom/members/simsimi");
 				return null;
 			}
@@ -105,20 +118,20 @@ public class TestSimSimIBot extends TestCase {
 		Thread.sleep(500); // wait workspace Listener(NotificationListener)
 
 		assertEquals(3, session.pathBy("/rooms/roomroom/messages").children().count());
-		assertEquals(2, session.pathBy("/notifies/bleujin").children().count());
+		assertEquals(1, session.pathBy("/notifies/bleujin").children().count());
 
 		session.pathBy("/rooms/roomroom/messages").children().debugPrint();
-		// new InfinityThread().startNJoin();
+//		new InfinityThread().startNJoin();
 	}
 
 	public void testOnMessage() throws Exception {
-		talkEngine.init().startEngine();
+		talkEngine.startEngine();
 		ReadSession session = talkEngine.readSession();
 
 		talkToSimsimi(session, "안녕 심심이");
 		
 		session.workspace().cddm().await();
-		Thread.sleep(5000);
+		Thread.sleep(2000);
 		
 		session.pathBy("/rooms/roomroom/messages").children().debugPrint();
 
@@ -126,13 +139,13 @@ public class TestSimSimIBot extends TestCase {
 	}
 	
 	public void testOnEnglishMessage() throws Exception {
-		talkEngine.init().startEngine();
+		talkEngine.startEngine();
 		ReadSession session = talkEngine.readSession();
 
 		talkToSimsimi(session, "Hello sim");
 		
 		session.workspace().cddm().await();
-		Thread.sleep(5000);
+		Thread.sleep(2000);
 		
 		session.pathBy("/rooms/roomroom/messages").children().debugPrint();
 
@@ -154,7 +167,7 @@ public class TestSimSimIBot extends TestCase {
 		session.tran(new TransactionJob<Void>() {
 			@Override
 			public Void handle(WriteSession wsession) throws Exception {
-				wsession.pathBy("/rooms/roomroom/messages/123456").property("message", message).property("event", "onMessage").refTo("sender", "/users/bleujin");
+				wsession.pathBy("/rooms/roomroom/messages/123456").property("message", message).property("options", "{event:'onMessage'}").property("clientScript", "client.room().message(args);").refTo("sender", "/users/bleujin");
 				return null;
 			}
 		});

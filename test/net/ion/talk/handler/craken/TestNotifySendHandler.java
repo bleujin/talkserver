@@ -69,7 +69,7 @@ public class TestNotifySendHandler extends TestCase {
 
             return new Account(userId, null) {
                 @Override
-                public void onMessage(String notifyId, TalkResponse response) {
+                public void onMessage(String notifyId) {
                     FakeAccountManager.this.notifyId = notifyId;
                 }
             };

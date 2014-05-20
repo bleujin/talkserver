@@ -3,6 +3,7 @@ package net.ion.talk.handler.craken;
 import java.util.concurrent.ExecutorService;
 
 import net.ion.craken.node.ReadSession;
+import net.ion.framework.util.StringUtil;
 import net.ion.message.push.sender.Pusher;
 import net.ion.message.push.sender.PusherConfig;
 import net.ion.message.push.sender.Vender;
@@ -54,7 +55,9 @@ public class NotifyStrategy implements PushStrategy {
 
 	@Override
 	public Vender vender(String targetId) {
-		return "apple".equals(rsession.pathBy("/users/" + targetId).property(User.DeviceOS ).stringValue()) ? Vender.APPLE :Vender.GOOGLE;
+		String strValue = rsession.pathBy("/users/" + targetId).property(User.DeviceOS ).stringValue();
+		if (StringUtil.isBlank(strValue) || "web".equals(strValue)) return Vender.BLANK ;
+		return "apple".equals(strValue) ? Vender.APPLE :Vender.GOOGLE;
 	}
 
 	@Override
