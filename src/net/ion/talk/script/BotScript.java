@@ -19,6 +19,7 @@ import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
 import net.ion.craken.script.FileAlterationMonitor;
 import net.ion.framework.db.Rows;
+import net.ion.framework.mail.BBotMailer;
 import net.ion.framework.util.Debug;
 import net.ion.framework.util.FileUtil;
 import net.ion.framework.util.ListUtil;
@@ -26,7 +27,6 @@ import net.ion.framework.util.MapUtil;
 import net.ion.framework.util.ObjectUtil;
 import net.ion.framework.util.StringUtil;
 import net.ion.radon.aclient.NewClient;
-import net.ion.talk.ParameterMap;
 import net.ion.talk.bot.connect.RestClient;
 import net.ion.talk.responsebuilder.TalkResponseBuilder;
 
@@ -58,6 +58,7 @@ public class BotScript {
 		sengine.put("rb", TalkResponseBuilder.create()) ;
 		sengine.put("nc", nc) ;
 		sengine.put("bc", RestClient.create(nc, rsession));
+		sengine.put("bbotmailer", BBotMailer.create(ses));
 		
 		this.rsession = rsession ;
 	}

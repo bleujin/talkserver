@@ -29,6 +29,85 @@
 		<input type="text" id="message" style="width:90%; font-size:16px" /></td></tr>
 </table>
 
+<div>
+	<button id="btnRegister">Register</button>
+	<button id="btnHelp">Help</button>
+</div>
+
+<!-- Register Window -->
+<div id="registerWindow" class="easyui-window" title="Register User" data-options="modal:true, closed:true, collapsible: false" style="width:500px; height:400px; padding:10px;">
+	<div class="easyui-layout" data-options="fit: true, border: false" style="padding: 10px">
+		<div data-options="region: 'center', border: false">
+			<form id="registerForm">
+			<table cellpadding="5">
+				<tr><td>ID (email):</td>
+					<td><input class="easyui-validatebox" type="text" id="email" name="email" data-options="required:true, validType:'email'"></input></td></tr>
+				<tr><td>Nickname:</td>
+					<td><input class="easyui-validatebox" type="text" id="nickname" name="nickname" data-options="required:true"></input></td></tr>
+				<tr><td>Password:</td>
+					<td><input id="password" class="easyui-validatebox" type="password" name="password" data-options="required:true"></input></td></tr>
+				<tr><td>Password Confirm:</td>
+					<td><input class="easyui-validatebox" type="password" name="password_confirm" required="required" validType="equals['#password']"></input></td></tr>
+				<tr><td>Password Confirm:</td>
+					<td><input class="easyui-validatebox" type="password" name="password_confirm" required="required" validType="equals['#password']"></input></td></tr>
+				<tr><td>Country:</td>
+					<td><select class="easyui-combobox" name="country" id="country">
+							<option value="+82" selected="selected">Korea</option>
+							<option value="+81">Japan</option>
+							<option value="+62">Indonesia</option>
+							<option value="+1">United states</option>
+						</select></td></tr>
+				<tr><td>Phone number:</td>
+					<td><input id="exchangeNo" name="exchangeNo" class="easyui-numberbox" style="width:55px" data-options="required: true" maxlength="4"></input>
+						<input id="prefixNo" name="prefixNo" class="easyui-numberbox" style="width:55px" data-options="required: true" maxlength="4"></input>
+						<input id="postfixNo" name="postfixNo" class="easyui-numberbox" style="width:55px" data-options="required: true" maxlength="4"></input></td></tr>
+				<tr><td>Phone number authorization:</td>
+					<td><input id="authNum" name="authNum" class="easyui-numberbox" maxlength="6"></input><div><span id="verified">Not verified</span></div></td>
+						<td><a class="easyui-linkbutton" data-options="iconCls:'icon-ok'" href="javascript:void(0)" onclick="javascript:requestPhoneAuth('ok')" style="width:80px">Request</a></td></tr>
+			</table>	
+			</form>
+		</div>
+
+		<div data-options="region: 'south', border: false">
+			<a class="easyui-linkbutton" data-options="iconCls:'icon-ok'" href="javascript:void(0)" onclick="javascript:registerUser();" style="width:80px">Register</a>
+			<a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" href="javascript:void(0)" onclick="javascript:jQuery('#registerWindow').window('close');" style="width:80px">Cancel</a>	
+		</div>
+		
+	</div>
+</div>
+
+<!-- Help Window -->
+<div id="helpWindow" class="easyui-window" title="Help" data-options="closed: true, collapsible: false" style="width: 700px; height: 400px;">
+	<div class="easyui-layout" data-options="fit: true, border: true" style="padding: 5px">
+		<div data-options="region: 'west'" style="width: 250px;">
+			<ul id="helpTree" class="easyui-tree" dnd="false">
+				<li>
+					<span>Chatting</span>
+					<ul>
+						<li id="talkToFriend">Talk to friends</li>
+						<li id="talkToBot">Talk to Bots</li>
+					</ul>
+				</li>
+				<li>
+					<span>Bots</span>
+					<ul>
+						<li id="systemBot">System</li>
+						<li id="echoBot">Echo</li>
+						<li id="bbot">B@</li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+		<div id="helpContent" data-options="region: 'center'"style="width: 450px;">
+			<div id="help_talkToFriend">Talk To Friend</div>
+			<div id="help_talkToBot">Talk To Bot</div>
+			<div id="help_systemBot">System Bot</div>
+			<div id="help_echoBot">Echo Bot</div>
+			<div id="help_bbot">BBot</div>
+		</div>
+	</div>
+</div>
+
 <script type="text/javascript">
 
     WEB_SOCKET_SWF_LOCATION = "/toonweb/WebSocketMain.swf";  // Set URL of your WebSocketMain.swf here:
@@ -244,20 +323,154 @@
    			return ws ;
    		} ;
 	} ;
-
-
 		
-		jQuery("#message").keydown(function(event) {
-			if (event.which == 13) {
-				var msg = jQuery("#message").val() ;
-				var divId = jQuery('#zone').tabs('getSelected').panel('options').title ;
-				// jQuery("#" + divId).append(msg) ;
-		  		webClient.chat();			
-				console.log(divId + msg) ;
+	jQuery("#message").keydown(function(event) {
+		if (event.which == 13) {
+			var msg = jQuery("#message").val() ;
+			var divId = jQuery('#zone').tabs('getSelected').panel('options').title ;
+			// jQuery("#" + divId).append(msg) ;
+	  		webClient.chat();			
+			console.log(divId + msg) ;
+		}
+		
+	});
+	
+	jQuery.extend(jQuery.fn.validatebox.defaults.rules, {
+		equals: {
+			validator: function(value,param){
+				return value == jQuery(param[0]).val();
+			},
+			message: 'Field do not match.'
 			}
-			
+		}
+	);	
+	
+	function resetForm() {
+		jQuery('#registerForm').form('clear');
+		jQuery('#country').combobox('select', '+82');
+		window.toonweb.isAuthRequested = false;
+		window.toonweb.isAuthorized = false;
+	}
+	
+	jQuery('#btnRegister').click(function(event) {
+		resetForm();
+		jQuery('#registerWindow').window('open');
+	});
+	
+	jQuery('#btnHelp').click(function(event) {
+		jQuery('#helpWindow').window('open');
+	});
+	
+	jQuery('#helpTree').tree({
+		onClick: function(node) {
+			if(node.id) {
+				jQuery('#helpContent').children().hide();
+				jQuery('#help_' + node.id).show();
+			}
+		}
+	});
+	
+	jQuery('#authNum').keyup(function(event) {
+		var value = jQuery(this).val();
+		//&& window.toonweb.isAuthRequested
+		if(value.length == 6 ) {
+			verifyAuthNum(value);	
+		}
+		
+	});
+	
+	
+	window.toonweb = {
+		isAuthRequested: false,
+		isAuthorized: false
+	};	
+	
+	function requestPhoneAuth() {
+		var country = jQuery("#country").combobox('getValue');
+		var exchangeNo = jQuery('#exchangeNo').val();
+		var prefixNo = jQuery('#prefixNo').val();
+		var postfixNo = jQuery('#postfixNo').val();
+		
+		if(exchangeNo.startsWith('0')) {
+			exchangeNo = exchangeNo.substr(1);
+		}
+		
+		var phoneNum = country + exchangeNo + prefixNo + postfixNo;
+		
+ 		jQuery.post('/register/SMSAuth', {phone: phoneNum})
+			.done(function(data) {
+				window.toonweb.isAuthRequested = true;
+				alert('Authorization number has been sent');
+			})
+			.fail(function(data) {
+				alert('Error has occured during phone number authorization');
+			});
+	}
+	
+	function verifyAuthNum(value) {
+		var authNum = jQuery('#authNum').val();
+		var phoneNum = phoneNumberWithCountry();
+		
+		var url = '/register/SMSAuth?phone=' + encodeURIComponent(phoneNum) + '&code=' + authNum; 
+		
+		jQuery.ajax({
+			type: 'GET',
+			url: url
+		}).done(function(data) {
+			if(data == 'true') {
+				window.toonweb.isAuthorized = true;
+				jQuery('#verified').html('Verified');
+			} else {
+				window.toonweb.isAuthorized = false;
+				jQuery('#verified').html('<span style="color: red;">Not matched</span>');
+			}
+		}).fail(function() {
+			alert('failed to send authorization number');
 		});
+	}
+	
+	function phoneNumber() {
+		var exchangeNo = jQuery('#exchangeNo').val();
+		var prefixNo = jQuery('#prefixNo').val();
+		var postfixNo = jQuery('#postfixNo').val();
+		
+		var _exchangeNo = exchangeNo.startsWith('0') ? exchangeNo.substr(1) : exchangeNo;  
+		
+		return _exchangeNo + prefixNo + postfixNo;
+	}
+	
+	function phoneNumberWithCountry() {
+		var country = jQuery("#country").combobox('getValue');
+		
+		return country + phoneNumber();
+	}
+	
+	function registerUser() {
+		var isFormValid = jQuery('#registerForm').form('validate');
+		
+		if(isFormValid) {
+			var email = jQuery('#email').val(),
+				nickname = jQuery('#nickname').val(),
+				password = jQuery('#password').val(),
+				country = jQuery("#country").combobox('getValue'),
+				phoneNum = phoneNumber();
 
+			jQuery.post('/register/user/' + email, {
+				email: email,
+				nickname: nickname,
+				password: password,
+				country : country,
+				phoneNum: phoneNum
+			}).done(function() {
+				alert('success!');
+				jQuery('#registerWindow').window('close');		
+			}).fail(function(data, textStatus, jqXHR) {
+				alert('Error has occured during user registration');
+			});
+		}
+	}
+	
+	jQuery('#helpContent').children().hide();
 	window.onload = initChat ;
 	
 </script>
