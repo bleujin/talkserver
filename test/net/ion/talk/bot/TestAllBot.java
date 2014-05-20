@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import net.ion.talk.handler.engine.TestServerHandler;
 import net.ion.talk.let.*;
+import net.ion.talk.senario.TestAllDeploy;
 
 public class TestAllBot extends TestCase {
 
@@ -16,7 +17,7 @@ public class TestAllBot extends TestCase {
 		result.addTestSuite(TestEchoBot.class);
         result.addTestSuite(TestSimCall.class);
         result.addTestSuite(TestSimSimIBot.class);
-
+        
 		return result;
 	}
 }

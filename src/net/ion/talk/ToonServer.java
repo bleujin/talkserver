@@ -137,9 +137,10 @@ public class ToonServer {
 	}
 
 	public ToonServer stop() throws InterruptedException, ExecutionException {
-		repoEntry.shutdown();
-		worker.shutdown(); 
-		worker.awaitTermination(2, TimeUnit.SECONDS) ;
+		talkEngine.stopEngine(); 
+//		repoEntry.shutdown();
+//		worker.shutdown(); 
+//		worker.awaitTermination(2, TimeUnit.SECONDS) ;
 		if (aradon != null) aradon.stop();
 		if (radon != null) radon.stop().get();
 		

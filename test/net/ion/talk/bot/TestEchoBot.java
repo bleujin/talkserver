@@ -74,7 +74,7 @@ public class TestEchoBot extends TestCase {
 	protected void tearDown() throws Exception {
 		this.talkEngine.stopEngine(); 
 		this.rentry.shutdown();
-		this.radon.stop();
+		this.radon.stop().get();
 		super.tearDown();
 	}
 	

@@ -180,6 +180,8 @@ public class TalkEngine implements WebSocketHandler {
 		for (TalkHandler handler : handlers) {
 			handler.onEngineStop(this);
 		}
+		connManger().shutdown() ;
+
 		heartBeat.endBeat(); 
 		started.set(Boolean.FALSE);
 
@@ -191,6 +193,7 @@ public class TalkEngine implements WebSocketHandler {
 		NewClient nc = context().getAttributeObject(NewClient.class.getCanonicalName(), NewClient.class);
 		if (nc != null)
 			nc.close();
+		
 	}
 
 	public ReadSession readSession() throws IOException {
@@ -309,6 +312,12 @@ class ConnManager {
 	private CopyOnWriteArraySet<WebSocketConnection> conns = new CopyOnWriteArraySet<WebSocketConnection>() ;
 
 	private ConnManager() {
+	}
+
+	public void shutdown() {
+		for (WebSocketConnection conn : conns) {
+			conn.close() ;
+		}
 	}
 
 	UserConnection findBy(String id) {
