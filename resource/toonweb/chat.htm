@@ -1,7 +1,7 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<meta name = "viewport" content = "width=640;user-scalable=1">
+	<meta name="viewport" content="width=320, initial-scale=1, maximum-scale=1, minimum-scale=1" />
 	<title>Sample of Toontalk</title>
 	
 	<!-- Include these three JS files: -->
@@ -17,16 +17,16 @@
 </head>
 <body leftmargin=0 topmargin=0>
 
-<table border=0 cellpadding=0 cellspacing=0 width=640>
+<table border=0 cellpadding=0 cellspacing=0 width=340>
 	<tr><td>
-		<!--table width=600 align=center><tr><td><div id="outputDiv" style="overflow:scroll; width:600; height:380"></div></td></tr></table-->
-		<div id="zone" class="easyui-tabs" style="width:600px;height:491px;">
+		<!--table width=600 align=center><tr><td><div id="outputDiv" style="overflow:scroll; width:320; height:380"></div></td></tr></table-->
+		<div id="zone" class="easyui-tabs" style="width:315px;height:320px;">
 			<div title="Home" id='Home'>
 			</div>
 		</div>
 		</td></tr>
-	<tr><td height=60>
-		<input type="text" id="message" style="width:90%; font-size:16px" /></td></tr>
+	<tr><td height=40>
+		<input type="text" id="message" style="width:85%; font-size:16px" /></td></tr>
 </table>
 
 <div>
@@ -119,29 +119,46 @@
 	
 	var client = new function(){
 		var roomObj = new function(){
-			this.margument ;
 			this.count = 0 ;
 			
-			this.args = function(margument){
-				this.margument = margument ;
+			this.mwindow = function(option){
+			 	\$.messager.show({
+					title: option.title || 'New Message',
+					msg: option.msg ,
+					showType: option.showType || 'show', 
+					timeout : option.timeout || 10000,
+					style:{right:'', left:5, top:29, bottom:''}
+				});
+			}, 
+			
+			this.alertMsg = function(option){
+				\$.messager.alert(option.title || 'Alert', option.content, option.type || 'error');
+			
 			}, 
 		
-			this.message = function(message) {
-				var divId = jQuery('#zone').tabs('getSelected').panel('options').title ;
-				var log = jQuery("#" + divId) ;
+			this.message = function(args) {
+				var selectedScreenId = jQuery('#zone').tabs('getSelected').panel('options').title ;
+				var roomId = args.roomId || selectedScreenId ;
 				
-		    	var escaped = message.replace(/&/, "&amp;").replace(/</, "&lt;").replace(/>/, "&gt;").replace(/"/, "&quot;"); // "
-		    	var prefixString = (this.margument == undefined ||  this.margument.sender == webClient.sender) ? 'send' : 'received' ;
-		    	var sender = (this.margument && this.margument.sender) ? '&lt;' + this.margument.sender + '&gt;' : '&lt;system&gt;' ;
+				if (roomId != selectedScreenId){
+					var onClickMsg = "webClient.chat(\"/join " + roomId + "\")"  ;
+					this.mwindow({title:'New Message', msg:"<a href='#' onclick='" + onClickMsg + "'>" + args.message + "</a><br/>from:" + args.sender + " ,room:" + roomId}) ;
+					selectedScreenId = roomId ;
+				}
+				if (\$('#' +roomId) == null) return ;
+				
+				var currentScreen = jQuery("#" + selectedScreenId) ;
+				
+		    	//var escaped = args.message.replace(/&/, "&amp;").replace(/</, "&lt;").replace(/>/, "&gt;").replace(/"/, "&quot;");
+		    	var escaped = args.message ;  
+		    	var sender = '&lt;' + (args.sender || 'system') + '&gt;' ;
 		    	 
-		    	if (prefixString == 'received') {
-		    		log.append("<div align='right' style=\"width:100%; height:20px; padding:0; background-color:dfdfdf \">" + sender + ':' + escaped + "</div>");
-		    	} else if (prefixString == 'send') {
-		    		log.append("<div align='left' style=\"width:100%; height:20px; padding:0; background-color:efefef \">" + escaped + "</div>");
+		    	if (args.sender == webClient.sender) {
+		    		currentScreen.append("<div align='right' style=\"width:100%; height:20px; padding:0; background-color:dfdfdf \">" + escaped + "</div>");
 		    	} else {
-		    		log.append("<div align='left' style=\"width:100%; height:20px; padding:0; background-color:efefef \">" + escaped + "</div>");
+		    		currentScreen.append("<div align='left' style=\"width:100%; height:20px; padding:0; background-color:efefef \">" + sender + ':' + escaped + "</div>");
 		    	}
-		    	log.scrollTop((this.count++) * 20) ;
+		    	currentScreen.scrollTop((this.count++) * 20) ;
 			}, 
 			
 			this.background = function(imgUrl){
@@ -156,7 +173,7 @@
 				if (jQuery('#zone').tabs('exists', title)){
 					jQuery('#zone').tabs('select', title);
 				} else {
-					var content = '<div id="' + title + '" style="overflow:scroll;width:100%;height:100%;"></div>'; //'<iframe scrolling="auto" frameborder="0"  src="'+url+'" style="width:100%;height:100%;"></iframe>';
+					var content = '<div id="' + title + '" style="overflow:scroll;width:100%;height:100%;"></div>'; 
 					jQuery('#zone').tabs('add',{
 						title:title,
 						content:content,
@@ -214,21 +231,22 @@
 		webClient.sender = '$config.sender$' ;
 		webClient.senderNickname = 'bleujin' ;
 
-		webClient.chat = function(){
+		webClient.chat = function(argMessage){
 			// id, script, params[
-			var chatMsg = {id:'' + new Date().getUTCMilliseconds(), script:'/room/sendMessageWith', params:{}} ;
-			var msgText = document.getElementById("message").value ;
-			var selectedDiv = jQuery('#zone').tabs('getSelected').panel('options').title ;
+			var msgText = argMessage ? argMessage : \$("#message").val() ;
 			
-			if (selectedDiv == 'Home' && !msgText.startWith('/')){
-				client.room().message('not in room') ;
+			var chatMsg = {id:'' + new Date().getUTCMilliseconds(), script:'/room/sendMessageWith', params:{}} ;
+			var currentDivId = jQuery('#zone').tabs('getSelected').panel('options').title ;
+			
+			if (currentDivId == 'Home' && !msgText.startWith('/')){
+				client.room().alertMsg({content:'not in room'}) ;
 			} else {
 				chatMsg.params.receivers = ''
-				chatMsg.params.roomId = selectedDiv ;
+				chatMsg.params.roomId = currentDivId ;
 				chatMsg.params.message = msgText  ;
 				chatMsg.params.sender = this.sender ;
 				chatMsg.params.senderNickname = this.senderNickname ;
-				chatMsg.params.clientScript = 'client.room().message(args.message);' ;
+				chatMsg.params.clientScript = 'client.room().message(args);' ;
 				chatMsg.params.requestId = '/123456' ;
 				
 				this.getWebSocket().send(this.jsonToString(chatMsg));
@@ -274,7 +292,7 @@
    		var ws = new WebSocket('$config.address$') ;
 		
 	  	ws.onopen = function(){
-	  		client.room().message("open") ;
+	  		client.room().message({message:"open"}) ;
 	  	} ;
 	  	
    		ws.onmessage = function(e){
@@ -295,8 +313,7 @@
    			}
 
    			if (msg.script.startWith('/commands/')){
-   				var args = msg.result ;
-   				client.room().args(args) ;
+   				var args = msg.result || {} ;
    				eval(msg.result.clientScript) ;
    				return ;
    			}
@@ -304,8 +321,7 @@
    			if (msg.script == '/room/sendMessageWith') return ; // return sendMessageWith
    			if (msg.script == '/room/listNotifyDataBy') {
    				// alert(msg.result.message) ;
-   				var args = msg.result ;
-   				client.room().args(args) ;
+   				var args = msg.result || {} ;
    				eval(msg.result.clientScript) ;
    				return ;
    			}
@@ -313,35 +329,34 @@
    		} ;
    		
    		ws.onclose = function(){
-   			client.room().message("closed") ;
+   			client.room().message({message:"closed.. retry connect"}) ;
+   			ws = new WebSocket('$config.address$') ;
    		} ;
    		ws.onerror = function(){
-   			client.room().message("error") ;
+   			client.room().message({message:"error"}) ;
    		} ;
    		
    		webClient.getWebSocket = function(){
    			return ws ;
    		} ;
+   		
 	} ;
-		
+
 	jQuery("#message").keydown(function(event) {
 		if (event.which == 13) {
 			var msg = jQuery("#message").val() ;
 			var divId = jQuery('#zone').tabs('getSelected').panel('options').title ;
 			// jQuery("#" + divId).append(msg) ;
 	  		webClient.chat();			
-			console.log(divId + msg) ;
 		}
-		
 	});
-	
+
 	jQuery.extend(jQuery.fn.validatebox.defaults.rules, {
 		equals: {
 			validator: function(value,param){
 				return value == jQuery(param[0]).val();
 			},
 			message: 'Field do not match.'
-			}
 		}
 	);	
 	

@@ -107,7 +107,7 @@ public class TalkMessageHandler implements CDDHandler {
 
     private void ifUserOnExit(WriteSession wsession, Map<String,String> resolveMap, Map<PropertyId,PropertyValue> pmap) {
         //유저 퇴장시 방의 유저에게 퇴장 Notify 생성
-        if(PropertyValue.createPrimitive(Const.Event.onExit).equals(pmap.get(PropertyId.fromIdString(Const.Message.Event)))){
+        if("onExit".equals(pmap.get(PropertyId.fromIdString(Const.Message.Options)).json().asString("event"))){
             String sender = pmap.get(PropertyId.fromIdString(Const.Message.Message)).stringValue();
             writeNotification(wsession, sender, getRoomId(resolveMap), getMessageId(resolveMap));
         }
@@ -122,8 +122,8 @@ public class TalkMessageHandler implements CDDHandler {
 
             if(wsession.exists("/bots/"+botId) && wsession.pathBy("/bots/"+botId).ref("bot").property(Const.Bot.isSyncBot).stringValue().equals("true")){
                 nc.preparePost(wsession.pathBy("/users/" + botId).property(Const.Bot.RequestURL).stringValue())
-                        .addParameter(Const.Message.Event, Const.Event.onFilter)
-                        .addParameter(Const.Message.CausedEvent, pmap.get(PropertyId.fromIdString(Const.Message.Event)).stringValue())
+                        .addParameter(Const.Message.Options, "{event:'onFilter'}")
+                        .addParameter(Const.Message.CausedEvent, pmap.get(PropertyId.fromIdString(Const.Message.Options)).stringValue())
                         .addParameter(Const.Message.Sender, pmap.get(PropertyId.fromIdString(Const.Message.Sender)).stringValue())
                         .addParameter(Const.Bot.BotId, botId)
                         .addParameter(Const.Message.Message, pmap.get(PropertyId.fromIdString(Const.Message.Message)).stringValue())

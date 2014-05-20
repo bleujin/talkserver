@@ -212,7 +212,7 @@ public class BotScript {
 	}
 
 	
-	public <T> T callFn(String fullFnName, BotMessage bm, BotResponseHandler<T> returnnative) {
+	private <T> T callFn(String fullFnName, BotMessage bm, BotResponseHandler<T> returnnative) {
 		try {
 			
 			String[] names = StringUtil.split(fullFnName, '.') ;
@@ -238,8 +238,8 @@ public class BotScript {
 		
 	}
 
-	public Object callFn(String fullFnName,  BotMessage bm) {
-		return callFn(fullFnName, bm,  BotResponseHandler.ReturnNative) ;
+	public Object callFn(BotMessage bm) {
+		return callFn(bm.botId() + "." + bm.eventName(), bm, BotResponseHandler.ReturnNative) ;
 	}
 
 	public Rows viewRows(ReadSession session, String script) throws ScriptException {

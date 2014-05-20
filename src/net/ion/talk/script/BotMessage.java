@@ -1,79 +1,74 @@
 package net.ion.talk.script;
 
+import net.ion.craken.node.ReadNode;
+import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.util.ObjectId;
-
+import net.ion.talk.bean.Const;
 
 public class BotMessage {
 
-	private String message;
-	private String sender;
-	private String roomId;
-	private String clientScript;
-	private String messageId;
 	private String botId;
-	private String newMsgId = new ObjectId().toString() ;
+	private String newMsgId = new ObjectId().toString();
+	private MessageCommand messageCmd;
+	private ReadNode messageNode;
 
-	public static BotMessage create() {
-		return new BotMessage() ;
+	private BotMessage(String botId, ReadNode messageNode) {
+		this.botId = botId;
+		this.messageNode = messageNode;
+		this.messageCmd = MessageCommand.create(this, messageNode.property(Const.Message.Message).asString());
 	}
-	
-	public String newMsgId(){
-		return newMsgId ;
+
+	public static BotMessage create(String botId, ReadNode notifyNode) {
+		ReadNode messageNode = notifyNode.ref(Const.Message.Message);
+		return new BotMessage(botId, messageNode);
+	}
+
+	public String newMsgId() {
+		return newMsgId;
 	}
 
 	public String message() {
-		return message;
+		return messageNode.property(Const.Message.Message).asString();
+	}
+
+	public MessageCommand messageAsCommand() {
+		return messageCmd;
 	}
 
 	public String sender() {
-		return sender;
+		return messageNode.ref(Const.Message.Sender).property(Const.User.UserId).asString();
 	}
 
 	public String roomId() {
-		return roomId;
+		return messageNode.parent().parent().fqn().name();
 	}
 
 	public String clientScript() {
-		return clientScript;
+		return messageNode.property(Const.Message.ClientScript).asString();
 	}
 
 	public String messageId() {
-		return messageId;
+		return messageNode.fqn().name();
 	}
 
 	public String botId() {
 		return botId;
 	}
 
-	public BotMessage message(String message) {
-		this.message = message;
-		return this;
+	public String eventName() {
+		return JsonObject.fromString(messageNode.property(Const.Message.Options).asString()).asString("event");
 	}
 
-	public BotMessage sender(String sender) {
-		this.sender = sender;
-		return this;
+	public String asString(String name) {
+		return messageNode.property(name).asString();
 	}
 
-	public BotMessage roomId(String roomId) {
-		this.roomId = roomId;
-		return this;
+	public String[] asStrings(String name) {
+		return messageNode.property(name).asStrings();
 	}
 
-	public BotMessage clientScript(String clientScript) {
-		this.clientScript = clientScript;
-		return this;
+	public int asInt(String name) {
+		return messageNode.property(name).asInt();
 	}
-
-	public BotMessage messageId(String messageId) {
-		this.messageId = messageId;
-		return this;
-	}
-
-	public BotMessage botId(String botId) {
-		this.botId = botId;
-		return this;
-	}
-
 
 }

@@ -10,7 +10,7 @@ new function(){
 	} ;
 	
 
-	this.create = function(client, cparam){
+	this.create = function(source, cparam){
 		var roomId = new net.ion.framework.util.ObjectId().toString() ;
 		session.tran(function(wsession){
 			var members = wsession.pathBy("/openrooms/" + roomId).child("members") ;
@@ -20,12 +20,32 @@ new function(){
 		client.data("roomId", roomId) ;
 	}, 
 	
-	this.list = function(client, cparam){
+	this.rooms = function(source, cparam){
 		// ex) list rooms, list friends, 
-		client.listrooms(session.pathBy("/openrooms").children().toString()) ;		
+		var children = session.ghostBy("/openrooms").children().toList() ;
+		var text = '' ;
+		if (children.size() == 0) {
+			text = 'no opened rooms' ; 
+		} else {
+			var rooms = children.iterator() ;
+			text = '<ul>' ;
+			while(rooms.hasNext()){
+				var room = rooms.next().ref('room') ;
+				var onClickMsg = "webClient.chat(\"/join " + room.property('roomId').asString() + "\")" ;
+				text += "<li><a href='#' onclick='" + onClickMsg + "'>" + room.property('roomId').asString() + "</a> : " + room.property('title').asString() + "</li>" ;
+			}
+			text += '</ul>' ;
+		}
+			
+		source.sendMessage(
+			rb.makeCommandBuilder("/commands/rooms")
+			  .inner("result")
+				.property("clientScript", "client.room().message(args);")
+				.property("message", text).build().talkMessage()) ;
 	}, 
 	
-	this.whisper = function(client, cparam){
+	this.whisper = function(source, cparam){
+		var targetId = cparam.reamin(0) ;
 		
 	}, 
 	
@@ -33,7 +53,7 @@ new function(){
 		var user = session.ghostBy("/users/" + source.id()) ;
 		source.sendMessage(rb.makeCommandBuilder("/commands/whoami")
 			.inner("result")
-				.property("clientScript", "client.room().message(args.message);")
+				.property("clientScript", "client.room().message(args);")
 				.property("message", "id:" + source.id() + ", nick:" + user.property("nickname").asString()).build().talkMessage()) ;
 	}, 
 	
@@ -41,23 +61,33 @@ new function(){
 		source.sendMessage(
 			rb.makeCommandBuilder("/commands/time")
 			  .inner("result")
-				.property("clientScript", "client.room().message(args.message);")
+				.property("clientScript", "client.room().message(args);")
 				.property("message", new java.util.Date().toString()).build().talkMessage()) ;
 	}, 
 	
 	this.join = function(source, cparam){
 		var roomId = cparam.remain(0) ;
+
 		session.tranSync(function(wsession){
 			wsession.pathBy("/openrooms/" + roomId).refTo("room", "/rooms/" + roomId).property("roomId", roomId) ;
-			wsession.pathBy("/rooms/" + roomId + "/members/" + source.id()) ;
+			if (wsession.exists("/rooms/" + roomId)) wsession.pathBy("/rooms/" + roomId).property("roomId", roomId).property("title", "not defined").child('members').child(source.id()) ;
+			else wsession.pathBy("/rooms/" + roomId + "/members/" + source.id()) ;
 		}) ;
-		// rb.create().newInner().property(room, "title").property("roomId",params.asString("roomId")).inlist("members").property(members,"user.userId,user.nickname").build().toJsonElement();
-		// rb.create().newInner().property("clientScript", "addTab('" + roomId + "');").build().toString()
 
 		source.sendMessage(rb.makeCommandBuilder("/commands/join")
 			.inner("result")
 				.property("clientScript", "client.room().join('" + roomId + "');")
 				.build().talkMessage()) ;				
+
+		var unreadMsg = session.pathBy("/rooms/" + roomId + "/messages").children().ascending('messageId').offset(100).iterator() ;
+		while(unreadMsg.hasNext()){
+			var next = unreadMsg.next() ; 
+			source.sendMessage(rb.makeCommandBuilder("/commands/join")
+			  .inner("result")
+				.property(next, "message, sender.userId as sender, sender.nickname as senderNickname, requestId, clientScript, event, messageId, time")
+				.property("roomId", roomId)
+				.build().talkMessage()) ;			
+		}
 	}, 
 	
 	this.bot = function(source, cparam){
@@ -66,7 +96,7 @@ new function(){
 			source.sendMessage(
 			rb.makeCommandBuilder("/commands/bot")
 			  .inner("result")
-				.property("clientScript", "client.room().message(args.message);")
+				.property("clientScript", "client.room().message(args);")
 				.property("message", botId + ' not exists' ).build().talkMessage()) ;
 			return ;
 		} 
@@ -78,7 +108,7 @@ new function(){
 		source.sendMessage(
 			rb.makeCommandBuilder("/commands/bot")
 			  .inner("result")
-				.property("clientScript", "client.room().message(args.message);")
+				.property("clientScript", "client.room().message(args);")
 				.property("message", botId + ' invited' ).build().talkMessage()) ;
 		
 	}, 
@@ -93,7 +123,7 @@ new function(){
 		source.sendMessage(
 			rb.makeCommandBuilder("/commands/members")
 			  .inner("result")
-				.property("clientScript", "client.room().message(args.message);")
+				.property("clientScript", "client.room().message(args);")
 				.property("message", result.join(', ')).build().talkMessage()) ;
 	}, 
 	
@@ -104,7 +134,7 @@ new function(){
 			source.sendMessage(
 			rb.makeCommandBuilder("/commands/ban")
 			  .inner("result")
-				.property("clientScript", "client.room().message(args.message);")
+				.property("clientScript", "client.room().message(args);")
 				.property("message", targetId + ' not exists' ).build().talkMessage()) ;
 			return ;
 		} 
@@ -128,7 +158,7 @@ new function(){
 		source.sendMessage(
 			rb.makeCommandBuilder("/commands/info")
 			  .inner("result")
-				.property("clientScript", "client.room().message(args.message);")
+				.property("clientScript", "client.room().message(args);")
 				.property("sender", "&lt;system&gt;")
 				.property("message", toString(result)).build().talkMessage()) ;
 	}, 
@@ -143,8 +173,7 @@ new function(){
 		source.sendMessage(
 			rb.makeCommandBuilder("/commands/topic")
 			  .inner("result")
-				.property("clientScript", "client.room().message(args.message);")
-				
+				.property("clientScript", "client.room().message(args);")
 				.property("message", 'topic[' + topic + ']' + ' changed').build().talkMessage()) ;
 		
 	} 

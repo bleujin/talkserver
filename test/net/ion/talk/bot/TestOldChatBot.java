@@ -84,9 +84,9 @@ public class TestOldChatBot extends TestCrakenBase{
             public Object handle(WriteSession wsession) throws Exception {
                 wsession.pathBy("/rooms/test/messages/testMessage")
                         .property(Const.Message.Message, msg)
-                        .property(Const.Message.ClientScript, "client.rooms().message(args.message);")
+                        .property(Const.Message.ClientScript, Const.Message.DefaultOnMessageClientScript)
                         .property(Const.Message.Sender, "ryun")
-                        .property(Const.Message.Event, Const.Event.onMessage);
+                        .property(Const.Message.Options, "{event:'onMessage'}");
                 return null;
             }
         });
