@@ -2,8 +2,8 @@ new function() {
 	
 	this.onLoad = function() {
 		session.tran(function(wsession){
-			wsession.pathBy("/bots/b@") ;
-			wsession.pathBy("/users/b@").property("userId", "b@").property("nickname", "B@ bot").property("stateMessage", "normal") ;
+			wsession.pathBy("/bots/bbot") ;
+			wsession.pathBy("/users/bbot").property("userId", "bbot").property("nickname", "B bot").property("stateMessage", "normal").property("free", true) ;
 		}) ;
 	};
 	

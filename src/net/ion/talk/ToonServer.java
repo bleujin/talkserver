@@ -116,10 +116,6 @@ public class ToonServer {
 		return this;
 	}
 
-	public static long GMTTime() {
-		return GregorianCalendar.getInstance().getTime().getTime();
-	}
-
 	public ToonServer ready() throws Exception {
 		this.talkEngine.init().startEngine() ;
 		

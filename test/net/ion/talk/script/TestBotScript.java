@@ -42,7 +42,7 @@ public class TestBotScript extends TestCase{
 		
 		ReadNode mnode = rsession.pathBy("/notifies/123456") ;
 		BotMessage bm = BotMessage.create("echo", mnode);
-		Object result = bs.callFn(bm) ;
+		Object result = bs.callFromOnMessage(bm) ;
 	
 		assertEquals("Hello Echo", rsession.pathBy("/rooms/roomroom/messages").children().gt("roomId", " ").firstNode().property("message").asString()) ; 
 		

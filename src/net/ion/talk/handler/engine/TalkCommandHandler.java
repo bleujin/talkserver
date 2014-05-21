@@ -19,7 +19,7 @@ import net.ion.talk.script.CommandScript;
 
 public class TalkCommandHandler implements TalkHandler{
 
-	private CommandScript cs;
+	private CommandScript cscript;
 
 	@Override
 	public Reason onConnected(TalkEngine tengine, UserConnection uconn) {
@@ -37,12 +37,12 @@ public class TalkCommandHandler implements TalkHandler{
 		
 		CommandParam cparam = CommandParam.create(tmsg) ;
 		
-		cs.outroomFn(cparam, uconn) ;
+		cscript.outroomFn(cparam, uconn) ;
 	}
 
 	@Override
 	public void onEngineStart(TalkEngine tengine) throws Exception {
-		this.cs = CommandScript.create(tengine.readSession(), tengine.context().getAttributeObject(ScheduledExecutorService.class.getCanonicalName(), ScheduledExecutorService.class))
+		this.cscript = CommandScript.create(tengine.readSession(), tengine.context().getAttributeObject(ScheduledExecutorService.class.getCanonicalName(), ScheduledExecutorService.class))
 			.readDir(new File("./command"), true);
 	}
 

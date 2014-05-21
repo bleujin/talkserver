@@ -36,6 +36,7 @@ import net.ion.talk.handler.engine.ServerHandler;
 import net.ion.talk.handler.engine.TalkCommandHandler;
 import net.ion.talk.handler.engine.TalkScriptHandler;
 import net.ion.talk.handler.engine.UserConnectionHandler;
+import net.ion.talk.handler.engine.WhisperHandler;
 import net.ion.talk.script.BotScript;
 import net.ion.talk.script.TalkScript;
 
@@ -130,7 +131,8 @@ public class TalkEngine implements WebSocketHandler {
 
 		AccountManager am = context().getAttributeObject(AccountManager.class.getCanonicalName(), AccountManager.class);
 
-		registerHandler(new UserConnectionHandler()).registerHandler(ServerHandler.test()).registerHandler(new TalkScriptHandler()).registerHandler(new TalkCommandHandler()) ;
+		registerHandler(new UserConnectionHandler()).registerHandler(ServerHandler.test()).registerHandler(new TalkScriptHandler()).registerHandler(new WhisperHandler())
+			.registerHandler(new TalkCommandHandler()) ;
 
 		rsession.workspace().cddm().add(new UserInAndOutRoomHandler());
 		rsession.workspace().cddm().add(new TalkMessageHandler(nc));

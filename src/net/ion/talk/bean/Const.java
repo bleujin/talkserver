@@ -62,5 +62,11 @@ public class Const {
         public static final String Bot = "bot";
         public static final String User = "user";
     }
+    
+    public static class Status {
+    	public static final String Status = "status" ;
+    	public static final String Success = "success" ;
+    	public static final String Failure = "failure" ;
+    }
 }
 

@@ -21,6 +21,7 @@ import net.ion.radon.aclient.NewClient;
 import net.ion.talk.ToonServer;
 import net.ion.talk.bean.Const;
 import net.ion.talk.bean.Const.Message;
+import net.ion.talk.util.CalUtil;
 
 import com.google.common.base.Predicate;
 
@@ -139,7 +140,7 @@ public class TalkMessageHandler implements CDDHandler {
         wsession.pathBy("/notifies/" + receiver).property(Const.Notify.LastNotifyId, messageId)
                 .child(messageId)
                 .property(Const.Connection.DelegateServer, getDelegateServer(receiver, wsession))
-                .property(Const.Notify.CreatedAt, ToonServer.GMTTime())
+                .property(Const.Notify.CreatedAt, CalUtil.gmtTime())
                 .refTo(Const.Message.Message, "/rooms/" + roomId + "/messages/" + messageId)
                 .refTo(Const.Room.RoomId, "/rooms/" + roomId);
     }

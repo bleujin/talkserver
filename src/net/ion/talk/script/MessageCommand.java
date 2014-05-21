@@ -4,20 +4,18 @@ import net.ion.framework.util.StringUtil;
 
 public class MessageCommand {
 
-	private BotMessage botMessage;
 	private String message;
 	private String remains;
 	private String[] cmds;
 
-	private MessageCommand(BotMessage botMessage, String message) {
-		this.botMessage = botMessage ;
+	private MessageCommand(String message) {
 		this.message = message ;
 		this.remains = StringUtil.substringAfter(message, " ") ;
 		this.cmds = StringUtil.split(message, " ") ;
 	}
 
-	public static MessageCommand create(BotMessage botMessage, String message) {
-		return new MessageCommand(botMessage, message);
+	public static MessageCommand create(String message) {
+		return new MessageCommand(message);
 	}
 
 	public String fnName(){

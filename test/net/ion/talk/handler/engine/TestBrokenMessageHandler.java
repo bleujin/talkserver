@@ -13,6 +13,7 @@ import net.ion.talk.bean.Const;
 import net.ion.talk.handler.craken.BrokenMessageHandler;
 import net.ion.talk.handler.craken.NotificationListener;
 import net.ion.talk.script.BotScript;
+import net.ion.talk.util.CalUtil;
 
 /**
  * Created with IntelliJ IDEA.
@@ -40,7 +41,7 @@ public class TestBrokenMessageHandler extends TestCase {
             @Override
             public Object handle(WriteSession wsession) throws Exception {
 
-                wsession.pathBy("/notifies/ryun").child("test").property(Const.Notify.CreatedAt, ToonServer.GMTTime());
+                wsession.pathBy("/notifies/ryun").child("test").property(Const.Notify.CreatedAt, CalUtil.gmtTime());
                 return null;
             }
         });
@@ -52,7 +53,7 @@ public class TestBrokenMessageHandler extends TestCase {
         BrokenMessageHandler.NOTIFY_JOB_DELAY = 500;
         Thread.sleep(3000);
         long createdAt = rsession.pathBy("/notifies/ryun/test").property(Const.Notify.CreatedAt).longValue(0);
-        assertTrue(ToonServer.GMTTime() - createdAt < 1500);
+        assertTrue(CalUtil.gmtTime() - createdAt < 1500);
 
     }
 

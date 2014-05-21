@@ -71,7 +71,7 @@ public class TestClientLet extends TestCase {
 						.path("reload").addUrlPattern("/reload").handler(ReloadLet.class)
 					.restSection("register")
 						.path("user").addUrlPattern("/user/{email}").matchMode(IMatchMode.STARTWITH).handler(UserLet.class)
-						.path("phoneAuth").addUrlPattern("/phoneAuth").matchMode(EnumClass.IMatchMode.STARTWITH).handler(PhoneAuthLet.class)
+						.path("smsAuth").addUrlPattern("/SMSAuth").matchMode(EnumClass.IMatchMode.STARTWITH).handler(PhoneAuthLet.class)
 					.restSection("toonweb")
 						.path("toonweb").addUrlPattern("/").matchMode(IMatchMode.STARTWITH).handler(ToonWebResourceLet.class).toBuilder();
 						

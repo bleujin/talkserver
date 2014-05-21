@@ -20,13 +20,20 @@ import net.ion.craken.node.WriteSession;
 import net.ion.craken.script.FileAlterationMonitor;
 import net.ion.framework.db.Rows;
 import net.ion.framework.mail.BBotMailer;
+import net.ion.framework.parse.gson.JsonElement;
+import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.util.Debug;
 import net.ion.framework.util.FileUtil;
 import net.ion.framework.util.ListUtil;
 import net.ion.framework.util.MapUtil;
+import net.ion.framework.util.ObjectId;
 import net.ion.framework.util.ObjectUtil;
 import net.ion.framework.util.StringUtil;
 import net.ion.radon.aclient.NewClient;
+import net.ion.talk.ParameterMap;
+import net.ion.talk.UserConnection;
+import net.ion.talk.bean.Const.Message;
+import net.ion.talk.bean.Const.Status;
 import net.ion.talk.bot.connect.RestClient;
 import net.ion.talk.responsebuilder.TalkResponseBuilder;
 
@@ -238,8 +245,24 @@ public class BotScript {
 		
 	}
 
-	public Object callFn(BotMessage bm) {
+	public Object callFromOnMessage(BotMessage bm) {
 		return callFn(bm.botId() + "." + bm.eventName(), bm, BotResponseHandler.ReturnNative) ;
+	}
+	
+	public Object whisper(UserConnection source, WhisperMessage bwm) {
+		
+		BotWhisperHandler<Void> returnnative = BotWhisperHandler.DEFAULT ;
+		try {
+			Object pack = packages.get(bwm.toUserId());
+			Object result = ((Invocable) sengine).invokeMethod(pack, "onWhisper", source, bwm);
+			if(result instanceof NativeJavaObject) result = ((NativeJavaObject)result).unwrap() ;  
+			result = ObjectUtil.coalesce(result, "undefined") ;
+			return returnnative.onSuccess(source, bwm.toUserId(), bwm, result);
+		} catch (ScriptException e) {
+			return returnnative.onThrow(source, bwm.toUserId(), bwm, e) ;
+		} catch (NoSuchMethodException e) {
+			return returnnative.onThrow(source, bwm.toUserId(), bwm, e) ;
+		}
 	}
 
 	public Rows viewRows(ReadSession session, String script) throws ScriptException {
@@ -270,3 +293,24 @@ interface BotResponseHandler<T> {
 	public T onThrow(String fullName, BotMessage pmap, Exception ex) ;
 }
 
+interface BotWhisperHandler<T> {
+	public final static BotWhisperHandler<Void> DEFAULT = new BotWhisperHandler<Void>() {
+		@Override
+		public Void onSuccess(UserConnection uconn, String botId, WhisperMessage whisper, Object result) {
+			return null ;
+		}
+
+		@Override
+		public Void onThrow(UserConnection uconn, String botId, WhisperMessage whisper, Exception ex) {
+			JsonObject forSend = JsonObject.create().put("id", whisper.id()).put(Status.Status, Status.Success)
+					.put("result", new JsonObject().put(Message.ClientScript, Message.DefaultOnMessageClientScript).put(Message.Message, ex.getMessage()).put(Message.MessageId, new ObjectId().toString()) )
+					.put("script", "/whisper/" + whisper.userMessage()).put("params", whisper.asJson());
+			uconn.sendMessage(forSend.toString()) ;
+			
+			return null ;
+		}
+	};
+
+	public T onSuccess(UserConnection sender, String botId, WhisperMessage whisper, Object result) ;
+	public T onThrow(UserConnection sender, String botId, WhisperMessage whisper, Exception ex) ;
+}

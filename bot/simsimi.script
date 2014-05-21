@@ -13,8 +13,6 @@ new function() {
 	this.onMessage = function(bm){
 		if ("simsimi" == bm.sender()) return ;
 		
-		
-		
 		var handler = new net.ion.talk.bot.connect.BotCompletionHandler() {
 			onCompleted: function(jsonResponse) {
 				session.tran(function(wsession) {
@@ -40,6 +38,38 @@ new function() {
 
 		bc.request(serverHost).addParameter("text", bm.message()).post(handler);
 	},
+	
+	this.onWhisper = function(source, whisperMsg){
+		var handler = new net.ion.talk.bot.connect.BotCompletionHandler() {
+			onCompleted: function(jsonResponse) {
+				var resp = eval('(' + jsonResponse + ')');
+				
+				java.lang.System.out.println(jsonResponse) ;
+				source.sendMessage(
+				rb.makeCommandBuilder("/whisper/simsimi")
+				  .inner("result")
+				  	.property("sender", "simsimi")
+					.property("clientScript", "client.room().message(args);")
+					.property("message", resp.result == 200 ? resp.response : resp.msg)
+					.property("options", "{event:'onWhisper'}")
+					.property("messageId", new net.ion.framework.util.ObjectId().toString()).build().talkMessage()) ;
+			} ,
+			
+			onThrowable: function(ex){
+				source.sendMessage(
+				rb.makeCommandBuilder("/whisper/simsimi")
+				  .inner("result")
+				  	.property("sender", "simsimi")
+					.property("clientScript", "client.room().message(args);")
+					.property("message", ex.getMessage())
+					.property("options", "{event:'onWhisper'}")
+					.property("messageId", new net.ion.framework.util.ObjectId().toString()).build().talkMessage()) ;
+			}
+		};
+
+		bc.request(serverHost).addParameter("text", whisperMsg.userMessage()).post(handler);
+	}, 
+	
 	
 	this.onEnter = function(bm){
 		var roomId = bm.roomId() ;
