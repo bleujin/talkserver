@@ -60,13 +60,12 @@ new function(){
 			      if(!(wsession.pathBy("/users/"+findUser.get(j).fqn().name()).hasRef("friends",wsession.pathBy("/users/"+params.asString("userId")).fqn())))  //recommend
 			        	wsession.pathBy("/users/"+findUser.get(j).fqn().name()).refTos("recommendFriends",["/users/"+params.asString("userId")]);
 			       });			
-				}
-				
+				}				
 			}
 	
 		}
 		var user = session.pathBy("/users/" + params.asString("userId"));
-		return rb.create().newInner().inlist("friends", user.refs("friends").toList(), "phone,nickname,userId,stateMessage,country").build().toJsonElement();
+		return rb.create().newInner().inlist("friends", user.refs("friends").toList(), "phone,nickname,userId,stateMessage,country").property("clientScript","client.friends().add(args)").build().toJsonElement();
 	},
 
 	//추천 친구 리스트 (친구 리스트와 봇 리스트가 따로 되어 있음)
@@ -75,7 +74,7 @@ new function(){
 		var children = session.pathBy("/bots").children();
 	
 		return rb.create().newInner().inlist("friends", user.refs("recommendFriends").toList(),"phone,nickname,userId,stateMessage")
-			.root().inlist("bots", children, "user.userId,user.nickname,user.phone,user.stateMessage").property("clientScript","client.friends().listRecomendFriends();").build().toJsonElement();
+			.root().inlist("bots", children, "user.userId,user.nickname,user.phone,user.stateMessage").property("clientScript","client.friends().listRecomendFriends(args);").build().toJsonElement();
 	}
 
 } ;

@@ -24,24 +24,43 @@ new function(){
 		return rb.create().newInner().property(user, "nickname, phone,pushId,stateMessage,country").build().toJsonElement();
 	}, 
 	
+	// 유저아이디 인증 하기
+	this.authBy = function(params){
+		var userPath = "/users/" + params.asString("userId");
+		if(session.exists(userPath)){
+			if(params.asString("password").equals(session.pathBy(userPath).property("password").asString()))
+			{
+				return rb.create().newInner().property("auth","valid").build().toJsonElement();			
+			}else{
+				return rb.create().newInner().property("auth","invalid").build().toJsonElement();
+			}			
+		}else{
+			 return rb.create().newInner().property("auth","valid").build().toJsonElement();
+		}
+	}, 
+	
+	
 	// 회원 가입	
 	this.registerWith = function(params){
-		session.tranSync(function(wsession){
-			wsession.pathBy("/users/" + params.asString("userId"))
-				.property("password",params.asString("password"))
-				.property("phone",params.asString("phone"))
-				.property("country",params.asString("country"))
-				.property("userId",params.asString("userId"))
-				.property("nickname",params.asString("nickname"))
-				.property("pushId",params.asString("pushId"))
-				.property("deviceOS",params.asString("deviceOS"))
-				.property("stateMessage",params.asString("stateMessage"))
-				.property("friends", "")
-				.property("recommendFriends", "");
+		
+					
+			session.tranSync(function(wsession){
+				wsession.pathBy("/users/" + params.asString("userId"))
+					.property("password",params.asString("password"))
+					.property("phone",params.asString("phone"))
+					.property("country",params.asString("country"))
+					.property("userId",params.asString("userId"))
+					.property("nickname",params.asString("nickname"))
+					.property("pushId",params.asString("pushId"))
+					.property("deviceOS",params.asString("deviceOS"))
+					.property("stateMessage",params.asString("stateMessage"))
+					.property("friends", "")
+					.property("recommendFriends", "");
 				
-			wsession.pathBy("/phones/" + params.asString("realPhone"))
-				.refTos("users",["/users/" + params.asString("userId")]);
-			});
+				wsession.pathBy("/phones/" + params.asString("realPhone"))
+					.refTos("users",["/users/" + params.asString("userId")]);
+				});
+		
 	}, 
 	
 	
