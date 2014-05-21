@@ -9,7 +9,7 @@ public abstract class TalkMessage {
 
 	
 	public enum MType {
-		COMMAND, NORMAL, ILLEGAL
+		COMMAND, NORMAL, ILLEGAL, WHISPER
 	}
 	
 	public static TalkMessage fromJsonString(String jsonText) {
@@ -38,6 +38,8 @@ public abstract class TalkMessage {
 	public abstract MType messageType() ;
 	
 	public abstract String userMessage() ;
+	
+	public abstract TalkMessage setParam(String name, Object value) ;
 }
 
 
@@ -75,12 +77,19 @@ class TalkScriptMessage extends TalkMessage {
 		return plainMessage;
 	}
 	
+	public TalkScriptMessage setParam(String name, Object value){
+		params.set(name, value) ;
+		return this ;
+	}
+	
 	public String userMessage(){
 		return params.asString("message") ;
 	}
 	
 	public MType messageType() {
-		return userMessage().startsWith("/") ? MType.COMMAND : MType.NORMAL ;
+		if (userMessage().startsWith("/")) return MType.COMMAND ;
+		else if (userMessage().startsWith("@")) return MType.WHISPER ;
+		return MType.NORMAL ;
 	}
 }
 
@@ -121,5 +130,9 @@ class IllegalTalkMessage extends TalkMessage{
 
 	public String userMessage() {
 		return StringUtil.EMPTY ;
+	}
+	
+	public TalkMessage setParam(String name, Object value) {
+		return this ;
 	}
 }

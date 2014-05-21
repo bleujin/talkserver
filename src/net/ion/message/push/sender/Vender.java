@@ -2,7 +2,7 @@ package net.ion.message.push.sender;
 
 public enum Vender {
 
-    APPLE, GOOGLE;
+    APPLE, GOOGLE, BLANK;
 
     public boolean isApple() {
         return this == APPLE;

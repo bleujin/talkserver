@@ -12,65 +12,63 @@ import net.ion.talk.UserConnection;
 import net.ion.talk.bean.Const.Connection;
 import net.ion.talk.bean.Const.User;
 import net.ion.talk.handler.TalkHandler;
+
 /**
- * Created with IntelliJ IDEA.
- * User: Ryun
- * Date: 2014. 2. 3.
- * Time: 오후 3:36
- * To change this template use File | Settings | File Templates.
+ * Created with IntelliJ IDEA. User: Ryun Date: 2014. 2. 3. Time: 오후 3:36 To change this template use File | Settings | File Templates.
  */
 public class UserConnectionHandler implements TalkHandler {
 
-    private ReadSession rsession;
+	private ReadSession rsession;
 
-    @Override
-    public Reason onConnected(TalkEngine tengine, final UserConnection uconn) {
+	@Override
+	public Reason onConnected(TalkEngine tengine, final UserConnection uconn) {
 
-        if (! uconn.isAllowUser(rsession.pathBy("/users/" + uconn.id()).property(User.AccessToken).stringValue())){
-            return Reason.NOTALLOW;
-        }
+		if (!uconn.isAllowUser(rsession.pathBy("/users/" + uconn.id()).property(User.AccessToken).stringValue())) {
+			return Reason.NOTALLOW;
+		}
 
-        try {
-            rsession.tranSync(new TransactionJob<Void>() {
-                @Override
-                public Void handle(WriteSession wsession) {
-                    wsession.pathBy("/connections/"+uconn.id()).property(Connection.DelegateServer, rsession.workspace().repository().memberId())
-                            .refTo("user","/users/"+uconn.id());
-                    wsession.pathBy("/users/"+uconn.id()).unset(User.AccessToken);
-                    return null;
-                }
-            });
-        } catch (Exception e) {
-            return Reason.INTERNAL ;
-        }
-        return Reason.OK ;
-    }
+		try {
+			rsession.tranSync(new TransactionJob<Void>() {
+				@Override
+				public Void handle(WriteSession wsession) {
+					String userId = uconn.id();
+					wsession.pathBy("/connections/" + userId).property(Connection.DelegateServer, rsession.workspace().repository().memberId()).refTo("user", "/users/" + userId);
+					wsession.pathBy("/users/" + userId).unset(User.AccessToken);
+					wsession.pathBy("/rooms/@" + userId + "/members/" + userId).refTo("user", "/users/" + userId);
+					return null;
+				}
+			});
+		} catch (Exception e) {
+			return Reason.INTERNAL;
+		}
+		return Reason.OK;
+	}
 
-    @Override
-    public void onClose(TalkEngine tengine, final UserConnection uconn) {
-        try {
-            rsession.tranSync(new TransactionJob<Void>() {
-                @Override
-                public Void handle(WriteSession wsession) throws Exception {
-                    wsession.pathBy("/connections/"+uconn.id()).removeSelf();
-                    return null;
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+	@Override
+	public void onClose(TalkEngine tengine, final UserConnection uconn) {
+		try {
+			rsession.tranSync(new TransactionJob<Void>() {
+				@Override
+				public Void handle(WriteSession wsession) throws Exception {
+					wsession.pathBy("/connections/" + uconn.id()).removeSelf();
+					return null;
+				}
+			});
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
-    @Override
-    public void onMessage(TalkEngine tengine, UserConnection uconn, ReadSession rsession, TalkMessage tmsg) {
-    }
+	@Override
+	public void onMessage(TalkEngine tengine, UserConnection uconn, ReadSession rsession, TalkMessage tmsg) {
+	}
 
-    @Override
-    public void onEngineStart(TalkEngine tengine) throws IOException  {
-        this.rsession = tengine.readSession();
-    }
+	@Override
+	public void onEngineStart(TalkEngine tengine) throws IOException {
+		this.rsession = tengine.readSession();
+	}
 
-    @Override
-    public void onEngineStop(TalkEngine tengine) {
-    }
+	@Override
+	public void onEngineStop(TalkEngine tengine) {
+	}
 }

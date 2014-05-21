@@ -13,13 +13,13 @@ new function(){
 		return members.length ;	
 	},
 	
-	//방 이름 변경 (공개방으로 전환시 방이름 변경)
+	//방 이름 변경 (공개방으로 전환시 방이름 변경) 
 	this.updateWith = function(params){
 		session.tranSync(function(wsession){		       
 		   wsession.pathBy("/rooms/" + params.asString("roomId")).property("title", params.asString("title"));
 		});
 	},
-	//방에서 강퇴	
+	//방에서 강퇴
 	this.banWith = function(params){
 		var members= params.asStrings("members");
 		session.tranSync(function(wsession){
@@ -121,7 +121,8 @@ new function(){
 				.property("messageId", randomId)
 				.refTo("sender","/users/"+params.asString("sender"))
 				.property("clientScript",params.asString("clientScript"))
-				.property("options","{event:\"onMessage\"}")
+				.property("options","{event:'onMessage'}")
+				.property("fromRoomId",params.asString("fromRoomId"))
 				.property("requestId",params.asString("requestId"))
 				.property("time",time.toString());
 

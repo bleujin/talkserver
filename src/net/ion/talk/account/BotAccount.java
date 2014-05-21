@@ -11,14 +11,14 @@ public class BotAccount extends Account{
 	private ReadSession session;
 	
 	protected BotAccount(BotScript bs, ReadSession session, String id) {
-		super(id, Type.Bot);
+		super(id, Type.BOT);
 		this.bs = bs ;
 		this.session = session ;
 	}
 
 	@Override
-	public void onMessage(String notifyId, TalkResponse response) {
-        bs.callFn(BotMessage.create(accountId(), session.pathBy("/notifies/" + accountId() + "/" + notifyId))) ;
+	public void onMessage(String notifyId) {
+        bs.callFromOnMessage(BotMessage.create(accountId(), session.pathBy("/notifies/" + accountId() + "/" + notifyId))) ;
 	}
 
 }

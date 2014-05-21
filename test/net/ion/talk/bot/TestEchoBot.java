@@ -1,47 +1,24 @@
 package net.ion.talk.bot;
 
-import org.restlet.data.Method;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 import junit.framework.TestCase;
-import net.ion.bleujin.restlet.TestComponentAsServer;
 import net.ion.craken.aradon.NodeLet;
 import net.ion.craken.aradon.UploadLet;
 import net.ion.craken.aradon.bean.RepositoryEntry;
-import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
-import net.ion.craken.node.crud.RepositoryImpl;
-import net.ion.framework.util.Debug;
-import net.ion.framework.util.InfinityThread;
 import net.ion.nradon.Radon;
-import net.ion.radon.aclient.NewClient;
-import net.ion.radon.aclient.Realm;
-import net.ion.radon.aclient.Request;
-import net.ion.radon.aclient.RequestBuilder;
-import net.ion.radon.aclient.Realm.RealmBuilder;
-import net.ion.radon.aclient.Response;
 import net.ion.radon.core.Aradon;
 import net.ion.radon.core.EnumClass;
-import net.ion.radon.core.EnumClass.ILocation;
 import net.ion.radon.core.EnumClass.IMatchMode;
 import net.ion.radon.core.config.ConfigurationBuilder;
-import net.ion.radon.util.AradonTester;
 import net.ion.talk.TalkEngine;
-import net.ion.talk.account.AccountManager;
-import net.ion.talk.bot.BotManager;
-import net.ion.talk.filter.ToonAuthenticator;
-import net.ion.talk.handler.craken.NotificationListener;
-import net.ion.talk.handler.craken.NotifyStrategy;
-import net.ion.talk.handler.craken.TalkMessageHandler;
-import net.ion.talk.handler.craken.UserInAndOutRoomHandler;
-import net.ion.talk.handler.engine.ServerHandler;
-import net.ion.talk.handler.engine.UserConnectionHandler;
-import net.ion.talk.handler.engine.TalkScriptHandler;
+import net.ion.talk.bean.Const.User;
 import net.ion.talk.let.ResourceLet;
 import net.ion.talk.let.ScriptDoLet;
-import net.ion.talk.script.BotScript;
-import net.ion.talk.script.TalkScript;
 import net.ion.talk.toonweb.ClientLet;
 import net.ion.talk.toonweb.ToonWebResourceLet;
 
@@ -67,7 +44,9 @@ public class TestEchoBot extends TestCase {
 		});
 
 		ConfigurationBuilder cbuilder = ConfigurationBuilder.newBuilder()
-				.aradon().addAttribute(RepositoryEntry.EntryName, rentry)
+				.aradon()
+					.addAttribute(RepositoryEntry.EntryName, rentry)
+					.addAttribute(ScheduledExecutorService.class.getCanonicalName(), Executors.newScheduledThreadPool(5))
 				.sections()
 					.restSection("admin").addAttribute("baseDir", "./resource/template")
 						.path("node").addUrlPattern("/repository/{renderType}").matchMode(IMatchMode.STARTWITH).handler(NodeLet.class)
@@ -86,7 +65,7 @@ public class TestEchoBot extends TestCase {
 		this.radon = aradon.toRadon(9000)
 					.start().get();
 		
-		this.talkEngine = TalkEngine.testCreate(rentry) ;
+		this.talkEngine = TalkEngine.testCreate(aradon.getServiceContext()).init() ;
 		
 		radon.add("/websocket/{id}/{accessToken}", talkEngine) ;
 	}
@@ -95,12 +74,12 @@ public class TestEchoBot extends TestCase {
 	protected void tearDown() throws Exception {
 		this.talkEngine.stopEngine(); 
 		this.rentry.shutdown();
-		this.radon.stop();
+		this.radon.stop().get();
 		super.tearDown();
 	}
 	
 	public void testonLoad() throws Exception {
-		talkEngine.init().startEngine() ;
+		talkEngine.startEngine() ;
 		ReadSession session = talkEngine.readSession();
 		
 		assertEquals(true, session.exists("/bots/echo"));
@@ -111,13 +90,13 @@ public class TestEchoBot extends TestCase {
 	
 	
 	public void testOnEnter() throws Exception {
-		talkEngine.init().startEngine() ;
+		talkEngine.startEngine() ;
 		ReadSession session = talkEngine.readSession();
 
 		session.tran(new TransactionJob<Void>() {
 			@Override
 			public Void handle(WriteSession wsession) throws Exception {
-				wsession.pathBy("/users/bleujin") ;
+				wsession.pathBy("/users/bleujin").property(User.UserId, "bleujin") ;
 				wsession.pathBy("/rooms/roomroom/members/echo") ;
 				return null;
 			}
@@ -132,9 +111,9 @@ public class TestEchoBot extends TestCase {
 		}) ;
 		session.workspace().cddm().await(); 
 		Thread.sleep(500); // wait workspace Listener(NotificationListener)
-		
+
 		assertEquals(3, session.pathBy("/rooms/roomroom/messages").children().count()) ;
-		assertEquals(2, session.pathBy("/notifies/bleujin").children().count()) ;
+		assertEquals(1, session.pathBy("/notifies/bleujin").children().count()) ; // exclusive sender ; true
 		
 		session.pathBy("/rooms/roomroom/messages").children().debugPrint();
 //		new InfinityThread().startNJoin(); 
@@ -143,7 +122,7 @@ public class TestEchoBot extends TestCase {
 	
 
 	public void testOnMessage() throws Exception {
-		talkEngine.init().startEngine() ;
+		talkEngine.startEngine() ;
 		ReadSession session = talkEngine.readSession();
 		
 		session.tran(new TransactionJob<Void>() {
@@ -160,7 +139,7 @@ public class TestEchoBot extends TestCase {
 		session.tran(new TransactionJob<Void>() {
 			@Override
 			public Void handle(WriteSession wsession) throws Exception {
-				wsession.pathBy("/rooms/roomroom/messages/123456").property("message", "Hello World").property("event", "onMessage")
+				wsession.pathBy("/rooms/roomroom/messages/123456").property("message", "Hello World").property("options", "{event:'onMessage'}")
 					.refTo("sender", "/users/bleujin") ;
 				return null;
 			}

@@ -11,6 +11,8 @@ import net.ion.talk.TalkEngine.Reason;
 import net.ion.talk.TalkMessage.MType;
 import net.ion.talk.TalkMessage;
 import net.ion.talk.UserConnection;
+import net.ion.talk.bean.Const.Message;
+import net.ion.talk.bean.Const.Room;
 import net.ion.talk.handler.TalkHandler;
 import net.ion.talk.script.ScriptResponseHandler;
 import net.ion.talk.script.TalkScript;
@@ -33,12 +35,12 @@ public class TalkScriptHandler implements TalkHandler {
 
 	@Override
 	public void onMessage(TalkEngine tengine, final UserConnection uconn, ReadSession rsession, final TalkMessage tmsg) {
-		if (tmsg.messageType() == MType.COMMAND) return ;
 		if (tmsg.messageType() == MType.ILLEGAL) {
 			uconn.sendMessage("illegal message : " + tmsg.toPlainMessage());
 			return ;
 		}
-
+		
+		if (tmsg.messageType() != MType.NORMAL) return ;
 		
 		tscript.callFn(tmsg.script(), ObjectUtil.coalesce(tmsg.params(), ParameterMap.BLANK), new ScriptResponseHandler<Void>() {
 			@Override

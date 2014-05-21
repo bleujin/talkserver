@@ -29,5 +29,7 @@ public class TestSimCall extends TestCase {
 				// handler.onThrow(message, ex);
 			}
 		}).get();
+		
+		nc.close(); 
 	}	
 }

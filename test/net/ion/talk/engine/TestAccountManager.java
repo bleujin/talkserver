@@ -1,22 +1,31 @@
 package net.ion.talk.engine;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicReference;
+
+import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
-import net.ion.radon.util.AradonTester;
+import net.ion.radon.core.TreeContext;
+import net.ion.talk.FakeWebSocketConnection;
+import net.ion.talk.TalkEngine;
+import net.ion.talk.UserConnection;
 import net.ion.talk.account.Account;
+import net.ion.talk.account.Account.Type;
+import net.ion.talk.account.AccountHandler;
 import net.ion.talk.account.AccountManager;
-import net.ion.talk.account.Bot;
 import net.ion.talk.account.BotAccount;
 import net.ion.talk.account.ConnectedUserAccount;
 import net.ion.talk.account.DisconnectedAccount;
-import net.ion.talk.account.Account.Type;
+import net.ion.talk.account.ProxyAccount;
 import net.ion.talk.bean.Const;
+import net.ion.talk.bean.Const.User;
 import net.ion.talk.bot.TestCrakenBase;
-import net.ion.talk.fake.FakeSender;
-import net.ion.talk.fake.FakeTalkEngine;
-import net.ion.talk.fake.FakeUserConnection;
 import net.ion.talk.responsebuilder.TalkResponse;
-import net.ion.talk.script.BotScript;
+
+import org.restlet.Context;
+import org.restlet.routing.VirtualHost;
 
 /**
  * Created with IntelliJ IDEA.
@@ -28,41 +37,60 @@ import net.ion.talk.script.BotScript;
 public class TestAccountManager extends TestCrakenBase{
 
     private AccountManager am;
-    private FakeTalkEngine fakeEngine;
-    private FakeSender sender;
+    private TalkEngine tengine;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        fakeEngine = new FakeTalkEngine(rentry);
-        sender = new FakeSender();
-        am = AccountManager.create(BotScript.DUMMY, fakeEngine, sender);
+        TreeContext context = TreeContext.createRootContext(new VirtualHost(new Context())) ;
+        context.putAttribute(RepositoryEntry.EntryName, rentry) ;
+        context.putAttribute(ScheduledExecutorService.class.getCanonicalName(), Executors.newScheduledThreadPool(2)) ;
+        tengine = TalkEngine.testCreate(context).init().startEngine() ;
+        am = tengine.context().getAttributeObject(AccountManager.class.getCanonicalName(), AccountManager.class) ;
+        
+        rsession.tran(new TransactionJob<Void>() {
+			@Override
+			public Void handle(WriteSession wsession) throws Exception {
+				wsession.pathBy("/users/ryun").property(User.UserId, "ryun") ;
+				return null;
+			}
+		}) ;
     }
-
-    public void testIsConnectedUser() throws Exception {
-        String user = "ryun";
-        fakeEngine.addConnectedUser(user);
-        Account account = am.newAccount(user);
-        assertTrue(account instanceof ConnectedUserAccount);
+    
+    @Override
+    public void tearDown() throws Exception {
+    	tengine.stopEngine(); 
+    	super.tearDown();
     }
 
     public void testIsDisconnectedUser(){
         String user = "ryun";
-        createUserToCraken(user);
         Account account = am.newAccount(user);
         assertTrue(account instanceof DisconnectedAccount);
     }
 
-    public void testIsNotFoundUser(){
+    public void testIsConnectedUser() throws Exception {
         String user = "ryun";
+        tengine.onOpen(FakeWebSocketConnection.create("ryun"));
         Account account = am.newAccount(user);
-        assertEquals(Account.Type.NotFoundUser, account.type());
+        assertTrue(account instanceof ProxyAccount);
+    }
+    
+    public void testAppUser() throws Exception {
+        String user = "ryun";
+        tengine.onOpen(FakeWebSocketConnection.createFromApp("ryun"));
+        Account account = am.newAccount(user);
+        assertTrue(account instanceof ConnectedUserAccount);
+	}
+    
+    public void testIsNotFoundUser(){
+        String user = "notfound";
+        Account account = am.newAccount(user);
+        assertEquals(Account.Type.NOT_REGISTERED, account.type());
     }
 
     public void testIsBot() throws Exception {
-        String bot = "echoBot";
-        createBotToCraken(bot, "http://localhost:9000", false);
-        Account account = am.newAccount(bot);
+        Account account = am.newAccount("echo");
         assertTrue(account instanceof BotAccount);
     }
 
@@ -70,27 +98,35 @@ public class TestAccountManager extends TestCrakenBase{
         String user = "ryun";
         String notifyId = "1234";
 
-        createUserToCraken(user);
-        FakeUserConnection uconn = fakeEngine.addConnectedUser(user);
-
+        FakeWebSocketConnection fake = FakeWebSocketConnection.create("ryun");
+		tengine.onOpen(fake);
         Account account = am.newAccount(user);
         TalkResponse notifyMsg = createNotify(user, notifyId);
-        account.onMessage(notifyId, notifyMsg);
-
-        assertEquals(notifyMsg.toString(), uconn.receivedMessage());
-
+        account.onMessage(notifyId);
+        
+        assertEquals(notifyMsg.toString(), fake.recentMsg());
     }
 
     public void testSendToDisconnectedUser() throws Exception {
-        String user = "ryun";
-        String notifyId = "1234";
-        createUserToCraken(user);
+        final AtomicReference<String> recevied = new AtomicReference<String>() ;
+        am.defineHandle(Type.DISCONNECTED_USER, new AccountHandler() {
+			@Override
+			public Account create(AccountManager am, String userId, UserConnection uconn) {
+				return new Account("ryun", Type.DISCONNECTED_USER){
+					@Override
+					public void onMessage(String notifyId) {
+						recevied.set(notifyId);
+					}};
+			}
+		}) ;
 
-        Account account = am.newAccount(user);
-        TalkResponse notifyMsg = createNotify(user, notifyId);
-        account.onMessage(notifyId, notifyMsg);
+    	String notifyId = "1234";
 
-        assertEquals(notifyMsg.toString(), sender.getMessage());
+        Account account = am.newAccount("ryun");
+        TalkResponse notifyMsg = createNotify("ryun", notifyId);
+        account.onMessage(notifyId);
+
+        assertEquals("1234", recevied.get());
 
     }
 
@@ -112,7 +148,7 @@ public class TestAccountManager extends TestCrakenBase{
         });
 
         TalkResponse notifyMsg = createNotify(bot, notifyId);
-        account.onMessage(notifyId, notifyMsg);
+        account.onMessage(notifyId);
 
     }
 

@@ -23,6 +23,7 @@ public class TestAllToonServer extends TestCase {
 
         result.addTest(TestAllCDDHandler.suite());
         result.addTest(TestAllTalkHandler.suite());
+        
         result.addTest(TestAllBot.suite());
         result.addTest(TestAllDeploy.suite());
 

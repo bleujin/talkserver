@@ -52,6 +52,11 @@ public class ParameterMap {
 		
 	}
 	
+	public ParameterMap set(String name, Object value){
+		inner.put(name, value) ;
+		return this ;
+	}
+	
 	public InputStream asStream(String name) throws IOException{
 		final Object item = inner.get(name);
 		if (item instanceof FileItem){

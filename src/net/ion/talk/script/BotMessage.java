@@ -3,6 +3,7 @@ package net.ion.talk.script;
 import net.ion.craken.node.ReadNode;
 import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.util.ObjectId;
+import net.ion.framework.util.StringUtil;
 import net.ion.talk.bean.Const;
 
 public class BotMessage {
@@ -15,7 +16,7 @@ public class BotMessage {
 	private BotMessage(String botId, ReadNode messageNode) {
 		this.botId = botId;
 		this.messageNode = messageNode;
-		this.messageCmd = MessageCommand.create(this, messageNode.property(Const.Message.Message).asString());
+		this.messageCmd = MessageCommand.create(messageNode.property(Const.Message.Message).asString());
 	}
 
 	public static BotMessage create(String botId, ReadNode notifyNode) {
@@ -31,7 +32,7 @@ public class BotMessage {
 		return messageNode.property(Const.Message.Message).asString();
 	}
 
-	public MessageCommand messageAsCommand() {
+	public MessageCommand asCommand() {
 		return messageCmd;
 	}
 
@@ -39,6 +40,7 @@ public class BotMessage {
 		return messageNode.ref(Const.Message.Sender).property(Const.User.UserId).asString();
 	}
 
+	
 	public String roomId() {
 		return messageNode.parent().parent().fqn().name();
 	}
@@ -59,6 +61,14 @@ public class BotMessage {
 		return JsonObject.fromString(messageNode.property(Const.Message.Options).asString()).asString("event");
 	}
 
+	public boolean isBlank(String name) {
+		return (!messageNode.hasProperty(name)) || (StringUtil.isBlank(messageNode.property(name).asString())) ;
+	}
+	
+	public boolean isNotInRoom(){
+		return isBlank("fromRoomId") ;
+	}
+	
 	public String asString(String name) {
 		return messageNode.property(name).asString();
 	}
@@ -71,4 +81,8 @@ public class BotMessage {
 		return messageNode.property(name).asInt();
 	}
 
+	
+	public String toString(){
+		return "botId:" + botId() + ", node:" + messageNode.toString() ;
+	}
 }

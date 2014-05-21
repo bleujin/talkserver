@@ -4,6 +4,7 @@ import net.ion.craken.node.ReadNode;
 import net.ion.framework.parse.gson.JsonElement;
 import net.ion.framework.util.ObjectUtil;
 import net.ion.talk.ToonServer;
+import net.ion.talk.util.CalUtil;
 
 /**
  * Author: Ryunhee Han
@@ -36,14 +37,14 @@ public class TalkResponseBuilder {
 
     public static TalkResponse makeResponse(String id, Object result) {
         return TalkResponseBuilder.create().newInner()
-                .property("createAt", ToonServer.GMTTime())
+                .property("createAt", CalUtil.gmtTime())
                 .property("status", "success")
                 .property("result", result instanceof JsonElement ? result : ObjectUtil.toString(result, "undefined")).build();
     }
     
     public static BasicBuilder makeCommandBuilder(String script){
         return TalkResponseBuilder.create().newInner()
-                .property("createAt", ToonServer.GMTTime())
+                .property("createAt", CalUtil.gmtTime())
                 .property("status", "success")
                 .property("script", script) ;
 //                .property("result", result instanceof JsonElement ? result : ObjectUtil.toString(result, "undefined")).build();
@@ -54,7 +55,7 @@ public class TalkResponseBuilder {
         return TalkResponseBuilder.create().newInner()
                 .property("status", "failure")
                 .property("result", e.getMessage())
-                .property("createdAt", ToonServer.GMTTime())
+                .property("createdAt", CalUtil.gmtTime())
                 .build();
     }
 

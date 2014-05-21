@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import net.ion.talk.handler.engine.TestServerHandler;
 import net.ion.talk.let.*;
+import net.ion.talk.senario.TestAllDeploy;
 
 public class TestAllBot extends TestCase {
 
@@ -11,10 +12,12 @@ public class TestAllBot extends TestCase {
 		TestSuite result = new TestSuite("Test All Bot");
 
 //        result.addTestSuite(TestOldBBot.class);
-        result.addTestSuite(TestOldChatBot.class);
-        result.addTestSuite(TestOldEchoBot.class);
-        result.addTestSuite(TestOldEmbedBot.class);
+//        result.addTestSuite(TestOldChatBot.class);
 
+		result.addTestSuite(TestEchoBot.class);
+        result.addTestSuite(TestSimCall.class);
+        result.addTestSuite(TestSimSimIBot.class);
+        
 		return result;
 	}
 }

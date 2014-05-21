@@ -15,6 +15,7 @@ public class TestAllEngine extends TestCase {
 		// result.addTestSuite(TestMailer.class) ;
 		suite.addTestSuite(TestEngineContext.class);
 		suite.addTestSuite(TestAccountManager.class);
+		suite.addTestSuite(TestConnections.class);
 
 		return suite;
 	}

@@ -7,6 +7,7 @@ import org.restlet.data.Method;
 
 import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.parse.gson.JsonParser;
+import net.ion.framework.util.Debug;
 import net.ion.radon.aclient.AsyncCompletionHandler;
 import net.ion.radon.aclient.Cookie;
 import net.ion.radon.aclient.ListenableFuture;
@@ -71,8 +72,10 @@ public class RestRequestBuilder {
 				}
 			}).get();
 		} catch (InterruptedException e) {
+			e.printStackTrace(); 
 			throw new IOException(e) ;
 		} catch (ExecutionException e) {
+			e.printStackTrace(); 
 			throw new IOException(e) ;
 		}
 	}

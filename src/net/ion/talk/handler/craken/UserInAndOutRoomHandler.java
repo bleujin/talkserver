@@ -35,16 +35,13 @@ public class UserInAndOutRoomHandler implements CDDHandler {
         final String roomId = resolveMap.get(Const.Room.RoomId);
         final String userId = resolveMap.get(Const.User.UserId);
 
+        if (roomId.startsWith("@")) return null ;
+        
         return new TransactionJob<Void>() {
             @Override
             public Void handle(WriteSession wsession) throws Exception {
 
                 String messageId = new ObjectId().toString();
-
-//                String sender = wsession.pathBy("/rooms/" + roomId + "/members/"+userId).property(Const.Message.Sender).stringValue();
-
-//                if (wsession.exists("/bots/" + userId)) return null ;
-                
                 wsession.pathBy("/rooms/" + roomId + "/messages/")
                         .child(messageId)
                         .property(Message.ExclusiveSender, true) 
@@ -55,8 +52,6 @@ public class UserInAndOutRoomHandler implements CDDHandler {
                         .property(Message.ClientScript, Message.DefaultOnMessageClientScript) 
                         .refTo(Message.Sender, "/users/"+userId)
                         .property(Message.MessageId, messageId);
-
-
                 return null;
             }
         };
@@ -67,19 +62,14 @@ public class UserInAndOutRoomHandler implements CDDHandler {
 
         final String roomId = resolveMap.get(Room.RoomId);
         final String userId = resolveMap.get(User.UserId);
+
+        if (roomId.startsWith("@")) return null ;
+        
         return new TransactionJob<Void>() {
             @Override
             public Void handle(WriteSession wsession) throws Exception {
 
-//                String sender = wsession.pathBy("/rooms/" + roomId + "/members/"+userId).property(Const.Message.Sender).stringValue();
-
                 String messageId = new ObjectId().toString();
-
-
-//                wsession.pathBy("/rooms/1234/messages/testMessage")
-//                        .property(Const.Message.Message, "Bye")
-//                        .property(Const.Message.Sender, "ryun")
-//                        .property(Const.Message.Event, Const.Event.onExit);
                 //will define message
                 wsession.pathBy("/rooms/" + roomId + "/messages/")
                         .child(messageId)

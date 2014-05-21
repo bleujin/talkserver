@@ -60,14 +60,15 @@ public class TestConnectToServer extends TestCase {
 		NewClient nc = NewClient.create() ;
 		Realm realm = new RealmBuilder().setPrincipal("emanon").setPassword("emanon").build();
 		Response response = nc.prepareGet("http://" + InetAddress.getLocalHost().getHostAddress() + ":9000/auth/login").setRealm(realm).execute().get();
-
 		String wsaddress = response.getTextBody();
+
 
 		final AtomicReference<String> received = new AtomicReference<String>();
 		final CountDownLatch count = new CountDownLatch(1);
 		WebSocket websocket = nc.createWebSocket(wsaddress, new WebSocketTextListener() {
 			@Override
 			public void onClose(WebSocket arg0) {
+				
 			}
 
 			@Override
@@ -93,6 +94,8 @@ public class TestConnectToServer extends TestCase {
 		websocket.sendTextMessage("Hello");
 		count.await();
 
+		websocket.close(); 
+		Thread.sleep(1000);
 		nc.close(); 
 		assertEquals("Hello", received.get());
 	}

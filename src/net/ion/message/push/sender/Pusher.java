@@ -4,6 +4,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
+import net.ion.framework.util.StringUtil;
 import net.ion.message.push.sender.handler.BeforeSendHandler;
 import net.ion.message.push.sender.handler.PushResponseHandler;
 import net.ion.message.push.sender.strategy.PushStrategy;
@@ -45,14 +46,16 @@ public class Pusher {
                 if(beforeHandler != null) {
                     beforeHandler.handle(pushMessage);
                 }
+                
+                if (strategy.vender(receiver) == Vender.BLANK && StringUtil.isBlank(token)) {
+                	return null ;
+                } 
 
                 if (strategy.vender(receiver).isApple()) {
                     return apnsSender.sendTo(receiver, token).message(pushMessage.getMessage()).badge(strategy.getBadge()).sound(strategy.getSound()).push(handler);
-                } else if (strategy.vender(receiver).isGoogle()) {
-                    return gcmSender.sendTo(receiver, token).message(pushMessage.getMessage()).delayWhenIdle(strategy.getDelayWhenIdle()).timeToLive(strategy.getTimeToLive()).collapseKey(strategy.getCollapseKey()).push(handler);
                 } else {
-                    throw new IllegalArgumentException("not supported vendor : " + strategy.vender(receiver));
-                }
+                    return gcmSender.sendTo(receiver, token).message(pushMessage.getMessage()).delayWhenIdle(strategy.getDelayWhenIdle()).timeToLive(strategy.getTimeToLive()).collapseKey(strategy.getCollapseKey()).push(handler);
+                } 
             }
         };
 

@@ -20,7 +20,7 @@ public class TestWebSocketTalkMessageHandler extends TestCase {
 
 	public void setUp() throws Exception {
 
-		tengine = TalkEngine.testCreate().registerHandler(new TalkScriptHandler()).startEngine();
+		tengine = TalkEngine.testCreate().init().clearHandler().registerHandler(new TalkScriptHandler()).startEngine();
 		rsession = tengine.readSession();
 		ryun = FakeWebSocketConnection.create("ryun");
 
@@ -45,6 +45,13 @@ public class TestWebSocketTalkMessageHandler extends TestCase {
 		});
 
 		ryun.data("accessToken", "testToken");
+	}
+	
+
+	@Override
+	public void tearDown() throws Exception {
+		tengine.stopEngine();
+		super.tearDown();
 	}
 
 	public void xtestSuceessSendMessage() throws Exception {
@@ -85,9 +92,4 @@ public class TestWebSocketTalkMessageHandler extends TestCase {
 		assertEquals("illegal message : {\"cript\":\"hell\"}", ryun.recentMsg());
 	}
 
-	@Override
-	public void tearDown() throws Exception {
-		tengine.stopEngine();
-		super.tearDown();
-	}
 }

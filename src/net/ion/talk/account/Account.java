@@ -14,11 +14,11 @@ public abstract class Account {
     private final Type type;
     private final String accountId;
 
-    public enum Type{
-        ConnectedUser, DisconnectedUser, NotFoundUser, Bot
-    }
+	public enum Type {
+		CONNECTED_USER, DISCONNECTED_USER, BOT, NOT_REGISTERED, PROXY ;
+	}
 
-    public abstract void onMessage(String notifyId, TalkResponse response) ;
+    public abstract void onMessage(String notifyId) ;
 
     public Type type(){
         return type;
