@@ -57,7 +57,7 @@ public class WhisperHandler implements TalkHandler{
 						.property(Message.MessageId, msgId)
 						.refTo("sender", "/users/" + uconn.id())
 						.property(Message.ClientScript, whisper.asString(Message.ClientScript))
-						.property(Message.Options, "{event:'onWhispher'}")
+						.property(Message.Options, "{event:'onWhisper'}")
 						.property("fromRoomId",whisper.asString("roomId"))
 						.property(Message.RequestId, whisper.asString(Message.RequestId))
 						.property(Message.Time, String.valueOf(new Date().getTime()))
