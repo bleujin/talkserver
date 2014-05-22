@@ -15,7 +15,7 @@ public class WhisperMessage {
 		this.tm = tm;
 		this.toUserId = toUserId ;
 		this.userMessage = wmessage ;
-		this.messageCmd = MessageCommand.create(userMessage) ;
+		this.messageCmd = MessageCommand.create(userMessage.startsWith("/") ? userMessage.substring(1) : userMessage) ;
 	}
 
 	public final static WhisperMessage create(TalkMessage tm) {
@@ -25,7 +25,7 @@ public class WhisperMessage {
 			String wmessage = StringUtil.substringAfter(tm.userMessage(), " ") ; 
 			return new WhisperMessage(tm, to, wmessage);
 		} else if (tm.userMessage().startsWith("/")) {
-			String wmessage = tm.userMessage().substring(1) ;
+			String wmessage = tm.userMessage() ;
 			return new WhisperMessage(tm, "system", wmessage);
 		}
 		throw new IllegalArgumentException() ;

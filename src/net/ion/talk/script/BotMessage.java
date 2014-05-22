@@ -66,7 +66,7 @@ public class BotMessage {
 	}
 	
 	public boolean isNotInRoom(){
-		return isBlank("fromRoomId") ;
+		return isBlank("roomId") ;
 	}
 	
 	public String asString(String name) {

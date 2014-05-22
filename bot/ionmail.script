@@ -1,0 +1,137 @@
+new function(){
+
+	var users = {} ;
+	var ionmailServer = "smtp.i-on.net" ;
+	
+
+	this.onLoad = function(){
+		session.tran(function(wsession){
+			wsession.pathBy("/users/echo").property("userId", "ionmail").property("nickname", "ionmail bot").property("stateMessage", "normal").property("free", true) ;
+		}) ;
+	}, 
+	
+	this.sendMessage = function(oriSender, event, bm, args){
+		var roomId = bm.roomId() ;
+		var selfBotId = bm.botId() ;
+
+		if (session.exists("/bots/" + oriSender)) return ;
+        session.tran(function(wsession) {
+            var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + bm.newMsgId())
+                    .property("message", args.message || bm.message())
+                    .refTo("sender", "/users/"+selfBotId)
+                    .property("roomId", roomId)
+                    .property("options", "{event:'onMessage'}")
+                    .property("clientScript", bm.clientScript())
+                    .property("messageId", bm.messageId());
+
+        }) ;
+	}, 
+	
+	this.onWhisper = function(source, whisperMsg){
+
+	
+		var cmd = whisperMsg.asCommand() ;
+		if (this.hasOwnProperty(cmd.fnName())){
+			var rtn = this[cmd.fnName()](whisperMsg, cmd, source) ;
+			if (rtn && rtn.message){
+				source.sendMessage(
+				rb.makeCommandBuilder("/whisper/ionmail/" + cmd.fnName())
+				  .inner("result")
+				  	.property("sender", "ionmail")
+					.property("clientScript", rtn.clientScript || "client.room().message(args);")
+					.property("message", rtn.message)
+					.property("options", "{event:'onWhisper'}")
+					.property("messageId", new net.ion.framework.util.ObjectId().toString()).build().talkMessage()) ;
+			}
+		}
+		/*
+		source.sendMessage(
+			rb.makeCommandBuilder("/whisper/echo")
+			  .inner("result")
+			  	.property("sender", "echo")
+				.property("clientScript", "client.room().message(args);")
+				.property("message", whisperMsg.userMessage())
+				.property("options", "{event:'onWhisper'}")
+				.property("messageId", new net.ion.framework.util.ObjectId().toString()).build().talkMessage()) ;
+		*/
+	}, 
+	
+	this.list = function(whisperMsg, cmd, source){
+		try {
+			if (! users[source.id()]) return {message:'not setted passwd'} ;
+			if (! source.id().endsWith('@i-on.net')) return {message:'only permit ion mail account'} ;
+		
+			importPackage(net.ion.framework.mail) ;
+
+			var offset = cmd.remainAsInt(0, 3) ;
+			var skip = cmd.remainAsInt(1, 0) ;
+			var sw = new java.io.StringWriter() ;
+			
+			var mailer = MailConfigBuilder.create().receiveConfig().server(ionmailServer).mailUserId(source.id()).mailUserPwd(users[source.id()]).protocol(ReceiveConfigBuilder.Protocol.POP3).buildConfig().confirmValidOfReceiveMailConfig().createMailer();
+			var count = mailer.unreadMessage(new MessageWriteHandler(sw, offset, skip)).get();
+			if (count < 1) return {message:'no mail'} ;
+			return {message:sw.toString()} ;
+		} catch(ex){
+			return {message:ex.toString()} ;
+		}
+	}, 
+	
+	this.password = function(whisperMsg, cmd, source){
+		users[source.id()] = cmd.remain(0).trim() ;
+		return {message:'setted password'} ;
+	}, 
+	
+	this.send = function(whisperMsg, cmd, source){
+		try {
+			if (! source.id().endsWith('@i-on.net')) return {message:'only permit ion mail account'} ;
+
+			var roomId = whisperMsg.fromRoomId() ;
+			if (roomId == '') return {message:'not in room'} ;
+
+			importPackage(net.ion.framework.mail) ;
+			importPackage(javax.mail.internet) ;
+			
+			var miters = session.ghostBy('/rooms/' + roomId + '/messages').children().iterator() ;
+			var content = '' ;
+			while(miters.hasNext()){
+				var next = miters.next() ;
+				content += next.property('message').asString() + '<br/>' ;
+			}
+			
+			var to = cmd.remainAsString(0, source.id()) ;
+			
+			var mailer = MailConfigBuilder.create().sendConfig().server(ionmailServer).mailUserId(source.id()).mailUserPwd("nopwd").buildConfig().confirmValidOfSendMailConfig().createMailer();
+	
+	        mailer.sendMail(new MessageCreater() {
+	        	makeMessage: function(msg) {
+	                msg.addRecipient(javax.mail.Message.RecipientType.TO, new InternetAddress("bleujin@i-on.net"));
+	                msg.setSubject(roomId + "'s message");
+	                msg.setContent(content, "text/html");
+	                return msg;
+	            }
+	        });
+	        return {message:'send mail to ' + to} ;
+	   } catch(ex){
+	   		return {message:ex.toString()} ;
+	   }
+	}, 
+	
+	this.help = function(whisperMsg, cmd, source){
+		return {message:'help, send, password, list'} ;
+	}, 
+	
+	this.onMessage = function(bm){
+	}, 
+	
+	this.onEnter = function(bm){
+		this.sendMessage(bm.sender(), "onEnter", bm, {message :"Hello I'm EchoBot"}) ;
+	}, 
+	
+	this.onExit = function(bm){
+//		this.sendMessage(bm.sender(), "onExit", bm, {message :"Bye"}) ;
+	}, 
+	
+	this.onFilter = function(bm){
+
+	}
+}

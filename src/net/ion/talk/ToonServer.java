@@ -10,6 +10,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import net.ion.craken.aradon.MonitorLet;
 import net.ion.craken.aradon.NodeLet;
 import net.ion.craken.aradon.UploadLet;
 import net.ion.craken.aradon.bean.RepositoryEntry;
@@ -30,6 +31,7 @@ import net.ion.talk.let.ScriptConfirmLet;
 import net.ion.talk.let.ScriptDoLet;
 import net.ion.talk.let.ScriptExecLet;
 import net.ion.talk.let.UserLet;
+import net.ion.talk.monitor.TalkMonitor;
 import net.ion.talk.script.TalkScript;
 import net.ion.talk.toonweb.ClientLet;
 import net.ion.talk.toonweb.ReloadLet;
@@ -102,6 +104,7 @@ public class ToonServer {
 						
 					.restSection("admin").addAttribute("baseDir", "./resource/template")
 						.path("node").addUrlPattern("/repository/{renderType}").matchMode(IMatchMode.STARTWITH).handler(NodeLet.class)
+						.path("event").addUrlPattern("/event/").matchMode(IMatchMode.STARTWITH).handler(MonitorLet.class)
 						.path("template").addUrlPattern("/template").matchMode(EnumClass.IMatchMode.STARTWITH).handler(ResourceLet.class)
 						.path("doscript").addUrlPattern("/script").matchMode(EnumClass.IMatchMode.EQUALS).handler(ScriptDoLet.class)
 						.path("upload").addUrlPattern("/upload").matchMode(IMatchMode.STARTWITH).handler(UploadLet.class).toBuilder() ;
@@ -111,6 +114,7 @@ public class ToonServer {
 		
 		this.talkEngine = TalkEngine.create(aradon.getServiceContext()) ;
 		radon.add("/websocket/{id}/{accessToken}", talkEngine) ;
+		radon.add("/event/*", TalkMonitor.create(repoEntry.login())) ;
 		
 		status.set(Status.INITED);
 		return this;

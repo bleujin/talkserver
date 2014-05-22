@@ -1,6 +1,9 @@
 package net.ion.framework.mail;
 
+import java.io.PrintStream;
+import java.io.StringWriter;
 import java.text.MessageFormat;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
 import javax.activation.DataHandler;
@@ -46,6 +49,18 @@ public class TestMailer extends TestCase {
         mailer.unreadMessage(MessageHandler.PRINTER);
     }
 
+    public void xtestMessageWriteHandler() {
+        Mailer mailer = MailConfigBuilder.create().receiveConfig().server("smtp.i-on.net").mailUserId("bleujin@i-on.net").mailUserPwd(userPwd).protocol(Protocol.POP3).buildConfig().confirmValidOfReceiveMailConfig().createMailer();
+
+        StringWriter sw = new StringWriter();
+		try {
+			mailer.unreadMessage(new MessageWriteHandler(sw, 3, 0)).get();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		Debug.line(sw.toString());
+    }
+    
     public void testAttachFile() throws Exception {
         Mailer mailer = MailConfigBuilder.create().sendConfig().server("smtp.i-on.net").mailUserId("bleujin@i-on.net").mailUserPwd(userPwd).buildConfig().confirmValidOfSendMailConfig().createMailer();
 

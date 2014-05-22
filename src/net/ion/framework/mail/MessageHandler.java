@@ -17,7 +17,6 @@ public interface MessageHandler<T> {
 
 	public T handle(Message[] msgs) throws Exception ;
 	
-	
 	public static final MessageHandler<Void> PRINTER = new MessageHandler<Void>() {
 		
 		private PrintStream pout = System.out ;
@@ -83,7 +82,9 @@ public interface MessageHandler<T> {
 				pout.write(c);
 			}
 		}
-		
+
 	} ;
+
+
 	
 }

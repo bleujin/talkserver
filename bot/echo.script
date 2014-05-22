@@ -39,7 +39,7 @@ new function(){
 	}, 
 	
 	this.onEnter = function(bm){
-		this.sendMessage(bm.sender(), "onEnter", bm, {message :"Hello I'm EchoBot. please type: /help"}) ;
+		this.sendMessage(bm.sender(), "onEnter", bm, {message :"Hello I'm EchoBot"}) ;
 	}, 
 	
 	this.onExit = function(bm){

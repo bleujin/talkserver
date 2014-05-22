@@ -179,10 +179,14 @@ public class BotScript {
 		try {
 			String script = FileUtil.readFileToString(file);
 			packages.put(packName, sengine.eval(script));
+			((Invocable) sengine).invokeMethod(packages.get(packName), "onLoad");
+			
 		} catch (IOException e) {
 			e.printStackTrace(); 
 		} catch (ScriptException e) {
 			e.printStackTrace(); 
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
 		}
 		return packName;
 	}
@@ -304,7 +308,7 @@ interface BotWhisperHandler<T> {
 		public Void onThrow(UserConnection uconn, String botId, WhisperMessage whisper, Exception ex) {
 			JsonObject forSend = JsonObject.create().put("id", whisper.id()).put(Status.Status, Status.Success)
 					.put("result", new JsonObject().put(Message.ClientScript, Message.DefaultOnMessageClientScript).put(Message.Message, ex.getMessage()).put(Message.MessageId, new ObjectId().toString()) )
-					.put("script", "/whisper/" + whisper.userMessage()).put("params", whisper.asJson());
+					.put("script", whisper.userMessage()).put("params", whisper.asJson());
 			uconn.sendMessage(forSend.toString()) ;
 			
 			return null ;

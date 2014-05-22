@@ -173,18 +173,18 @@
 				console.log(inviteMsg) ;
 			}, 
 			
-			this.join = function(title){
-				if (jQuery('#zone').tabs('exists', title)){
-					jQuery('#zone').tabs('select', title);
+			this.join = function(args){
+				if (jQuery('#zone').tabs('exists', args.roomId)){
+					jQuery('#zone').tabs('select', args.roomId);
 				} else {
-					var content = '<div id="' + title + '" style="overflow:scroll;width:100%;height:100%;"></div>'; 
+					var content = '<div id="' + args.roomId + '" style="overflow:scroll;width:100%;height:100%;"></div>'; 
 					jQuery('#zone').tabs('add',{
-						title:title,
+						title:args.roomId,
 						content:content,
 						closable:true
 					});
 				} ;
-				webClient.command('/room/listUnreadMessageBy', {'roomId':title, 'messageId':'0'}) ;
+//				webClient.command('/room/listUnreadMessageBy', {'roomId':args.roomId, 'messageId':'0'}) ;
 			} ;
 		} ;
 

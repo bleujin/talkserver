@@ -30,50 +30,50 @@ new function(){
 
 	this.sendToFromRoom = function(bm, args){
 		session.tran(function(wsession) {
-        	wsession.pathBy("/rooms/" + bm.asString("fromRoomId") + "/messages/" + bm.newMsgId())
+        	wsession.pathBy("/rooms/" + bm.roomId() + "/messages/" + bm.newMsgId())
                     .property("message", args.message)
-                    .refTo("sender", bm.sender())
+                    .refTo("sender", "/users/system")
                     .property("options", "{event:'onMessage'}")
                     .property("clientScript", args.clientScript || 'client.room().message(args)')
-                    .property("messageId", bm.messageId());
+                    .property("messageId", bm.newMsgId());
         }) ;
 	}, 
 	
 	this.onMessage = function(bm){
-	/*
+	
 		// this.sendWhisper(bm, {message:new java.util.Date().toString()}) ;
 		var cmd = bm.asCommand() ;
 		if (this.hasOwnProperty(cmd.fnName())){
-			this[cmd.fnName()](bm, cmd) ;
+			var rtn = this[cmd.fnName()](bm, cmd) ;
+			// java.lang.System.out.println(bm.roomId() + rtn.message + bm.sender()) ;
+			this.sendToFromRoom(bm, rtn) ;
 		}
-	*/
 	}, 
 	
 	this.onWhisper = function(source, whisperMsg){
 		var cmd = whisperMsg.asCommand() ;
 		if (this.hasOwnProperty(cmd.fnName())){
-			var rtn = this[cmd.fnName()](whisperMsg, cmd) ;
+			var rtn = this[cmd.fnName()](whisperMsg, cmd, source) ;
+			if (rtn && rtn.message){
+				source.sendMessage(
+				rb.makeCommandBuilder("/whisper/system/" + cmd.fnName())
+				  .inner("result")
+				  	.property("sender", "system")
+					.property("clientScript", rtn.clientScript || "client.room().message(args);")
+					.property("message", rtn.message)
+					.property("options", "{event:'onWhisper'}")
+					.property("messageId", new net.ion.framework.util.ObjectId().toString()).build().talkMessage()) ;
+			}				
+		} else {
 			source.sendMessage(
-			rb.makeCommandBuilder("/whisper/system/" + cmd.fnName())
-			  .inner("result")
-			  	.property("sender", "system")
-				.property("clientScript", rtn.clientScript || "client.room().message(args);")
-				.property("message", rtn.message)
-				.property("options", "{event:'onWhisper'}")
-				.property("messageId", new net.ion.framework.util.ObjectId().toString()).build().talkMessage()) ;
-				
-			if ('join' == cmd.fnName()){
-				var roomId = cmd.remain(0) ;
-				var unreadMsg = session.pathBy("/rooms/" + roomId + "/messages").children().ascending('messageId').offset(100).iterator() ;
-				while(unreadMsg.hasNext()){
-					var next = unreadMsg.next() ; 
-					source.sendMessage(rb.makeCommandBuilder("/whisper/system")
-					  .inner("result")
-						.property(next, "message, sender.userId as sender, sender.nickname as senderNickname, requestId, clientScript, event, messageId, time")
-						.property("roomId", roomId)
-						.build().talkMessage()) ;			
-				}
-			}
+				rb.makeCommandBuilder("/whisper/system/" + cmd.fnName())
+				  .inner("result")
+				  	.property("sender", "system")
+					.property("clientScript", "client.room().message(args);")
+					.property("message", 'unknown command : ' + cmd.fnName())
+					.property("options", "{event:'onWhisper'}")
+					.property("messageId", new net.ion.framework.util.ObjectId().toString()).build().talkMessage()) ;
+			
 		}
 		
 	
@@ -101,18 +101,37 @@ new function(){
 		return {message:"id:" + whisperMsg.sender() + ", nick:" + user.property("nickname").asString() } ;
 	}, 
 
-	this.join = function(whisperMsg, cparam){
+	this.join = function(whisperMsg, cparam, source){
 		var roomId = cparam.remain(0) ;
 
 		session.tranSync(function(wsession){
 			wsession.pathBy("/openrooms/" + roomId).refTo("room", "/rooms/" + roomId).property("roomId", roomId) ;
-			if (! wsession.exists("/rooms/" + roomId)) wsession.pathBy("/rooms/" + roomId).property("roomId", roomId).property("title", "not defined").child('members').child(whisperMsg.sender()) ;
+			if (! wsession.exists("/rooms/" + roomId)) wsession.pathBy("/rooms/" + roomId).property("roomId", roomId).property("title", "no title").child('members').child(whisperMsg.sender()) ;
 			else wsession.pathBy("/rooms/" + roomId).property("roomId", roomId).child('members').child(whisperMsg.sender()) ;
 		}) ;
 
-		return {clientScript:"client.room().join('" + roomId + "');", message:''} ;
+		source.sendMessage(
+		rb.makeCommandBuilder("/whisper/system/" + cparam.fnName())
+		  .inner("result")
+		  	.property("sender", "system")
+			.property("clientScript", "client.room().join(args);")
+			.property("message", "")
+			.property("roomId", roomId)
+			.property("options", "{event:'onWhisper'}")
+			.property("messageId", new net.ion.framework.util.ObjectId().toString()).build().talkMessage()) ;
 
-
+		var unreadMsg = session.pathBy("/rooms/" + roomId + "/messages").children().ascending('messageId').offset(100).iterator() ;
+		while(unreadMsg.hasNext()){
+			var next = unreadMsg.next() ; 
+			if (next.property("exclusiveSender").asBoolean() && source.id().equals(next.ref("sender").property("userId").asString()) ) continue ;
+			source.sendMessage(rb.makeCommandBuilder("/whisper/system")
+			  .inner("result")
+				.property(next, "message, sender.userId as sender, sender.nickname as senderNickname, requestId, clientScript, options, messageId, time")
+				.property("roomId", roomId)
+				.build().talkMessage()) ;			
+		}
+		
+		return ;
 	}, 
 	
 	
@@ -200,17 +219,17 @@ new function(){
 		}) ;
 	}, 
 	
-	this.leave = function(whisperMsg, cparam){
+	this.leave = function(whisperMsg, cparam, source){
 		if (whisperMsg.isNotInRoom()) {
 			return {message:'this command can do executed only in room'} ;
 		}
 
 		var roomId = whisperMsg.fromRoomId() ;
 		session.tranSync(function(wsession){
-			wsession.pathBy("/rooms/" + roomId + "/members/" + bm.senderId()).removeSelf() ;
+			wsession.pathBy("/rooms/" + roomId + "/members/" + source.id()).removeSelf() ;
 		}) ;
 		
-		return {clientScript:"client.room().leave('" + roomId + "');", message:''} ;
+		return {clientScript:"client.room().leave(args);", message:'', 'roomId':roomId} ;
 	}, 
 	
 	
@@ -241,18 +260,63 @@ new function(){
 			session.tranSync(function(wsession){
 				wsession.pathBy("/rooms/" + whisperMsg.fromRoomId() + "/members/" + targetId) ;
 			}) ;
+			
 			return {message: '[userId:' + targetId + '] invite'} ;
 		} else {
-		
+			
 			return {message: '[userId:' + targetId + '] invite-message received'} ;
 		}
 		
 	}, 
 	
 	
-	this.whisper = function(whisperMsg, cparam){
-		var targetId = cparam.reamin(0) ;
+	this.whisper = function(whisperMsg, cparam, source){
+		var sender = whisperMsg.sender() ;
+		if ("" == cparam.remain(0)){
+			var lastMsgId = session.ghostBy("/rooms/@" + sender + "/messages").property("last").asString();
+			
+			var unreadMsg = session.ghostBy("/rooms/@" + sender + "/messages").children().ascending('messageId').gt('messageId', lastMsgId).iterator() ;
+			while(unreadMsg.hasNext()){
+				var next = unreadMsg.next() ; 
+				source.sendMessage(rb.makeCommandBuilder("/whisper/system" + cparam.fnName())
+			  		.inner("result")
+						.property(next, "message, sender.userId as sender, sender.nickname as senderNickname, requestId, clientScript, options, messageId, time")
+						.build().talkMessage()) ;
+			}	
+			return ;
+			
+		} else if ("read" == cparam.remain(0)){
+			session.tran(function(wsession){
+				var firstNode = wsession.pathBy("/rooms/@" + sender + "/messages").children().descending("messageId").firstNode() ;
+				if (firstNode){
+					wsession.pathBy("/rooms/@" + sender + "/messages").property("last", firstNode.property("messageId").asString()) ;
+				}
+			}) ;
 		
+			source.sendMessage(
+				rb.makeCommandBuilder("/whisper/system/" + cparam.fnName())
+				  .inner("result")
+				  	.property("sender", "system")
+					.property("clientScript", "client.room().message(args);")
+					.property("message", "all whisper trans 'to read' status")
+					.property("options", "{event:'onWhisper'}")
+					.property("messageId", new net.ion.framework.util.ObjectId().toString()).build().talkMessage()) ;
+			return ;
+		} else {
+			var offset = cparam.remainAsInt(0, 10) ;
+			var skip = cparam.remainAsInt(1, 0) ;
+		
+			var unreadMsg = session.ghostBy("/rooms/@" + sender + "/messages").children().ascending('messageId').skip(skip).offset(offset).toList().iterator() ;
+			while(unreadMsg.hasNext()){
+				var next = unreadMsg.next() ; 
+				source.sendMessage(rb.makeCommandBuilder("/whisper/system/" + cparam.fnName())
+			  		.inner("result")
+						.property(next, "message, sender.userId as sender, sender.nickname as senderNickname, requestId, clientScript, options, messageId, time")
+						.build().talkMessage()) ;
+			}	
+			return ;
+		}
+	
 	} 
 
 

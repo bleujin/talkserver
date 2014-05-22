@@ -3,8 +3,9 @@ new function(){
 	this.addGPSWith = function(params){
 		session.tranSync(function(wsession){
 			wsession.pathBy("/users/" + params.asString("userId")+"/connection")
-				.property("latitude",params.asString("latitude"))
-				.property("longitude",params.asString("longitude"));
+				.property("time", new java.util.Date().getTime())
+				.property("latitude", params.asString("latitude"))
+				.property("longitude", params.asString("longitude"));
 		});
 	}, 
 	

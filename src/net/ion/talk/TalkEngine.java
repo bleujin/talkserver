@@ -131,8 +131,7 @@ public class TalkEngine implements WebSocketHandler {
 
 		AccountManager am = context().getAttributeObject(AccountManager.class.getCanonicalName(), AccountManager.class);
 
-		registerHandler(new UserConnectionHandler()).registerHandler(ServerHandler.test()).registerHandler(new TalkScriptHandler()).registerHandler(new WhisperHandler())
-			.registerHandler(new TalkCommandHandler()) ;
+		registerHandler(new UserConnectionHandler()).registerHandler(ServerHandler.test()).registerHandler(new TalkScriptHandler()).registerHandler(new WhisperHandler()) ;
 
 		rsession.workspace().cddm().add(new UserInAndOutRoomHandler());
 		rsession.workspace().cddm().add(new TalkMessageHandler(nc));

@@ -11,7 +11,7 @@ new function() {
 		var roomId = bm.roomId() ;
 		var selfBotId = bm.botId() ;
 
-		if ("b@" == bm.sender()) return ;
+		if ("bbot" == bm.sender()) return ;
 		
 		var memberList = session.pathBy("/rooms/" + roomId + "/members").childrenNames().toArray();
         session.tran(function(wsession) {
@@ -47,7 +47,7 @@ new function() {
 		var sender = bm.sender();
 		var cmdPrefix = message.substr(0, 2).toUpperCase();
 		
-		if(sender == 'b@' || cmdPrefix != 'B@') return ;
+		if(sender == 'bbot' || cmdPrefix != 'B@') return ;
 		
 		var command = message.substr(2);
 		

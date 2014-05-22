@@ -48,7 +48,9 @@ public class WhisperHandler implements TalkHandler{
 		session.tran(new TransactionJob<Void>() {
 			@Override
 			public Void handle(WriteSession wsession) throws Exception {
-				if (! wsession.exists("/bots/"+ userId)){
+				if (wsession.exists("/bots/"+ userId)){
+					bscript.whisper(uconn, whisper) ;
+				} else if (wsession.exists("/users/" + userId)) {
 					String msgId = new ObjectId().toString() ; 
 					wsession.pathBy("/rooms/@" + userId + "/messages/" + msgId)
 						.property(Message.Message, whisper.userMessage())
@@ -60,8 +62,6 @@ public class WhisperHandler implements TalkHandler{
 						.property(Message.RequestId, whisper.asString(Message.RequestId))
 						.property(Message.Time, String.valueOf(new Date().getTime()))
 						.property(Message.Receivers, userId) ;
-				} else {
-					bscript.whisper(uconn, whisper) ;
 				}
 				return null;
 			}
