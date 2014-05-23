@@ -64,7 +64,7 @@ public class AccountManager {
 		handlers.put(Type.BOT, new AccountHandler() {
 			@Override
 			public Account create(AccountManager am, String userId, UserConnection uconn) {
-				return new BotAccount(bs, session, userId);
+				return new BotAccount(am.tengine, bs, session, userId);
 			}
 		}) ;
 		handlers.put(Type.NOT_REGISTERED, new AccountHandler() {
@@ -88,18 +88,18 @@ public class AccountManager {
 	}
 
 	
-	public Account newAccount(String userId) {
-		UserConnection uconn = tengine.findConnection(userId);
+	public Account newAccount(String toUserId) {
+		UserConnection uconn = tengine.findConnection(toUserId);
 
 		if (uconn != UserConnection.NOTFOUND) { // connected
-			Account account = handlers.get(Type.CONNECTED_USER).create(this, userId, uconn);
-			return uconn.fromApp() ? account :  handlers.get(Type.PROXY).create(this, userId, uconn) ;
-		} else if (uconn == UserConnection.NOTFOUND && session.exists("/bots/" + userId)) {
-			return handlers.get(Type.BOT).create(this, userId, uconn);
-		} else if (uconn == UserConnection.NOTFOUND && session.exists("/users/" + userId)) {
-			return handlers.get(Type.DISCONNECTED_USER).create(this, userId, uconn);
+			Account account = handlers.get(Type.CONNECTED_USER).create(this, toUserId, uconn);
+			return uconn.fromApp() ? account :  handlers.get(Type.PROXY).create(this, toUserId, uconn) ;
+		} else if (uconn == UserConnection.NOTFOUND && session.exists("/bots/" + toUserId)) {
+			return handlers.get(Type.BOT).create(this, toUserId, uconn);
+		} else if (uconn == UserConnection.NOTFOUND && session.exists("/users/" + toUserId)) {
+			return handlers.get(Type.DISCONNECTED_USER).create(this, toUserId, uconn);
 		}
-		return handlers.get(Type.NOT_REGISTERED).create(this, userId, uconn);
+		return handlers.get(Type.NOT_REGISTERED).create(this, toUserId, uconn);
 		
 	}
 

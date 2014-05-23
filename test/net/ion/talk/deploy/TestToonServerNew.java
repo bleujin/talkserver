@@ -104,7 +104,7 @@ public class TestToonServerNew extends TestCase {
 			}
 		});
 
-		String msg = TalkMessage.fromScript("1234", "/test/hello", ParameterMap.BLANK).toPlainMessage();
+		String msg = TalkMessage.fromTest("1234", "/test/hello", ParameterMap.BLANK).toPlainMessage();
 		Debug.line(msg);
 		ws.sendTextMessage(msg);
 		cd.await();

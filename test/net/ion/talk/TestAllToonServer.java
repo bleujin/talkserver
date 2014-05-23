@@ -27,6 +27,9 @@ public class TestAllToonServer extends TestCase {
         result.addTest(TestAllBot.suite());
         result.addTest(TestAllDeploy.suite());
 
+        
+        
+        
 		return result;
 	}
 

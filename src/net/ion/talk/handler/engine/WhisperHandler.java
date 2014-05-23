@@ -34,15 +34,9 @@ public class WhisperHandler implements TalkHandler{
 
 	@Override
 	public void onMessage(TalkEngine tengine, final UserConnection uconn, ReadSession rsession, final TalkMessage tmsg) {
-		if (tmsg.messageType() == MType.COMMAND) { // /time -> @system time 
-			final WhisperMessage whisper = WhisperMessage.create(tmsg) ;
-			bscript.whisper(uconn, whisper) ;
-			return ;
-		}
-
 		if (tmsg.messageType() != MType.WHISPER) return ;
 		
-		final WhisperMessage whisper = WhisperMessage.create(tmsg) ;
+		final WhisperMessage whisper = WhisperMessage.create(uconn, tmsg) ;
 		final String userId = whisper.toUserId() ;
 		
 		session.tran(new TransactionJob<Void>() {
@@ -51,14 +45,13 @@ public class WhisperHandler implements TalkHandler{
 				if (wsession.exists("/bots/"+ userId)){
 					bscript.whisper(uconn, whisper) ;
 				} else if (wsession.exists("/users/" + userId)) {
-					String msgId = new ObjectId().toString() ; 
-					wsession.pathBy("/rooms/@" + userId + "/messages/" + msgId)
-						.property(Message.Message, whisper.userMessage())
-						.property(Message.MessageId, msgId)
+					wsession.pathBy("/rooms/@" + userId + "/messages/" + whisper.messageId())
+						.property(Message.Message, whisper.message())
+						.property(Message.MessageId, whisper.messageId())
 						.refTo("sender", "/users/" + uconn.id())
 						.property(Message.ClientScript, whisper.asString(Message.ClientScript))
 						.property(Message.Options, "{event:'onWhisper'}")
-						.property("fromRoomId",whisper.asString("roomId"))
+						.property("fromRoomId",whisper.fromRoomId())
 						.property(Message.RequestId, whisper.asString(Message.RequestId))
 						.property(Message.Time, String.valueOf(new Date().getTime()))
 						.property(Message.Receivers, userId) ;

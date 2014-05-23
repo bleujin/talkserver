@@ -6,13 +6,12 @@ new function(){
 		}) ;
 	}, 
 	
-	this.sendMessage = function(oriSender, event, bm, args){
-		var roomId = bm.roomId() ;
-		var selfBotId = bm.botId() ;
+	this.sendMessage = function(event, bm, args){
+		var roomId = bm.fromRoomId() ;
+		var selfBotId = bm.toUserId() ;
 
-		if (session.exists("/bots/" + oriSender)) return ;
         session.tran(function(wsession) {
-            var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + bm.newMsgId())
+            var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + new net.ion.framework.util.ObjectId().toString())
                     .property("message", args.message || bm.message())
                     .refTo("sender", "/users/"+selfBotId)
                     .property("roomId", roomId)
@@ -35,15 +34,15 @@ new function(){
 	}, 
 	
 	this.onMessage = function(bm){
-		this.sendMessage(bm.sender(), "onMessage", bm, {}) ;
+		this.sendMessage(bm.fromUserId(), "onMessage", bm, {}) ;
 	}, 
 	
 	this.onEnter = function(bm){
-		this.sendMessage(bm.sender(), "onEnter", bm, {message :"Hello I'm EchoBot"}) ;
+		this.sendMessage("onEnter", bm, {message :"Hello I'm EchoBot"}) ;
 	}, 
 	
 	this.onExit = function(bm){
-//		this.sendMessage(bm.sender(), "onExit", bm, {message :"Bye"}) ;
+//		this.sendMessage("onExit", bm, {message :"Bye"}) ;
 	}, 
 	
 	this.onFilter = function(bm){

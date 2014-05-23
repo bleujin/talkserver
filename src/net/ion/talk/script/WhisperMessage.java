@@ -1,66 +1,97 @@
 package net.ion.talk.script;
 
 import net.ion.framework.parse.gson.JsonObject;
+import net.ion.framework.util.ObjectId;
 import net.ion.framework.util.StringUtil;
 import net.ion.talk.TalkMessage;
+import net.ion.talk.UserConnection;
+import net.ion.talk.fake.FakeUserConnection;
 
-public class WhisperMessage {
+public class WhisperMessage implements ScriptMessage {
 
 	private TalkMessage tm;
 	private String toUserId;
-	private String userMessage;
+	private String message;
 	private MessageCommand messageCmd;
+	private String messageId;
+	private UserConnection source;
 	
-	private WhisperMessage(TalkMessage tm, String toUserId, String wmessage) {
+	private WhisperMessage(UserConnection source, TalkMessage tm, String toUserId, String wmessage) {
+		this.source = source ;
 		this.tm = tm;
 		this.toUserId = toUserId ;
-		this.userMessage = wmessage ;
-		this.messageCmd = MessageCommand.create(userMessage.startsWith("/") ? userMessage.substring(1) : userMessage) ;
+		this.message = wmessage ;
+		this.messageCmd = MessageCommand.create(message) ;
+		this.messageId = new ObjectId().toString() ;
+	}
+	
+	public final static WhisperMessage test(TalkMessage tm) {
+		return create(FakeUserConnection.fake(tm.params().asString("sender")), tm) ;
 	}
 
-	public final static WhisperMessage create(TalkMessage tm) {
-		
+	public final static WhisperMessage create(UserConnection source, TalkMessage tm) {
 		if (tm.userMessage().startsWith("@")) {
-			String to = StringUtil.substringBefore(tm.userMessage(), " ").substring(1) ;
+			String toUserId = StringUtil.substringBefore(tm.userMessage(), " ").substring(1) ;
 			String wmessage = StringUtil.substringAfter(tm.userMessage(), " ") ; 
-			return new WhisperMessage(tm, to, wmessage);
-		} else if (tm.userMessage().startsWith("/")) {
-			String wmessage = tm.userMessage() ;
-			return new WhisperMessage(tm, "system", wmessage);
+			return new WhisperMessage(source, tm, toUserId, wmessage);
 		}
 		throw new IllegalArgumentException() ;
 	}
+
+
 	
-	public String id(){
-		return tm.id() ;
-	}
-
-	public String toUserId() {
-		return toUserId;
-	}
-
-	public String userMessage(){
-		return userMessage ;
+	@Override
+	public UserConnection source() {
+		return source ;
 	}
 	
+	@Override
+	public String messageId() {
+		return messageId;
+	}
+
+	@Override
+	public String message() {
+		return message;
+	}
+
+	@Override
+	public String[] messages() {
+		return StringUtil.split(message(), " ");
+	}
+
+	@Override
+	public String fromUserId() {
+		return tm.params().asString("sender");
+	}
+
+	@Override
 	public MessageCommand asCommand() {
 		return messageCmd;
 	}
 
-	public String sender() {
-		return tm.params().asString("sender");
+	@Override
+	public String toUserId() {
+		return toUserId;
 	}
 
+	@Override
 	public String fromRoomId() {
 		return tm.params().asString("roomId");
 	}
 
+	@Override
 	public boolean isNotInRoom(){
 		return StringUtil.isBlank(fromRoomId()) ;
 	}
 	
-	public String[] userMessages() {
-		return StringUtil.split(userMessage(), " ");
+
+	
+	
+	
+	
+	public String requestId(){
+		return tm.id() ;
 	}
 
 	public String asString(String name) {
@@ -70,7 +101,6 @@ public class WhisperMessage {
 	public JsonObject asJson() {
 		return tm.params().asJson();
 	}
-	
-	
+
 	
 }
