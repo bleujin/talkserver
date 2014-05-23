@@ -27,10 +27,7 @@ import net.ion.radon.core.config.ConfigurationBuilder;
 import net.ion.talk.TalkEngine;
 import net.ion.talk.bean.Const.User;
 import net.ion.talk.filter.ToonAuthenticator;
-import net.ion.talk.let.PhoneAuthLet;
-import net.ion.talk.let.ResourceLet;
-import net.ion.talk.let.ScriptDoLet;
-import net.ion.talk.let.UserLet;
+import net.ion.talk.let.*;
 import net.ion.talk.responsebuilder.TalkResponseBuilder;
 
 import org.restlet.data.Method;
@@ -69,11 +66,12 @@ public class TestClientLet extends TestCase {
 						.addPreFilter(new ToonAuthenticator("user"))
 						.path("client").addUrlPattern("/").handler(ClientLet.class)
 						.path("reload").addUrlPattern("/reload").handler(ReloadLet.class)
+                    .restSection("execute")
+                        .path("execute").addUrlPattern("/").matchMode(IMatchMode.STARTWITH).handler(ScriptExecLet.class)
                     .restSection("mobile")
                         .addPreFilter(new ToonAuthenticator("user"))
                         .path("client").addUrlPattern("/").handler(MobileClientLet.class)
                     .restSection("register")
-                        .path("user").addUrlPattern("/user/{email}").matchMode(IMatchMode.STARTWITH).handler(UserLet.class)
                         .path("smsAuth").addUrlPattern("/SMSAuth").matchMode(EnumClass.IMatchMode.STARTWITH).handler(PhoneAuthLet.class)
 					.restSection("toonweb")
 						.path("toonweb").addUrlPattern("/").matchMode(IMatchMode.STARTWITH).handler(ToonWebResourceLet.class).toBuilder();

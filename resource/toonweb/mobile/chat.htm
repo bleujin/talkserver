@@ -674,6 +674,12 @@
         return this.push.apply(this, rest);
     };
 
+    var scriptRunner = new function() {
+        this.execute = function(packName, funcName, params, onSuccess) {
+            \$.post('/execute/' + packName + '/' + funcName + '.json', params).done(onSuccess);
+        }
+    };
+
     \$(document).ready(function() {
         validator = \$('#registerForm').validate({
             rules: {
@@ -725,26 +731,32 @@
                     return false;
                 }
 
-                var email = \$('#registerForm input[name=email]').fieldValue()[0];
-                var option = {
-                    url: '/register/user/' + email,
-                    type: 'POST',
-                    data: {phoneNum: phoneNumber()},
-                    success: function() {
-                        alert('Registration success');
-                        resetRegisterForm();
-                        \$( '#register').panel( 'close' );
-                    },
-                    error: function() {
-                        alert('Registration Failed');
-                    }
-                };
+                var email = \$("#registerForm input[name=email]").val(),
+                    password = \$("#registerForm input[name=password]").val(),
+                    country = \$("#country option:selected").val(),
+                    nickname = \$("#registerForm input[name=nickname]").val(),
+                    phone = phoneNumber(),
+                    realPhone = phoneNumberWithCountry().substr(1);             // remove first +
 
-                \$(form).ajaxSubmit(option);
+                scriptRunner.execute('user', 'registerWith', {
+                    userId: email,
+                    password: password,
+                    country: country,
+                    nickname: nickname,
+                    phone: phone,
+                    realPhone: realPhone
+                }, function(data) {
+                    alert('Registration success');
+                    resetRegisterForm();
+                    \$('#register').panel('close');
+                });
 
                 return false;
             }
         });
+
+
+        chatRoomHandler.select('home');
     });
 
 

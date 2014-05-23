@@ -1,12 +1,11 @@
 package net.ion.talk.let;
 
-import java.io.IOException;
-
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
+import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.util.RandomUtil;
 import net.ion.message.sms.sender.SMSSender;
 import net.ion.nradon.let.IServiceLet;
@@ -16,9 +15,12 @@ import net.ion.radon.core.annotation.AnRequest;
 import net.ion.radon.core.annotation.ContextParam;
 import net.ion.radon.core.annotation.FormParam;
 import net.ion.radon.core.let.InnerRequest;
-
+import net.ion.talk.util.CalUtil;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
+
+import java.io.IOException;
 
 public class PhoneAuthLet implements IServiceLet {
 
@@ -31,7 +33,7 @@ public class PhoneAuthLet implements IServiceLet {
 	}
 	
 	@Post
-	public String sendAuthNum(@AnContext TreeContext context, @AnRequest InnerRequest request, @FormParam("phone") final String phone) throws Exception {
+	public StringRepresentation sendAuthNum(@AnContext TreeContext context, @AnRequest InnerRequest request, @FormParam("phone") final String phone) throws Exception {
 
 		SMSSender smsSender = context.getAttributeObject(SMSSender.class.getCanonicalName(), SMSSender.class);
         RepositoryEntry rentry = context.getAttributeObject(RepositoryEntry.EntryName, RepositoryEntry.class);
@@ -48,8 +50,10 @@ public class PhoneAuthLet implements IServiceLet {
         });
 
         smsSender.toPhoneNo(phone).from("02", "3430", "1200").message(smsMsg(phone, code)).send();
+        JsonObject result = new JsonObject().put("createAt", CalUtil.gmtTime())
+                .put("status", "success");
 
-        return "success";
+        return new StringRepresentation(result.toString());
 	}
 	
 	private String smsMsg(String phoneNumber, String authNum) {

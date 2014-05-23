@@ -52,6 +52,8 @@ public class TestPhoneAuthLet extends TestCase {
         net.ion.radon.aclient.Response response = nc.preparePost(NetworkUtil.httpAddress(9000, "/register/SMSAuth")).addParameter("phone", "+821091399660").execute().get();
         assertEquals(200, response.getStatus().getCode());
 
+        Debug.line(response.getTextBody());
+
         nc.close();
         
         ReadSession session = repoEntry.login();

@@ -1,15 +1,5 @@
 package net.ion.talk;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.GregorianCalendar;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
-
 import net.ion.craken.aradon.MonitorLet;
 import net.ion.craken.aradon.NodeLet;
 import net.ion.craken.aradon.UploadLet;
@@ -23,20 +13,20 @@ import net.ion.radon.core.config.ConfigurationBuilder;
 import net.ion.radon.core.security.ChallengeAuthenticator;
 import net.ion.talk.filter.CrakenVerifier;
 import net.ion.talk.filter.ToonAuthenticator;
-import net.ion.talk.let.EmbedBotLet;
-import net.ion.talk.let.LoginLet;
-import net.ion.talk.let.PhoneAuthLet;
-import net.ion.talk.let.ResourceLet;
-import net.ion.talk.let.ScriptConfirmLet;
-import net.ion.talk.let.ScriptDoLet;
-import net.ion.talk.let.ScriptExecLet;
-import net.ion.talk.let.UserLet;
+import net.ion.talk.let.*;
 import net.ion.talk.monitor.TalkMonitor;
-import net.ion.talk.script.TalkScript;
 import net.ion.talk.toonweb.ClientLet;
 import net.ion.talk.toonweb.MobileClientLet;
 import net.ion.talk.toonweb.ReloadLet;
 import net.ion.talk.toonweb.ToonWebResourceLet;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class ToonServer {
 
@@ -80,7 +70,6 @@ public class ToonServer {
 						.path("login").addUrlPattern("/login").matchMode(IMatchMode.STARTWITH).handler(LoginLet.class)
 						
 					.restSection("register")
-						.path("user").addUrlPattern("/user/{email}").matchMode(IMatchMode.STARTWITH).handler(UserLet.class)
 						.path("smsAuth").addUrlPattern("/SMSAuth").matchMode(EnumClass.IMatchMode.STARTWITH).handler(PhoneAuthLet.class)
 						
 					.restSection("script")
