@@ -18,7 +18,7 @@ public class BotAccount extends Account{
 
 	@Override
 	public void onMessage(String notifyId) {
-        bs.callFn(BotMessage.create(accountId(), session.pathBy("/notifies/" + accountId() + "/" + notifyId))) ;
+        bs.callFromOnMessage(BotMessage.create(accountId(), session.pathBy("/notifies/" + accountId() + "/" + notifyId))) ;
 	}
 
 }

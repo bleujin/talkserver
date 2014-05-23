@@ -16,7 +16,7 @@ public class BotMessage {
 	private BotMessage(String botId, ReadNode messageNode) {
 		this.botId = botId;
 		this.messageNode = messageNode;
-		this.messageCmd = MessageCommand.create(this, messageNode.property(Const.Message.Message).asString());
+		this.messageCmd = MessageCommand.create(messageNode.property(Const.Message.Message).asString());
 	}
 
 	public static BotMessage create(String botId, ReadNode notifyNode) {
@@ -66,7 +66,7 @@ public class BotMessage {
 	}
 	
 	public boolean isNotInRoom(){
-		return isBlank("fromRoomId") ;
+		return isBlank("roomId") ;
 	}
 	
 	public String asString(String name) {

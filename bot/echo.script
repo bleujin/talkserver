@@ -23,20 +23,30 @@ new function(){
         }) ;
 	}, 
 	
+	this.onWhisper = function(source, whisperMsg){
+		source.sendMessage(
+			rb.makeCommandBuilder("/whisper/echo")
+			  .inner("result")
+			  	.property("sender", "echo")
+				.property("clientScript", "client.room().message(args);")
+				.property("message", whisperMsg.userMessage())
+				.property("options", "{event:'onWhisper'}")
+				.property("messageId", new net.ion.framework.util.ObjectId().toString()).build().talkMessage()) ;
+	}, 
+	
 	this.onMessage = function(bm){
 		this.sendMessage(bm.sender(), "onMessage", bm, {}) ;
 	}, 
 	
 	this.onEnter = function(bm){
-		java.lang.System.out.println(bm.toString() + bm.sender()) ;
-		this.sendMessage(bm.sender(), "onEnter", bm, {message :"Hello I'm EchoBot. please type: /help"}) ;
+		this.sendMessage(bm.sender(), "onEnter", bm, {message :"Hello I'm EchoBot"}) ;
 	}, 
 	
-	this.onExit = function(params){
+	this.onExit = function(bm){
 //		this.sendMessage(bm.sender(), "onExit", bm, {message :"Bye"}) ;
 	}, 
 	
-	this.onFilter = function(params){
+	this.onFilter = function(bm){
 
 	}
 }

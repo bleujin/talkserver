@@ -1,23 +1,23 @@
 package net.ion.talk.script;
 
+import net.ion.framework.util.NumberUtil;
+import net.ion.framework.util.ObjectUtil;
 import net.ion.framework.util.StringUtil;
 
 public class MessageCommand {
 
-	private BotMessage botMessage;
 	private String message;
 	private String remains;
 	private String[] cmds;
 
-	private MessageCommand(BotMessage botMessage, String message) {
-		this.botMessage = botMessage ;
+	private MessageCommand(String message) {
 		this.message = message ;
 		this.remains = StringUtil.substringAfter(message, " ") ;
 		this.cmds = StringUtil.split(message, " ") ;
 	}
 
-	public static MessageCommand create(BotMessage botMessage, String message) {
-		return new MessageCommand(botMessage, message);
+	public static MessageCommand create(String message) {
+		return new MessageCommand(message);
 	}
 
 	public String fnName(){
@@ -25,8 +25,20 @@ public class MessageCommand {
 	} 
 
 	public String remain(int index){
+		if (cmds.length <= (index+1)) return "" ;
 		return StringUtil.trim(cmds[index + 1]) ;
 	} 
+
+	public int remainAsInt(int index, int defaultValue){
+		if (cmds.length <= (index+1)) return defaultValue ;
+		return NumberUtil.toInt(StringUtil.trim(cmds[index + 1]), defaultValue) ;
+	} 
+
+	public String remainAsString(int index, String defaultValue){
+		if (cmds.length <= (index+1)) return defaultValue ;
+		return StringUtil.defaultIfEmpty(remain(index), defaultValue) ;
+	} 
+
 
 	public String remains(){
 		return remains ;

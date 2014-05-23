@@ -1,6 +1,7 @@
 package net.ion.talk.deploy;
 
 import java.io.File;
+import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -50,6 +51,7 @@ public class TestToonServerNew extends TestCase {
 		final ToonServer tserver = ToonServer.testCreate(rentry, worker);
 		tserver.ready().startRadon();
 		
+		
 		ReadSession rsession = tserver.talkEngine().readSession();
 		rsession.tran(new TransactionJob<Void>() {
 			@Override
@@ -84,6 +86,7 @@ public class TestToonServerNew extends TestCase {
 
 			@Override
 			public void onError(Throwable arg0) {
+				arg0.printStackTrace();
 			}
 
 			@Override

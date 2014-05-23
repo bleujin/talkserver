@@ -50,18 +50,28 @@ new function(){
 	}, 
 	
 	this.whoami = function(source, cparam){
+		var roomId = cparam.asString("roomId") ;	
+		var randomId = new net.ion.framework.util.ObjectId().toString();		
 		var user = session.ghostBy("/users/" + source.id()) ;
 		source.sendMessage(rb.makeCommandBuilder("/commands/whoami")
 			.inner("result")
 				.property("clientScript", "client.room().message(args);")
+				.property("roomId", roomId)
+				.property("messageId",randomId)
 				.property("message", "id:" + source.id() + ", nick:" + user.property("nickname").asString()).build().talkMessage()) ;
 	}, 
 	
 	this.time = function(source, cparam){
+		var roomId = cparam.asString("roomId") ;
+		var randomId = new net.ion.framework.util.ObjectId().toString();
+
+		java.lang.System.out.println(randomId) ;
 		source.sendMessage(
 			rb.makeCommandBuilder("/commands/time")
 			  .inner("result")
 				.property("clientScript", "client.room().message(args);")
+				.property("roomId",roomId)
+				.property("messageId",randomId)
 				.property("message", new java.util.Date().toString()).build().talkMessage()) ;
 	}, 
 	
@@ -146,7 +156,7 @@ new function(){
 	
 	this.info = function(source, cparam){
 		var roomId = cparam.asString("roomId") ;
-		
+		var randomId = new net.ion.framework.util.ObjectId().toString();
 		var result = {} ;
 		result.topic = session.pathBy("/rooms/" + cparam.asString("roomId")).property("title").asString() ;
 		result.members = [] ;
@@ -160,6 +170,8 @@ new function(){
 			  .inner("result")
 				.property("clientScript", "client.room().message(args);")
 				.property("sender", "&lt;system&gt;")
+				.property("roomId",roomId)
+				.property("messageId",randomId)
 				.property("message", toString(result)).build().talkMessage()) ;
 	}, 
 	

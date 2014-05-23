@@ -15,6 +15,7 @@ import net.ion.talk.ToonServer;
 import net.ion.talk.UserConnection;
 import net.ion.talk.bean.Const;
 import net.ion.talk.handler.TalkHandler;
+import net.ion.talk.util.CalUtil;
 
 import com.google.common.base.Predicate;
 import com.sun.istack.internal.Nullable;
@@ -62,7 +63,7 @@ public class BrokenMessageHandler implements TalkHandler {
             public Object handle(WriteSession wsession) throws Exception {
 
                 for(ReadNode deadNotify : deadNotifies){
-                    wsession.pathBy(deadNotify.fqn()).property(Const.Notify.CreatedAt, ToonServer.GMTTime());
+                    wsession.pathBy(deadNotify.fqn()).property(Const.Notify.CreatedAt, CalUtil.gmtTime());
                 }
                 return null;
             }
@@ -73,7 +74,7 @@ public class BrokenMessageHandler implements TalkHandler {
         return iter.children().filter(new Predicate<ReadNode>() {
             @Override
             public boolean apply(@Nullable ReadNode notify) {
-                return (ToonServer.GMTTime() - notify.property(Const.Notify.CreatedAt).longValue(0) > NOTIFY_LIFE_TIME);
+                return (CalUtil.gmtTime() - notify.property(Const.Notify.CreatedAt).longValue(0) > NOTIFY_LIFE_TIME);
             }
         });
     }

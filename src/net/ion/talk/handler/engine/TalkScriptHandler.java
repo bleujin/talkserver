@@ -39,15 +39,8 @@ public class TalkScriptHandler implements TalkHandler {
 			uconn.sendMessage("illegal message : " + tmsg.toPlainMessage());
 			return ;
 		}
-		if (tmsg.messageType() == MType.COMMAND) {
-			tmsg.params()
-				.set("fromRoomId", tmsg.params().asString(Room.RoomId))
-				.set("_" + Message.Receivers, tmsg.params().asString(Message.Receivers))
-//				.set(Message.Receivers, "system")
-				.set(Room.RoomId, "@system")
-				.set(Message.Message, tmsg.userMessage().substring(1)) ;
-		}
-
+		
+		if (tmsg.messageType() != MType.NORMAL) return ;
 		
 		tscript.callFn(tmsg.script(), ObjectUtil.coalesce(tmsg.params(), ParameterMap.BLANK), new ScriptResponseHandler<Void>() {
 			@Override

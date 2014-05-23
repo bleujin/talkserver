@@ -62,7 +62,7 @@
 					<td><input id="exchangeNo" name="exchangeNo" class="easyui-numberbox" style="width:55px" data-options="required: true" maxlength="4"></input>
 						<input id="prefixNo" name="prefixNo" class="easyui-numberbox" style="width:55px" data-options="required: true" maxlength="4"></input>
 						<input id="postfixNo" name="postfixNo" class="easyui-numberbox" style="width:55px" data-options="required: true" maxlength="4"></input></td></tr>
-				<tr><td>Phone number authorization:</td>
+				<tr><td>Phone authorization:</td>
 					<td><input id="authNum" name="authNum" class="easyui-numberbox" maxlength="6"></input><div><span id="verified">Not verified</span></div></td>
 						<td><a class="easyui-linkbutton" data-options="iconCls:'icon-ok'" href="javascript:void(0)" onclick="javascript:requestPhoneAuth('ok')" style="width:80px">Request</a></td></tr>
 			</table>	
@@ -173,18 +173,18 @@
 				console.log(inviteMsg) ;
 			}, 
 			
-			this.join = function(title){
-				if (jQuery('#zone').tabs('exists', title)){
-					jQuery('#zone').tabs('select', title);
+			this.join = function(args){
+				if (jQuery('#zone').tabs('exists', args.roomId)){
+					jQuery('#zone').tabs('select', args.roomId);
 				} else {
-					var content = '<div id="' + title + '" style="overflow:scroll;width:100%;height:100%;"></div>'; 
+					var content = '<div id="' + args.roomId + '" style="overflow:scroll;width:100%;height:100%;"></div>'; 
 					jQuery('#zone').tabs('add',{
-						title:title,
+						title:args.roomId,
 						content:content,
 						closable:true
 					});
 				} ;
-				webClient.command('/room/listUnreadMessageBy', {'roomId':title, 'messageId':'0'}) ;
+//				webClient.command('/room/listUnreadMessageBy', {'roomId':args.roomId, 'messageId':'0'}) ;
 			} ;
 		} ;
 
@@ -267,7 +267,7 @@
 			var chatMsg = {id:'' + new Date().getUTCMilliseconds(), script:'/room/sendMessageWith', params:{}} ;
 			var currentDivId = jQuery('#zone').tabs('getSelected').panel('options').title ;
 			
-			if (currentDivId == 'Home' && !msgText.startWith('/')){
+			if (currentDivId == 'Home' && ! (msgText.startWith('/') || msgText.startWith('@'))){
 				client.room().alertMsg({content:'not in room'}) ;
 			} else {
 				chatMsg.params.receivers = '';
@@ -354,7 +354,7 @@
 	   				return ;
 	   			}
 	
-	   			if (msg.script.startWith('/commands/')){
+	   			if (msg.script.startWith('/whisper/')){
 	   				var args = msg.result || {} ;
 	   				eval(msg.result.clientScript) ;
 	   				return ;
@@ -412,7 +412,7 @@
 			},
 			message: 'Field do not match.'
 		}
-    });
+	});	
 	
 	function resetForm() {
 		jQuery('#registerForm').form('clear');
