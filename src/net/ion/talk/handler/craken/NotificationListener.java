@@ -50,7 +50,6 @@ public class NotificationListener implements WorkspaceListener{
 			PropertyValue pvalue = pmap.get(PropertyId.fromIdString(Connection.DelegateServer)) ;
 			
 			if(pvalue != null && pvalue.stringValue().equals(this.memberId)){
-				TalkResponse tresponse = TalkResponseBuilder.create().newInner().property("notifyId", notifyId).build() ;
                 am.newAccount(userId).onMessage(notifyId);
             }
 		}

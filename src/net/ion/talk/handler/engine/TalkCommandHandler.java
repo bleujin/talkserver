@@ -17,6 +17,7 @@ import net.ion.talk.UserConnection;
 import net.ion.talk.handler.TalkHandler;
 import net.ion.talk.script.CommandScript;
 
+@Deprecated
 public class TalkCommandHandler implements TalkHandler{
 
 	private CommandScript cscript;
@@ -33,7 +34,7 @@ public class TalkCommandHandler implements TalkHandler{
 
 	@Override
 	public void onMessage(TalkEngine tengine, UserConnection uconn, ReadSession rsession, TalkMessage tmsg) {
-		if (tmsg.messageType() != MType.COMMAND) return ;
+//		if (tmsg.messageType() != MType.COMMAND) return ;
 		
 		CommandParam cparam = CommandParam.create(tmsg) ;
 		

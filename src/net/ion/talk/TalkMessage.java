@@ -1,5 +1,6 @@
 package net.ion.talk;
 
+import scala.xml.PrettyPrinter.Para;
 import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.parse.gson.JsonUtil;
 import net.ion.framework.util.ObjectUtil;
@@ -9,7 +10,7 @@ public abstract class TalkMessage {
 
 	
 	public enum MType {
-		COMMAND, NORMAL, ILLEGAL, WHISPER
+		NORMAL, ILLEGAL, WHISPER
 	}
 	
 	public static TalkMessage fromJsonString(String jsonText) {
@@ -17,17 +18,17 @@ public abstract class TalkMessage {
 			JsonObject json = JsonObject.fromString(jsonText);
 			if (StringUtil.isBlank(json.asString("id")) || StringUtil.isBlank(("script"))) return new IllegalTalkMessage(jsonText) ; 
 			
-			return new TalkScriptMessage(json.asString("id"), json.asString("script"), ParameterMap.create(json.asJsonObject("params"))).plainMessage(jsonText);
+			return new TalkScriptMessage(json);
 		} catch (Exception notJson) {
 			return new IllegalTalkMessage(jsonText);
 		}
 	}
 
-	public static TalkMessage fromScript(String id, String scriptPath, ParameterMap params) {
-		return new TalkScriptMessage(id, scriptPath, params).plainMessage(scriptPath) ;
+	public static TalkMessage fromTest(String id, String scriptPath, ParameterMap params) {
+		return new TalkScriptMessage(id, scriptPath, params) ;
 	}
 
-	public abstract String script() ;
+	public abstract String scriptPath() ;
 
 	public abstract String id();
 
@@ -50,13 +51,21 @@ class TalkScriptMessage extends TalkMessage {
 	private final String id ;
 	private String plainMessage;
 	
-	TalkScriptMessage(String id, String scriptPath, ParameterMap params) {
-		this.id = id ;
-		this.scriptPath = scriptPath;
-		this.params = params ;
+	TalkScriptMessage(JsonObject json) {
+		this.id = json.asString("id") ;
+		this.scriptPath = json.asString("script") ;
+		this.params = ParameterMap.create(json.asJsonObject("params")) ;
+		this.plainMessage = json.toString() ;
 	}
 
-	public String script() {
+	TalkScriptMessage(String id, String scriptPath, ParameterMap params) {
+		this.id = id ;
+		this.scriptPath = scriptPath ;
+		this.params = params;
+		this.plainMessage = "only test" ;
+	}
+
+	public String scriptPath() {
 		return scriptPath;
 	}
 
@@ -83,13 +92,13 @@ class TalkScriptMessage extends TalkMessage {
 	}
 	
 	public String userMessage(){
-		return params.asString("message") ;
+		String result = params.asString("message");
+		if (result.startsWith("/")) return "@system " + result.substring(1) ; 
+		return result ;
 	}
 	
 	public MType messageType() {
-		if (userMessage().startsWith("/")) return MType.COMMAND ;
-		else if (userMessage().startsWith("@")) return MType.WHISPER ;
-		return MType.NORMAL ;
+		return userMessage().startsWith("@")? MType.WHISPER : MType.NORMAL ;
 	}
 }
 
@@ -115,7 +124,7 @@ class IllegalTalkMessage extends TalkMessage{
 	}
 
 	@Override
-	public String script() {
+	public String scriptPath() {
 		throw new UnsupportedOperationException("this plain msg") ;
 	}
 

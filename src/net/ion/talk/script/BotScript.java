@@ -250,22 +250,22 @@ public class BotScript {
 	}
 
 	public Object callFromOnMessage(BotMessage bm) {
-		return callFn(bm.botId() + "." + bm.eventName(), bm, BotResponseHandler.ReturnNative) ;
+		return callFn(bm.toUserId() + "." + bm.eventName(), bm, BotResponseHandler.ReturnNative) ;
 	}
 	
-	public Object whisper(UserConnection source, WhisperMessage bwm) {
+	public Object whisper(UserConnection source, WhisperMessage whisperMsg) {
 		
 		BotWhisperHandler<Void> returnnative = BotWhisperHandler.DEFAULT ;
 		try {
-			Object pack = packages.get(bwm.toUserId());
-			Object result = ((Invocable) sengine).invokeMethod(pack, "onWhisper", source, bwm);
+			Object pack = packages.get(whisperMsg.toUserId());
+			Object result = ((Invocable) sengine).invokeMethod(pack, "onWhisper", source, whisperMsg);
 			if(result instanceof NativeJavaObject) result = ((NativeJavaObject)result).unwrap() ;  
 			result = ObjectUtil.coalesce(result, "undefined") ;
-			return returnnative.onSuccess(source, bwm.toUserId(), bwm, result);
+			return returnnative.onSuccess(source, whisperMsg.toUserId(), whisperMsg, result);
 		} catch (ScriptException e) {
-			return returnnative.onThrow(source, bwm.toUserId(), bwm, e) ;
+			return returnnative.onThrow(source, whisperMsg.toUserId(), whisperMsg, e) ;
 		} catch (NoSuchMethodException e) {
-			return returnnative.onThrow(source, bwm.toUserId(), bwm, e) ;
+			return returnnative.onThrow(source, whisperMsg.toUserId(), whisperMsg, e) ;
 		}
 	}
 
@@ -306,9 +306,9 @@ interface BotWhisperHandler<T> {
 
 		@Override
 		public Void onThrow(UserConnection uconn, String botId, WhisperMessage whisper, Exception ex) {
-			JsonObject forSend = JsonObject.create().put("id", whisper.id()).put(Status.Status, Status.Success)
+			JsonObject forSend = JsonObject.create().put("id", whisper.requestId()).put(Status.Status, Status.Failure)
 					.put("result", new JsonObject().put(Message.ClientScript, Message.DefaultOnMessageClientScript).put(Message.Message, ex.getMessage()).put(Message.MessageId, new ObjectId().toString()) )
-					.put("script", whisper.userMessage()).put("params", whisper.asJson());
+					.put("script", whisper.message()).put("params", whisper.asJson());
 			uconn.sendMessage(forSend.toString()) ;
 			
 			return null ;

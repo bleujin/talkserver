@@ -11,8 +11,8 @@ new function(){
 	}, 
 	
 	this.sendMessage = function(oriSender, event, bm, args){
-		var roomId = bm.roomId() ;
-		var selfBotId = bm.botId() ;
+		var roomId = bm.fromRoomId() ;
+		var selfBotId = bm.toUserId() ;
 
 		if (session.exists("/bots/" + oriSender)) return ;
         session.tran(function(wsession) {
@@ -58,8 +58,8 @@ new function(){
 	
 	this.list = function(whisperMsg, cmd, source){
 		try {
-			if (! users[source.id()]) return {message:'not setted passwd'} ;
-			if (! source.id().endsWith('@i-on.net')) return {message:'only permit ion mail account'} ;
+			if (! users[whisperMsg.fromUserId()]) return {message:'not setted passwd'} ;
+			if (! whisperMsg.fromUserId().endsWith('@i-on.net')) return {message:'only permit ion mail account'} ;
 		
 			importPackage(net.ion.framework.mail) ;
 
@@ -67,7 +67,7 @@ new function(){
 			var skip = cmd.remainAsInt(1, 0) ;
 			var sw = new java.io.StringWriter() ;
 			
-			var mailer = MailConfigBuilder.create().receiveConfig().server(ionmailServer).mailUserId(source.id()).mailUserPwd(users[source.id()]).protocol(ReceiveConfigBuilder.Protocol.POP3).buildConfig().confirmValidOfReceiveMailConfig().createMailer();
+			var mailer = MailConfigBuilder.create().receiveConfig().server(ionmailServer).mailUserId(whisperMsg.fromUserId()).mailUserPwd(users[whisperMsg.fromUserId()]).protocol(ReceiveConfigBuilder.Protocol.POP3).buildConfig().confirmValidOfReceiveMailConfig().createMailer();
 			var count = mailer.unreadMessage(new MessageWriteHandler(sw, offset, skip)).get();
 			if (count < 1) return {message:'no mail'} ;
 			return {message:sw.toString()} ;
@@ -77,13 +77,13 @@ new function(){
 	}, 
 	
 	this.password = function(whisperMsg, cmd, source){
-		users[source.id()] = cmd.remain(0).trim() ;
+		users[whisperMsg.fromUserId()] = cmd.remain(0).trim() ;
 		return {message:'setted password'} ;
 	}, 
 	
 	this.send = function(whisperMsg, cmd, source){
 		try {
-			if (! source.id().endsWith('@i-on.net')) return {message:'only permit ion mail account'} ;
+			if (! whisperMsg.fromUserId().endsWith('@i-on.net')) return {message:'only permit ion mail account'} ;
 
 			var roomId = whisperMsg.fromRoomId() ;
 			if (roomId == '') return {message:'not in room'} ;
@@ -98,9 +98,9 @@ new function(){
 				content += next.property('message').asString() + '<br/>' ;
 			}
 			
-			var to = cmd.remainAsString(0, source.id()) ;
+			var to = cmd.remainAsString(0, whisperMsg.fromUserId()) ;
 			
-			var mailer = MailConfigBuilder.create().sendConfig().server(ionmailServer).mailUserId(source.id()).mailUserPwd("nopwd").buildConfig().confirmValidOfSendMailConfig().createMailer();
+			var mailer = MailConfigBuilder.create().sendConfig().server(ionmailServer).mailUserId(whisperMsg.fromUserId()).mailUserPwd("nopwd").buildConfig().confirmValidOfSendMailConfig().createMailer();
 	
 	        mailer.sendMail(new MessageCreater() {
 	        	makeMessage: function(msg) {
@@ -124,14 +124,11 @@ new function(){
 	}, 
 	
 	this.onEnter = function(bm){
-		this.sendMessage(bm.sender(), "onEnter", bm, {message :"Hello I'm EchoBot"}) ;
 	}, 
 	
 	this.onExit = function(bm){
-//		this.sendMessage(bm.sender(), "onExit", bm, {message :"Bye"}) ;
 	}, 
 	
 	this.onFilter = function(bm){
-
 	}
 }

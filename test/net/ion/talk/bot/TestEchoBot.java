@@ -22,64 +22,9 @@ import net.ion.talk.let.ScriptDoLet;
 import net.ion.talk.toonweb.ClientLet;
 import net.ion.talk.toonweb.ToonWebResourceLet;
 
-public class TestEchoBot extends TestCase {
+public class TestEchoBot extends TestBaseServer {
 
-	private Radon radon;
-	private RepositoryEntry rentry;
-	private TalkEngine talkEngine;
-
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		this.rentry = RepositoryEntry.test();
-		ReadSession session = rentry.login();
-
-		session.tranSync(new TransactionJob<Void>() {
-			@Override
-			public Void handle(WriteSession wsession) throws Exception {
-//				wsession.pathBy("/servers/home").property("host", "61.250.201.157").property("port", 9000);
-				wsession.pathBy("/users/bleujin").property("password", "1234");
-				return null;
-			}
-		});
-
-		ConfigurationBuilder cbuilder = ConfigurationBuilder.newBuilder()
-				.aradon()
-					.addAttribute(RepositoryEntry.EntryName, rentry)
-					.addAttribute(ScheduledExecutorService.class.getCanonicalName(), Executors.newScheduledThreadPool(5))
-				.sections()
-					.restSection("admin").addAttribute("baseDir", "./resource/template")
-						.path("node").addUrlPattern("/repository/{renderType}").matchMode(IMatchMode.STARTWITH).handler(NodeLet.class)
-						.path("template").addUrlPattern("/template").matchMode(EnumClass.IMatchMode.STARTWITH).handler(ResourceLet.class)
-						.path("doscript").addUrlPattern("/script").matchMode(EnumClass.IMatchMode.EQUALS).handler(ScriptDoLet.class)
-						.path("upload").addUrlPattern("/upload").matchMode(IMatchMode.STARTWITH).handler(UploadLet.class)
-					.restSection("session")
-						.path("client").addUrlPattern("/{userId}/{roomId}").handler(ClientLet.class)
-					.restSection("toonweb")
-						.path("toonweb").addUrlPattern("/").matchMode(IMatchMode.STARTWITH).handler(ToonWebResourceLet.class).toBuilder();
-						
-
-		Aradon aradon = Aradon.create(cbuilder.build()) ;
-		
-		
-		this.radon = aradon.toRadon(9000)
-					.start().get();
-		
-		this.talkEngine = TalkEngine.testCreate(aradon.getServiceContext()).init() ;
-		
-		radon.add("/websocket/{id}/{accessToken}", talkEngine) ;
-	}
-
-	@Override
-	protected void tearDown() throws Exception {
-		this.talkEngine.stopEngine(); 
-		this.rentry.shutdown();
-		this.radon.stop().get();
-		super.tearDown();
-	}
-	
 	public void testonLoad() throws Exception {
-		talkEngine.startEngine() ;
 		ReadSession session = talkEngine.readSession();
 		
 		assertEquals(true, session.exists("/bots/echo"));
@@ -90,7 +35,6 @@ public class TestEchoBot extends TestCase {
 	
 	
 	public void testOnEnter() throws Exception {
-		talkEngine.startEngine() ;
 		ReadSession session = talkEngine.readSession();
 
 		session.tran(new TransactionJob<Void>() {
@@ -122,7 +66,6 @@ public class TestEchoBot extends TestCase {
 	
 
 	public void testOnMessage() throws Exception {
-		talkEngine.startEngine() ;
 		ReadSession session = talkEngine.readSession();
 		
 		session.tran(new TransactionJob<Void>() {

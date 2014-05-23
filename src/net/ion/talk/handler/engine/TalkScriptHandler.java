@@ -42,7 +42,7 @@ public class TalkScriptHandler implements TalkHandler {
 		
 		if (tmsg.messageType() != MType.NORMAL) return ;
 		
-		tscript.callFn(tmsg.script(), ObjectUtil.coalesce(tmsg.params(), ParameterMap.BLANK), new ScriptResponseHandler<Void>() {
+		tscript.callFn(tmsg.scriptPath(), ObjectUtil.coalesce(tmsg.params(), ParameterMap.BLANK), new ScriptResponseHandler<Void>() {
 			@Override
 			public Void onSuccess(String fullName, ParameterMap pmap, Object result) {
 				if (result == null ||  StringUtil.isBlank(result.toString()) || "undefined".equals(result)) return null ;
@@ -50,12 +50,12 @@ public class TalkScriptHandler implements TalkHandler {
 				JsonObject forSend = JsonObject.create()
 							.put("id", tmsg.id())
 							.put("status", "success")
-							.put("result", result instanceof JsonElement ? (JsonElement)result : ObjectUtil.toString(result)).put("script", tmsg.script()).put("params", pmap.asJson()) ;
+							.put("result", result instanceof JsonElement ? (JsonElement)result : ObjectUtil.toString(result)).put("script", tmsg.scriptPath()).put("params", pmap.asJson()) ;
 				uconn.sendMessage(forSend.toString()) ;
 				return null ;
 			}
 			public Void onThrow(String fullName, ParameterMap pmap, Exception ex) {
-				JsonObject forSend = JsonObject.create().put("id", tmsg.id()).put("status", "failure").put("result", ex.getMessage()).put("script", tmsg.script()).put("params", pmap.asJson());
+				JsonObject forSend = JsonObject.create().put("id", tmsg.id()).put("status", "failure").put("result", ex.getMessage()).put("script", tmsg.scriptPath()).put("params", pmap.asJson());
 				uconn.sendMessage(forSend.toString()) ;
 				return null;
 			}

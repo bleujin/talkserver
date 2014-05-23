@@ -4,57 +4,83 @@ import net.ion.craken.node.ReadNode;
 import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.util.ObjectId;
 import net.ion.framework.util.StringUtil;
+import net.ion.talk.UserConnection;
 import net.ion.talk.bean.Const;
 
-public class BotMessage {
+public class BotMessage implements ScriptMessage{
 
 	private String botId;
-	private String newMsgId = new ObjectId().toString();
+	
 	private MessageCommand messageCmd;
 	private ReadNode messageNode;
+	private UserConnection source;
 
-	private BotMessage(String botId, ReadNode messageNode) {
+	private BotMessage(UserConnection source, String botId, ReadNode messageNode) {
+		this.source = source ;
 		this.botId = botId;
 		this.messageNode = messageNode;
 		this.messageCmd = MessageCommand.create(messageNode.property(Const.Message.Message).asString());
 	}
 
-	public static BotMessage create(String botId, ReadNode notifyNode) {
+	public static BotMessage create(UserConnection source, String botId, ReadNode notifyNode) {
 		ReadNode messageNode = notifyNode.ref(Const.Message.Message);
-		return new BotMessage(botId, messageNode);
+		return new BotMessage(source, botId, messageNode);
 	}
 
-	public String newMsgId() {
-		return newMsgId;
+	
+	@Override 
+	public UserConnection source(){
+		return source ;
 	}
 
+	@Override
 	public String message() {
 		return messageNode.property(Const.Message.Message).asString();
 	}
 
+	@Override
+	public String[] messages() {
+		return StringUtil.split(message(), " ");
+	}
+
+
+	@Override
+	public String toUserId() {
+		return botId;
+	}
+
+	@Override
+	public boolean isNotInRoom(){
+		return false ;
+	}
+
+	@Override
 	public MessageCommand asCommand() {
 		return messageCmd;
 	}
 
-	public String sender() {
-		return messageNode.ref(Const.Message.Sender).property(Const.User.UserId).asString();
-	}
-
-	
-	public String roomId() {
+	@Override
+	public String fromRoomId() {
 		return messageNode.parent().parent().fqn().name();
 	}
 
-	public String clientScript() {
-		return messageNode.property(Const.Message.ClientScript).asString();
+	@Override
+	public String fromUserId() {
+		return messageNode.ref(Const.Message.Sender).property(Const.User.UserId).asString();
 	}
 
+	@Override
 	public String messageId() {
 		return messageNode.fqn().name();
-	}
-
-	public String botId() {
-		return botId;
+	}	
+	
+	
+	
+	
+	
+	
+	public String clientScript() {
+		return messageNode.property(Const.Message.ClientScript).asString();
 	}
 
 	public String eventName() {
@@ -64,11 +90,7 @@ public class BotMessage {
 	public boolean isBlank(String name) {
 		return (!messageNode.hasProperty(name)) || (StringUtil.isBlank(messageNode.property(name).asString())) ;
 	}
-	
-	public boolean isNotInRoom(){
-		return isBlank("roomId") ;
-	}
-	
+
 	public String asString(String name) {
 		return messageNode.property(name).asString();
 	}
@@ -83,6 +105,6 @@ public class BotMessage {
 
 	
 	public String toString(){
-		return "botId:" + botId() + ", node:" + messageNode.toString() ;
+		return "botId:" + toUserId() + ", node:" + messageNode.toString() ;
 	}
 }

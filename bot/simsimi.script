@@ -11,17 +11,17 @@ new function() {
 	},
 	
 	this.onMessage = function(bm){
-		if ("simsimi" == bm.sender()) return ;
+		if ("simsimi" == bm.fromUserId()) return ;
 		
 		var handler = new net.ion.talk.bot.connect.BotCompletionHandler() {
 			onCompleted: function(jsonResponse) {
 				session.tran(function(wsession) {
-					var roomId = bm.roomId() ;
-					var selfBotId = bm.botId() ;
+					var roomId = bm.fromRoomId() ;
+					var selfBotId = bm.toUserId() ;
 					var resp = eval('(' + jsonResponse + ')');
 					
 					
-		            var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + bm.newMsgId())
+		            var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + new net.ion.framework.util.ObjectId().toString())
 		                    .property("message", resp.response)
 		                    .refTo("sender", "/users/"+selfBotId)
 		                    .property("roomId", roomId)
@@ -72,14 +72,14 @@ new function() {
 	
 	
 	this.onEnter = function(bm){
-		var roomId = bm.roomId() ;
-		var selfBotId = bm.botId() ;
+		var roomId = bm.fromRoomId() ;
+		var selfBotId = bm.toUserId() ;
 
-		if ("simsimi" == bm.sender()) return ;
+		if ("simsimi" == bm.fromUserId()) return ;
 		
 		var memberList = session.pathBy("/rooms/" + roomId + "/members").childrenNames().toArray();
         session.tran(function(wsession) {
-            var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + bm.newMsgId())
+            var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + new net.ion.framework.util.ObjectId().toString())
                     .property("message", "Hello I'm SimSimI")
                     .refTo("sender","/users/"+ selfBotId)
                     .property("roomId", roomId)

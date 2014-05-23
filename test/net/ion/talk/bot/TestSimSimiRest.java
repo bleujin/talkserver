@@ -9,7 +9,7 @@ import net.ion.radon.aclient.AsyncCompletionHandler;
 import net.ion.radon.aclient.NewClient;
 import net.ion.radon.aclient.Response;
 
-public class TestSimCall extends TestCase {
+public class TestSimSimiRest extends TestCase {
 
 	
 	public void testFirst() throws IOException, InterruptedException, ExecutionException {

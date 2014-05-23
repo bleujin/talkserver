@@ -15,8 +15,10 @@ public class TestAllBot extends TestCase {
 //        result.addTestSuite(TestOldChatBot.class);
 
 		result.addTestSuite(TestEchoBot.class);
-        result.addTestSuite(TestSimCall.class);
+        result.addTestSuite(TestSimSimiRest.class);
         result.addTestSuite(TestSimSimIBot.class);
+        result.addTestSuite(TestSystemBot.class);
+        result.addTestSuite(TestIONMailBot.class);
         
 		return result;
 	}
