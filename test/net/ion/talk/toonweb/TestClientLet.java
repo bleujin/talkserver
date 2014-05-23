@@ -69,9 +69,12 @@ public class TestClientLet extends TestCase {
 						.addPreFilter(new ToonAuthenticator("user"))
 						.path("client").addUrlPattern("/").handler(ClientLet.class)
 						.path("reload").addUrlPattern("/reload").handler(ReloadLet.class)
-					.restSection("register")
-						.path("user").addUrlPattern("/user/{email}").matchMode(IMatchMode.STARTWITH).handler(UserLet.class)
-						.path("smsAuth").addUrlPattern("/SMSAuth").matchMode(EnumClass.IMatchMode.STARTWITH).handler(PhoneAuthLet.class)
+                    .restSection("mobile")
+                        .addPreFilter(new ToonAuthenticator("user"))
+                        .path("client").addUrlPattern("/").handler(MobileClientLet.class)
+                    .restSection("register")
+                        .path("user").addUrlPattern("/user/{email}").matchMode(IMatchMode.STARTWITH).handler(UserLet.class)
+                        .path("smsAuth").addUrlPattern("/SMSAuth").matchMode(EnumClass.IMatchMode.STARTWITH).handler(PhoneAuthLet.class)
 					.restSection("toonweb")
 						.path("toonweb").addUrlPattern("/").matchMode(IMatchMode.STARTWITH).handler(ToonWebResourceLet.class).toBuilder();
 						

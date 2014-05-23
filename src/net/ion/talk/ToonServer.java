@@ -34,6 +34,7 @@ import net.ion.talk.let.UserLet;
 import net.ion.talk.monitor.TalkMonitor;
 import net.ion.talk.script.TalkScript;
 import net.ion.talk.toonweb.ClientLet;
+import net.ion.talk.toonweb.MobileClientLet;
 import net.ion.talk.toonweb.ReloadLet;
 import net.ion.talk.toonweb.ToonWebResourceLet;
 
@@ -98,6 +99,10 @@ public class ToonServer {
 						.addPreFilter(new ToonAuthenticator("user"))
 						.path("client").addUrlPattern("/").handler(ClientLet.class)
 						.path("reload").addUrlPattern("/reload").handler(ReloadLet.class)
+
+                    .restSection("mobile")
+                        .addPreFilter(new ToonAuthenticator("user"))
+                        .path("client").addUrlPattern("/").handler(MobileClientLet.class)
 
 					.restSection("toonweb")
 						.path("toonweb").addUrlPattern("/").matchMode(IMatchMode.STARTWITH).handler(ToonWebResourceLet.class)

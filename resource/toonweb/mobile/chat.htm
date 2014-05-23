@@ -1,0 +1,756 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.css" />
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.js"></script>
+    <script type="text/javascript" src="/toonweb/common_lang.js"></script>
+    <script type="text/javascript" src="/toonweb/swfobject.js"></script>
+    <script type="text/javascript" src="/toonweb/web_socket.js"></script>
+    <script type="text/javascript" src="/toonweb/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="/toonweb/jquery.form.min.js"></script>
+    <style type="text/css">
+        .bubble {
+            position: relative;
+            margin: 0;
+            padding:10px;
+            text-align:center;
+            width:180px;
+            -moz-border-radius:10px;
+            -webkit-border-radius:10px;
+            -webkit-box-shadow: 0px 0 3px rgba(0,0,0,0.25);
+            -moz-box-shadow: 0px 0 3px rgba(0,0,0,0.25);
+            box-shadow: 0px 0 3px rgba(0,0,0,0.25);
+        }
+        .bubble.me {
+            background-color:#f4cecf;
+        }
+        .bubble.other {
+            background-color:aquamarine;
+        }
+        .bubble.me:after {
+            position: absolute;
+            display: block;
+            content: "";
+            border-color: #f4cecf transparent transparent transparent;
+            border-style: solid;
+            border-width: 10px;
+            height:0;
+            width:0;
+            position:absolute;
+            bottom:-19px;
+            left:1em;
+        }
+
+        .bubble.other:after {
+            position: absolute;
+            display: block;
+            content: "";
+            border-color: aquamarine transparent transparent transparent;
+            border-style: solid;
+            border-width: 10px;
+            height:0;
+            width:0;
+            position:absolute;
+            bottom:-19px;
+            right:1em;
+        }
+
+        label.error {
+            color: red;
+            font-size: 16px;
+            font-weight: normal;
+            line-height: 1.4;
+            margin-top: 0.5em;
+            width: 100%;
+            float: none;
+        }
+
+        @media screen and (orientation: portrait){
+            label.error { margin-left: 0; display: block; }
+        }
+
+        @media screen and (orientation: landscape){
+            label.error { display: inline-block; margin-left: 0; }
+        }
+
+    </style>
+</head>
+<body>
+<div data-url="chatMain" data-role="page" class="jqm-demos" id="chatMain" data-title="ToonTalk Mobile">
+    <div data-role="header">
+        <h1>ToonTalk Mobile</h1>
+        <a href="#nav-panel" data-icon="bars" data-iconpos="notext">Menu</a>
+        <!--<a href="#popupLogin" data-icon="user" data-iconpos="notext">User</a>-->
+        <a href="#help" data-icon="info" data-iconpos="notext">Help</a>
+    </div><!-- /header -->
+    <div role="main" class="ui-content jqm-content jqm-fullwidth">
+
+        <div data-role="popup" id="alertPop" data-dismissible="false" style="min-width: 300px; min-height: 100px;">
+            <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-left">Close</a>
+            <div data-role="header" style="text-align: center;"><h2>Warning</h2></div>
+            <p><span id="alertMessage" style="margin: 20px;"></span></p>
+        </div>
+
+        <div data-role="tabs" id="chatScreens">
+            <div id="roomList" data-role="navbar" data-iconpos="right">
+                <ul>
+                    <li><a href="#home" id='tab-home' data-ajax="false">home</a></li>
+                </ul>
+            </div>
+            <div id="chatRooms">
+                <div id="home" class="ui-body-d ui-content">
+                    <div align="left" style="width:100%; height:20px; padding:0; padding-top: 10px">Opened</div>
+                    <div align="left" style="width:100%; height:20px; padding:0; padding-top: 10px">Welcome to ToonTalk Mobile</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div data-role="panel" data-poistion="left" data-position-fixed="true" data-display="push" data-theme="a" id="nav-panel">
+        <ul data-role="listview">
+            <li data-icon="delete"><a href="#" data-rel="close">Close menu</a></li>
+            <li><a href="#">Home</a></li>
+            <li><a href="#register">Register</a></li>
+        </ul>
+    </div>
+
+    <div data-role="panel" data-position-fixed="true" data-display="overlay" data-dismissible="false" data-theme="a" id="register" style="width: 80%;">
+        <form id="registerForm" class="validate">
+            <h2>Register</h2>
+            <label for="email">UserID(email):</label>
+            <input name="email" id="email" value="" class="required email" data-clear-btn="true" data-mini="true" type="email">
+
+            <label for="nickname">Nickname:</label>
+            <input name="nickname" id="nickname" value="" data-clear-btn="true" data-mini="true" type="text">
+
+            <label for="password">Password:</label>
+            <input name="password" id="password" class="required password" value="" data-clear-btn="true" data-mini="true" type="password">
+            <label for="password_confirm">Password confirm:</label>
+            <input id="password_confirm" class="required password" value="" data-clear-btn="true" data-mini="true" type="password">
+
+            <label for="country">Country</label>
+            <select id="country" name="country">
+                <option value="+82" selected="selected">Korea</option>
+                <option value="+81">Japan</option>
+                <option value="+62">Indonesia</option>
+                <option value="+1">United states</option>
+            </select>
+
+            <label for="character">Default Character</label>
+            <select id="character" name="character">
+                <option value="ibot" selected="selected">iBot</option>
+            </select>
+
+            <label>Phone:</label>
+            <input id="exchangeNo" value="" data-clear-btn="true" data-mini="true" type="text" class="required" placeholder="010">
+            <input id="prefixNo" value="" data-clear-btn="true" data-mini="true" type="text" class="required" placeholder="1234">
+            <input id="postfixNo" value="" data-clear-btn="true" data-mini="true" type="text" class="required" placeholder="4567">
+            <a href="#" onclick="javascript:requestPhoneAuth(); return ;" class="ui-btn ui-shadow ui-corner-all ui-icon-grid">Request Auth Number</a>
+
+            <label for="authNum">Phone Authorization:</label>
+            <input id="authNum" value="" data-icon="alert" data-clear-btn="true" data-mini="true" type="number" maxlength="6">
+
+
+            <span id="verifyResult">Not verified yet</span>
+            <div>
+                <input id="btnRegister" type="submit" value="Register" data-icon="check" data-theme="a">
+                <input id="btnRegisterCancel" type="button" value="Cancel" data-icon="back" data-rel="close" data-theme="a" onclick="javascript:resetRegisterForm();">
+            </div>
+        </form>
+    </div>
+
+    <div data-role="footer" data-position="fixed" style="vertical-align: middle;">
+        <div style="margin-left: 15px; margin-right: 15px; float: left; width: 70%; min-width:70%;">
+            <input data-clear-btn="true" name="message" id="message" value="" type="text">
+        </div>
+        <div style="float: left; width: 10%; min-width: 10%;">
+            <button onclick="javascript:webClient.chat();" class="ui-btn ui-btn-inline">Send</button>
+        </div>
+
+    </div><!-- /footer -->
+</div>
+
+<!--
+<div data-role="popup" id="popupLogin" data-theme="a" class="ui-corner-all">
+    <form>
+        <div style="padding:10px 20px;">
+            <h3>Please sign in</h3>
+            <label for="userId" class="ui-hidden-accessible">Username:</label>
+            <input type="text" name="userId" id="userId" value="" placeholder="email" data-theme="a">
+            <label for="pw" class="ui-hidden-accessible">Password:</label>
+            <input type="password" name="password" id="pw" value="" placeholder="password" data-theme="a">
+            <button type="submit" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-check">Sign in</button>
+        </div>
+    </form>
+</div>
+-->
+
+<div id="help" data-role="page" data-position="right" data-position-fixed="true" data-display="reveal" data-theme="a">
+    <div data-role="header" data-add-back-btn="true">
+        <h1>Help</h1>
+    </div>
+    <ul data-role="listview">
+        <li><a href="#help_chat">Chatting</a></li>
+        <li><a href="#help_bot">Bot</a></li>
+    </ul>
+</div>
+
+<div id="help_chat" data-role="page">
+    <div data-role=header data-add-back-btn="true">
+        <h1>Chatting</h1>
+    </div>
+
+    Help chat
+</div>
+
+<div id="help_bot" data-role="page" data-add-back-btn="true">
+    <div data-role=header data-add-back-btn="true">
+        <h1>Bot</h1>
+    </div>
+
+    Help Bot
+</div>
+
+<script type="text/javascript">
+
+    var webClient = {};
+
+    var chatRoomHandler = {
+        create:function(navBarID, roomId, roomTitle) {
+            var navbar = \$("#" + navBarID);
+
+            var li = \$("<li></li>");
+            var a  = \$("<a></a>");
+            var closeBtn = \$('<a></a>').attr('roomId', roomId).attr('role', 'delete').attr('class', 'ui-btn ui-icon-delete ui-btn-icon-notext').text('Delete');
+            a.attr("href", '#' + roomId).attr('id', 'tab-' + roomId).text(roomTitle);
+            li.attr('roomNumber', roomId);
+            li.append(a);
+            li.append(closeBtn);
+
+            closeBtn.click(function(event) {
+                event.preventDefault();
+                \$(this).removeClass('ui-btn-active').removeClass('ui-btn-hover-b').addClass('ui-btn-up-b');
+                var roomId = \$(this).attr('roomId');
+
+                chatRoomHandler.remove(roomId);
+            });
+
+            navbar = chatRoomHandler.clearNavBarStyle(navbar);
+
+            navbar.navbar("destroy");
+            li.appendTo(\$("#" + navBarID + " ul"));
+            \$('#chatRooms').append('<div style="margin-bottom: 20px;" id="'+roomId+ '"></div>');
+            navbar.navbar();
+            \$('#chatScreens').tabs('refresh');
+
+            chatRoomHandler.select(roomId);
+        },
+        refreshRoomList: function() {
+            var navbar = \$("#roomList");
+            navbar = chatRoomHandler.clearNavBarStyle(navbar);
+            navbar.navbar("destroy");
+            navbar.navbar();
+            \$('#chatScreens').tabs('refresh');
+        },
+
+        clearNavBarStyle:function(navbar){
+            navbar.find("*").andSelf().each(function(){
+                if(\$(this).attr('role') == 'delete') {
+                    return ;
+                }
+                \$(this).removeClass(function(i, cn){
+                    var matches = cn.match (/ui-[\w\-]+/g) || [];
+                    return (matches.join (' '));
+                });
+                if (\$(this).attr("class") == "") {
+                    \$(this).removeAttr("class");
+                }
+            });
+            return navbar;
+        },
+        select: function(roomId) {
+            \$('.ui-btn-active').removeClass('ui-btn-hover-b').addClass('ui-btn-up-b');
+            \$('#tab-' + roomId).addClass('ui-btn-active');
+            \$('#tab-' + roomId).trigger('click');
+        },
+        remove: function(roomId) {
+            \$('li[roomNumber=' + roomId + ']').remove();
+            \$('#' + roomId).remove();
+            chatRoomHandler.refreshRoomList();
+        },
+        exists: function(roomId) {
+            return \$('#tab-' + roomId).length > 0;
+        }
+    }
+
+    var client = new function(){
+        var roomObj = new function(){
+            this.count = 0 ;
+
+            this.mwindow = function(option){
+                \$.messager.show({
+                    title: option.title || 'New Message',
+                    msg: option.msg ,
+                    showType: option.showType || 'show',
+                    timeout : option.timeout || 10000,
+                    style:{right:'', left:5, top:29, bottom:''}
+                });
+            },
+
+            this.alertMsg = function(option){
+//                \$('#alertMessage').html(option.content);
+//                \$("#alertPop").enhanceWithin().popup();
+//                \$("#alertPop").popup('open');
+                alert(option.content);
+//                \$.messager.alert(option.title || 'Alert', option.content, option.type || 'error');
+
+            },
+
+            this.message = function(args) {
+//                var selectedScreenId = jQuery('#zone').tabs('getSelected').panel('options').title ;
+                var selectedScreenId = activeScreenId();
+                var roomId = args.roomId || selectedScreenId ;
+
+                if (roomId.startWith('@')){   // whisper
+
+
+                } else if (roomId != selectedScreenId){
+                    var onClickMsg = "webClient.chat(\"/join " + roomId + "\")"  ;
+                    this.mwindow({title:'New Message', msg:"<a href='#' onclick='" + onClickMsg + "'>" + args.message + "</a><br/>from:" + args.sender + " ,room:" + roomId}) ;
+                    selectedScreenId = roomId ;
+                }
+                if ( (!roomId.startWith('@')) && \$('#' +roomId) == null) return ;
+
+                var currentScreen = jQuery("#" + selectedScreenId) ;
+
+                //var escaped = args.message.replace(/&/, "&amp;").replace(/</, "&lt;").replace(/>/, "&gt;").replace(/"/, "&quot;");
+                var escaped = args.html || args.message ;
+                var sender = '&lt;' + (args.sender || 'system') + '&gt;' ;
+
+                if (args.sender == webClient.sender) {
+                    currentScreen.append('<div align="right"><div class="bubble other">' + escaped + '</div><p style="margin-left: 1em;">' + sender + '</p></div>');
+                } else {
+                    currentScreen.append('<div align="left"><div align="left" class="bubble me">' + escaped + '</div><p style="margin-left: 1em;">' + sender + '</p></div>');
+                }
+//                currentScreen.scrollTop((this.count++) * 20) ;
+                \$("html, body").animate({ scrollTop: \$(document).height()-\$(window).height() }, 10);
+            },
+
+            this.background = function(imgUrl){
+                console.log(imgUrl) ;
+            },
+
+            this.invite = function(inviteMsg) {
+                console.log(inviteMsg) ;
+            },
+
+            this.join = function(args){
+                var roomId = args.roomId;
+                if(existChatRoom(roomId)) {
+                    chatRoomHandler.select(roomId);
+                } else {
+                    chatRoomHandler.create('roomList', roomId, roomId);
+                }
+            } ;
+        } ;
+
+        var existChatRoom = function(roomId) {
+            return chatRoomHandler.exists(roomId);
+        };
+
+        var commonObj = new function(){
+
+        } ;
+
+        var utilObj = new function(){
+            this.alert = function(){
+            }
+        } ;
+
+        this.room =  function(){
+            return roomObj ;
+        },
+
+        this.character = function(id){
+            return new function(){
+                this.id = id ;
+
+                this.scale = function(percentage) {
+                    console.log(this.id + ' ' + percentage) ;
+                }
+            } ;
+        },
+
+        this.common = function(){
+            return commonObj ;
+        },
+
+        this.util = function(){
+            return utilObj ;
+        },
+
+        this.gps = function(){
+            return gpsObj ;
+        },
+
+        this.file = function(){
+        },
+
+        this.reload = function(){
+            \$.ajax({
+                type:'post', async:true, url:'/session/reload',
+                success : function(data){
+                    console.log(data) ;
+                    webClient.reconnect(data) ;
+                },
+                error : function(request,status,error){
+                    console.log('error' + status + error);
+//                    \$.messager.alert('Alert', 'Not Connect Server', 'error');
+                }
+            }) ;
+        }
+    } ;
+
+    var activeScreenId = function() {
+        var href = \$('.ui-tabs-active').children()[0].href;
+        var tabId = href.substr(href.lastIndexOf('/') + 2);
+
+        return tabId;
+    };
+
+    function initChat() {
+        webClient.sender = '$config.sender$' ;
+        webClient.senderNickname = '$config.nickName$' ;
+        webClient.status = 'ready' ;
+
+        webClient.jsonToString = function(obj){
+            var t = typeof (obj);
+            if (t != "object" || obj === null) {
+                if (t == "string") obj = '"' + obj + '"'; // simple data type
+                return String(obj);
+            } else { // recurse array or object
+                var n, v, json = [], arr = (obj && obj.constructor == Array);
+                for (n in obj) {
+                    v = obj[n]; t = typeof(v);
+                    if (t == "string") v = '"'+v+'"';
+                    else if (t == "object" && v !== null) v = this.jsonToString(v);
+                    json.push((arr ? "" : '"' + n + '":') + String(v));
+                }
+                return (arr ? "[" : "{") + String(json) + (arr ? "]" : "}");
+            }
+        } ;
+
+        var ws ;
+
+        webClient.initWebsocket = function(wsaddress){
+            ws = new WebSocket(wsaddress) ;
+
+            ws.onopen = function(){
+                client.room().message({message:"open"}) ;
+                webClient.status = 'connected' ;
+            } ;
+
+            ws.onmessage = function(e){
+                console.log(e.data) ;
+                if ('HEARTBEAT' == e.data) {
+                    ws.send('HEARTBEAT') ;
+                    return ;
+                }
+                // {notifyId:...}
+                var msg = eval('(' + e.data + ')') ;
+                if (msg.script == undefined && msg.notifyId != ''){
+                    webClient.command('/room/listNotifyDataBy', {'notifyId':msg.notifyId, 'userId':webClient.sender}) ;
+                    return ;
+                }
+                if (msg.status != 'success'){
+                    console.error(e.data) ;
+                    return ;
+                }
+
+                if (msg.script.startWith('/whisper/')){
+                    var args = msg.result || {} ;
+                    eval(msg.result.clientScript) ;
+                    return ;
+                }
+
+                if (msg.script == '/room/sendMessageWith') return ; // return sendMessageWith
+                if (msg.script == '/room/listNotifyDataBy') {
+                    // alert(msg.result.message) ;
+                    var args = msg.result || {} ;
+                    eval(msg.result.clientScript) ;
+                    return ;
+                }
+            } ;
+
+            ws.onclose = function(){
+                webClient.status = 'closed' ;
+                client.room().message({message:"closed.. retry connect"}) ;
+                client.reload() ;
+
+            } ;
+            ws.onerror = function(){
+                client.room().message({message:"error"}) ;
+
+            } ;
+        } ;
+
+        webClient.initWebsocket('$config.address$') ;
+
+        webClient.getWebSocket = function(){
+            return ws ;
+        } ;
+
+        webClient.reconnect = function(address){
+            this.initWebsocket(address);
+        }
+
+        webClient.command = function(script, params){
+            // id, script, params[
+            var cmdMsg = {} ;
+            cmdMsg.id = new Date().getUTCMilliseconds() ;
+            cmdMsg.script = script ;
+            cmdMsg.params = params ;
+            this.getWebSocket().send(this.jsonToString(cmdMsg));
+        } ;
+
+        webClient.close = function(){
+            this.getWebSocket().close() ;
+        } ;
+
+
+        webClient.connected = function(){
+            return this.status == 'connected' ;
+        };
+
+        webClient.chat = function(argMessage){
+            // id, script, params[
+            if (! this.connected()) {
+                client.reload() ;
+                setTimeout(function(){
+                    if (webClient.connected()) webClient.chat(argMessage);
+                    else client.room().alertMsg({content: 'Not connect Server'});
+                }, 1000) ;
+                return ;
+            }
+
+            var msgText = argMessage ? argMessage : jQuery("#message").val() ;
+            var chatMsg = {id:'' + new Date().getUTCMilliseconds(), script:'/room/sendMessageWith', params:{}} ;
+            var currentRoomId = activeScreenId();
+
+            if (currentRoomId == 'home' && !msgText.startWith('/')){
+                client.room().alertMsg({content:'not in room'}) ;
+            } else {
+                chatMsg.params.receivers = '';
+                chatMsg.params.roomId = (currentRoomId == 'home') ? '' :  currentRoomId ;
+                chatMsg.params.message = msgText  ;
+                chatMsg.params.sender = this.sender ;
+                chatMsg.params.senderNickname = this.senderNickname ;
+                chatMsg.params.clientScript = 'client.room().message(args);' ;
+                chatMsg.params.requestId = chatMsg.id ;
+
+                console.log(this.jsonToString(chatMsg)) ;
+
+                this.getWebSocket().send(this.jsonToString(chatMsg));
+            }
+
+            webClient.close = function(){
+                this.getWebSocket().close();
+            } ;
+
+            \$("#message").val("");
+            \$("#message").focus();
+        } ;
+
+    };
+
+    \$("#message").keydown(function(event) {
+        if (event.which == 13) {
+            var msg = jQuery("#message").val() ;
+            var divId = jQuery('#zone').tabs('getSelected').panel('options').title ;
+            // jQuery("#" + divId).append(msg) ;
+
+            webClient.chat();
+        }
+    }) ;
+
+    \$('#authNum').keyup(function(event) {
+        var value = jQuery(this).val();
+        //&& window.toonweb.isAuthRequested
+        if(value.length == 6 ) {
+            verifyAuthNum(value);
+        }
+    });
+
+    window.toonweb = {
+        isAuthRequested: false,
+        isAuthorized: false
+    };
+
+    function resetRegisterForm() {
+        var form = \$('#registerForm');
+        form.resetForm();
+        form.clearForm();
+        form.clearFields();
+
+        if(validator != '') {
+            validator.resetForm();
+        }
+    }
+
+    function requestPhoneAuth() {
+        var country = jQuery("#country option:selected").val();
+        var exchangeNo = jQuery('#exchangeNo').val();
+        var prefixNo = jQuery('#prefixNo').val();
+        var postfixNo = jQuery('#postfixNo').val();
+
+        if(exchangeNo === '' || prefixNo === '' || postfixNo === '') {
+            alert('Invalid Phone number');
+            return;
+        }
+
+        if(exchangeNo.startWith('0')) {
+            exchangeNo = exchangeNo.substr(1);
+        }
+
+        var phoneNum = country + exchangeNo + prefixNo + postfixNo;
+
+        \$.post('/register/SMSAuth', {phone: phoneNum})
+                .done(function(data) {
+                    window.toonweb.isAuthRequested = true;
+                    alert('Authorization number has been sent');
+                })
+                .fail(function(data) {
+                    alert('Error has occured during phone number authorization');
+                });
+    }
+
+    function verifyAuthNum(value) {
+        var authNum = jQuery('#authNum').val();
+        var phoneNum = phoneNumberWithCountry();
+
+        var url = '/register/SMSAuth?phone=' + encodeURIComponent(phoneNum) + '&code=' + authNum;
+
+        \$.ajax({
+            type: 'GET',
+            url: url
+        }).done(function(data) {
+                    if(data == 'true') {
+                        window.toonweb.isAuthorized = true;
+                        jQuery('#verifyResult').html('Verified');
+                    } else {
+                        window.toonweb.isAuthorized = false;
+                        \$('#verifyResult').html('<span style="color: red;">Not matched</span>');
+                    }
+                }).fail(function() {
+                    alert('failed to send authorization number');
+                });
+    }
+
+    function phoneNumber() {
+        var exchangeNo = \$('#exchangeNo').val();
+        var prefixNo = \$('#prefixNo').val();
+        var postfixNo = \$('#postfixNo').val();
+
+        var _exchangeNo = exchangeNo.startWith('0') ? exchangeNo.substr(1) : exchangeNo;
+
+        return _exchangeNo + prefixNo + postfixNo;
+    }
+
+    function phoneNumberWithCountry() {
+        var country = \$("#country option:selected").val();
+
+        return country + phoneNumber();
+    }
+
+    var validator = '';
+
+    Array.prototype.remove = function(from, to) {
+        var rest = this.slice((to || from) + 1 || this.length);
+        this.length = from < 0 ? this.length + from : from;
+        return this.push.apply(this, rest);
+    };
+
+    \$(document).ready(function() {
+        validator = \$('#registerForm').validate({
+            rules: {
+                nickname: {
+                    required: true
+                },
+                email: {
+                    required: true
+                },
+                country: {
+                    required: true
+                },
+                exchangeNo: {
+                    required: true
+                },
+                prefixNo: {
+                    required: true
+                },
+                postfixNo: {
+                    required: true
+                }
+            },
+            messages: {
+                email: {
+                    required: "Please enter your email"
+                },
+                nickname: {
+                    required: "Please enter your nickname"
+                },
+                country: {
+                    required: "Please select your country."
+                },
+                exchangeNo: {
+                    required: "Please enter exchange number"
+                },
+                prefixNo: {
+                    required: "Please enter prefix number"
+                },
+                postfixNo: {
+                    required: "Please enter postfix number"
+                }
+            },
+            errorPlacement: function (error, element) {
+                error.insertAfter(\$(element).parent());
+            },
+            submitHandler: function (form) {
+                if(!window.toonweb.isAuthorized || !window.toonweb.isAuthRequested) {
+                    alert('Phone number authorization required');
+                    return false;
+                }
+
+                var email = \$('#registerForm input[name=email]').fieldValue()[0];
+                var option = {
+                    url: '/register/user/' + email,
+                    type: 'POST',
+                    data: {phoneNum: phoneNumber()},
+                    success: function() {
+                        alert('Registration success');
+                        resetRegisterForm();
+                        \$( '#register').panel( 'close' );
+                    },
+                    error: function() {
+                        alert('Registration Failed');
+                    }
+                };
+
+                \$(form).ajaxSubmit(option);
+
+                return false;
+            }
+        });
+    });
+
+
+
+    window.onload = initChat ;
+
+</script>
+</body>
+</html>
