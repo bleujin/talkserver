@@ -1,12 +1,13 @@
 new function() {
 	// simsimi test key = 22441b90-e7a7-4a68-9f5b-6486b0a59676
-	var serverHost = 'http://sandbox.api.simsimi.com/request.p?key=22441b90-e7a7-4a68-9f5b-6486b0a59676&lc=ko' ;
-	
+	var serverHost = 'http://sandbox.api.simsimi.com/request.p?key=42c1ff40-4f90-4b93-a5ca-17fba17ec661&lc=ko' ;
+	var _myBotId = 'simsimi' ;
 	
 	this.onLoad = function(){
 		session.tran(function(wsession){
-			wsession.pathBy("/bots/simsimi") ;
-			wsession.pathBy("/users/simsimi").property("userId", "simsimi").property("nickname", "SimSimI bot").property("stateMessage", "normal") ;
+			wsession.pathBy("/bots/" + _myBotId).refTo("user", "/users/" + _myBotId) ;
+			wsession.pathBy("/users/" + _myBotId).property("userId", _myBotId).property("nickname", _myBotId + " bot").property("stateMessage", "normal").property("free", true) ;
+			wsession.pathBy("/rooms/@" + _myBotId + "/members/" + _myBotId).refTo("user", "/users/" + _myBotId) ;
 		}) ;
 	},
 	

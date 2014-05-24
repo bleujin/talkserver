@@ -8,12 +8,14 @@ new function(){
 	    }
 	    return str;
 	} ;
-	
+
+	var _myBotId = 'system' ;	
 	
 	this.onLoad = function(){
 		session.tran(function(wsession){
-			wsession.pathBy("/users/system").property("userId", "system").property("nickname", "system bot").property("stateMessage", "normal").property("free", true) ;
-			wsession.pathBy("/rooms/@system/members/system").refTo("user", "/users/system") ;
+			wsession.pathBy("/bots/" + _myBotId).refTo("user", "/users/" + _myBotId) ;
+			wsession.pathBy("/users/" + _myBotId).property("userId", _myBotId).property("nickname", _myBotId + " bot").property("stateMessage", "normal").property("free", true) ;
+			wsession.pathBy("/rooms/@" + _myBotId + "/members/" + _myBotId).refTo("user", "/users/" + _myBotId) ;
 		}) ;
 	}, 
 	
@@ -31,7 +33,7 @@ new function(){
 	this.sendToFromRoom = function(bm, args){
 		session.tran(function(wsession) {
 			var newMsgId = new net.ion.framework.util.ObjectId().toString() ;
-        	wsession.pathBy("/rooms/" + bm.roomId() + "/messages/" + newMsgId)
+        	wsession.pathBy("/rooms/" + bm.fromRoomId() + "/messages/" + newMsgId)
                     .property("message", args.message)
                     .refTo("sender", "/users/system")
                     .property("options", "{event:'onMessage'}")
@@ -46,7 +48,7 @@ new function(){
 		var cmd = bm.asCommand() ;
 		if (this.hasOwnProperty(cmd.fnName())){
 			var rtn = this[cmd.fnName()](bm, cmd) ;
-			// java.lang.System.out.println(bm.roomId() + rtn.message + bm.fromUserId()) ;
+			// java.lang.System.out.println(bm.fromRoomId() + rtn.message + bm.fromUserId()) ;
 			this.sendToFromRoom(bm, rtn) ;
 		}
 	}, 
@@ -93,22 +95,27 @@ new function(){
 	
 	
 	
-	this.time = function(whisperMsg){
+	this.time = function(scriptMsg){
 		return {message:new java.util.Date().toString() } ;
 	}, 
 	
-	this.whoami = function(whisperMsg, cparam){
-		var user = session.ghostBy("/users/" + whisperMsg.fromUserId()) ;
-		return {message:"id:" + whisperMsg.fromUserId() + ", nick:" + user.property("nickname").asString() } ;
+	this.whoami = function(scriptMsg, cparam){
+		var user = session.ghostBy("/users/" + scriptMsg.fromUserId()) ;
+		return {message:"id:" + scriptMsg.fromUserId() + ", nick:" + user.property("nickname").asString() } ;
 	}, 
 
-	this.join = function(whisperMsg, cparam, source){
+	this.join = function(scriptMsg, cparam, source){
+		importPackage(net.ion.framework.util) ;
+		
 		var roomId = cparam.remain(0) ;
+		if (StringUtil.isBlank(roomId)) {
+			return {message:'roomId cannt blank'} ;
+		} 
 
 		session.tranSync(function(wsession){
 			wsession.pathBy("/openrooms/" + roomId).refTo("room", "/rooms/" + roomId).property("roomId", roomId) ;
-			if (! wsession.exists("/rooms/" + roomId)) wsession.pathBy("/rooms/" + roomId).property("roomId", roomId).property("title", "no title").child('members').child(whisperMsg.fromUserId()) ;
-			else wsession.pathBy("/rooms/" + roomId).property("roomId", roomId).child('members').child(whisperMsg.fromUserId()) ;
+			if (! wsession.exists("/rooms/" + roomId)) wsession.pathBy("/rooms/" + roomId).property("roomId", roomId).property("title", "no title").child('members').child(scriptMsg.fromUserId()) ;
+			else wsession.pathBy("/rooms/" + roomId).property("roomId", roomId).child('members').child(scriptMsg.fromUserId()) ;
 		}) ;
 
 		source.sendMessage(
@@ -124,7 +131,7 @@ new function(){
 		var unreadMsg = session.pathBy("/rooms/" + roomId + "/messages").children().ascending('messageId').offset(100).iterator() ;
 		while(unreadMsg.hasNext()){
 			var next = unreadMsg.next() ; 
-			if (next.property("exclusiveSender").asBoolean() && whisperMsg.fromUserId().equals(next.ref("sender").property("userId").asString()) ) continue ;
+			if (next.property("exclusiveSender").asBoolean() && scriptMsg.fromUserId().equals(next.ref("sender").property("userId").asString()) ) continue ;
 			source.sendMessage(rb.makeCommandBuilder("/whisper/system")
 			  .inner("result")
 				.property(next, "message, sender.userId as sender, sender.nickname as senderNickname, requestId, clientScript, options, messageId, time")
@@ -136,7 +143,7 @@ new function(){
 	}, 
 	
 	
-	this.rooms = function(whisperMsg, cparam){
+	this.rooms = function(scriptMsg, cparam){
 		// ex) list rooms, list friends, 
 		var children = session.ghostBy("/openrooms").children().toList() ;
 		var text = '' ;
@@ -157,13 +164,13 @@ new function(){
 	}, 
 	
 	
-	this.members = function(whisperMsg, cparam){
-		if (whisperMsg.isNotInRoom()) {
+	this.members = function(scriptMsg, cparam){
+		if (scriptMsg.isNotInRoom()) {
 			return {message:'this command can do executed only in room'} ;
 		}
 	
 		var result = [] ;
-		var citer = session.ghostBy("/rooms/" + whisperMsg.fromRoomId() + "/members").children().iterator() ;
+		var citer = session.ghostBy("/rooms/" + scriptMsg.fromRoomId() + "/members").children().iterator() ;
 		while(citer.hasNext()){
 			result.push(citer.next().fqn().name()) ;
 		}
@@ -171,15 +178,15 @@ new function(){
 	}, 
 	
 	
-	this.info = function(whisperMsg, cparam){
-		if (whisperMsg.isNotInRoom()) {
+	this.info = function(scriptMsg, cparam){
+		if (scriptMsg.isNotInRoom()) {
 			return {message:'this command can do executed only in room'} ;
 		}
 
 		var result = {} ;
-		result.topic = session.pathBy("/rooms/" + whisperMsg.fromRoomId()).property("title").defaultValue('no topic') ;
+		result.topic = session.pathBy("/rooms/" + scriptMsg.fromRoomId()).property("title").defaultValue('no topic') ;
 		result.members = [] ;
-		var children = session.pathBy("/rooms/" + whisperMsg.fromRoomId() + "/members").children().iterator() ;
+		var children = session.pathBy("/rooms/" + scriptMsg.fromRoomId() + "/members").children().iterator() ;
 		while(children.hasNext()){
 			result.members.push(children.next().fqn().name()) ;
 		}
@@ -187,8 +194,8 @@ new function(){
 		return {message:toString(result)} ;
 	}, 
 	
-	this.bot = function(whisperMsg, cparam){
-		if (whisperMsg.isNotInRoom()) {
+	this.bot = function(scriptMsg, cparam){
+		if (scriptMsg.isNotInRoom()) {
 			return {message:'this command can do executed only in room'} ;
 		}
 	
@@ -198,18 +205,18 @@ new function(){
 		} 
 		
 		session.tranSync(function(wsession){
-			wsession.pathBy("/rooms/" + whisperMsg.fromRoomId() + "/members/" + botId) ;
+			wsession.pathBy("/rooms/" + scriptMsg.fromRoomId() + "/members/" + botId) ;
 		}) ;
 		return {message: '[botId:' + botId + '] invited'} ;
 	}, 
 	
 	
-	this.ban = function(whisperMsg, cparam){
-		if (whisperMsg.isNotInRoom()) {
+	this.ban = function(scriptMsg, cparam){
+		if (scriptMsg.isNotInRoom()) {
 			return {message:'this command can do executed only in room'} ;
 		}
 
-		var roomId = whisperMsg.fromRoomId() ;
+		var roomId = scriptMsg.fromRoomId() ;
 		var targetId = cparam.remain(0) ;
 		if (!session.exists("/rooms/" + roomId + "/members/" + targetId)){
 			return {message:targetId + ' not exists'} ;
@@ -218,38 +225,38 @@ new function(){
 		session.tranSync(function(wsession){
 			wsession.pathBy("/rooms/" + roomId + "/members/" + targetId).removeSelf() ;
 		}) ;
-		return {message: targetId + ' ban from' + whisperMsg.fromUserId()} ;
+		return {message: targetId + ' ban from' + scriptMsg.fromUserId()} ;
 	}, 
 	
-	this.leave = function(whisperMsg, cparam, source){
-		if (whisperMsg.isNotInRoom()) {
+	this.leave = function(scriptMsg, cparam, source){
+		if (scriptMsg.isNotInRoom()) {
 			return {message:'this command can do executed only in room'} ;
 		}
 
-		var roomId = whisperMsg.fromRoomId() ;
+		var roomId = scriptMsg.fromRoomId() ;
 		session.tranSync(function(wsession){
-			wsession.pathBy("/rooms/" + roomId + "/members/" + whisperMsg.fromUserId()).removeSelf() ;
+			wsession.pathBy("/rooms/" + roomId + "/members/" + scriptMsg.fromUserId()).removeSelf() ;
 		}) ;
 		
 		return {clientScript:"client.room().leave(args);", message:'leaved room', 'roomId':roomId} ;
 	}, 
 	
 	
-	this.topic = function(whisperMsg, cparam){
-		if (whisperMsg.isNotInRoom()) {
+	this.topic = function(scriptMsg, cparam){
+		if (scriptMsg.isNotInRoom()) {
 			return {message:'this command can do executed only in room'} ;
 		}
 
 		var topic = cparam.remains() ;
 		session.tranSync(function(wsession){
-			wsession.pathBy("/rooms/" + whisperMsg.fromRoomId()).property("title", topic);
+			wsession.pathBy("/rooms/" + scriptMsg.fromRoomId()).property("title", topic);
 		}) ;
 		return {message:'topic[' + topic + ']' + ' changed'} ;
 	},  
 	
 	
-	this.invite = function(whisperMsg, cparam){
-		if (whisperMsg.isNotInRoom()) {
+	this.invite = function(scriptMsg, cparam){
+		if (scriptMsg.isNotInRoom()) {
 			return {message:'this command can do executed only in room'} ;
 		}
 	
@@ -258,32 +265,39 @@ new function(){
 			return {message: '[userId:' + targetId + '] not exists'} ;
 		} 
 		
+		session.tranSync(function(wsession){
+			wsession.pathBy("/rooms/" + scriptMsg.fromRoomId() + "/members/" + targetId) ;
+		}) ;
+		
+		return {message: '[userId:' + targetId + '] invite'} ;
+
+		/*
 		if(session.pathBy("/users/" + targetId).property("free").asBoolean() == true) { // in javascript why not affectd false ?
 			session.tranSync(function(wsession){
-				wsession.pathBy("/rooms/" + whisperMsg.fromRoomId() + "/members/" + targetId) ;
+				wsession.pathBy("/rooms/" + scriptMsg.fromRoomId() + "/members/" + targetId) ;
 			}) ;
 			
 			return {message: '[userId:' + targetId + '] invite'} ;
 		} else {
-			var sender = whisperMsg.fromUserId() ;
+			var sender = scriptMsg.fromUserId() ;
 			session.tranSync(function(wsession){
 				wsession.pathBy("/rooms/@" + targetId + "/messages/" + new net.ion.framework.util.ObjectId().toString())
 					.property("message", sender + ' invite you')
                     .refTo("sender", "/users/" + sender)
-                    .property("fromRoomId", whisperMsg.fromRoomId())
+                    .property("fromRoomId", scriptMsg.fromRoomId())
                     .property("options", "{event:'onWhisper'}")
                     .property("clientScript", 'client.room().message(args)')
-                    .property("messageId", whisperMsg.messageId());
+                    .property("messageId", scriptMsg.messageId());
 			}) ;
 			
 			return {message: '[userId:' + targetId + '] invite-message received'} ;
 		}
-		
+		*/
 	}, 
 	
 	
-	this.whisper = function(whisperMsg, cparam, source){
-		var sender = whisperMsg.fromUserId() ;
+	this.whisper = function(scriptMsg, cparam, source){
+		var sender = scriptMsg.fromUserId() ;
 		if ("" == cparam.remain(0)){
 			var lastMsgId = session.ghostBy("/rooms/@" + sender + "/messages").property("last").asString();
 			

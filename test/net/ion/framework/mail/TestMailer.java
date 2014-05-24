@@ -2,7 +2,9 @@ package net.ion.framework.mail;
 
 import java.io.PrintStream;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
+import java.util.Date;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
@@ -18,6 +20,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.MimeUtility;
 
 import junit.framework.TestCase;
 import net.ion.framework.mail.ReceiveConfigBuilder.Protocol;
@@ -34,13 +37,16 @@ public class TestMailer extends TestCase {
 
         mailer.sendMail(new MessageCreater() {
             @Override
-            public MimeMessage makeMessage(MimeMessage msg) throws MessagingException {
-                msg.addRecipient(Message.RecipientType.TO, new InternetAddress("bleujin@i-on.net"));
-                msg.setSubject("This is the Subject Line!");
-                msg.setContent("<h1>This is actual message</h1>", "text/html");
+            public MimeMessage makeMessage(MimeMessage msg) throws MessagingException, UnsupportedEncodingException {
+                msg.addRecipient(Message.RecipientType.TO, new InternetAddress("bleujin@gmail.com"));
+                msg.setSubject(MimeUtility.encodeText("한글 제목!", "UTF-8", "B"));
+                msg.setContentLanguage(new String[]{"UTF-8"});
+                msg.setSentDate(new Date());
+                msg.setHeader("Content-Type", "text/html; charset=UTF-8");
+                msg.setText("<h1>한글 내용</h1>", "UTF-8");
                 return msg;
             }
-        });
+        }).get();
     }
 
     public void xtestReceiveMail() throws Exception {

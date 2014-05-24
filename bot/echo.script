@@ -1,15 +1,37 @@
 new function(){
 
+	var _myBotId = 'echo' ;
+
 	this.onLoad = function(){
 		session.tran(function(wsession){
-			wsession.pathBy("/users/echo").property("userId", "echo").property("nickname", "echo bot").property("stateMessage", "normal").property("free", true) ;
+			wsession.pathBy("/bots/" + _myBotId).refTo("user", "/users/" + _myBotId) ;
+			wsession.pathBy("/users/" + _myBotId).property("userId", _myBotId).property("nickname", _myBotId + " bot").property("stateMessage", "normal").property("free", true) ;
+			wsession.pathBy("/rooms/@" + _myBotId + "/members/" + _myBotId).refTo("user", "/users/" + _myBotId) ;
 		}) ;
 	}, 
+
+	this.onMessage = function(bm){
+		this.sendMessage("onMessage", bm, {}) ;
+	}, 
 	
+	
+	this.onWhisper = function(source, whisperMsg){
+		source.sendMessage(
+			rb.makeCommandBuilder("/whisper/echo")
+			  .inner("result")
+			  	.property("sender", "echo")
+				.property("clientScript", "client.room().message(args);")
+				.property("message", whisperMsg.message())
+				.property("options", "{event:'onWhisper'}")
+				.property("messageId", new net.ion.framework.util.ObjectId().toString()).build().talkMessage()) ;
+	}, 
+
 	this.sendMessage = function(event, bm, args){
 		var roomId = bm.fromRoomId() ;
 		var selfBotId = bm.toUserId() ;
 
+		if (session.exists("/bots/"+ bm.fromUserId())) return ;
+		
         session.tran(function(wsession) {
             var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + new net.ion.framework.util.ObjectId().toString())
                     .property("message", args.message || bm.message())
@@ -22,23 +44,8 @@ new function(){
         }) ;
 	}, 
 	
-	this.onWhisper = function(source, whisperMsg){
-		source.sendMessage(
-			rb.makeCommandBuilder("/whisper/echo")
-			  .inner("result")
-			  	.property("sender", "echo")
-				.property("clientScript", "client.room().message(args);")
-				.property("message", whisperMsg.userMessage())
-				.property("options", "{event:'onWhisper'}")
-				.property("messageId", new net.ion.framework.util.ObjectId().toString()).build().talkMessage()) ;
-	}, 
-	
-	this.onMessage = function(bm){
-		this.sendMessage(bm.fromUserId(), "onMessage", bm, {}) ;
-	}, 
-	
 	this.onEnter = function(bm){
-		this.sendMessage("onEnter", bm, {message :"Hello I'm EchoBot"}) ;
+		this.sendMessage("onEnter", bm, {message :"Hello " + bm.fromUserId() + " I'm EchoBot"}) ;
 	}, 
 	
 	this.onExit = function(bm){
