@@ -1,6 +1,6 @@
 new function() {
-	// simsimi test key = 22441b90-e7a7-4a68-9f5b-6486b0a59676
-	var serverHost = 'http://sandbox.api.simsimi.com/request.p?key=42c1ff40-4f90-4b93-a5ca-17fba17ec661&lc=ko' ;
+	// simsimi test key = 42c1ff40-4f90-4b93-a5ca-17fba17ec661
+	var serverHost = 'http://api.simsimi.com/request.p?key=ec69c1ea-c941-4770-938e-0d5808f0f877&lc=ko' ;
 	var _myBotId = 'simsimi' ;
 	
 	this.onLoad = function(){
@@ -45,7 +45,6 @@ new function() {
 			onCompleted: function(jsonResponse) {
 				var resp = eval('(' + jsonResponse + ')');
 				
-				java.lang.System.out.println(jsonResponse) ;
 				source.sendMessage(
 				rb.makeCommandBuilder("/whisper/simsimi")
 				  .inner("result")
@@ -68,7 +67,7 @@ new function() {
 			}
 		};
 
-		bc.request(serverHost).addParameter("text", whisperMsg.userMessage()).post(handler);
+		bc.request(serverHost).addParameter("text", whisperMsg.message()).post(handler);
 	}, 
 	
 	

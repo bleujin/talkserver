@@ -290,10 +290,6 @@ new function(){
 		return {message:'latitude:' + lat + ', longitude:' + lon};
 	}, 
 	
-	this.where = function(scriptMsg, cparam){
-	
-	}, 
-	
 	
 	this.invite = function(scriptMsg, cparam){
 		if (scriptMsg.isNotInRoom()) {
