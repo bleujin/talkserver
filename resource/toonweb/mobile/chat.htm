@@ -309,8 +309,8 @@
 
             this.mwindow = function(option){
                 \$().toastmessage('showToast', {
-                    stayTime: 3000,
-                    text: option.msg,
+                    stayTime: 10000,
+                    text: '<span style="color:black;">' + option.title + ' : </span>' + option.msg,
                     position: 'top-left',
                     type: 'notice'
                 });
@@ -332,8 +332,7 @@
 					return ;
                 } else if (roomId != selectedScreenId){
                     var onClickMsg = 'webClient.chat("/join ' + roomId + '")';
-                    this.mwindow({title:'New Message', msg:"<a href='#' onclick='" + onClickMsg + "'>" + args.message + "</a><br/><span style='color:black;'>from:" + args.sender + " ,room:" + roomId + "</span>"}) ;
-                    selectedScreenId = roomId ;
+                    this.mwindow({title:'New Message', msg:"<a href='#' onclick='" + onClickMsg + "'>" + args.message + "</a><br/><span style='color:black;'>from:" + args.sender + " , room:" + roomId + "</span>"}) ;
                     return;
                 }
                 if ( (!roomId.startWith('@')) && \$('#' +roomId) == null) return ;
@@ -565,7 +564,7 @@
             var currentRoomId = activeScreenId();
 
 
-            if (currentRoomId == 'home' && !msgText.startWith('/')){
+            if (currentRoomId == 'home' && !(msgText.startWith('/')||msgText.startWith('@') )){
                 client.room().alertMsg({content:'not in room'}) ;
             } else {
                 chatMsg.params.receivers = '';
