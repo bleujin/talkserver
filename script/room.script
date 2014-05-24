@@ -100,7 +100,7 @@ new function(){
 
 			}); 
 		}
-		return rb.create().newInner().property("auth",session.exists("/openRooms/" + roomId)).build().toJsonElement();
+		return rb.create().newInner().property("auth",session.exists("/openrooms/" + roomId)).build().toJsonElement();
 	}, 
 	
 	

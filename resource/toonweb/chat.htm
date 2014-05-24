@@ -110,6 +110,7 @@
 	</div>
 </div>
 
+
 <script type="text/javascript">
 
     WEB_SOCKET_SWF_LOCATION = "/toonweb/WebSocketMain.swf";  // Set URL of your WebSocketMain.swf here:
@@ -325,8 +326,8 @@
 		
 		webClient.connected = function(){
 			return this.status == 'connected' ;
-		}
-	
+		} ;
+		
 
    		var ws ;
    		
@@ -336,6 +337,16 @@
 		  	ws.onopen = function(){
 		  		client.room().message({message:"open"}) ;
 		  		webClient.status = 'connected' ;
+		  		if (!!navigator.geolocation){
+					console.log('supported navigator') ;
+    				navigator.geolocation.getCurrentPosition(function(position){
+							console.log(position.coords.latitude + ',' + position.coords.longitude) ;
+							webClient.command('/user/addGPSWith', {latitude:position.coords.latitude, longitude:position.coords.longitude, userId:'$config.sender$'}) ;
+						}, function(error){console.log('not supported navigator : ' +  error.message); });
+				} else {
+					console.log('not supported navigator') ;
+				}
+		  		
 		  	} ;
 		  	
 	   		ws.onmessage = function(e){
