@@ -1,6 +1,6 @@
 new function() {
 	// simsimi test key = 22441b90-e7a7-4a68-9f5b-6486b0a59676
-	var serverHost = 'http://sandbox.api.simsimi.com/request.p?key=22441b90-e7a7-4a68-9f5b-6486b0a59676&lc=ko' ;
+	var serverHost = 'http://sandbox.api.simsimi.com/request.p?key=cfb09d07-3af1-4ce9-bd60-09a2aba0e2e6&lc=ko' ;
 	
 	
 	this.onLoad = function(){

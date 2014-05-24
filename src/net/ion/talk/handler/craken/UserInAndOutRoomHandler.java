@@ -44,7 +44,7 @@ public class UserInAndOutRoomHandler implements CDDHandler {
                 String messageId = new ObjectId().toString();
                 wsession.pathBy("/rooms/" + roomId + "/messages/")
                         .child(messageId)
-                        .property(Message.ExclusiveSender, true) 
+                    //    .property(Message.ExclusiveSender, true) 
                         .property(Message.Options, "{event:'onEnter'}")
                         .property(Room.RoomId, roomId)
                         .property(Message.Time, Calendar.getInstance().getTimeInMillis())

@@ -48,7 +48,7 @@ new function(){
 
 		
 
-		return rb.create().newInner().property(message, "message, sender.userId as sender,sender.nickname as senderNickname,requestId, clientScript,options,time").property("roomId",roomId).property("notifyId",params.asString("notifyId")).property("messageId",message.fqn().name()).build().toJsonElement();
+		return rb.create().newInner().property(message, "message, sender.userId as sender,sender.nickname as senderNickname,requestId, clientScript,options,time,fromRoomId").property("roomId",roomId).property("notifyId",params.asString("notifyId")).property("messageId",message.fqn().name()).build().toJsonElement();
 
 	}, 
 	
@@ -59,7 +59,7 @@ new function(){
 	
 		
 
-		return rb.create().newInner().inlist("messages", unreadMessages,"message,sender.userId as sender,sender.nickname as senderNickname,requestId, clientScript,options, messageId,time").property("roomId", roomId).build().toJsonElement();
+		return rb.create().newInner().inlist("messages", unreadMessages,"message,sender.userId as sender,sender.nickname as senderNickname,requestId, clientScript,options, messageId,time,fromRoomId").property("roomId", roomId).build().toJsonElement();
 
 	},
 	 
@@ -100,7 +100,7 @@ new function(){
 
 			}); 
 		}
-		return rb.create().newInner().property("auth",session.exists("/openRooms/" + roomId)).build().toJsonElement();
+		return rb.create().newInner().property("auth",session.exists("/openrooms/" + roomId)).build().toJsonElement();
 	}, 
 	
 	
