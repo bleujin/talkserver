@@ -12,6 +12,7 @@
     <script type="text/javascript" src="/toonweb/web_socket.js"></script>
     <script type="text/javascript" src="/toonweb/jquery.validate.min.js"></script>
     <script type="text/javascript" src="/toonweb/jquery.form.min.js"></script>
+    <script src=http://maps.googleapis.com/maps/api/js?sensor=true></script>
     <style type="text/css">
         .bubble {
             position: relative;
@@ -188,6 +189,16 @@
     </form>
 </div>
 -->
+
+<!--<div data-role="panel" id="gmap" data-transition="slideup">-->
+    <!--<div data-role="header">-->
+        <!--<h1>Location</h1>-->
+        <!--<a href="#nav-panel" data-icon="delete" data-rel="close" data-iconpos="notext">Close</a>-->
+    <!--</div>-->
+    <!--<div role="main" class="ui-content" id="map-canvas">-->
+
+    <!--</div>-->
+<!--</div>-->
 
 <div id="help" data-role="page" data-position="right" data-position-fixed="true" data-display="reveal" data-theme="a">
     <div data-role="header" data-add-back-btn="true">
@@ -540,6 +551,21 @@
             var msgText = argMessage ? argMessage : jQuery("#message").val() ;
             var chatMsg = {id:'' + new Date().getUTCMilliseconds(), script:'/room/sendMessageWith', params:{}} ;
             var currentRoomId = activeScreenId();
+
+            if(msgText == '/whereami') {
+                var lat = '0', lng = '0';
+
+                navigator.geolocation.getCurrentPosition(function (pos) {
+                    lat = pos.coords.latitude;
+                    lng = pos.coords.longitude;
+
+                    alert('lat = ' + lat + ', lng = ' + lng);
+                });
+
+                var pos = 'lat = ' + lat + ', lng = ' + lng;
+                jQuery("#home").append('<div align="left"><div align="left" class="bubble me">' + pos + '</div><p style="margin-left: 1em;">Google</p></div>');
+                return ;
+            }
 
             if (currentRoomId == 'home' && !msgText.startWith('/')){
                 client.room().alertMsg({content:'not in room'}) ;

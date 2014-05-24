@@ -23,13 +23,19 @@ public class ToonWebResourceLet  implements IServiceLet {
 	public Representation deliverFile(@ContextParam("baseDir") String baseDir, @AnRequest InnerRequest request) throws IOException {
 
 		final String resourceHome = ObjectUtil.coalesce(baseDir, "./resource/toonweb/");
+        String resourceName = request.getPathReference().getPath();
+        String extension = FilenameUtils.getExtension(request.getRemainPath());
 
+        if("/".equals(resourceName)) {
+            resourceName = "/index.html";
+            extension = "html";
+        }
 
-		File file = new File(resourceHome + request.getPathReference().getPath());
+        File file = new File(resourceHome + resourceName);
 
 		if (file.exists()) {
 			FileInputStream fis = new FileInputStream(file);
-			String extension = FilenameUtils.getExtension(request.getRemainPath());
+
 			return new InputRepresentation(fis, request.getPathService().getAradon().getMetadataService().getMediaType(extension));
 		} else {
 			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND) ;
