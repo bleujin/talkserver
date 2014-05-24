@@ -2,30 +2,20 @@ new function(){
 
 	var users = {} ;
 	var ionmailServer = "smtp.i-on.net" ;
+	var _myBotId = 'ionmail' ;
 	
 
 	this.onLoad = function(){
 		session.tran(function(wsession){
-			wsession.pathBy("/users/ionmail").property("userId", "ionmail").property("nickname", "ionmail bot").property("stateMessage", "normal").property("free", true) ;
+			wsession.pathBy("/bots/" + _myBotId).refTo("user", "/users/" + _myBotId) ;
+			wsession.pathBy("/users/" + _myBotId).property("userId", _myBotId).property("nickname", _myBotId + " bot").property("stateMessage", "normal").property("free", true) ;
+			wsession.pathBy("/rooms/@" + _myBotId + "/members/" + _myBotId).refTo("user", "/users/" + _myBotId) ;
 		}) ;
 	}, 
 	
-	this.sendMessage = function(oriSender, event, bm, args){
-		var roomId = bm.fromRoomId() ;
-		var selfBotId = bm.toUserId() ;
-
-		if (session.exists("/bots/" + oriSender)) return ;
-        session.tran(function(wsession) {
-            var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + bm.newMsgId())
-                    .property("message", args.message || bm.message())
-                    .refTo("sender", "/users/"+selfBotId)
-                    .property("roomId", roomId)
-                    .property("options", "{event:'onMessage'}")
-                    .property("clientScript", bm.clientScript())
-                    .property("messageId", bm.messageId());
-
-        }) ;
+	this.onMessage = function(bm){
 	}, 
+	
 	
 	this.onWhisper = function(source, whisperMsg){
 
@@ -56,10 +46,28 @@ new function(){
 		*/
 	}, 
 	
-	this.list = function(whisperMsg, cmd, source){
+		
+	this.sendMessage = function(event, bm, args){
+		var roomId = bm.fromRoomId() ;
+		var selfBotId = bm.toUserId() ;
+
+		if (session.exists("/bots/" + bm.fromUserId())) return ;
+        session.tran(function(wsession) {
+            var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + new net.ion.framework.util.ObjectId().toString())
+                    .property("message", args.message || bm.message())
+                    .refTo("sender", "/users/"+selfBotId)
+                    .property("roomId", roomId)
+                    .property("options", "{event:'onMessage'}")
+                    .property("clientScript", bm.clientScript())
+                    .property("messageId", bm.messageId());
+
+        }) ;
+	}, 
+	
+	this.list = function(scriptMsg, cmd, source){
 		try {
-			if (! users[whisperMsg.fromUserId()]) return {message:'not setted passwd'} ;
-			if (! whisperMsg.fromUserId().endsWith('@i-on.net')) return {message:'only permit ion mail account'} ;
+			if (! users[scriptMsg.fromUserId()]) return {message:'not setted passwd'} ;
+			if (! scriptMsg.fromUserId().endsWith('@i-on.net')) return {message:'only permit ion mail account'} ;
 		
 			importPackage(net.ion.framework.mail) ;
 
@@ -67,7 +75,7 @@ new function(){
 			var skip = cmd.remainAsInt(1, 0) ;
 			var sw = new java.io.StringWriter() ;
 			
-			var mailer = MailConfigBuilder.create().receiveConfig().server(ionmailServer).mailUserId(whisperMsg.fromUserId()).mailUserPwd(users[whisperMsg.fromUserId()]).protocol(ReceiveConfigBuilder.Protocol.POP3).buildConfig().confirmValidOfReceiveMailConfig().createMailer();
+			var mailer = MailConfigBuilder.create().receiveConfig().server(ionmailServer).mailUserId(scriptMsg.fromUserId()).mailUserPwd(users[scriptMsg.fromUserId()]).protocol(ReceiveConfigBuilder.Protocol.POP3).buildConfig().confirmValidOfReceiveMailConfig().createMailer();
 			var count = mailer.unreadMessage(new MessageWriteHandler(sw, offset, skip)).get();
 			if (count < 1) return {message:'no mail'} ;
 			return {message:sw.toString()} ;
@@ -76,53 +84,54 @@ new function(){
 		}
 	}, 
 	
-	this.password = function(whisperMsg, cmd, source){
-		users[whisperMsg.fromUserId()] = cmd.remain(0).trim() ;
+	this.password = function(scriptMsg, cmd, source){
+		users[scriptMsg.fromUserId()] = cmd.remain(0).trim() ;
 		return {message:'setted password'} ;
 	}, 
 	
-	this.send = function(whisperMsg, cmd, source){
+	this.send = function(scriptMsg, cmd, source){
 		try {
-			if (! whisperMsg.fromUserId().endsWith('@i-on.net')) return {message:'only permit ion mail account'} ;
+			if (! scriptMsg.fromUserId().endsWith('@i-on.net')) return {message:'only permit ion mail account'} ;
 
-			var roomId = whisperMsg.fromRoomId() ;
+			var roomId = scriptMsg.fromRoomId() ;
 			if (roomId == '') return {message:'not in room'} ;
 
 			importPackage(net.ion.framework.mail) ;
 			importPackage(javax.mail.internet) ;
 			
-			var miters = session.ghostBy('/rooms/' + roomId + '/messages').children().iterator() ;
+			var miters = session.ghostBy('/rooms/' + roomId + '/messages').children().ascending('messageId').iterator() ;
 			var content = '' ;
 			while(miters.hasNext()){
 				var next = miters.next() ;
-				content += next.property('message').asString() + '<br/>' ;
+				if (next.property('exclusiveSender').asBoolean() == true) content += next.ref('sender').property('userId').asString() + ': ' + next.property('options').asString() + '\r\n' ;
+				else content += next.ref('sender').property('userId').asString() + ': ' +  next.property('message').asString() + ' at ' + new java.util.Date(next.property('time').asLong(0)) + '\r\n' ;
 			}
 			
-			var to = cmd.remainAsString(0, whisperMsg.fromUserId()) ;
+			var to = cmd.remainAsString(0, scriptMsg.fromUserId()) ;
 			
-			var mailer = MailConfigBuilder.create().sendConfig().server(ionmailServer).mailUserId(whisperMsg.fromUserId()).mailUserPwd("nopwd").buildConfig().confirmValidOfSendMailConfig().createMailer();
+			var mailer = MailConfigBuilder.create().sendConfig().server(ionmailServer).mailUserId(scriptMsg.fromUserId()).mailUserPwd("bleujin7").buildConfig().confirmValidOfSendMailConfig().createMailer();
 	
 	        mailer.sendMail(new MessageCreater() {
 	        	makeMessage: function(msg) {
+                	var subject = roomId + "'s message" ;
 	                msg.addRecipient(javax.mail.Message.RecipientType.TO, new InternetAddress(to));
-	                msg.setSubject(roomId + "'s message");
-	                msg.setContent(content, "text/html");
+	                msg.setSubject(MimeUtility.encodeText(subject, "UTF-8", "B"));
+	                msg.setSentDate(new java.util.Date());
+	                msg.setHeader("Content-Type", "text/html; charset=UTF-8");
+	                msg.setText(content, "UTF-8");
 	                return msg;
 	            }
-	        });
+	        }).get();
 	        return {message:'send mail to ' + to} ;
 	   } catch(ex){
 	   		return {message:ex.toString()} ;
 	   }
 	}, 
 	
-	this.help = function(whisperMsg, cmd, source){
+	this.help = function(scriptMsg, cmd, source){
 		return {message:'help, send, password, list'} ;
 	}, 
-	
-	this.onMessage = function(bm){
-	}, 
-	
+
 	this.onEnter = function(bm){
 	}, 
 	

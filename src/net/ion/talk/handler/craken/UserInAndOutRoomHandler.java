@@ -48,7 +48,7 @@ public class UserInAndOutRoomHandler implements CDDHandler {
                         .property(Message.Options, "{event:'onEnter'}")
                         .property(Room.RoomId, roomId)
                         .property(Message.Time, Calendar.getInstance().getTimeInMillis())
-                        .property(Message.Message, userId)                      
+                        .property(Message.Message, userId + " enter")                      
                         .property(Message.ClientScript, Message.DefaultOnMessageClientScript) 
                         .refTo(Message.Sender, "/users/"+userId)
                         .property(Message.MessageId, messageId);
@@ -78,7 +78,7 @@ public class UserInAndOutRoomHandler implements CDDHandler {
                         		
                         .property(Room.RoomId, roomId)
                         .property(Message.Time, Calendar.getInstance().getTimeInMillis())
-                        .property(Message.Message, userId)
+                        .property(Message.Message, userId + " exit")
                         .property(Message.ClientScript, Message.DefaultOnMessageClientScript) 
                         .refTo(Message.Sender, "/users/"+userId)
                         .property(Message.MessageId, messageId);

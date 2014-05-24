@@ -113,17 +113,6 @@ public class BotScript {
 
 		}.loadScript(scriptDir);
 		
-		rsession.tran(new TransactionJob<Void>() {
-			@Override
-			public Void handle(WriteSession wsession) throws Exception {
-				for (String packName : packages.keySet()) {
-					wsession.pathBy("/bots/" + packName).refTo("user", "/users/" + packName) ;
-					wsession.pathBy("/users/" + packName) ;
-				}
-				return null;
-			}
-		}) ;
-		
 		for (String packName : packages.keySet()) {
 			try {
 				Object pack = packages.get(packName);

@@ -29,11 +29,12 @@
 		<input type="text" id="message" style="width:75%; font-size:16px" /><a href='javascript://' onclick='webClient.close();'>Close</a></td></tr>
 </table>
 
-
+<!--
 <div>
 	<button id="btnRegister">Register</button>
 	<button id="btnHelp">Help</button>
 </div>
+-->
 
 <!-- Register Window -->
 <div id="registerWindow" class="easyui-window" title="Register User" data-options="modal:true, closed:true, collapsible: false" style="width:500px; height:400px; padding:10px;">
@@ -109,6 +110,7 @@
 	</div>
 </div>
 
+
 <script type="text/javascript">
 
     WEB_SOCKET_SWF_LOCATION = "/toonweb/WebSocketMain.swf";  // Set URL of your WebSocketMain.swf here:
@@ -142,8 +144,8 @@
 				var roomId = args.roomId || selectedScreenId ;
 				
 				if (roomId.startWith('@')){   // whisper
-					
-					
+					this.mwindow({title:'New Whisper', msg:args.message + " from:" + args.sender }) ;
+					return ;
 				} else if (roomId != selectedScreenId){
 					var onClickMsg = "webClient.chat(\"/join " + roomId + "\")"  ;
 					this.mwindow({title:'New Message', msg:"<a href='#' onclick='" + onClickMsg + "'>" + args.message + "</a><br/>from:" + args.sender + " ,room:" + roomId}) ;
@@ -158,9 +160,9 @@
 		    	var sender = '&lt;' + (args.sender || 'system') + '&gt;' ;
 		    	 
 		    	if (args.sender == webClient.sender) {
-		    		currentScreen.append("<div align='right' style=\"width:100%; height:20px; padding:0; background-color:dfdfdf \">" + escaped + "</div>");
+		    		currentScreen.append("<div align='right' style=\"width:100%; padding:0; background-color:dfdfdf \">" + escaped + "</div>");
 		    	} else {
-		    		currentScreen.append("<div align='left' style=\"width:100%; height:20px; padding:0; background-color:efefef \">" + sender + ':' + escaped + "</div>");
+		    		currentScreen.append("<div align='left' style=\"width:100%; padding:0; background-color:efefef \">" + sender + ':' + escaped + "</div>");
 		    	}
 		    	currentScreen.scrollTop((this.count++) * 20) ;
 			}, 
@@ -324,8 +326,8 @@
 		
 		webClient.connected = function(){
 			return this.status == 'connected' ;
-		}
-	
+		} ;
+		
 
    		var ws ;
    		
@@ -335,6 +337,16 @@
 		  	ws.onopen = function(){
 		  		client.room().message({message:"open"}) ;
 		  		webClient.status = 'connected' ;
+		  		if (!!navigator.geolocation){
+					console.log('supported navigator') ;
+    				navigator.geolocation.getCurrentPosition(function(position){
+							console.log(position.coords.latitude + ',' + position.coords.longitude) ;
+							webClient.command('/user/addGPSWith', {latitude:position.coords.latitude, longitude:position.coords.longitude, userId:'$config.sender$'}) ;
+						}, function(error){console.log('not supported navigator : ' +  error.message); });
+				} else {
+					console.log('not supported navigator') ;
+				}
+		  		
 		  	} ;
 		  	
 	   		ws.onmessage = function(e){
@@ -353,6 +365,8 @@
 	   				console.error(e.data) ;
 	   				return ;
 	   			}
+
+	   			if (msg.script == '/room/sendMessageWith') return ; // return sendMessageWith
 	
 	   			if (msg.script.startWith('/whisper/')){
 	   				var args = msg.result || {} ;
@@ -360,7 +374,6 @@
 	   				return ;
 	   			}
 	   			
-	   			if (msg.script == '/room/sendMessageWith') return ; // return sendMessageWith
 	   			if (msg.script == '/room/listNotifyDataBy') {
 	   				// alert(msg.result.message) ;
 	   				var args = msg.result || {} ;

@@ -227,6 +227,8 @@
 </div>
 
 <script type="text/javascript">
+    WEB_SOCKET_SWF_LOCATION = "/toonweb/WebSocketMain.swf";  // Set URL of your WebSocketMain.swf here:
+    WEB_SOCKET_DEBUG = true;  // Set this to dump debug message from Flash to console.log:
 
     var webClient = {};
 
@@ -313,9 +315,6 @@
             },
 
             this.alertMsg = function(option){
-//                \$('#alertMessage').html(option.content);
-//                \$("#alertPop").enhanceWithin().popup();
-//                \$("#alertPop").popup('open');
                 alert(option.content);
 //                \$.messager.alert(option.title || 'Alert', option.content, option.type || 'error');
 
@@ -327,8 +326,8 @@
                 var roomId = args.roomId || selectedScreenId ;
 
                 if (roomId.startWith('@')){   // whisper
-
-
+					this.mwindow({title:'New Whisper', msg:args.message + " from:" + args.sender }) ;
+					return ;
                 } else if (roomId != selectedScreenId){
                     var onClickMsg = "webClient.chat(\"/join " + roomId + "\")"  ;
                     this.mwindow({title:'New Message', msg:"<a href='#' onclick='" + onClickMsg + "'>" + args.message + "</a><br/>from:" + args.sender + " ,room:" + roomId}) ;
@@ -420,7 +419,7 @@
                 },
                 error : function(request,status,error){
                     console.log('error' + status + error);
-//                    \$.messager.alert('Alert', 'Not Connect Server', 'error');
+                    \$.messager.alert('Alert', 'Not Connect Server', 'error');
                 }
             }) ;
         }
@@ -463,6 +462,16 @@
             ws.onopen = function(){
                 client.room().message({message:"open"}) ;
                 webClient.status = 'connected' ;
+                
+                if (!!navigator.geolocation){
+					console.log('supported navigator') ;
+    				navigator.geolocation.getCurrentPosition(function(position){
+							console.log(position.coords.latitude + ',' + position.coords.longitude) ;
+							webClient.command('/user/addGPSWith', {latitude:position.coords.latitude, longitude:position.coords.longitude, userId:'$config.sender$'}) ;
+						}, function(error){console.log('not supported navigator : ' +  error.message); });
+				} else {
+					console.log('not supported navigator') ;
+				}
             } ;
 
             ws.onmessage = function(e){
@@ -482,15 +491,15 @@
                     return ;
                 }
 
+                if (msg.script == '/room/sendMessageWith') return ; // return sendMessageWith
+
                 if (msg.script.startWith('/whisper/')){
                     var args = msg.result || {} ;
                     eval(msg.result.clientScript) ;
                     return ;
                 }
 
-                if (msg.script == '/room/sendMessageWith') return ; // return sendMessageWith
                 if (msg.script == '/room/listNotifyDataBy') {
-                    // alert(msg.result.message) ;
                     var args = msg.result || {} ;
                     eval(msg.result.clientScript) ;
                     return ;
@@ -552,20 +561,6 @@
             var chatMsg = {id:'' + new Date().getUTCMilliseconds(), script:'/room/sendMessageWith', params:{}} ;
             var currentRoomId = activeScreenId();
 
-            if(msgText == '/whereami') {
-                var lat = '0', lng = '0';
-
-                navigator.geolocation.getCurrentPosition(function (pos) {
-                    lat = pos.coords.latitude;
-                    lng = pos.coords.longitude;
-
-                    alert('lat = ' + lat + ', lng = ' + lng);
-                });
-
-                var pos = 'lat = ' + lat + ', lng = ' + lng;
-                jQuery("#home").append('<div align="left"><div align="left" class="bubble me">' + pos + '</div><p style="margin-left: 1em;">Google</p></div>');
-                return ;
-            }
 
             if (currentRoomId == 'home' && !msgText.startWith('/')){
                 client.room().alertMsg({content:'not in room'}) ;
