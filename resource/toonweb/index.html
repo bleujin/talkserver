@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="/toonweb/bootstrap.min.css"/>
+    <script type="text/javascript" src="/toonweb/common_lang.js"></script>
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/toonweb/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="/toonweb/jquery.form.min.js"></script>
+
+    <title>ToonTalk Mobile</title>
+    <style type="text/css">
+        h2 {
+            text-align: center;
+        }
+        label.error {
+            color: red;
+            font-size: 16px;
+            font-weight: normal;
+            line-height: 1.4;
+            margin-top: 0.5em;
+            width: 100%;
+            float: none;
+        }
+
+        @media screen and (orientation: portrait){
+            label.error { margin-left: 0; display: block; }
+        }
+
+        @media screen and (orientation: landscape){
+            label.error { display: inline-block; margin-left: 0; }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="navbar navbar-default navbar-fixed-top">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Home</a>
+        </div>
+        <div class="navbar-collapse collapse navbar-responsive-collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="/mobile/">Go Chat!!</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="jumbotron">
+        <h1>ToonTalk Mobile</h1>
+        <p>Talk with friends and Bot</p>
+        <!--<p><a class="btn btn-primary btn-lg">Learn more</a></p>-->
+    </div>
+
+    <div class="panel panel-info">
+        <div class="panel-heading">Sign up! or Go chat!!</div>
+        <div class="panel-body">
+            <h2>Before chat, Sign up first !!</h2>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading"><h1>Sign Up!</h1></div>
+        <div class="panel-body">
+            <form class="form-horizontal" id="registerForm" method="POST">
+                <fieldset>
+                    <div class="form-group">
+                        <label for="email" class="col-lg-2 control-label">Email</label>
+                        <div class="col-lg-10">
+                            <input class="form-control" required id="email" name="email" placeholder="Email" type="email">
+                            <span id="email-validate-msg"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="nickname" class="col-lg-2 control-label">Nickname</label>
+                        <div class="col-lg-10">
+                            <input class="form-control" required id="nickname" name="nickname" placeholder="Nick Name" type="text">
+                            <span id="nickname-validate-msg"></span>
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+                        <label for="password" class="col-lg-2 control-label">Password</label>
+                        <div class="col-lg-10">
+                            <input class="form-control" required id="password" name="password" placeholder="Password" type="password">
+                            <span id="password-validate-msg"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="password_confirm" class="col-lg-2 control-label">Password Confirm</label>
+                        <div class="col-lg-10">
+                            <input class="form-control" required id="password_confirm" placeholder="Password" type="password">
+                            <span id="password_confirm-validate-msg"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="country" class="col-lg-2 control-label">Country</label>
+                        <div class="col-lg-10">
+                            <select class="form-control" id="country">
+                                <option value="+82" selected>Korea</option>
+                                <option value="+81">Japan</option>
+                                <option value="+62">Indonesia</option>
+                                <option value="+1">United states</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="character" class="col-lg-2 control-label">Default Character</label>
+                        <div class="col-lg-10">
+                            <select class="form-control" id="character" name="character">
+                                <option value="ibot" selected="selected">iBot</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="password" class="col-lg-2 control-label">Phone</label>
+                        <div class="col-lg-10">
+                            <input class="form-control" id="exchangeNo" required type="text" style="width: 80px; float: left; margin-right: 10px;">
+                            <input class="form-control" id="prefixNo" required type="text" style="width: 80px; float: left; margin-right: 10px;">
+                            <input class="form-control" id="postfixNo" required  type="text" style="width: 80px; float: left; margin-right: 10px;">
+                            <button type="button" class="btn btn-default" onclick="javascript:requestPhoneAuth(event);">Request</button>
+                            <div>
+                                <div><span id="exchangeNo-validate-msg"></span></div>
+                                <div><span id="prefixNo-validate-msg"></span></div>
+                                <div><span id="postfixNo-validate-msg"></span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password_confirm" class="col-lg-2 control-label">Authorization code</label>
+                        <div class="col-lg-10">
+                            <input class="form-control" id="authNum" type="number">
+                            <span id="verifyResult">Not verified</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-lg-10 col-lg-offset-2">
+                            <button class="btn btn-default" onclick="javascript:resetRegisterForm(event);">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+
+<script>
+    var scriptRunner, validator;
+
+    $('#authNum').keyup(function(event) {
+        var value = jQuery(this).val();
+        if(value.length == 6 ) {
+            verifyAuthNum(value);
+        }
+    });
+
+    window.toonweb = {
+        isAuthRequested: false,
+        isAuthorized: false
+    };
+
+    function resetRegisterForm(event) {
+        event.preventDefault();
+
+        var form = $('#registerForm');
+        form.resetForm();
+        form.clearForm();
+        form.clearFields();
+
+        $('span').each(function(index) {
+            var id = $(this).attr('id');
+            if(id && id.indexOf('validate-msg') > -1) {
+                $(this).html('');
+            }
+        });
+    }
+
+    function requestPhoneAuth(event) {
+        event.preventDefault();
+
+        var country = jQuery("#country option:selected").val();
+        var exchangeNo = jQuery('#exchangeNo').val();
+        var prefixNo = jQuery('#prefixNo').val();
+        var postfixNo = jQuery('#postfixNo').val();
+
+        if(exchangeNo === '' || prefixNo === '' || postfixNo === '') {
+            alert('Invalid Phone number');
+            return;
+        }
+
+        if(exchangeNo.startWith('0')) {
+            exchangeNo = exchangeNo.substr(1);
+        }
+
+        var phoneNum = country + exchangeNo + prefixNo + postfixNo;
+
+        $.post('/register/SMSAuth', {phone: phoneNum})
+                .done(function(data) {
+                    window.toonweb.isAuthRequested = true;
+                    alert('Authorization number has been sent');
+                })
+                .fail(function(data) {
+                    alert('Error has occured during phone number authorization');
+                });
+    }
+
+    function verifyAuthNum(value) {
+        var authNum = jQuery('#authNum').val();
+        var phoneNum = phoneNumberWithCountry();
+
+        var url = '/register/SMSAuth?phone=' + encodeURIComponent(phoneNum) + '&code=' + authNum;
+
+        $.ajax({
+            type: 'GET',
+            url: url
+        }).done(function(data) {
+                    if(data == 'true') {
+                        window.toonweb.isAuthorized = true;
+                        jQuery('#verifyResult').html('Verified');
+                    } else {
+                        window.toonweb.isAuthorized = false;
+                        $('#verifyResult').html('<span style="color: red;">Not matched</span>');
+                    }
+                }).fail(function() {
+                    alert('failed to send authorization number');
+                });
+    }
+
+    function phoneNumber() {
+        var exchangeNo = $('#exchangeNo').val();
+        var prefixNo = $('#prefixNo').val();
+        var postfixNo = $('#postfixNo').val();
+
+        var _exchangeNo = exchangeNo.startWith('0') ? exchangeNo.substr(1) : exchangeNo;
+
+        return _exchangeNo + prefixNo + postfixNo;
+    }
+
+    function phoneNumberWithCountry() {
+        var country = $("#country option:selected").val();
+
+        return country + phoneNumber();
+    }
+
+    $(document).ready(function() {
+        scriptRunner = new function() {
+            this.execute = function(packName, funcName, params, onSuccess) {
+                $.post('/execute/' + packName + '/' + funcName + '.json', params).done(onSuccess);
+            }
+        };
+
+        validator = $('#registerForm').validate({
+            rules: {
+                nickname: {
+                    required: true
+                },
+                email: {
+                    required: true
+                },
+                country: {
+                    required: true
+                },
+                exchangeNo: {
+                    required: true
+                },
+                prefixNo: {
+                    required: true
+                },
+                postfixNo: {
+                    required: true
+                }
+            },
+            messages: {
+                email: {
+                    required: "Please enter your email"
+                },
+                nickname: {
+                    required: "Please enter your nickname"
+                },
+                country: {
+                    required: "Please select your country."
+                },
+                exchangeNo: {
+                    required: "Please enter exchange number"
+                },
+                prefixNo: {
+                    required: "Please enter prefix number"
+                },
+                postfixNo: {
+                    required: "Please enter postfix number"
+                }
+            },
+            errorPlacement: function (error, element) {
+                var errMsgHolder = $('#' + element[0].id + '-validate-msg');
+                errMsgHolder.html(error);
+            }
+        });
+
+        $('#registerForm').submit(function(event) {
+
+            event.preventDefault();
+
+            if(!window.toonweb.isAuthorized || !window.toonweb.isAuthRequested) {
+                alert('Phone number authorization required');
+                return false;
+            }
+
+            var email = $("#registerForm input[name=email]").val(),
+                    password = $("#registerForm input[name=password]").val(),
+                    country = $("#country option:selected").val(),
+                    nickname = $("#registerForm input[name=nickname]").val(),
+                    phone = phoneNumber(),
+                    realPhone = phoneNumberWithCountry().substr(1);             // remove first +
+
+//            console.log(email, password, country, nickname, phone, realPhone);
+
+            if($(this).valid()) {
+                scriptRunner.execute('user', 'registerWith', {
+                    userId: email,
+                    password: password,
+                    country: country,
+                    nickname: nickname,
+                    phone: phone,
+                    realPhone: realPhone
+                }, function(data) {
+                    alert('Registration success');
+                    resetRegisterForm(event);
+                });
+            }
+
+            return;
+        });
+    });
+</script>
+</body>
+</html>
