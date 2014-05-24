@@ -332,7 +332,7 @@
 					return ;
                 } else if (roomId != selectedScreenId){
                     var onClickMsg = 'webClient.chat("/join ' + roomId + '")';
-                    this.mwindow({title:'New Message', msg:"<a href='#' onclick='" + onClickMsg + "'>" + args.message + "</a><br/>from:" + args.sender + " ,room:" + roomId}) ;
+                    this.mwindow({title:'New Message', msg:"<a href='#' onclick='" + onClickMsg + "'>" + args.message + "</a><br/><span style='color:black;'>from:" + args.sender + " ,room:" + roomId + "</span>"}) ;
                     selectedScreenId = roomId ;
                     return;
                 }
