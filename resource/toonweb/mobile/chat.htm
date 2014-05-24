@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.css" />
+    <link rel="stylesheet" href="/toonweb/js/toast/resources/css/jquery.toastmessage.css"/>
     <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
     <script src="http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.js"></script>
     <script type="text/javascript" src="/toonweb/common_lang.js"></script>
@@ -12,6 +13,8 @@
     <script type="text/javascript" src="/toonweb/web_socket.js"></script>
     <script type="text/javascript" src="/toonweb/jquery.validate.min.js"></script>
     <script type="text/javascript" src="/toonweb/jquery.form.min.js"></script>
+    <script type="text/javascript" src="/toonweb/js/toast/javascript/jquery.toastmessage.js"></script>
+
     <script src=http://maps.googleapis.com/maps/api/js?sensor=true></script>
     <style type="text/css">
         .bubble {
@@ -92,7 +95,7 @@
 
         <div data-role="popup" id="alertPop" data-dismissible="false" style="min-width: 300px; min-height: 100px;">
             <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-left">Close</a>
-            <div data-role="header" style="text-align: center;"><h2>Warning</h2></div>
+            <div data-role="header" style="text-align: center;"><h2>Message</h2></div>
             <p><span id="alertMessage" style="margin: 20px;"></span></p>
         </div>
 
@@ -305,12 +308,11 @@
             this.count = 0 ;
 
             this.mwindow = function(option){
-                \$.messager.show({
-                    title: option.title || 'New Message',
-                    msg: option.msg ,
-                    showType: option.showType || 'show',
-                    timeout : option.timeout || 10000,
-                    style:{right:'', left:5, top:29, bottom:''}
+                \$().toastmessage('showToast', {
+                    stayTime: 3000,
+                    text: option.msg,
+                    position: 'top-left',
+                    type: 'notice'
                 });
             },
 
@@ -329,9 +331,10 @@
 					this.mwindow({title:'New Whisper', msg:args.message + " from:" + args.sender }) ;
 					return ;
                 } else if (roomId != selectedScreenId){
-                    var onClickMsg = "webClient.chat(\"/join " + roomId + "\")"  ;
+                    var onClickMsg = 'webClient.chat("/join ' + roomId + '")';
                     this.mwindow({title:'New Message', msg:"<a href='#' onclick='" + onClickMsg + "'>" + args.message + "</a><br/>from:" + args.sender + " ,room:" + roomId}) ;
                     selectedScreenId = roomId ;
+                    return;
                 }
                 if ( (!roomId.startWith('@')) && \$('#' +roomId) == null) return ;
 
