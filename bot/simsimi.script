@@ -50,7 +50,7 @@ new function() {
 				  .inner("result")
 				  	.property("sender", "simsimi")
 					.property("clientScript", "client.room().message(args);")
-					.property("message", resp.result == 200 ? resp.response : resp.msg)
+					.property("message", resp.response )
 					.property("options", "{event:'onWhisper'}")
 					.property("messageId", new net.ion.framework.util.ObjectId().toString()).build().talkMessage()) ;
 			} ,
