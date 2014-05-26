@@ -172,7 +172,7 @@
             <input data-clear-btn="true" name="message" id="message" value="" type="text">
         </div>
         <div style="float: left; width: 10%; min-width: 10%;">
-            <button onclick="javascript:webClient.chat();" class="ui-btn ui-btn-inline">Send</button>
+            <button onclick="javascript:client.chat();" class="ui-btn ui-btn-inline">Send</button>
         </div>
 
     </div><!-- /footer -->
@@ -233,213 +233,268 @@
     WEB_SOCKET_SWF_LOCATION = "/toonweb/WebSocketMain.swf";  // Set URL of your WebSocketMain.swf here:
     WEB_SOCKET_DEBUG = true;  // Set this to dump debug message from Flash to console.log:
 
-    var webClient = {};
+    var ChatClient = function(wsAddress, sender, senderNickName) {
 
-    var chatRoomHandler = {
-        create:function(navBarID, roomId, roomTitle) {
-            var navbar = \$("#" + navBarID);
+//        var ws ;
 
-            var li = \$("<li></li>");
-            var a  = \$("<a></a>");
-            var closeBtn = \$('<a></a>').attr('roomId', roomId).attr('role', 'delete').attr('class', 'ui-btn ui-icon-delete ui-btn-icon-notext').text('Delete');
-            a.attr("href", '#' + roomId).attr('id', 'tab-' + roomId).text(roomTitle);
-            li.attr('roomNumber', roomId);
-            li.append(a);
-            li.append(closeBtn);
+        this.sender = sender;
+        this.nickname = senderNickName;
+//        this.status = '';
 
-            closeBtn.click(function(event) {
-                event.preventDefault();
-                \$(this).removeClass('ui-btn-active').removeClass('ui-btn-hover-b').addClass('ui-btn-up-b');
-                var roomId = \$(this).attr('roomId');
+        var screen = this;
 
-                chatRoomHandler.remove(roomId);
-            });
+        var connManager = new function() {
+            var ws;
+            this.status;
+            var self = this;
 
-            navbar = chatRoomHandler.clearNavBarStyle(navbar);
+            this.initConnection = function(address) {
+                ws = new WebSocket(address);
 
-            navbar.navbar("destroy");
-            li.appendTo(\$("#" + navBarID + " ul"));
-            \$('#chatRooms').append('<div style="margin-bottom: 20px;" id="'+roomId+ '"></div>');
-            navbar.navbar();
-            \$('#chatScreens').tabs('refresh');
+                ws.onopen = function() {
+                    screen.getRoomManager().currentRoom().message({message: "open"});
+                    self.status = 'connected';
+                };
 
-            chatRoomHandler.select(roomId);
-        },
-        refreshRoomList: function() {
-            var navbar = \$("#roomList");
-            navbar = chatRoomHandler.clearNavBarStyle(navbar);
-            navbar.navbar("destroy");
-            navbar.navbar();
-            \$('#chatScreens').tabs('refresh');
-        },
+                ws.onmessage = function(e) {
+                    console.log(e.data);
+                    if('HEARTBEAT' == e.data) {
+                        ws.send('HEARTBEAT');
+                        return;
+                    }
 
-        clearNavBarStyle:function(navbar){
-            navbar.find("*").andSelf().each(function(){
-                if(\$(this).attr('role') == 'delete') {
-                    return ;
-                }
-                \$(this).removeClass(function(i, cn){
-                    var matches = cn.match (/ui-[\w\-]+/g) || [];
-                    return (matches.join (' '));
-                });
-                if (\$(this).attr("class") == "") {
-                    \$(this).removeAttr("class");
-                }
-            });
-            return navbar;
-        },
-        select: function(roomId) {
-            \$('.ui-btn-active').removeClass('ui-btn-hover-b').addClass('ui-btn-up-b');
-            \$('#tab-' + roomId).addClass('ui-btn-active');
-            \$('#tab-' + roomId).trigger('click');
-        },
-        remove: function(roomId) {
-            \$('li[roomNumber=' + roomId + ']').remove();
-            \$('#' + roomId).remove();
-            chatRoomHandler.refreshRoomList();
-        },
-        exists: function(roomId) {
-            return \$('#tab-' + roomId).length > 0;
-        }
-    }
+                    var msg = eval('(' + e.data + ')');
 
-    var client = new function(){
-        var roomObj = new function(){
-            this.count = 0 ;
+                    if(msg.script == undefined && msg.notifyId != '') {
+                        screen.command('/room/listNotifyDataBy', {
+                            'notifyId': msg.notifyId,
+                            'userId': screen.sender
+                        });
+                        return;
+                    }
 
-            this.mwindow = function(option){
-                \$().toastmessage('showToast', {
-                    stayTime: 10000,
-                    text: '<span style="color:black;">' + option.title + ' : </span>' + option.msg,
-                    position: 'top-left',
-                    type: 'notice'
-                });
-            },
+                    if(msg.status != 'success') {
+                        console.error(e.data);          // fix this to notify
+                        return ;
+                    }
 
-            this.alertMsg = function(option){
-                alert(option.content);
-//                \$.messager.alert(option.title || 'Alert', option.content, option.type || 'error');
+                    if(msg.script == '/room/sendMessageWith') return ;
 
-            },
+                    if(msg.script.startWith('/whisper/') || msg.script == '/room/listNotifyDataBy') {
+                        var args = msg.result || {};
+                        eval(msg.result.clientScript);
+                        return ;
+                    }
+                };
 
-            this.message = function(args) {
-//                var selectedScreenId = jQuery('#zone').tabs('getSelected').panel('options').title ;
-                var selectedScreenId = activeScreenId();
-                var roomId = args.roomId || selectedScreenId ;
+                ws.onclose = function() {
+                    self.status = 'closed';
+                    roomManager.currentRoom().message({
+                        message: 'Connection closed...retry connect'
+                    });
+                    self.reconnect();
+                };
 
-                if (roomId.startWith('@')){   // whisper
-					this.mwindow({title:'New Whisper', msg:args.message + " from:" + args.sender }) ;
-					return ;
-                } else if (roomId != selectedScreenId){
-                    var onClickMsg = 'webClient.chat("/join ' + roomId + '")';
-                    this.mwindow({title:'New Message', msg:"<a href='#' onclick='" + onClickMsg + "'>" + args.message + "</a><br/><span style='color:black;'>from:" + args.sender + " , room:" + roomId + "</span>"}) ;
-                    return;
-                }
-                if ( (!roomId.startWith('@')) && \$('#' +roomId) == null) return ;
+                ws.onerror = function() {
+                    roomManager.currentRoom().message({
+                        message: 'Error'
+                    });
+                };
+            };
 
-                var currentScreen = jQuery("#" + selectedScreenId) ;
+            this.getConnection = function() {
+                return ws;
+            };
 
-                //var escaped = args.message.replace(/&/, "&amp;").replace(/</, "&lt;").replace(/>/, "&gt;").replace(/"/, "&quot;");
-                var escaped = args.html || args.message ;
-                var sender = '&lt;' + (args.sender || 'system') + '&gt;' ;
+            this.close = function() {
+                ws.close();
+            };
 
-                if (args.sender == webClient.sender) {
-                    currentScreen.append('<div align="right"><div class="bubble other">' + escaped + '</div><p style="margin-left: 1em;">' + sender + '</p></div>');
-                } else {
-                    currentScreen.append('<div align="left"><div align="left" class="bubble me">' + escaped + '</div><p style="margin-left: 1em;">' + sender + '</p></div>');
-                }
-//                currentScreen.scrollTop((this.count++) * 20) ;
-                \$("html, body").animate({ scrollTop: \$(document).height()-\$(window).height() }, 10);
-            },
+            this.isConnected = function() {
+                return self.status == 'connected';
+            };
 
-            this.background = function(imgUrl){
-                console.log(imgUrl) ;
-            },
-
-            this.invite = function(inviteMsg) {
-                console.log(inviteMsg) ;
-            },
-
-            this.join = function(args){
-                var roomId = args.roomId;
-                if(existChatRoom(roomId)) {
-                    chatRoomHandler.select(roomId);
-                } else {
-                    chatRoomHandler.create('roomList', roomId, roomId);
-                }
-            } ;
-        } ;
-
-        var existChatRoom = function(roomId) {
-            return chatRoomHandler.exists(roomId);
+            this.reconnect = function() {
+                \$.ajax({
+                    type:'post', async:true, url:'/session/reload',
+                    success : function(data){
+                        console.log(data) ;
+                        self.initConnection(data);
+                    },
+                    error : function(request,status,error){
+                        console.log('error' + status + error);
+//                    \$.messager.alert('Alert', 'Not Connect Server', 'error');
+                    }
+                }) ;
+            };
         };
 
-        var commonObj = new function(){
+        var roomManager = new function() {
 
-        } ;
+            var rooms = {};
 
-        var utilObj = new function(){
-            this.alert = function(){
+            var Room = function(roomId, roomManager) {
+                var myRoomId = roomId ;
+                var manager = roomManager ;
+
+                this.roomId = function() {
+                    return myRoomId;
+                };
+
+                this.toast = function(option) {
+                    console.log('Toast ' + option);
+                };
+
+                this.notify = function(option) {
+                    console.log('Notify ' + option);
+                };
+
+                this.join = function(args) {
+                    var roomId = args.roomId;
+
+                    if(manager.exists(roomId)) {
+                        manager.select(roomId);
+                    } else {
+                        manager.create(roomId, roomId);
+                    }
+                };
+
+                var appendMsg = function(message, sender) {
+                    var roomEl = \$('#' + roomId);
+                    if (sender == screen.sender) {
+                        roomEl.append('<div align="right"><div class="bubble other">' + message + '</div><p style="margin-left: 1em;">' + sender + '</p></div>');
+                    } else {
+                        roomEl.append('<div align="left"><div align="left" class="bubble me">' + message + '</div><p style="margin-left: 1em;">' + sender + '</p></div>');
+                    }
+
+                    // scroll to bottom
+                    \$("html, body").animate({ scrollTop: \$(document).height()-\$(window).height() }, 10);
+                };
+
+                this.message = function(args) {
+                    //                if ( (!roomId.startWith('@')) && \$('#' +roomId) == null) return ;
+
+                    if(this.roomId().startWith('@')) {              // this if should be fixed...
+                        this.toast({
+                            title: 'New Whisper',
+                            msg: args.message + ' from: ' + args.sender
+                        });
+                        return ;
+                    } else if(!manager.isActive(myRoomId)) {
+                        var onClickMsg = 'client.chat("/join ' + roomId + '")';
+                        this.toast({
+                            title : 'New Message',
+                            msg : "<a href='#' onclick='" + onClickMsg + "'>" + args.message + "</a><br/><span style='color:black;'>from:" + args.sender + " , room:" + roomId + "</span>"
+                        }) ;
+                        return;
+                    }
+
+                    var message = args.html || args.message ;
+                    var sender = '&lt;' + (args.sender || 'system') + '&gt;' ;
+
+                    appendMsg(message, sender);
+                };
+            };
+
+            // constructor part
+            rooms['home'] = new Room('home', this);
+
+            this.create = function(roomId, roomTitle) {
+                var navbar = \$("#roomList");
+
+                var li = \$("<li></li>");
+                var a  = \$("<a></a>");
+                var closeBtn = \$('<a></a>').attr('roomId', roomId).attr('role', 'delete').attr('class', 'ui-btn ui-icon-delete ui-btn-icon-notext').text('Delete');
+                a.attr("href", '#' + roomId).attr('id', 'tab-' + roomId).text(roomTitle);
+                li.attr('roomNumber', roomId);
+                li.append(a);
+                li.append(closeBtn);
+
+                closeBtn.click(function(event) {
+                    event.preventDefault();
+                    \$(this).removeClass('ui-btn-active').removeClass('ui-btn-hover-b').addClass('ui-btn-up-b');
+                    var roomId = \$(this).attr('roomId');
+
+                    this.remove(roomId);
+                });
+
+                navbar = this.clearNavBarStyle(navbar);
+
+                navbar.navbar("destroy");
+                li.appendTo(\$("#roomList ul"));
+                \$('#chatRooms').append('<div style="margin-bottom: 20px;" id="'+roomId+ '"></div>');
+                navbar.navbar();
+                \$('#chatScreens').tabs('refresh');
+
+                rooms[roomId] = new Room(roomId, this);
+
+                this.select(roomId);
+            };
+
+            this.refreshRoomList = function() {
+                var navbar = \$("#roomList");
+                navbar = this.clearNavBarStyle(navbar);
+                navbar.navbar("destroy");
+                navbar.navbar();
+                \$('#chatScreens').tabs('refresh');
+            };
+
+            this.clearNavBarStyle = function(navbar){
+                navbar.find("*").andSelf().each(function(){
+                    if(\$(this).attr('role') == 'delete') {
+                        return ;
+                    }
+
+                    \$(this).removeClass(function(i, cn){
+                        var matches = cn.match (/ui-[\w\-]+/g) || [];
+                        return (matches.join (' '));
+                    });
+
+                    if (\$(this).attr("class") == "") {
+                        \$(this).removeAttr("class");
+                    }
+                });
+                return navbar;
+            };
+
+            this.select = function(roomId) {
+                \$('.ui-btn-active').removeClass('ui-btn-hover-b').addClass('ui-btn-up-b');
+                \$('#tab-' + roomId).addClass('ui-btn-active');
+                \$('#tab-' + roomId).trigger('click');
+            };
+
+            this.remove = function(roomId) {
+                \$('li[roomNumber=' + roomId + ']').remove();
+                \$('#' + roomId).remove();
+
+                delete rooms[roomId];
+
+                this.refreshRoomList();
+            };
+            this.exists = function(roomId) {
+                return \$('#tab-' + roomId).length > 0;
+            };
+
+            this.currentRoom = function() {
+                return rooms[this.getActiveRoomId()];
+            };
+
+            this.getActiveRoomId = function() {
+                var href = \$('.ui-tabs-active').children()[0].href;
+                var tabId = href.substr(href.lastIndexOf('/') + 2);
+
+                return tabId;
+            };
+
+            this.isActive = function(roomId) {
+                return this.getActiveRoomId() == roomId;
             }
-        } ;
+        };
 
-        this.room =  function(){
-            return roomObj ;
-        },
+        // constructor part of ChatClient
+        connManager.initConnection(wsAddress);
 
-        this.character = function(id){
-            return new function(){
-                this.id = id ;
-
-                this.scale = function(percentage) {
-                    console.log(this.id + ' ' + percentage) ;
-                }
-            } ;
-        },
-
-        this.common = function(){
-            return commonObj ;
-        },
-
-        this.util = function(){
-            return utilObj ;
-        },
-
-        this.gps = function(){
-            return gpsObj ;
-        },
-
-        this.file = function(){
-        },
-
-        this.reload = function(){
-            \$.ajax({
-                type:'post', async:true, url:'/session/reload',
-                success : function(data){
-                    console.log(data) ;
-                    webClient.reconnect(data) ;
-                },
-                error : function(request,status,error){
-                    console.log('error' + status + error);
-                    \$.messager.alert('Alert', 'Not Connect Server', 'error');
-                }
-            }) ;
-        }
-    } ;
-
-    var activeScreenId = function() {
-        var href = \$('.ui-tabs-active').children()[0].href;
-        var tabId = href.substr(href.lastIndexOf('/') + 2);
-
-        return tabId;
-    };
-
-    function initChat() {
-        webClient.sender = '$config.sender$' ;
-        webClient.senderNickname = '$config.nickName$' ;
-        webClient.status = 'ready' ;
-
-        webClient.jsonToString = function(obj){
+        var jsonToString = function(obj) {
             var t = typeof (obj);
             if (t != "object" || obj === null) {
                 if (t == "string") obj = '"' + obj + '"'; // simple data type
@@ -449,157 +504,99 @@
                 for (n in obj) {
                     v = obj[n]; t = typeof(v);
                     if (t == "string") v = '"'+v+'"';
-                    else if (t == "object" && v !== null) v = this.jsonToString(v);
+                    else if (t == "object" && v !== null) v = jsonToString(v);
                     json.push((arr ? "" : '"' + n + '":') + String(v));
                 }
                 return (arr ? "[" : "{") + String(json) + (arr ? "]" : "}");
             }
-        } ;
-
-        var ws ;
-
-        webClient.initWebsocket = function(wsaddress){
-            ws = new WebSocket(wsaddress) ;
-
-            ws.onopen = function(){
-                client.room().message({message:"open"}) ;
-                webClient.status = 'connected' ;
-                
-                if (!!navigator.geolocation){
-					console.log('supported navigator') ;
-    				navigator.geolocation.getCurrentPosition(function(position){
-							console.log(position.coords.latitude + ',' + position.coords.longitude) ;
-							webClient.command('/user/addGPSWith', {latitude:position.coords.latitude, longitude:position.coords.longitude, userId:'$config.sender$'}) ;
-						}, function(error){console.log('not supported navigator : ' +  error.message); });
-				} else {
-					console.log('not supported navigator') ;
-				}
-            } ;
-
-            ws.onmessage = function(e){
-                console.log(e.data) ;
-                if ('HEARTBEAT' == e.data) {
-                    ws.send('HEARTBEAT') ;
-                    return ;
-                }
-                // {notifyId:...}
-                var msg = eval('(' + e.data + ')') ;
-                if (msg.script == undefined && msg.notifyId != ''){
-                    webClient.command('/room/listNotifyDataBy', {'notifyId':msg.notifyId, 'userId':webClient.sender}) ;
-                    return ;
-                }
-                if (msg.status != 'success'){
-                    console.error(e.data) ;
-                    return ;
-                }
-
-                if (msg.script == '/room/sendMessageWith') return ; // return sendMessageWith
-
-                if (msg.script.startWith('/whisper/')){
-                    var args = msg.result || {} ;
-                    eval(msg.result.clientScript) ;
-                    return ;
-                }
-
-                if (msg.script == '/room/listNotifyDataBy') {
-                    var args = msg.result || {} ;
-                    eval(msg.result.clientScript) ;
-                    return ;
-                }
-            } ;
-
-            ws.onclose = function(){
-                webClient.status = 'closed' ;
-                client.room().message({message:"closed.. retry connect"}) ;
-                client.reload() ;
-
-            } ;
-            ws.onerror = function(){
-                client.room().message({message:"error"}) ;
-
-            } ;
-        } ;
-
-        webClient.initWebsocket('$config.address$') ;
-
-        webClient.getWebSocket = function(){
-            return ws ;
-        } ;
-
-        webClient.reconnect = function(address){
-            this.initWebsocket(address);
-        }
-
-        webClient.command = function(script, params){
-            // id, script, params[
-            var cmdMsg = {} ;
-            cmdMsg.id = new Date().getUTCMilliseconds() ;
-            cmdMsg.script = script ;
-            cmdMsg.params = params ;
-            this.getWebSocket().send(this.jsonToString(cmdMsg));
-        } ;
-
-        webClient.close = function(){
-            this.getWebSocket().close() ;
-        } ;
-
-
-        webClient.connected = function(){
-            return this.status == 'connected' ;
         };
 
-        webClient.chat = function(argMessage){
-            // id, script, params[
-            if (! this.connected()) {
-                client.reload() ;
-                setTimeout(function(){
-                    if (webClient.connected()) webClient.chat(argMessage);
-                    else client.room().alertMsg({content: 'Not connect Server'});
-                }, 1000) ;
+        this.getRoomManager = function() {
+            return roomManager;
+        };
+
+        this.chat = function(argMessage) {
+            if(!connManager.isConnected()) {
+                connManager.reconnect();
+
+                setTimeout(function() {
+                    if (connManager.isConnected()) {
+                        this.chat(argMessage);
+                    } else {
+                        roomManager.currentRoom().notify({content: 'Not connect Server'});
+    //                        client.room().alertMsg({content: 'Not connect Server'});
+                    }
+                }, 1000);
+
                 return ;
             }
 
-            var msgText = argMessage ? argMessage : jQuery("#message").val() ;
-            var chatMsg = {id:'' + new Date().getUTCMilliseconds(), script:'/room/sendMessageWith', params:{}} ;
-            var currentRoomId = activeScreenId();
+            var currentRoomId = roomManager.getActiveRoomId();
+            var msgText = argMessage ? argMessage : \$('#message').val();
+            var msgId = '' + new Date().getUTCMilliseconds();
+            var chatMsg = jsonToString({
+                id : msgId,
+                script: '/room/sendMessageWith',
+                params: {
+                    receivers: '',
+                    roomId: (currentRoomId == 'home' ? '' : currentRoomId),
+                    message: msgText,
+                    senderNickname: screen.nickname,
+                    clientScript: 'client.chat(args);',
+                    requestId: msgId
+                }
+            });
+            connManager.getConnection().send(chatMsg);
 
+            \$('#message').val('');
+            \$('#message').focus();
+        };
 
-            if (currentRoomId == 'home' && !(msgText.startWith('/')||msgText.startWith('@') )){
-                client.room().alertMsg({content:'not in room'}) ;
-            } else {
-                chatMsg.params.receivers = '';
-                chatMsg.params.roomId = (currentRoomId == 'home') ? '' :  currentRoomId ;
-                chatMsg.params.message = msgText  ;
-                chatMsg.params.sender = this.sender ;
-                chatMsg.params.senderNickname = this.senderNickname ;
-                chatMsg.params.clientScript = 'client.room().message(args);' ;
-                chatMsg.params.requestId = chatMsg.id ;
+        this.command = function(script, params) {
+            var cmdMsg = this.jsonToString({
+                id: new Date().getUTCMilliseconds(),
+                script: script,
+                params: params
+            });
+            connManager.getConnection().send(cmdMsg);
+        };
 
-                console.log(this.jsonToString(chatMsg)) ;
+        this.close = function() {
+            connManager.getConnection().close();
+        };
 
-                this.getWebSocket().send(this.jsonToString(chatMsg));
-            }
+        this.connected = function() {
+            return self.status == 'connected' ;
+        };
 
-            webClient.close = function(){
-                this.getWebSocket().close();
-            } ;
+        this.room = function() {
+            return roomManager.currentRoom();
+        };
 
-            \$("#message").val("");
-            \$("#message").focus();
-        } ;
-
+        this.reload = function() {
+            connManager.reload();
+        };
     };
+
+    var wsAddress = '$config.address$';
+    var sender = '$config.sender$';
+    var senderNickname = '$config.nickName$';
+
+    //
+    var client = new ChatClient(wsAddress, sender, senderNickname);
 
     \$("#message").keydown(function(event) {
         if (event.which == 13) {
-            var msg = jQuery("#message").val() ;
-            var divId = jQuery('#zone').tabs('getSelected').panel('options').title ;
+//            var msg = jQuery("#message").val() ;
+//            var divId = jQuery('#zone').tabs('getSelected').panel('options').title ;
             // jQuery("#" + divId).append(msg) ;
 
-            webClient.chat();
+            client.chat();
         }
     }) ;
 
+    ///////////////////////
+    // register handlers
     \$('#authNum').keyup(function(event) {
         var value = jQuery(this).val();
         //&& window.toonweb.isAuthRequested
@@ -622,7 +619,7 @@
         if(validator != '') {
             validator.resetForm();
         }
-    }
+    };
 
     function requestPhoneAuth() {
         var country = jQuery("#country option:selected").val();
@@ -779,12 +776,12 @@
         });
 
 
-        chatRoomHandler.select('home');
+        client.getRoomManager().select('home');
     });
 
 
 
-    window.onload = initChat ;
+//    window.onload = initChat ;
 
 </script>
 </body>
