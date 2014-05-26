@@ -155,7 +155,7 @@ new function(){
 		var unreadMsg = session.pathBy("/rooms/" + roomId + "/messages").children().ascending('messageId').offset(100).iterator() ;
 		while(unreadMsg.hasNext()){
 			var next = unreadMsg.next() ; 
-			if (next.property("exclusiveSender").asBoolean() && scriptMsg.fromUserId().equals(next.ref("sender").property("userId").asString()) ) continue ;
+//			if (next.property("exclusiveSender").asBoolean() && scriptMsg.fromUserId().equals(next.ref("sender").property("userId").asString()) ) continue ;
 			source.sendMessage(rb.makeCommandBuilder("/whisper/system")
 			  .inner("result")
 				.property(next, "message, sender.userId as sender, sender.nickname as senderNickname, requestId, clientScript, options, messageId, time")
