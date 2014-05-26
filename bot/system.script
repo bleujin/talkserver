@@ -45,12 +45,13 @@ new function(){
 	
 	this.sendWhisper = function(bm, args){
 		session.tran(function(wsession) {
-        	wsession.pathBy("/rooms/@" + bm.fromUserId() + "/messages/" + new net.ion.framework.util.ObjectId())
+			var messageId=new net.ion.framework.util.ObjectId().toString();		
+        	wsession.pathBy("/rooms/@" + bm.fromUserId() + "/messages/" + messageId)
                     .property("message", args.message)
                     .refTo("sender", "/users/system")
                     .property("options", "{event:'onMessage'}")
                     .property("clientScript", args.clientScript || 'client.room().message(args)')
-                    .property("messageId", bm.messageId());
+                    .property("messageId", messageId);
         }) ;
 	}, 
 
@@ -209,10 +210,12 @@ new function(){
 		if (scriptMsg.isNotInRoom()) {
 			return {message:'this command can do executed only in room'} ;
 		}
+	
 
 		var result = {} ;
+		result.roomId=scriptMsg.fromRoomId();
 		result.topic = session.pathBy("/rooms/" + scriptMsg.fromRoomId()).property("title").defaultValue('no topic') ;
-		result.members = [] ;
+		result.members = [] ;		
 		var children = session.pathBy("/rooms/" + scriptMsg.fromRoomId() + "/members").children().iterator() ;
 		while(children.hasNext()){
 			result.members.push(children.next().fqn().name()) ;
@@ -220,7 +223,6 @@ new function(){
 
 		return {message:toString(result)} ;
 	}, 
-	
 	this.bot = function(scriptMsg, cparam){
 		if (scriptMsg.isNotInRoom()) {
 			return {message:'this command can do executed only in room'} ;
@@ -253,8 +255,7 @@ new function(){
 			wsession.pathBy("/rooms/" + roomId + "/members/" + targetId).removeSelf() ;
 		}) ;
 		return {message: targetId + ' ban from' + scriptMsg.fromUserId()} ;
-	}, 
-	
+	},
 	this.leave = function(scriptMsg, cparam, source){
 		if (scriptMsg.isNotInRoom()) {
 			return {message:'this command can do executed only in room'} ;

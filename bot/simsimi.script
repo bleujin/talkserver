@@ -12,6 +12,7 @@ new function() {
 	},
 	
 	this.onMessage = function(bm){
+		var time= new Date().getTime();
 		if ("simsimi" == bm.fromUserId()) return ;
 		
 		var handler = new net.ion.talk.bot.connect.BotCompletionHandler() {
@@ -20,15 +21,17 @@ new function() {
 					var roomId = bm.fromRoomId() ;
 					var selfBotId = bm.toUserId() ;
 					var resp = eval('(' + jsonResponse + ')');
+					var messageId=new net.ion.framework.util.ObjectId().toString();
 					
 					
-		            var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + new net.ion.framework.util.ObjectId().toString())
+		            var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + messageId)
 		                    .property("message", resp.response)
 		                    .refTo("sender", "/users/"+selfBotId)
 		                    .property("roomId", roomId)
 		                    .property("options", "{event:'onMessage'}")
 		                    .property("clientScript", bm.clientScript())
-		                    .property("messageId", bm.messageId());					
+		                    .property("time",time.toString())
+		                    .property("messageId", messageId);					
 				});
 			} ,
 			
@@ -79,13 +82,15 @@ new function() {
 		
 		var memberList = session.pathBy("/rooms/" + roomId + "/members").childrenNames().toArray();
         session.tran(function(wsession) {
-            var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + new net.ion.framework.util.ObjectId().toString())
+        	var messageId=new net.ion.framework.util.ObjectId().toString();
+        
+            var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + messageId)
                     .property("message", "Hello I'm SimSimI")
                     .refTo("sender","/users/"+ selfBotId)
                     .property("roomId", roomId)
                     .property("options", "{event:'onMessage'}")
                     .property("clientScript", bm.clientScript())
-                    .property("messageId", bm.messageId());
+                    .property("messageId",messageId);
                     
 
         }) ;
