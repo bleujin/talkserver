@@ -141,7 +141,9 @@ new function(){
 			if (! wsession.exists("/rooms/" + roomId)){ 
 			     wsession.pathBy("/rooms/" + roomId).property("roomId", roomId).property("title", "no title").child('members').child(scriptMsg.fromUserId()).refTo("user", "/users/"+scriptMsg.fromUserId()) ;
 				 wsession.pathBy("/openrooms/" + roomId).refTo("room", "/rooms/" + roomId).property("roomId", roomId) ;
-			}else wsession.pathBy("/rooms/" + roomId).property("roomId", roomId).child('members').child(scriptMsg.fromUserId()).refTo("user", "/users/"+scriptMsg.fromUserId()) ;
+			}else if(!wsession.pathBy("/rooms/" + roomId+"/members/").hasChild(scriptMsg.fromUserId())){ 			
+				wsession.pathBy("/rooms/" + roomId).property("roomId", roomId).child('members').child(scriptMsg.fromUserId()).refTo("user", "/users/"+scriptMsg.fromUserId()) ;
+			}
 		}) ;
 
 		source.sendMessage(
@@ -304,6 +306,10 @@ new function(){
 		if (!session.exists("/users/" + targetId)){
 			return {message: '[userId:' + targetId + '] not exists'} ;
 		} 
+		
+		if(session.pathBy("/rooms/" + scriptMsg.fromRoomId()+"/members/").hasChild(targetId)){
+			 return {message: '[userId:' + targetId + '] is member'} ;		
+		}
 		
 		session.tranSync(function(wsession){
 			wsession.pathBy("/rooms/" + scriptMsg.fromRoomId() + "/members/" + targetId).refTo("user", "/users/"+scriptMsg.fromUserId()) ;
