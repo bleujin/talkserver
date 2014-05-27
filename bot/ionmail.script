@@ -6,11 +6,7 @@ new function(){
 	
 
 	this.onLoad = function(){
-		session.tran(function(wsession){
-			wsession.pathBy("/bots/" + _myBotId).refTo("user", "/users/" + _myBotId) ;
-			wsession.pathBy("/users/" + _myBotId).property("userId", _myBotId).property("nickname", _myBotId + " bot").property("stateMessage", "normal").property("free", true) ;
-			wsession.pathBy("/rooms/@" + _myBotId + "/members/" + _myBotId).refTo("user", "/users/" + _myBotId) ;
-		}) ;
+
 	}, 
 	
 	this.onMessage = function(bm){

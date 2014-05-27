@@ -3,6 +3,7 @@ package net.ion.talk.script;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
@@ -19,8 +20,6 @@ import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
 import net.ion.craken.script.FileAlterationMonitor;
 import net.ion.framework.db.Rows;
-import net.ion.framework.mail.BBotMailer;
-import net.ion.framework.parse.gson.JsonElement;
 import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.util.Debug;
 import net.ion.framework.util.FileUtil;
@@ -30,7 +29,6 @@ import net.ion.framework.util.ObjectId;
 import net.ion.framework.util.ObjectUtil;
 import net.ion.framework.util.StringUtil;
 import net.ion.radon.aclient.NewClient;
-import net.ion.talk.ParameterMap;
 import net.ion.talk.UserConnection;
 import net.ion.talk.bean.Const.Message;
 import net.ion.talk.bean.Const.Status;
@@ -43,7 +41,6 @@ import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.mozilla.javascript.NativeJavaObject;
-import org.mozilla.javascript.edu.emory.mathcs.backport.java.util.Collections;
 
 import sun.org.mozilla.javascript.internal.NativeObject;
 
@@ -56,6 +53,7 @@ public class BotScript {
 	private FileAlterationMonitor monitor;
 	private ScheduledExecutorService ses;
 	private ReadSession rsession;
+	private String scriptExtension = ".script" ;
 
 	private BotScript(ReadSession rsession, ScheduledExecutorService ses, NewClient nc) {
 		ScriptEngineManager manager = new ScriptEngineManager();
@@ -65,7 +63,7 @@ public class BotScript {
 		sengine.put("rb", TalkResponseBuilder.create()) ;
 		sengine.put("nc", nc) ;
 		sengine.put("bc", RestClient.create(nc, rsession));
-		sengine.put("bbotmailer", BBotMailer.create(ses));
+//		sengine.put("bbotmailer", BBotMailer.create(ses));
 		
 		this.rsession = rsession ;
 	}
@@ -82,6 +80,11 @@ public class BotScript {
 		return rsession ;
 	}
 	
+	public BotScript scriptExtension(String scriptExtension){
+		this.scriptExtension = scriptExtension ;
+		return this ;
+	}
+	
 	public BotScript readDir(final File scriptDir, boolean reloadWhenDetected) throws IOException {
 		if (!scriptDir.exists() || !scriptDir.isDirectory())
 			throw new IllegalArgumentException(scriptDir + " is not directory");
@@ -93,8 +96,6 @@ public class BotScript {
 			throw new IOException(e) ;
 		} 
 			
-		String scriptExtension = ".script";
-		
 		new DirectoryWalker<String>(FileFilterUtils.suffixFileFilter(scriptExtension), 2) {
 			protected void handleFile(File file, int dept, Collection<String> results) throws IOException {
 				String packName = loadPackageScript(file);
@@ -112,19 +113,7 @@ public class BotScript {
 			}
 
 		}.loadScript(scriptDir);
-		
-		for (String packName : packages.keySet()) {
-			try {
-				Object pack = packages.get(packName);
-				((Invocable) sengine).invokeMethod(pack, "onLoad");
-			} catch (ScriptException e) {
-				e.printStackTrace();
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		
+
 		
 		if (! reloadWhenDetected) return this ;
 
@@ -164,10 +153,22 @@ public class BotScript {
 
 
 	private String loadPackageScript(File file)  {
-		String packName = FilenameUtils.getBaseName(file.getName());
+		final String packName = FilenameUtils.getBaseName(file.getName());
 		try {
 			String script = FileUtil.readFileToString(file);
 			packages.put(packName, sengine.eval(script));
+			rsession.tran(new TransactionJob<Void>(){
+				@Override
+				public Void handle(WriteSession wsession) throws Exception {
+					wsession.pathBy("/bots/" + packName).refTo("user", "/users/" + packName) ;
+					wsession.pathBy("/users/" + packName).property("userId", packName).property("nickname", packName + " bot").property("stateMessage", "normal").property("free", true) ;
+					wsession.pathBy("/rooms/@" + packName + "/members/" + packName).refTo("user", "/users/" + packName) ;
+					return null;
+				}
+			}) ;
+			
+			
+			
 			((Invocable) sengine).invokeMethod(packages.get(packName), "onLoad");
 			
 		} catch (IOException e) {
@@ -244,9 +245,10 @@ public class BotScript {
 	
 	public Object whisper(UserConnection source, WhisperMessage whisperMsg) {
 		
-		BotWhisperHandler<Void> returnnative = BotWhisperHandler.DEFAULT ;
+		BotWhisperHandler<Object> returnnative = BotWhisperHandler.DEFAULT ;
 		try {
 			Object pack = packages.get(whisperMsg.toUserId());
+			if (pack == null) return returnnative.onThrow(source, whisperMsg.toUserId(), whisperMsg, new IllegalArgumentException("not found bot : " +  whisperMsg.toUserId())) ;
 			Object result = ((Invocable) sengine).invokeMethod(pack, "onWhisper", source, whisperMsg);
 			if(result instanceof NativeJavaObject) result = ((NativeJavaObject)result).unwrap() ;  
 			result = ObjectUtil.coalesce(result, "undefined") ;
@@ -287,14 +289,14 @@ interface BotResponseHandler<T> {
 }
 
 interface BotWhisperHandler<T> {
-	public final static BotWhisperHandler<Void> DEFAULT = new BotWhisperHandler<Void>() {
+	public final static BotWhisperHandler<Object> DEFAULT = new BotWhisperHandler<Object>() {
 		@Override
-		public Void onSuccess(UserConnection uconn, String botId, WhisperMessage whisper, Object result) {
-			return null ;
+		public Object onSuccess(UserConnection uconn, String botId, WhisperMessage whisper, Object result) {
+			return result ;
 		}
 
 		@Override
-		public Void onThrow(UserConnection uconn, String botId, WhisperMessage whisper, Exception ex) {
+		public Object onThrow(UserConnection uconn, String botId, WhisperMessage whisper, Exception ex) {
 			JsonObject forSend = JsonObject.create().put("id", whisper.requestId()).put(Status.Status, Status.Failure)
 					.put("result", new JsonObject().put(Message.ClientScript, Message.DefaultOnMessageClientScript).put(Message.Message, ex.getMessage()).put(Message.MessageId, new ObjectId().toString()) )
 					.put("script", whisper.message()).put("params", whisper.asJson());

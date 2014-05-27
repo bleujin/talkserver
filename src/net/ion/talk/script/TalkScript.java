@@ -3,6 +3,7 @@ package net.ion.talk.script;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
@@ -32,7 +33,6 @@ import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.mozilla.javascript.NativeJavaObject;
-import org.mozilla.javascript.edu.emory.mathcs.backport.java.util.Collections;
 
 import sun.org.mozilla.javascript.internal.NativeObject;
 
