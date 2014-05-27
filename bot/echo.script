@@ -29,17 +29,19 @@ new function(){
 	this.sendMessage = function(event, bm, args){
 		var roomId = bm.fromRoomId() ;
 		var selfBotId = bm.toUserId() ;
-
+		var time= new Date().getTime();
+		var messageId=new net.ion.framework.util.ObjectId().toString();
 		if (session.exists("/bots/"+ bm.fromUserId())) return ;
 		
         session.tran(function(wsession) {
-            var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + new net.ion.framework.util.ObjectId().toString())
+            var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + messageId)
                     .property("message", args.message || bm.message())
                     .refTo("sender", "/users/"+selfBotId)
                     .property("roomId", roomId)
                     .property("options", "{event:'onMessage'}")
                     .property("clientScript", bm.clientScript())
-                    .property("messageId", bm.messageId());
+                    .property("time",time.toString())
+                    .property("messageId", messageId);
 
         }) ;
 	}, 
