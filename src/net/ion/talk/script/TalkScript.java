@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.script.Invocable;
 import javax.script.ScriptContext;
@@ -18,6 +20,7 @@ import javax.script.SimpleScriptContext;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.script.FileAlterationMonitor;
 import net.ion.framework.db.Rows;
+import net.ion.framework.logging.LogBroker;
 import net.ion.framework.util.Debug;
 import net.ion.framework.util.FileUtil;
 import net.ion.framework.util.ListUtil;
@@ -25,6 +28,8 @@ import net.ion.framework.util.MapUtil;
 import net.ion.framework.util.ObjectUtil;
 import net.ion.framework.util.StringUtil;
 import net.ion.talk.ParameterMap;
+import net.ion.talk.bean.Const;
+import net.ion.talk.bean.Const.Message;
 import net.ion.talk.responsebuilder.TalkResponseBuilder;
 
 import org.apache.commons.io.DirectoryWalker;
@@ -43,6 +48,7 @@ public class TalkScript {
 	private FileAlterationMonitor monitor;
 	private ScheduledExecutorService ses;
 	private ReadSession rsession;
+	private Logger loger ;
 
 	private TalkScript(ReadSession rsession, ScheduledExecutorService ses) {
 		ScriptEngineManager manager = new ScriptEngineManager();
@@ -51,6 +57,7 @@ public class TalkScript {
 		sengine.put("session", rsession);
 		sengine.put("rb", TalkResponseBuilder.create()) ;
 		this.rsession = rsession ;
+		this.loger = LogBroker.getLogger(this) ;
 	}
 
 	public static TalkScript create(ReadSession rsession, ScheduledExecutorService ses) {
@@ -99,28 +106,28 @@ public class TalkScript {
 		if (! reloadWhenDetected) return this ;
 
 		
-		FileAlterationObserver observer = new FileAlterationObserver(scriptDir, FileFilterUtils.suffixFileFilter(scriptExtension)) ;
-		observer.addListener(new FileAlterationListenerAdaptor() {
-			@Override
-			public void onFileDelete(File file) {
-				Debug.line("Package Deleted", file);
-				packages.remove(FilenameUtils.getBaseName(file.getName())) ;
-			}
-			
-			@Override
-			public void onFileCreate(File file) {
-				Debug.line("Package Created", file);
-				loadPackageScript(file) ;
-			}
-			
-			@Override
-			public void onFileChange(File file) {
-				Debug.line("Package Changed", file);
-				loadPackageScript(file) ;
-			}
-		});
 		
 		try {
+			FileAlterationObserver observer = new FileAlterationObserver(scriptDir, FileFilterUtils.suffixFileFilter(scriptExtension)) ;
+			observer.addListener(new FileAlterationListenerAdaptor() {
+				@Override
+				public void onFileDelete(File file) {
+					loger.info("Talk Package Deleted :" + file);
+					packages.remove(FilenameUtils.getBaseName(file.getName())) ;
+				}
+				
+				@Override
+				public void onFileCreate(File file) {
+					loger.info("Talk Package Created : " + file);
+					loadPackageScript(file) ;
+				}
+				
+				@Override
+				public void onFileChange(File file) {
+					loger.info("Talk Package Changed : " + file);
+					loadPackageScript(file) ;
+				}
+			});
 			observer.initialize();
 
 			this.monitor = new FileAlterationMonitor(1000, this.ses, observer) ;
@@ -139,9 +146,11 @@ public class TalkScript {
 			String script = FileUtil.readFileToString(file);
 			packages.put(packName, sengine.eval(script));
 		} catch (IOException e) {
-			e.printStackTrace(); 
+			e.printStackTrace();
+			loger.warning(e.getMessage()) ;
 		} catch (ScriptException e) {
 			e.printStackTrace(); 
+			loger.warning(e.getMessage()) ;
 		}
 		return packName;
 	}
@@ -187,6 +196,12 @@ public class TalkScript {
 			String fnName = names[1];
 
 			Object pack = packages.get(packName);
+			
+			if (rsession.pathBy("/rooms/" + params.asString("roomId")).hasRef("owner")){
+				params.set(Const.Message.ClientScript, Message.UnDefinedClientScript) ;
+			}
+			
+			
 			if (pack == null) return shandler.onThrow(fullFnName, params, new IOException("not found package : " + fullFnName)) ;
 
 			Object result = ((Invocable) sengine).invokeMethod(pack, fnName, params);

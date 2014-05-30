@@ -4,11 +4,15 @@ import java.io.IOException;
 
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
+import net.ion.craken.node.WriteNode;
 import net.ion.craken.node.WriteSession;
+import net.ion.framework.util.ObjectUtil;
+import net.ion.framework.util.StringUtil;
 import net.ion.talk.TalkEngine;
 import net.ion.talk.TalkEngine.Reason;
 import net.ion.talk.TalkMessage;
 import net.ion.talk.UserConnection;
+import net.ion.talk.bean.Const;
 import net.ion.talk.bean.Const.Connection;
 import net.ion.talk.bean.Const.User;
 import net.ion.talk.handler.TalkHandler;
@@ -33,8 +37,12 @@ public class UserConnectionHandler implements TalkHandler {
 				public Void handle(WriteSession wsession) {
 					String userId = uconn.id();
 					wsession.pathBy("/connections/" + userId).property(Connection.DelegateServer, rsession.workspace().repository().memberId()).refTo("user", "/users/" + userId);
-					wsession.pathBy("/users/" + userId).unset(User.AccessToken);
+					WriteNode userNode = wsession.pathBy("/users/" + userId) ;
+					userNode.unset(User.AccessToken);
 					wsession.pathBy("/rooms/@" + userId + "/members/" + userId).refTo("user", "/users/" + userId);
+					
+					uconn.data("nick", StringUtil.defaultIfEmpty(userNode.property(Const.User.NickName).asString(), userId)) ;
+					
 					return null;
 				}
 			});

@@ -42,6 +42,9 @@ public class TalkScriptHandler implements TalkHandler {
 		
 		if (tmsg.messageType() != MType.NORMAL) return ;
 		
+		
+		
+		
 		tscript.callFn(tmsg.scriptPath(), ObjectUtil.coalesce(tmsg.params(), ParameterMap.BLANK), new ScriptResponseHandler<Void>() {
 			@Override
 			public Void onSuccess(String fullName, ParameterMap pmap, Object result) {

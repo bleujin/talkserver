@@ -40,7 +40,12 @@ public class UserInAndOutRoomHandler implements CDDHandler {
         return new TransactionJob<Void>() {
             @Override
             public Void handle(WriteSession wsession) throws Exception {
-
+            	
+            	if (wsession.readSession().ghostBy("/bots/" + userId).property("owner").asBoolean()){
+                	wsession.pathBy("/rooms/" + roomId).refTos("owner", "/bots/"+userId) ;
+            	}
+            	
+            	
                 String messageId = new ObjectId().toString();
                 wsession.pathBy("/rooms/" + roomId + "/messages/")
                         .child(messageId)
@@ -69,6 +74,11 @@ public class UserInAndOutRoomHandler implements CDDHandler {
             @Override
             public Void handle(WriteSession wsession) throws Exception {
 
+            	if (wsession.readSession().ghostBy("/bots/" + userId).property("owner").asBoolean()){
+                	wsession.pathBy("/rooms/" + roomId).unRefTos("owner", "/bots/"+userId) ;
+            	}
+
+            	
                 String messageId = new ObjectId().toString();
                 //will define message
                 wsession.pathBy("/rooms/" + roomId + "/messages/")

@@ -122,7 +122,7 @@ new function(){
 				.refTo("sender","/users/"+params.asString("sender"))
 				.property("clientScript",params.asString("clientScript"))
 				.property("options","{event:'onMessage'}")
-				.property("fromRoomId",params.asString("fromRoomId"))
+//				.property("fromRoomId",params.asString("fromRoomId"))
 				.property("requestId",params.asString("requestId"))
 				.property("time",time.toString());
 

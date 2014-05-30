@@ -55,8 +55,8 @@ public class BotScript {
 	private ReadSession rsession;
 	private String scriptExtension = ".script" ;
 
-	private BotScript(ReadSession rsession, ScheduledExecutorService ses, NewClient nc) {
-		ScriptEngineManager manager = new ScriptEngineManager();
+	private BotScript(ClassLoader classLoader, ReadSession rsession, ScheduledExecutorService ses, NewClient nc) {
+		ScriptEngineManager manager = new ScriptEngineManager(classLoader);
 		this.ses = ses ;
 		this.sengine = manager.getEngineByName("JavaScript");
 		sengine.put("session", rsession);
@@ -69,7 +69,11 @@ public class BotScript {
 	}
 
 	public static BotScript create(ReadSession rsession, ScheduledExecutorService ses, NewClient nc) {
-		return new BotScript(rsession, ses, nc);
+		return new BotScript(BotScript.class.getClassLoader(), rsession, ses, nc);
+	}
+
+	public static BotScript create(ClassLoader cloader, ReadSession rsession, ScheduledExecutorService ses, NewClient nc) {
+		return new BotScript(cloader, rsession, ses, nc);
 	}
 
 	public BotScript readDir(final File scriptDir) throws IOException {

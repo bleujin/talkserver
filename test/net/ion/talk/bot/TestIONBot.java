@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 import junit.framework.TestCase;
+import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.node.ReadSession;
 import net.ion.framework.util.Debug;
 import net.ion.framework.util.StringUtil;
@@ -22,6 +23,20 @@ import net.ion.talk.script.WhisperMessage;
 
 public class TestIONBot extends TestCase {
 
+	private RepositoryEntry r;
+
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
+		this.r = RepositoryEntry.test() ;
+	}
+	
+	@Override
+	protected void tearDown() throws Exception {
+		r.shutdown(); 
+		super.tearDown();
+	}
+	
 	public void testRead() throws Exception {
 		CsvReader reader = new CsvReader(new StringReader("bleujin	0\nhero	1")) ;
 		reader.setFieldDelimiter('\t');
@@ -37,7 +52,7 @@ public class TestIONBot extends TestCase {
 	}
 	
 	public void testBotLoad() throws Exception {
-		ReadSession rsession = null ;
+		ReadSession rsession =  r.login() ;
 		ScheduledExecutorService ses = Executors.newScheduledThreadPool(2); 
 		BotScript bs = BotScript.create(rsession, ses, NewClient.create()) ;
 		bs.scriptExtension(".dscript") ;

@@ -30,6 +30,10 @@ public class UserConnection {
 		return inner.getString("id");
 	}
 
+	public UserConnection data(String name, String value){
+		inner.data(name, value) ;
+		return this ;
+	}
 	
 	
 	
@@ -45,7 +49,10 @@ public class UserConnection {
 		return (Long) inner.data("_sessionTime");
 	}
 
-	
+	public String asString(String key) {
+		return ObjectUtil.toString(inner.data(key));
+	}
+
 	
 	
 	
@@ -88,9 +95,6 @@ public class UserConnection {
 		return Collections.unmodifiableMap(inner.data());
 	}
 
-	private String asString(String key) {
-		return ObjectUtil.toString(inner.data(key));
-	}
 
 	private Object asObject(String key) {
 		return inner.data(key);
@@ -157,5 +161,9 @@ class DoppleUserConnection extends UserConnection {
 		for (WebSocketConnection inner : dopple) {
 			inner.send(message);
 		}
+	}
+	
+	public String asString(String key) {
+		return super.asString(key);
 	}
 }

@@ -1,0 +1,270 @@
+new function(){
+
+	var actions = '화남 - %s은 화난 얼굴로 주먹을 치켜세웁니다.  \n\
+사과 - %s은 %s에게 사과합니다. "정말 죄송해요!"  \n\
+간청 - %s은 %s에게 자비를 베풀어달라고 간청합니다.  \n\
+박수 - %s은 %s에게 박수 갈채를 보냅니다.  \n\
+부끄 - %s은 %s 앞에서 매우 부끄러워합니다.  \n\
+BLUSH  - %s은 %s을(를) 보고 얼굴을 붉힙니다.  \n\
+손짓 - %s은 %s을(를) 손짓하여 부릅니다.  \n\
+BITE  - %s은 %s을(를) 깨물었습니다. "아야!"\n\
+피    - %s의 상처에서 피가 납니다.  \n\
+깜박 - %s은 %s을(를) 보고 두 눈을 깜박이며 어리둥절해합니다.  \n\
+어처구니 - %s은 %s을(를) 보며 어처구니 없어 합니다.  \n\
+지루 - %s은 %s을(를) 보며 지루해서 어쩔줄 몰라합니다.  \n\
+폴짝 - %s은 %s 앞에서 폴짝폴짝 뜁니다.  \n\
+기다려 - %s은 %s에게 곧 돌아올테니 꼼짝말고 있으라고 일러둡니다.  \n\
+인사 - %s은 %s에게 정중히 인사합니다.  \n\
+트림 - %s은 %s의 얼굴에 대고 무례하게 트림을 합니다. "꺼억~" \n\
+작별 - %s은 %s에게 작별 인사를 합니다. 다음에 봐요!""  \n\
+환호/CHEER - %s은 %s에게 용기를 북돋아 줍니다!  \n\
+닭/우쭐/퍼덕 - %s은 %s 앞에서 두 팔을 퍼덕거리며 우쭐댑니다. "꼬꼬댁~"\n\
+킬킬 - %s은 %s을(를) 보고 킬킬대며 웃습니다.  \n\
+박수갈채 - %s은 %s에게 박수 갈채를 보냅니다.  \n\
+어리둥절 - %s은 어리둥절한 눈으로 %s을(를) 쳐다봅니다.  \n\
+축하 - %s은 %s을(를) 축하해 줍니다.  \n\
+기침/콜록 - %s은 %s 앞에서 기침을 합니다.  \n\
+벌벌 - %s은 %s을(를) 보고 두려움에 몸을 벌벌 떱니다.  \n\
+뚜둑 - %s은 %s을(를) 노려보며 손마디를 뚜둑 꺾습니다.  \n\
+CRINGE - %s은 %s을(를) 보더니 겁을 먹고 몸을 움츠립니다.  \n\
+엉엉 - %s은 %s의 어깨에 기대어 엉엉 웁니다.  \n\
+궁금 - %s은 %s을(를) 보며 다음엔 무엇을 할지 궁금해 합니다.  \n\
+절    - %s은 %s에게 예의를 갖추어 절을 합니다.  \n\
+춤    - %s은 %s과 신나게 춤을 춥니다.  \n\
+건배 - %s은 잔을 들어 %s과 건배합니다.  \n\
+군침 - %s은 %s을(를) 보더니 군침을 흘립니다.  \n\
+냠냠 - %s은 %s 앞에서 맛있게 음식을 먹습니다. "냠냠" \n\
+EYE  - %s은 %s을(를) 위아래로 훑어봅니다.  \n\
+방귀 - %s은 %s 앞에서 헛기침을 하더니 큰 소리로 방귀를 뀝니다.  \n\
+초조 - %s은 %s을(를) 기다리면서 초조해 합니다.  \n\
+힘자랑 - %s은 %s 앞에서 힘자랑을 합니다.  \n\
+실망 - %s은 %s에게 실망하여 얼굴을 찡그립니다.  \n\
+헐떡 - %s은 %s을(를) 보며 숨을 헐떡거립니다.  \n\
+물끄러미 - %s은 애원하는 눈초리로 %s을(를) 물끄러미 바라봅니다.  \n\
+키득 - %s은 %s을(를) 보며 웃음을 참지 못해 키득거립니다.  \n\
+눈초리 - %s은 화난 눈초리로 %s을(를) 노려봅니다.  \n\
+고소 - %s은 %s의 불행을 고소해 합니다.  \n\
+사악 - %s은 %s을(를) 보며 사악한 미소를 짓습니다.  \n\
+불만 - %s은 %s을(를) 보며 불만을 터뜨립니다.  \n\
+비굴 - %s은 %s 앞에서 비굴한 표정으로 설설 깁니다.  \n\
+박장대소 - %s은 %s을(를) 보더니 박장대소를 터뜨립니다.  \n\
+행복 - %s은 %s 때문에 행복해 합니다.  \n\
+아니 - %s은 %s에게 단호하게 아니라고 말합니다.  \n\
+기차/TRAIN - 칙칙폭폭 뿌뿌~!  \n\
+맞이 -  %s은 %s을(를) 따뜻하게 맞이합니다.  \n\
+포옹 - %s은 %s을(를) 껴안습니다.  \n\
+HUNGRY  - %s은 %s을(를) 보며 주린 배를 움켜쥡니다.  \n\
+키스 - %s은 %s에게 키스를 보냅니다.  \n\
+무릎/꿇어 - %s은 %s에게 무릎을 꿇습니다.  \n\
+하하 - %s은 %s을(를) 보며 웃습니다.  \n\
+Laydown/Lay/누워  - %s은 %s 앞에서 드러 눕습니다.  \n\
+안마 - %s은 %s의 어깨를 안마해 줍니다.  \n\
+악수 - %s은 %s에게 악수를 청합니다.  \n\
+도전 - %s은 %s에게 도전하겠다고 외칩니다!  \n\
+애도 - %s은 묵념하며 %s의 죽음을 애도합니다.  \n\
+끄덕 - %s은 %s에게 고개를 끄덕입니다.  \n\
+후비적 - %s은 %s을(를) 멀뚱히 쳐다보며 코를 후비적거립니다.  \n\
+PANIC  - %s은 %s을(를) 보더니 공포에 사로잡혀 허둥댑니다.  \n\
+PEER -  %s은 뭔가를 조사하듯이 %s을(를) 자세히 쳐다봅니다.  \n\
+사정 - %s은 절박한 듯 %s에게 무릎을 꿇고 사정합니다.  \n\
+저기 - %s은 손을 들어 %s을(를) 가리킵니다.  \n\
+찔러 - %s은 %s을(를) 쿡쿡 찌릅니다.  \n\
+기도 - %s은 %s을(를) 위해 기도합니다.  \n\
+고함 - %s은 %s에게 우레와 같은 고함을 내지릅니다.  \n\
+바닥 - %s은 %s을(를) 보고 바닥을 뒹굴며 정신없이 웃습니다.  \n\
+무례 - %s은 %s 앞에서 무례한 행동을 합니다.  \n\
+경례 - %s은 %s에게 경의를 표하며 경례합니다.  \n\
+SCRATCH/긁어  - %s은 %s의 가려운 곳을 긁어줍니다.  \n\
+섹시 - %s은 %s을(를) 섹시하다는 눈길로 쳐다봅니다.  \n\
+엉덩이 - %s은 %s 앞에서 엉덩이로 이름을 씁니다.  \n\
+외쳐/SHOUT - %s은 %s에게 외칩니다.  \n\
+으쓱 - %s은 %s을(를) 보며 모르겠다는 듯이 어깨를 으쓱해 보입니다.  \n\
+수줍 - %s은 %s을(를) 보며 수줍은 듯이 미소짓습니다.  \n\
+한숨 - %s은 %s에게 한숨을 쉽니다.  \n\
+쿨쿨 - %s은 잠을 잡니다. "쿨쿨"\n\
+으르렁 - %s은 이빨을 드러내고 %s에게 으르렁거립니다.  \n\
+존경 - %s은 %s에게 존경을 표합니다.  \n\
+응시 - %s은 %s을(를) 응시합니다.  \n\
+깜짝 - %s은 %s의 행동에 깜짝 놀랍니다.  \n\
+항복 - %s은 무기를 거두고 %s에게 항복합니다.  \n\
+얘기 - %s은 %s과 얘기를 나누고 싶어합니다.  \n\
+TALKEX  - %s은 흥분하며 %s에게 말을 합니다.  \n\
+질문 - %s은 %s에게 질문을 던집니다.  \n\
+팔짱 - %s은 팔장을 끼고 %s을(를) 기다립니다.  \n\
+감사 - %s은 %s에게 감사해 합니다.  \n\
+분노 - %s은 폭풍과도 같은 분노를 드러내며 %s을(를) 위협합니다.  \n\
+피곤 - %s은 %s에게 피곤한 기색을 내비칩니다.  \n\
+승리/영광 - %s은 %s과 함께 승리의 영광을 나눕니다.  \n\
+손인사 - %s은 %s에게 손을 흔들며 인사합니다.  \n\
+천만 - %s은 %s에게 천만에요라고 얘기합니다.  \n\
+푸념 - %s은 %s에게 푸념을 늘어 놓습니다.  \n\
+휘파람 - %s은 휘파람을 불어 %s에게 신호를 보냅니다.\n\
+하품 - %s은 %s을(를) 보며 졸린 듯 하품을 합니다.  \n\
+움찔 - %s은 %s을(를) 보고 움찔하며 놀랍니다.  \n\
+진정 - %s은 %s을(를) 진정시키려 합니다.  \n\
+COLD  - %s은 %s에게 추운 기색을 내비칩니다.  \n\
+위로 - %s은 %s을(를) 위로합니다.  \n\
+안겨/CUDDLE  - %s은 %s에게 폴짝 안깁니다.  \n\
+숨기 - %s은 %s의 뒤로 숨습니다.  \n\
+모욕 - %s은 %s을(를) 오우거 자식이라고 모욕합니다.  \n\
+소개 - %s은 %s에게 자신을 소개합니다.  \n\
+JK   -  %s은 %s에게 그냥 농담이었다고 웃습니다.  \n\
+입맛 - %s은 %s을(를) 보며 입맛을 다십니다.  \n\
+LISTEN  - %s은 %s의 이야기를 귀 기울여 듣습니다.  \n\
+절망 - %s은 %s을(를) 보며 희망을 잃었다고 말합니다.  \n\
+조롱 - %s은 %s의 어리석음을 조롱합니다.  \n\
+곰곰 - %s은 %s이 한 행동에 대해 곰곰히 생각합니다.  \n\
+POUNCE  - %s은 갑자기 어둠 속에서 모습을 드러내 %s에게 달려듭니다.  \n\
+찬사 - %s은 %s에게 찬사를 보냅니다.  \n\
+만족 - %s은 %s을(를) 보며 만족한 듯이 가르랑거립니다.  \n\
+아리송 - %s은 %s을(를) 보며 아리송해 합니다.  \n\
+저요 - %s은 %s을(를) 보며 손을 번쩍 듭니다.  \n\
+준비 - %s은 %s에게 준비가 됐다고 알려줍니다.  \n\
+SHIMMY  - %s은 %s 앞에서 춤을 춥니다.  \n\
+와들 - %s은 %s 옆에 바싹 붙어서 와들와들 떱니다.  \n\
+벌레/SHOO  - %s은 %s을(를) 귀찮은 듯이 쫓아 버립니다.  \n\
+따귀 - %s은 %s의 따귀를 힘껏 때립니다.  \n\
+음흉 - %s은 %s을(를) 보며 음흉하게 웃습니다.  \n\
+킁킁 - %s은 킁킁대며 %s의 냄새를 맡습니다.  \n\
+야단 - %s은 %s을(를) 야단칩니다.  \n\
+SOOTHE  - %s은 %s을(를) 보며 모든 일이 잘될거라고 달랩니다.  \n\
+냄새 - %s은 %s을(를) 의심하며 방구 냄새를 맡습니다.  \n\
+도발 - %s은 %s에게 도발적인 행동을 취합니다.  \n\
+놀림 - %s은 %s을(를) 놀립니다.  \n\
+갈증 - %s은 %s을(를) 보며 목마른 표정을 짓습니다.  \n\
+반대 - %s은 %s의 의견에 반대합니다.  \n\
+큭큭 - %s은 %s을(를) 보며 큭큭거리며 웃습니다.  \n\
+간질 - %s은 %s을(를) 간지럼 태웁니다. "간질간질~"\n\
+바이올린 - %s은 %s을(를) 위해 세상에서 가장 작은 바이올린을 연주하기 시작합니다.  \n\
+미소 - %s은 %s을(를) 보며 미소를 짓습니다.  \n\
+동정 - %s은 %s을(를) 동정의 눈길로 바라봅니다.  \n\
+포효 - %s은 %s 앞에서 위협적으로 포효합니다.  \n\
+멍멍 - %s은 %s을(를) 보며 멍멍 짖습니다.  \n\
+겁    - %s은 %s을(를) 보고 겁먹은 것처럼 보입니다.  \n\
+먼산 - %s은 %s을(를) 외면하고 먼산을 쳐다봅니다.  \n\
+사랑 - %s은 %s을(를) 보고 사랑에 빠진 것 같습니다.  \n\
+음매 - %s은 %s을(를) 향해 음매~ 하고 긴 울음 소리를 냅니다.  \n\
+마나 - %s은 마나가 부족하다고 외칩니다!  \n\
+대기 - %s은 %s에게 기다리라고 얘기합니다.  \n\
+치료 - %s은 치료가 필요하다고 외칩니다!  \n\
+공격 - %s은 %s에게 공격을 개시하라고 외칩니다.  \n\
+고백 - %s은 %s에게 수줍게 고백합니다.  \n\
+농담 - %s은 %s에게 우스갯소리를 합니다.  \n\
+윙크 - %s은 %s에게 윙크합니다.  \n\
+토닥 - %s은 %s을(를) 토닥입니다.\n\
+일/WORK -  %s은 %s의 일거리를 거듭니다.\n\
+예의박수 - %s은 %s에게 예의 상 박수를 쳐줍니다.\n\
+가    - %s은 %s을(를) 가라고 합니다.\n\
+행운 - %s은 %s에게 행운을 빌어줍니다.\n\
+찰싹 - %s은 %s에게 정신차리라는 뜻으로 뒤통수를 "탁"칩니다.\n\
+주먹 - %s은 %s에게 주먹을 휘두르며 화를 냅니다.\n\
+맥박 - %s은 %s의 맥박을 짚어 봅니다. 이럴 수가!\n\
+무기 - %s은 %s의 앞에서 자신의 무기를 무섭게 휘두릅니다.\n\
+흥    - %s은 %s에게 화를 내며 투덜거립니다. 흥!\n\
+뒤적 - %s은 무언가를 찾기위해 %s의 몸을 수색합니다.\n\
+환영 - %s은 %s에게 환영해요 라고 얘기합니다.\n\
+삐죽 - %s은 %s에게 입을 삐죽입니다.\n\
+숨    - %s은 %s을(를) 보더니 놀라 숨을 멈춥니다.\n\
+신호 - %s은 %s에게 신호합니다.\n\
+비난 - %s은 %s을(를) 비난합니다.';
+
+	var actionMap = {} ;
+	var _myBotId = 'wowe' ;
+	this.onLoad = function(){
+		var reader = new net.ion.radon.impl.util.CsvReader(new java.io.StringReader(actions)) ;
+		reader.setFieldDelimiter('-');
+		reader.setBlockDelimiter('\n');
+
+		var line = reader.readLine() ; // skip
+		
+		while(true){
+			line = reader.readLine() ;
+			if (line == null || line.length == 0 || net.ion.framework.util.StringUtil.isBlank(line[0])) break ;
+			var names = net.ion.framework.util.StringUtil.split(line[0], "/") ;
+			for(var index in names) {
+				actionMap[names[index].trim()] = line[1] ;
+			}
+		} ;
+		session.tran(function(wsession) {
+			wsession.pathBy("/bots/wowe").property("owner", true) ;
+		}) ;
+		
+	}, 	
+
+	this.onMessage = function(bm){
+		if (! bm.isBlank('_owner')) return ;
+		
+		
+		var cmd = bm.asCommand() ;
+		if (actionMap[cmd.fnName()]) {
+			this.onWhisper(bm.source(), bm) ;
+		} else {
+			var roomId = bm.fromRoomId() ;
+			var time= new Date().getTime();
+			var messageId=new net.ion.framework.util.ObjectId().toString();
+	        session.tran(function(wsession) {
+            var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + messageId)
+                    .property("message", bm.message())
+                    .refTo("sender", "/users/"+bm.fromUserId())
+                    .property("roomId", roomId)
+                    .property("options", "{event:'onMessage'}")
+                    .property("clientScript", "client.room().message(args);")
+                    .property("time",time.toString())
+                    .property("_owner", _myBotId) 
+                    .property("messageId", messageId);
+			}) ;
+		}
+	}, 
+	
+	
+	this.onWhisper = function(source, whisperMsg){
+		var cmd = whisperMsg.asCommand() ;
+
+		var roomId = whisperMsg.fromRoomId() ;
+		if (actionMap[cmd.fnName()] && roomId > ' '){
+			var selfBotId = whisperMsg.toUserId() ;
+			var time= new Date().getTime();
+			var messageId=new net.ion.framework.util.ObjectId().toString();
+			if (session.exists("/bots/"+ whisperMsg.fromUserId())) return ; // 
+			
+			var message = java.lang.String.format(actionMap[cmd.fnName()], [source.asString('nick'), cmd.remainAsString(0, '모두')]) ;
+			
+	        session.tran(function(wsession) {
+	            var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + messageId)
+	                    .property("message", message)
+	                    .refTo("sender", "/users/"+whisperMsg.fromUserId())
+	                    .property("roomId", roomId)
+	                    .property("options", "{event:'onMessage'}")
+	                    .property("clientScript", "client.room().message(args);")
+	                    .property("time",time.toString())
+	                    .property("_owner", _myBotId) 
+	                    .property("messageId", messageId);
+	
+	        }) ;
+		} else {
+			source.sendMessage(
+				rb.makeCommandBuilder("/whisper/wowe/" + cmd.fnName())
+				  .inner("result")
+				  	.property("sender", "wowe")
+					.property("clientScript", "client.room().message(args);")
+					.property("message", "not found emotion or not in room")
+					.property("options", "{event:'onWhisper'}")
+					.property("time", new Date().getTime().toString())
+					.property("messageId", new net.ion.framework.util.ObjectId().toString()).build().talkMessage()) ;
+		}
+		
+	}, 
+
+	this.sendMessage = function(event, bm, args){
+
+	}, 
+	
+	this.onEnter = function(bm){
+	}, 
+	
+	this.onExit = function(bm){
+	}, 
+	
+	this.onFilter = function(bm){
+	}
+}

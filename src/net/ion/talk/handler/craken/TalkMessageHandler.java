@@ -73,7 +73,6 @@ public class TalkMessageHandler implements CDDHandler {
 //                if (isFilterMessage(pmap)) return null;
 
                 //SyncBot이 있으면 메시지 선 처리.
-                
 //                WriteChildren syncBots = wsession.pathBy("/rooms/" + getRoomId(resolveMap) + "/members").children().filter(SYNCBotFilter);
 //                sendMessageToSyncBot(wsession, resolveMap, pmap, syncBots);
 
