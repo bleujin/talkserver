@@ -1,0 +1,56 @@
+new function(){
+
+	var _myBotId = 'dice' ;
+
+	this.onLoad = function(){
+
+	}, 
+
+	this.onMessage = function(bm){
+		this.sendMessage("onMessage", bm, {}) ;
+	}, 
+	
+	
+	this.onWhisper = function(source, whisperMsg){
+
+	}, 
+
+	this.sendMessage = function(event, bm, args){
+		var roomId = bm.fromRoomId() ;
+		var selfBotId = bm.toUserId() ;
+		var time = new Date().getTime();
+		var messageId = new net.ion.framework.util.ObjectId().toString();
+		var maxNum = parseInt(bm.asCommand().remain(0));
+
+		if (session.exists("/bots/"+ bm.fromUserId())) return ;
+
+		if(bm.message().indexOf('주사위') == 0) {
+            var randomNum = Math.floor(Math.random() * maxNum) + 1;
+            var message = bm.fromUserId() + '님의 주사위 결과는 ' + randomNum + '입니다';
+
+            session.tran(function(wsession) {
+                var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + messageId)
+                        .property("message", message)
+                        .refTo("sender", "/users/"+selfBotId)
+                        .property("roomId", roomId)
+                        .property("options", "{event:'onMessage'}")
+                        .property("clientScript", bm.clientScript())
+                        .property("time",time.toString())
+                        .property("messageId", messageId);
+
+            }) ;
+        }
+	}, 
+	
+	this.onEnter = function(bm){
+		//this.sendMessage("onEnter", bm, {message :"Hello " + bm.fromUserId() + " I'm EchoBot"}) ;
+	}, 
+	
+	this.onExit = function(bm){
+//		this.sendMessage("onExit", bm, {message :"Bye"}) ;
+	}, 
+	
+	this.onFilter = function(bm){
+
+	}
+}

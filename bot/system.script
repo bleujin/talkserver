@@ -231,7 +231,7 @@ new function(){
 		} 
 		
 		session.tranSync(function(wsession){
-			wsession.pathBy("/rooms/" + scriptMsg.fromRoomId() + "/members/" + botId) ;
+			wsession.pathBy("/rooms/" + scriptMsg.fromRoomId() + "/members/" + botId).property('sender', botId) ;
 		}) ;
 		return {message: '[botId:' + botId + '] invited'} ;
 	}, 
