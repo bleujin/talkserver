@@ -375,7 +375,12 @@
                 this.error = function(message) {
                     alert(message);
                 };
-
+                
+                this.clear = function(args) {
+	            	if (! args.roomId) return ;
+	                \$('#' + args.roomId).empty();
+    	        };
+	
                 this.join = function(args) {
                     var roomId = args.roomId;
 
@@ -490,8 +495,9 @@
                 this.select(roomId);
             };
 
-            this.clear = function(roomId) {
-                \$('#' + roomId).empty();
+            this.clear = function(args) {
+            	if (! args.roomId) return ;
+                \$('#' + args.roomId).empty();
             };
 
             this.rejoinAllRooms = function() {

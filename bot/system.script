@@ -158,7 +158,8 @@ new function(){
 		var unreadMsg = recent100.iterator();
 		while(unreadMsg.hasNext()){
 			var next = unreadMsg.next() ; 
-//			if (next.property("exclusiveSender").asBoolean() && scriptMsg.fromUserId().equals(next.ref("sender").property("userId").asString()) ) continue ;
+			if (next.property("receivers").asString() > ' ' && ! next.property("receivers").asSet().contains(scriptMsg.fromUserId())) continue ;
+			
 			source.sendMessage(rb.makeCommandBuilder("/whisper/system")
 			  .inner("result")
 				.property(next, "message, sender.userId as sender, sender.nickname as senderNickname, requestId, clientScript, options, messageId, time")
@@ -168,6 +169,41 @@ new function(){
 		
 		return ;
 	},
+	
+	this.recent = function(scriptMsg, cparam, source){
+		var offset = cparam.remainAsInt(0, 10) ;
+		var roomId = scriptMsg.fromRoomId() ;
+		
+		var recent100 = session.pathBy("/rooms/" + roomId + "/messages").children().descending('messageId').offset(offset).toList() ;
+		java.util.Collections.reverse(recent100) ;
+		var unreadMsg = recent100.iterator();
+		while(unreadMsg.hasNext()){
+			var next = unreadMsg.next() ; 
+			if (next.property("receivers").asString() > ' ' && ! next.property("receivers").asSet().contains(scriptMsg.fromUserId())) continue ;
+			
+			source.sendMessage(rb.makeCommandBuilder("/whisper/system")
+			  .inner("result")
+				.property(next, "message, sender.userId as sender, sender.nickname as senderNickname, requestId, clientScript, options, messageId, time")
+				.property("roomId", roomId)
+				.build().talkMessage()) ;			
+		}
+		
+		return ;
+	}, 
+	
+	this.clear = function(scriptMsg, cparam, source){
+		source.sendMessage(
+		rb.makeCommandBuilder("/whisper/system/" + cparam.fnName())
+		  .inner("result")
+		  	.property("sender", "system")
+			.property("clientScript", "client.room().clear(args);")
+			.property("message", "")
+			.property("roomId", scriptMsg.fromRoomId())
+			.property("options", "{event:'onWhisper'}")
+			.property("messageId", new net.ion.framework.util.ObjectId().toString()).build().talkMessage()) ;
+	
+	} ;
+	
 
 	this.rooms = function(scriptMsg, cparam){
 		// ex) list rooms, list friends, 
