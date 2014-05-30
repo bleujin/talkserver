@@ -16,15 +16,16 @@ new function(){
 	}, 
 
 	this.sendMessage = function(event, bm, args){
+		if (session.exists("/bots/"+ bm.fromUserId())) return ;
+
 		var roomId = bm.fromRoomId() ;
 		var selfBotId = bm.toUserId() ;
 		var time = new Date().getTime();
 		var messageId = new net.ion.framework.util.ObjectId().toString();
-		var maxNum = parseInt(bm.asCommand().remain(0));
 
-		if (session.exists("/bots/"+ bm.fromUserId())) return ;
+		if(bm.message().startsWith('주사위')) {
+			var maxNum = bm.asCommand().remainAsInt(0, 100);
 
-		if(bm.message().indexOf('주사위') == 0) {
             var randomNum = Math.floor(Math.random() * maxNum) + 1;
             var message = bm.fromUserId() + '님의 주사위 결과는 ' + randomNum + '입니다';
 

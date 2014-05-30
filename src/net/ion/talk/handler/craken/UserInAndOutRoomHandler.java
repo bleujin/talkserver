@@ -42,7 +42,7 @@ public class UserInAndOutRoomHandler implements CDDHandler {
             public Void handle(WriteSession wsession) throws Exception {
             	
             	if (wsession.readSession().ghostBy("/bots/" + userId).property("owner").asBoolean()){
-                	wsession.pathBy("/rooms/" + roomId).refTos("owner", "/bots/"+userId) ;
+                	wsession.pathBy("/rooms/" + roomId).append("owner", userId) ;
             	}
             	
             	
@@ -75,7 +75,7 @@ public class UserInAndOutRoomHandler implements CDDHandler {
             public Void handle(WriteSession wsession) throws Exception {
 
             	if (wsession.readSession().ghostBy("/bots/" + userId).property("owner").asBoolean()){
-                	wsession.pathBy("/rooms/" + roomId).unRefTos("owner", "/bots/"+userId) ;
+                	wsession.pathBy("/rooms/" + roomId).unset("owner", userId) ;
             	}
 
             	

@@ -48,7 +48,7 @@ new function(){
 
 		
 
-		return rb.create().newInner().property(message, "message, sender.userId as sender,sender.nickname as senderNickname,requestId, clientScript,options,time,fromRoomId").property("roomId",roomId).property("notifyId",params.asString("notifyId")).property("messageId",message.fqn().name()).build().toJsonElement();
+		return rb.create().newInner().property(message, "message, sender.userId as sender,sender.nickname as senderNickname,requestId, clientScript,options,time").property("roomId",roomId).property("notifyId",params.asString("notifyId")).property("messageId",message.fqn().name()).build().toJsonElement();
 
 	}, 
 	
@@ -127,11 +127,6 @@ new function(){
 				.property("time",time.toString());
 
 		       msgNode.append("receivers", receivers);
-				
-						
-//				for(var i=0;i< receivers.length;i++){
-//				       msgNode.append("receivers", receivers);
-//				}
 		});	
 	}
 

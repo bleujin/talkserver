@@ -9,7 +9,7 @@ new function() {
 	
 	this.onMessage = function(bm){
 		var time= new Date().getTime();
-		if ("simsimi" == bm.fromUserId()) return ;
+		if (session.exists("/bots/"+ bm.fromUserId())) return ;
 		
 		var handler = new net.ion.talk.bot.connect.BotCompletionHandler() {
 			onCompleted: function(jsonResponse) {

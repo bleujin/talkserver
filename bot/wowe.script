@@ -193,7 +193,9 @@ SOOTHE  - %s은 %s을(를) 보며 모든 일이 잘될거라고 달랩니다.  \
 
 	this.onMessage = function(bm){
 		if (! bm.isBlank('_owner')) return ;
-		
+		if (session.exists("/bots/"+ bm.fromUserId())) {
+			return ;
+		}
 		
 		var cmd = bm.asCommand() ;
 		if (actionMap[cmd.fnName()]) {
@@ -207,8 +209,9 @@ SOOTHE  - %s은 %s을(를) 보며 모든 일이 잘될거라고 달랩니다.  \
                     .property("message", bm.message())
                     .refTo("sender", "/users/"+bm.fromUserId())
                     .property("roomId", roomId)
+                    .property("requestId", bm.asString('requestId'))
                     .property("options", "{event:'onMessage'}")
-                    .property("clientScript", "client.room().message(args);")
+                    .property("clientScript", bm.clientScript())
                     .property("time",time.toString())
                     .property("_owner", _myBotId) 
                     .property("messageId", messageId);
@@ -266,5 +269,6 @@ SOOTHE  - %s은 %s을(를) 보며 모든 일이 잘될거라고 달랩니다.  \
 	}, 
 	
 	this.onFilter = function(bm){
+		// bm.message....
 	}
 }

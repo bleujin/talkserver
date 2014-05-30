@@ -85,6 +85,7 @@ new function(){
 				  	.property("sender", "system")
 					.property("clientScript", rtn.clientScript || "client.room().message(args);")
 					.property("message", rtn.message)
+					.property("time", new Date().getTime())
 					.property("options", "{event:'onWhisper'}")
 					.property("messageId", new net.ion.framework.util.ObjectId().toString()).build().talkMessage()) ;
 			}				

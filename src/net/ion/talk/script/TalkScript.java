@@ -197,8 +197,9 @@ public class TalkScript {
 
 			Object pack = packages.get(packName);
 			
-			if (rsession.pathBy("/rooms/" + params.asString("roomId")).hasRef("owner")){
-				params.set(Const.Message.ClientScript, Message.UnDefinedClientScript) ;
+			if (rsession.pathBy("/rooms/" + params.asString("roomId")).hasProperty("owner")){
+				params.set("receivers", rsession.pathBy("/rooms/" + params.asString("roomId")).property("owner").asStrings()) ;
+//				params.set(Const.Message.ClientScript, Message.UnDefinedClientScript) ;
 			}
 			
 			
