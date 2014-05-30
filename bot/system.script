@@ -179,7 +179,7 @@ new function(){
 			text = '<ul>' ;
 			while(rooms.hasNext()){
 				var room = rooms.next().ref('room') ;
-				var onClickMsg = "webClient.chat(\"/join " + room.property('roomId').asString() + "\")" ;
+				var onClickMsg = "client.chat(\"/join " + room.property('roomId').asString() + "\")" ;
 				text += "<li><a href='#' onclick='" + onClickMsg + "'>" + room.property('roomId').asString() + "</a> : " + room.property('title').asString() + "</li>" ;
 			}
 			text += '</ul>' ;
