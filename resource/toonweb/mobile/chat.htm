@@ -21,8 +21,8 @@
             position: relative;
             margin: 0;
             padding:10px;
-            text-align:center;
-            width:180px;
+            text-align:left;
+            width: 200px;
             -moz-border-radius:10px;
             -webkit-border-radius:10px;
             -webkit-box-shadow: 0px 0 3px rgba(0,0,0,0.25);
@@ -145,6 +145,11 @@
         }
 
     </style>
+    <script>
+        function blockMove() {
+            window.event.preventDefault();
+        }
+    </script>
 </head>
 <body>
 <div data-url="chatMain" data-role="page" class="jqm-demos" id="chatMain" data-title="ToonTalk Mobile">
@@ -154,15 +159,15 @@
         <a href="#help" data-icon="info" data-iconpos="notext" class="ui-btn-right">Help</a>
     </div>
 
-    <div role="main" class="ui-content jqm-content jqm-fullwidth">
+    <div role="main" id="chatBody" class="ui-content jqm-content jqm-fullwidth">
         <div data-role="tabs" id="chatScreens" data-position="fixed">
             <div id="roomList" data-role="navbar" data-iconpos="right">
                 <ul>
-                    <li roomNumber='Home'><a href="#Home" id='tab-Home' data-ajax="false">Home</a></li>
+                    <li roomNumber='Home'><a href="#Home" id='tab-Home' data-ajax="false" data-transition="slide">Home</a></li>
                 </ul>
             </div>
             <div id="chatRooms">
-                <div id="Home" class="ui-body-d ui-content">
+                <div id="Home" class="ui-body-d ui-content" style="height: 100%;">
                     <div align="left" style="width:100%; height:20px; padding:0; padding-top: 10px">Opened</div>
                     <div align="left" style="width:100%; height:20px; padding:0; padding-top: 10px">Welcome to ToonTalk Mobile</div>
                 </div>
@@ -182,7 +187,7 @@
             <input data-clear-btn="true" name="message" id="message" value="" type="text">
         </div>
         <div style="float: left; width: 10%; min-width: 10%;">
-            <button onclick="javascript:client.chat();" class="ui-btn ui-btn-inline">Send</button>
+            <button onclick="javascript:client.chat();" class="ui-btn ui-btn-inline" onkeyup="blockMove;">Send</button>
             <!--button onclick="javascript:client.getRoomManager().clear(client.getRoomManager().activeRoomId());" class="ui-btn ui-btn-inline">Clear</button-->
         </div>
 
@@ -397,13 +402,13 @@
 
                     if (senderId == chatclient.sender) {
                         messageBlock.attr('align', 'right');
-                        messageInner.attr('class', 'bubble me').addClass(whisper).html(message);
+                        messageInner.attr('class', 'bubble me').addClass(whisper).html('<span style="word-wrap: break-word;">' + message + '</span>');
                     } else if(senderId.indexOf('@') == -1) {            // if senderId does not contain '@', this is bot
                         messageBlock.attr('align', 'left');
-                        messageInner.attr('class', 'bubble bot').addClass(whisper).html(message);
+                        messageInner.attr('class', 'bubble bot').addClass(whisper).html('<span style="word-wrap: break-word;">' + message + '</span>');
                     } else {
                         messageBlock.attr('align', 'left');
-                        messageInner.attr('class', 'bubble other').addClass(whisper).html(message);
+                        messageInner.attr('class', 'bubble other').addClass(whisper).html('<span style="word-wrap: break-word;">' + message + '</span>');
                     }
 
                     messageBlock.attr('title', jsonToString(args));
@@ -451,8 +456,7 @@
             };
 
             this.scrollToBottom = function() {
-//                \$("html, body").animate({ scrollTop: \$(document).height()-\$(window).height() }, 10);
-                \$("html, body").animate({ scrollTop: \$(document).height()-\$(window).height() }, 10);
+                \$("html, body").animate({ scrollTop: \$(document).height()-\$(window).height()+1000 }, 10);
             };
 
             this.create = function(roomId, roomTitle) {
@@ -462,7 +466,7 @@
                 var a  = \$("<a></a>");
                 var closeBtn = \$('<a></a>').attr('roomId', roomId).attr('role', 'delete').attr('class', 'ui-btn ui-icon-delete ui-btn-icon-notext').text('Delete');
 
-                a.attr("href", '#' + roomId).attr('id', 'tab-' + roomId).text(roomTitle);
+                a.attr("href", '#' + roomId).attr('id', 'tab-' + roomId).attr('data-transition','slide').text(roomTitle);
                 li.attr('roomNumber', roomId);
                 li.append(a);
                 li.append(closeBtn);
@@ -505,9 +509,7 @@
                 var rooms = [];
                 \$('#roomList ul li').each(function(index) {
                     var roomId = \$(this).attr('roomNumber');
-                    if(roomId != 'Home') {
-                        rooms.push(roomId);
-                    }
+                    rooms.push(roomId);
                 });
                 return rooms;
             }
@@ -570,6 +572,28 @@
                 var tabId = href.substr(href.lastIndexOf('/') + 2);
 
                 return tabId;
+            };
+
+            var activeRoomIndex = function() {
+                return \$( "#chatScreens" ).tabs( "option", "active" );
+            };
+
+            this.nextRoom = function(event) {
+                var rooms = roomManager.getAllRooms();
+                var nextRoomIndex = activeRoomIndex() + 1;
+
+                if(nextRoomIndex < rooms.length) {
+                    roomManager.select(rooms[nextRoomIndex]);
+                }
+            };
+
+            this.prevRoom = function(event) {
+                var rooms = roomManager.getAllRooms();
+                var prevRoomIndex = activeRoomIndex() - 1;
+
+                if(prevRoomIndex > -1) {
+                    roomManager.select(rooms[prevRoomIndex]);
+                }
             };
         };
 
@@ -669,14 +693,15 @@
             }
         }) ;
 
+
         client.getRoomManager().select('Home');
 
-        \$(document).on('focus', 'input, textarea', function() {
-            \$('div[data-role="header"]').css('position', 'absolute');
-            \$.mobile.silentScroll(\$('input:focus').offset().top - 100);
+        \$(document).on('swipeleft', '#chatMain', function(event) {
+            client.getRoomManager().prevRoom(event);
         });
-        \$(document).on('blur', 'input, textarea', function() {
-            \$('div[data-role="header"]').css('position', 'fixed');
+
+        \$(document).on('swiperight', '#chatMain', function(event) {
+            client.getRoomManager().nextRoom(event);
         });
     });
 
