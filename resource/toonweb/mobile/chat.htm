@@ -421,6 +421,8 @@
                 this.message = function(args) {
                     var roomId = args.roomId || manager.activeRoomId();
 
+                    if(\$('#' + args.messageId).length > 0) return;             // already received message... skip!
+
                     if(roomId.startWith('@')) {              // this if should be fixed...
                         this.toast({
                             title: 'New Whisper',
