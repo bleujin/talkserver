@@ -55,10 +55,8 @@ new function(){
 	//메세지 아이디 값보다 큰 메세지를 읽어 옴
 	this.listUnreadMessageBy = function(params){
 		var roomId=params.asString("roomId");
-		var unreadMessages = session.pathBy("/rooms/" + roomId + "/messages").children().where("this.messageId >= '" + params.asString("messageId") + "'");
+		var unreadMessages = session.pathBy("/rooms/" + roomId + "/messages").children().where("this.messageId >= '" + params.asString("messageId") + "'").ascending('messageId');
 	
-		
-
 		return rb.create().newInner().inlist("messages", unreadMessages,"message,sender.userId as sender,sender.nickname as senderNickname,requestId, clientScript,options, messageId,time,fromRoomId").property("roomId", roomId).build().toJsonElement();
 
 	},
