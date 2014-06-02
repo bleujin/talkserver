@@ -40,7 +40,7 @@ public class TestUploadLet extends TestCase {
 					.addBodyPart(new FilePart("thumb", file))
 					.addBodyPart(new StringPart("name", "한글이름")).setBodyEncoding("UTF-8").execute().get();
 		assertEquals(200, response.getStatusCode());
-		Debug.line(response.getUTF8Body());
+//		Debug.line(response.getUTF8Body());
 		nc.close();
 	}
 

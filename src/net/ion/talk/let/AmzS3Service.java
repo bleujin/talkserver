@@ -29,7 +29,7 @@ public class AmzS3Service implements OnEventObject {
 	}
 
 	static AmzS3Service test() throws S3ServiceException {
-		return new AmzS3Service("AKIAIF7NW3PUFRZUYEXA", "BK94no/UnATl19LAJM+CnFKezT5Wn2trS/D8JVq9", S3Bucket.LOCATION_ASIA_PACIFIC_TOKYO);
+		return new AmzS3Service("", "", S3Bucket.LOCATION_ASIA_PACIFIC_TOKYO);
 	}
 
 	public void destroySelf() throws ServiceException {
