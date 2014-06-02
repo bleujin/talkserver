@@ -1,64 +1,81 @@
 new function() {
 	// simsimi test key = 42c1ff40-4f90-4b93-a5ca-17fba17ec661
-	var serverHost = 'http://api.simsimi.com/request.p?key=ec69c1ea-c941-4770-938e-0d5808f0f877&lc=ko' ;
-	var _myBotId = 'simsimi' ;
-	
+	var serverHost = 'http://apis.daum.net/socialpick/search?n=10&output=json' ;
+	var _myBotId = 'socialpick' ;
+
 	this.onLoad = function(){
 
 	},
-	
+
 	this.onMessage = function(bm){
 		var time= new Date().getTime();
-		if (session.exists("/bots/"+ bm.fromUserId())) return ;
-		
+		if ("socialpick" == bm.fromUserId()) return ;
+
 		var handler = new net.ion.talk.bot.connect.BotCompletionHandler() {
+
 			onCompleted: function(jsonResponse) {
 				session.tran(function(wsession) {
 					var roomId = bm.fromRoomId() ;
 					var selfBotId = bm.toUserId() ;
 					var resp = eval('(' + jsonResponse + ')');
-					var messageId=new net.ion.framework.util.ObjectId().toString();
-					
-					
+					var messageId = new net.ion.framework.util.ObjectId().toString();
+
+                    var message = '';
+                    var items = resp.socialpick.item;
+
+                    for(var i = 0; i < items.length; i++) {
+                        var item = items[i]
+                        message += item.rank + '위 <a href="'+item.link+'" target="_blank">' + item.keyword + '</a><br/>';
+                    }
+
 		            var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + messageId)
-		                    .property("message", resp.response)
+		                    .property("message", message)
 		                    .refTo("sender", "/users/"+selfBotId)
 		                    .property("roomId", roomId)
 		                    .property("options", "{event:'onMessage'}")
 		                    .property("clientScript", bm.clientScript())
 		                    .property("time",time.toString())
-		                    .property("messageId", messageId);					
+		                    .property("messageId", messageId);
 				});
 			} ,
-			
+
 			onThrowable: function(ex){
 				ex.printStackTrace() ;
 			}
 		};
 
-		bc.request(serverHost).addParameter("text", bm.message()).post(handler);
+		if(bm.message() == 'now') {
+		    bc.request(serverHost).get(handler);
+		}
 	},
-	
+
 	this.onWhisper = function(source, whisperMsg){
 		var handler = new net.ion.talk.bot.connect.BotCompletionHandler() {
 			onCompleted: function(jsonResponse) {
 				var resp = eval('(' + jsonResponse + ')');
-				
+                var items = resp.socialpick.item;
+                var message = '';
+
+                for(var i = 0; i < items.length; i++) {
+                    var item = items[i]
+                    message += item.rank + '위 <a href="'+item.link+'" target="_blank">' + item.keyword + '</a><br/>';
+                }
+
 				source.sendMessage(
-				rb.makeCommandBuilder("/whisper/simsimi")
+				rb.makeCommandBuilder("/whisper/socialpick")
 				  .inner("result")
-				  	.property("sender", "simsimi")
+				  	.property("sender", "socialpick")
 					.property("clientScript", "client.room().message(args);")
-					.property("message", resp.response )
+					.property("message", message )
 					.property("options", "{event:'onWhisper'}")
 					.property("messageId", new net.ion.framework.util.ObjectId().toString()).build().talkMessage()) ;
 			} ,
-			
+
 			onThrowable: function(ex){
 				source.sendMessage(
-				rb.makeCommandBuilder("/whisper/simsimi")
+				rb.makeCommandBuilder("/whisper/socialpick")
 				  .inner("result")
-				  	.property("sender", "simsimi")
+				  	.property("sender", "socialpick")
 					.property("clientScript", "client.room().message(args);")
 					.property("message", ex.getMessage())
 					.property("options", "{event:'onWhisper'}")
@@ -66,38 +83,37 @@ new function() {
 			}
 		};
 
-		bc.request(serverHost).addParameter("text", whisperMsg.message()).post(handler);
-	}, 
-	
-	
+		if(whisperMsg.message() == 'now') {
+		    bc.request(serverHost).get(handler);
+		}
+	},
+
+
 	this.onEnter = function(bm){
 		var roomId = bm.fromRoomId() ;
 		var selfBotId = bm.toUserId() ;
 
-		if ("simsimi" == bm.fromUserId()) return ;
+		if ("socialpick" == bm.fromUserId()) return ;
 		
 		var memberList = session.pathBy("/rooms/" + roomId + "/members").childrenNames().toArray();
         session.tran(function(wsession) {
         	var messageId=new net.ion.framework.util.ObjectId().toString();
         
             var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + messageId)
-                    .property("message", "Hello I'm SimSimI")
+                    .property("message", "Daum 소셜픽 봇입니다. now라고 입력하시면 최근 다음 소셜픽 10개를 보여드립니다.")
                     .refTo("sender","/users/"+ selfBotId)
                     .property("roomId", roomId)
                     .property("options", "{event:'onMessage'}")
                     .property("clientScript", bm.clientScript())
                     .property("messageId",messageId);
-                    
-
         }) ;
-		
-	}, 
-	
+	},
+
 	this.onExit = function(params){
 		// do nothing
-	}, 
-	
-	this.onFilter = function(params){
+	},
 
-	}	
+	this.onFilter = function(params){
+		// do nothing
+	}
 }

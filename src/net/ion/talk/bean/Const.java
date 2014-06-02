@@ -33,6 +33,7 @@ public class Const {
         public static final String ClientScript = "clientScript";
 
         public static final String DefaultOnMessageClientScript = "client.room().message(args);";
+        public static final String UnDefinedClientScript = "client.undefined();";
 
         public static final String RequestId = "requestId";
         public static final String MessageId = "messageId";

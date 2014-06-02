@@ -85,6 +85,7 @@ new function(){
 				  	.property("sender", "system")
 					.property("clientScript", rtn.clientScript || "client.room().message(args);")
 					.property("message", rtn.message)
+					.property("time", new Date().getTime())
 					.property("options", "{event:'onWhisper'}")
 					.property("messageId", new net.ion.framework.util.ObjectId().toString()).build().talkMessage()) ;
 			}				
@@ -157,7 +158,8 @@ new function(){
 		var unreadMsg = recent100.iterator();
 		while(unreadMsg.hasNext()){
 			var next = unreadMsg.next() ; 
-//			if (next.property("exclusiveSender").asBoolean() && scriptMsg.fromUserId().equals(next.ref("sender").property("userId").asString()) ) continue ;
+			if (next.property("receivers").asString() > ' ' && ! next.property("receivers").asSet().contains(scriptMsg.fromUserId())) continue ;
+			
 			source.sendMessage(rb.makeCommandBuilder("/whisper/system")
 			  .inner("result")
 				.property(next, "message, sender.userId as sender, sender.nickname as senderNickname, requestId, clientScript, options, messageId, time")
@@ -167,6 +169,41 @@ new function(){
 		
 		return ;
 	},
+	
+	this.recent = function(scriptMsg, cparam, source){
+		var offset = cparam.remainAsInt(0, 10) ;
+		var roomId = scriptMsg.fromRoomId() ;
+		
+		var recent100 = session.pathBy("/rooms/" + roomId + "/messages").children().descending('messageId').offset(offset).toList() ;
+		java.util.Collections.reverse(recent100) ;
+		var unreadMsg = recent100.iterator();
+		while(unreadMsg.hasNext()){
+			var next = unreadMsg.next() ; 
+			if (next.property("receivers").asString() > ' ' && ! next.property("receivers").asSet().contains(scriptMsg.fromUserId())) continue ;
+			
+			source.sendMessage(rb.makeCommandBuilder("/whisper/system")
+			  .inner("result")
+				.property(next, "message, sender.userId as sender, sender.nickname as senderNickname, requestId, clientScript, options, messageId, time")
+				.property("roomId", roomId)
+				.build().talkMessage()) ;			
+		}
+		
+		return ;
+	}, 
+	
+	this.clear = function(scriptMsg, cparam, source){
+		source.sendMessage(
+		rb.makeCommandBuilder("/whisper/system/" + cparam.fnName())
+		  .inner("result")
+		  	.property("sender", "system")
+			.property("clientScript", "client.room().clear(args);")
+			.property("message", "")
+			.property("roomId", scriptMsg.fromRoomId())
+			.property("options", "{event:'onWhisper'}")
+			.property("messageId", new net.ion.framework.util.ObjectId().toString()).build().talkMessage()) ;
+	
+	} ;
+	
 
 	this.rooms = function(scriptMsg, cparam){
 		// ex) list rooms, list friends, 
@@ -179,7 +216,7 @@ new function(){
 			text = '<ul>' ;
 			while(rooms.hasNext()){
 				var room = rooms.next().ref('room') ;
-				var onClickMsg = "webClient.chat(\"/join " + room.property('roomId').asString() + "\")" ;
+				var onClickMsg = "client.chat(\"/join " + room.property('roomId').asString() + "\")" ;
 				text += "<li><a href='#' onclick='" + onClickMsg + "'>" + room.property('roomId').asString() + "</a> : " + room.property('title').asString() + "</li>" ;
 			}
 			text += '</ul>' ;
@@ -231,7 +268,7 @@ new function(){
 		} 
 		
 		session.tranSync(function(wsession){
-			wsession.pathBy("/rooms/" + scriptMsg.fromRoomId() + "/members/" + botId) ;
+			wsession.pathBy("/rooms/" + scriptMsg.fromRoomId() + "/members/" + botId).property('sender', botId) ;
 		}) ;
 		return {message: '[botId:' + botId + '] invited'} ;
 	}, 
@@ -384,7 +421,15 @@ new function(){
 			return ;
 		}
 	
-	} 
+	}, 
+	
+	this.whenIN = function(roomId){
+//		java.lang.System.out.println('in room : ' + roomId) ;
+	}, 
+	
+	this.whenOUT = function(roomId){
+//		java.lang.System.out.println('out room : ' + roomId) ;
+	}
 
 
 	

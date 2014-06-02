@@ -7,6 +7,7 @@ import java.util.Map;
 import net.ion.craken.listener.CDDHandler;
 import net.ion.craken.listener.CDDModifiedEvent;
 import net.ion.craken.listener.CDDRemovedEvent;
+import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
 import net.ion.framework.util.ObjectId;
@@ -14,6 +15,7 @@ import net.ion.talk.bean.Const;
 import net.ion.talk.bean.Const.Message;
 import net.ion.talk.bean.Const.Room;
 import net.ion.talk.bean.Const.User;
+import net.ion.talk.script.BotScript;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,6 +25,20 @@ import net.ion.talk.bean.Const.User;
  * To change this template use File | Settings | File Templates.
  */
 public class UserInAndOutRoomHandler implements CDDHandler {
+
+	
+	private BotScript bs;
+	private UserInAndOutRoomHandler(BotScript bs) {
+		this.bs = bs ;
+	}
+
+	public final static UserInAndOutRoomHandler create(BotScript bs){
+		return new UserInAndOutRoomHandler(bs) ;
+	}
+
+	public static CDDHandler test() {
+		return new UserInAndOutRoomHandler(null) ;
+	}
 
     @Override
     public String pathPattern() {
@@ -40,7 +56,13 @@ public class UserInAndOutRoomHandler implements CDDHandler {
         return new TransactionJob<Void>() {
             @Override
             public Void handle(WriteSession wsession) throws Exception {
-
+            	ReadNode userNode = wsession.readSession().ghostBy("/bots/" + userId) ;
+            	if (! userNode.isGhost()) {
+            		if (userNode.property("owner").asBoolean()) wsession.pathBy("/rooms/" + roomId).append("owner", userId) ;
+					if (bs.existFunction(userId, "whenIN")) bs.callFrom(userId, "whenIN", roomId) ;
+            	}
+            	
+            	
                 String messageId = new ObjectId().toString();
                 wsession.pathBy("/rooms/" + roomId + "/messages/")
                         .child(messageId)
@@ -69,6 +91,12 @@ public class UserInAndOutRoomHandler implements CDDHandler {
             @Override
             public Void handle(WriteSession wsession) throws Exception {
 
+            	ReadNode userNode = wsession.readSession().ghostBy("/bots/" + userId) ;
+            	if (! userNode.isGhost()) {
+            		if (userNode.property("owner").asBoolean()) wsession.pathBy("/rooms/" + roomId).unset("owner", userId) ;
+					if (bs.existFunction(userId, "whenIN")) bs.callFrom(userId, "whenOUT", roomId) ;
+            	}
+
                 String messageId = new ObjectId().toString();
                 //will define message
                 wsession.pathBy("/rooms/" + roomId + "/messages/")
@@ -87,4 +115,5 @@ public class UserInAndOutRoomHandler implements CDDHandler {
             }
         };
     }
+
 }

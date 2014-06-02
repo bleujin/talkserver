@@ -29,7 +29,7 @@ public class HeartBeat {
 				if (! started.get()) return null;
 				
 				job.run(); 
-				worker.schedule(this, delaySecond, TimeUnit.SECONDS);
+				worker.schedule(this, 3, TimeUnit.SECONDS);
 				return null ;
 			}
 		} ;

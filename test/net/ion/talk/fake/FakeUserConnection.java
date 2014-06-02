@@ -26,4 +26,9 @@ public class FakeUserConnection extends UserConnection {
 	public void sendMessage(String message) {
 		this.received = message;
 	}
+	
+	public String asString(String key) {
+		return super.asString(key);
+	}
+
 }

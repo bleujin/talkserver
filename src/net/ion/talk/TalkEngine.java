@@ -7,6 +7,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
@@ -133,7 +134,7 @@ public class TalkEngine implements WebSocketHandler {
 
 		registerHandler(new UserConnectionHandler()).registerHandler(ServerHandler.test()).registerHandler(new TalkScriptHandler()).registerHandler(new WhisperHandler()) ;
 
-		rsession.workspace().cddm().add(new UserInAndOutRoomHandler());
+		rsession.workspace().cddm().add(UserInAndOutRoomHandler.create(bs));
 		rsession.workspace().cddm().add(new TalkMessageHandler(nc));
 		rsession.workspace().addListener(new NotificationListener(am));
 
@@ -311,7 +312,8 @@ interface ConnHandler<T> {
 class ConnManager {
 
 	private CopyOnWriteArraySet<WebSocketConnection> conns = new CopyOnWriteArraySet<WebSocketConnection>() ;
-
+	private Logger logger = LogBroker.getLogger(ConnManager.class);
+	
 	private ConnManager() {
 	}
 
@@ -357,8 +359,7 @@ class ConnManager {
 	}
 
 	void remove(WebSocketConnection uconn, TalkEngine.Reason reason) {
-		Debug.line(uconn, uconn.data("id"), reason);
-		
+		logger.log(Level.INFO, "" + uconn.data("id") + " closed for" + reason);
 		conns.remove(uconn);
 	}
 

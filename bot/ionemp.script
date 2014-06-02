@@ -212,7 +212,9 @@ new function(){
 					.property("messageId", new net.ion.framework.util.ObjectId().toString()).build().talkMessage()) ;
 			}
 		} else if (empMap[source.id()] != undefined) {
+
 			empMap[source.id()].action = whisperMsg.message() ;
+			
 			source.sendMessage(
 				rb.makeCommandBuilder("/whisper/ionemp/" + cmd.fnName())
 				  .inner("result")

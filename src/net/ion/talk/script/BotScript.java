@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.logging.Logger;
 
 import javax.script.Invocable;
 import javax.script.ScriptContext;
@@ -20,8 +21,9 @@ import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
 import net.ion.craken.script.FileAlterationMonitor;
 import net.ion.framework.db.Rows;
+import net.ion.framework.logging.LogBroker;
 import net.ion.framework.parse.gson.JsonObject;
-import net.ion.framework.util.Debug;
+import net.ion.framework.util.ArrayUtil;
 import net.ion.framework.util.FileUtil;
 import net.ion.framework.util.ListUtil;
 import net.ion.framework.util.MapUtil;
@@ -54,9 +56,10 @@ public class BotScript {
 	private ScheduledExecutorService ses;
 	private ReadSession rsession;
 	private String scriptExtension = ".script" ;
+	private Logger logger = LogBroker.getLogger(BotScript.class);
 
-	private BotScript(ReadSession rsession, ScheduledExecutorService ses, NewClient nc) {
-		ScriptEngineManager manager = new ScriptEngineManager();
+	private BotScript(ClassLoader classLoader, ReadSession rsession, ScheduledExecutorService ses, NewClient nc) {
+		ScriptEngineManager manager = new ScriptEngineManager(classLoader);
 		this.ses = ses ;
 		this.sengine = manager.getEngineByName("JavaScript");
 		sengine.put("session", rsession);
@@ -69,7 +72,11 @@ public class BotScript {
 	}
 
 	public static BotScript create(ReadSession rsession, ScheduledExecutorService ses, NewClient nc) {
-		return new BotScript(rsession, ses, nc);
+		return new BotScript(BotScript.class.getClassLoader(), rsession, ses, nc);
+	}
+
+	public static BotScript create(ClassLoader cloader, ReadSession rsession, ScheduledExecutorService ses, NewClient nc) {
+		return new BotScript(cloader, rsession, ses, nc);
 	}
 
 	public BotScript readDir(final File scriptDir) throws IOException {
@@ -122,19 +129,22 @@ public class BotScript {
 		observer.addListener(new FileAlterationListenerAdaptor() {
 			@Override
 			public void onFileDelete(File file) {
-				Debug.line("Bot Deleted", file);
-				packages.remove(FilenameUtils.getBaseName(file.getName())) ;
+				String botName = FilenameUtils.getBaseName(file.getName()) ;
+				logger.warning(botName + " Bot Deleted");
+				packages.remove(botName) ;
 			}
 			
 			@Override
 			public void onFileCreate(File file) {
-				Debug.line("Bot Created", file);
+				String botName = FilenameUtils.getBaseName(file.getName()) ;
+				logger.warning(botName + " Bot Created");
 				loadPackageScript(file) ;
 			}
 			
 			@Override
 			public void onFileChange(File file) {
-				Debug.line("Bot Changed", file);
+				String botName = FilenameUtils.getBaseName(file.getName()) ;
+				logger.warning(botName + " Bot Changed");
 				loadPackageScript(file) ;
 			}
 		});
@@ -243,6 +253,16 @@ public class BotScript {
 		return callFn(bm.toUserId() + "." + bm.eventName(), bm, BotResponseHandler.ReturnNative) ;
 	}
 	
+	public Object callFrom(String botId, String fnName, Object... args) throws ScriptException, NoSuchMethodException {
+		Object pack = packages.get(botId);
+		if (pack == null) throw new IllegalArgumentException("not found bot") ;
+		Object result = ((Invocable) sengine).invokeMethod(pack, fnName, args);
+		if(result instanceof NativeJavaObject) result = ((NativeJavaObject)result).unwrap() ;  
+		
+		return result;
+	}
+
+	
 	public Object whisper(UserConnection source, WhisperMessage whisperMsg) {
 		
 		BotWhisperHandler<Object> returnnative = BotWhisperHandler.DEFAULT ;
@@ -267,6 +287,17 @@ public class BotScript {
 		if (result instanceof Rows) return Rows.class.cast(result) ;
 		throw new ScriptException("return type must be rows.class") ;
 	}
+
+	public void stop() {
+		ses.shutdown(); 
+		rsession.workspace().repository().shutdown() ;
+	}
+
+	public boolean existFunction(String botId, String fnName) {
+		Object pack = packages.get(botId) ;
+		return ArrayUtil.contains(((NativeObject)pack).getAllIds(), fnName) ;
+	}
+
 }
 
 
