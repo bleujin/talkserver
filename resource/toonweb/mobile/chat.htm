@@ -248,33 +248,37 @@
 
         var connManager = new function() {
             var ws;
-
             this.status = '';
+            
+            var heartBeatJob ;
 
             this.initConnection = function(address) {
                 ws = new WebSocket(address);
 
+				
                 ws.onopen = function() {
                     roomManager.room().message({message: "Welcome to ToonTalk Mobile"});
                     connManager.status = 'connected';
-
+					
                     if (!!navigator.geolocation){
-                        console.log('supported navigator') ;
-
                         navigator.geolocation.getCurrentPosition(function(position){
                             console.log(position.coords.latitude + ',' + position.coords.longitude) ;
                             chatclient.command('/user/addGPSWith', {latitude:position.coords.latitude, longitude:position.coords.longitude, userId:'$config.sender$'}) ;
                         }, function(error){
-                            console.log('not supported navigator : ' +  error.message);
+                            console.log('error : ' +  error.message);
                         });
 
                     } else {
                         console.log('not supported navigator') ;
                     }
+                    
+					heartBeatJob = setTimeout(connManager.reconnect , 30000) ;
                 };
 
                 ws.onmessage = function(e) {
                     console.log(e.data);
+                 	clearTimeout(heartBeatJob) ;
+                 	heartBeatJob = setTimeout(connManager.reconnect, 30000) ;
                     if('HEARTBEAT' == e.data) {
                         ws.send('HEARTBEAT');
                         return;
@@ -306,10 +310,9 @@
                 };
 
                 ws.onclose = function() {
+                   	window.clearInterval(heartBeatJob) ;
                     connManager.status = 'closed';
-                    roomManager.room().message({
-                        message: 'Connection closed...retry connect'
-                    });
+                    roomManager.room().message({message: 'closed. retry connect'});
                     connManager.reconnect();
                 };
 
@@ -394,7 +397,7 @@
                 var appendMsg = function(roomId, args) {
                     var message = args.html || args.message ;
                     var senderId = (args.sender || 'system');
-                    var senderTxt =  (args.time ? new Date(1 * args.time).toLocaleTimeString() : '' ) +  ' &lt;' + senderId + '&gt;' ;
+                    var senderTxt =  (args.time ? new Date(1 * args.time).toLocaleTimeString('en-US', {hour:'numeric', minute:'numeric', second:'numeric'}) : '' ) +  ' &lt;' + senderId + '&gt;' ;
 
                     var roomEl = \$('#' + roomId);
                     var whisper = args.options ? (eval('('+args.options+')').event == 'onWhisper' ? ' whisper' : '') : '';
@@ -414,7 +417,7 @@
                         messageInner.attr('class', 'bubble other').addClass(whisper).html('<span style="word-wrap: break-word;">' + message + '</span>');
                     }
 
-                    messageBlock.attr('title', jsonToString(args));
+                    messageBlock.attr('id', args.messageId).attr('title', jsonToString(args));
                     messageBlock.append(messageInner);
                     messageBlock.append('<p style="margin-left: 1em;">' + senderTxt + '</p>');
                     roomEl.append(messageBlock);

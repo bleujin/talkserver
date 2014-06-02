@@ -421,7 +421,15 @@ new function(){
 			return ;
 		}
 	
-	} 
+	}, 
+	
+	this.whenIN = function(roomId){
+//		java.lang.System.out.println('in room : ' + roomId) ;
+	}, 
+	
+	this.whenOUT = function(roomId){
+//		java.lang.System.out.println('out room : ' + roomId) ;
+	}
 
 
 	

@@ -23,6 +23,7 @@ import net.ion.craken.script.FileAlterationMonitor;
 import net.ion.framework.db.Rows;
 import net.ion.framework.logging.LogBroker;
 import net.ion.framework.parse.gson.JsonObject;
+import net.ion.framework.util.ArrayUtil;
 import net.ion.framework.util.FileUtil;
 import net.ion.framework.util.ListUtil;
 import net.ion.framework.util.MapUtil;
@@ -252,6 +253,16 @@ public class BotScript {
 		return callFn(bm.toUserId() + "." + bm.eventName(), bm, BotResponseHandler.ReturnNative) ;
 	}
 	
+	public Object callFrom(String botId, String fnName, Object... args) throws ScriptException, NoSuchMethodException {
+		Object pack = packages.get(botId);
+		if (pack == null) throw new IllegalArgumentException("not found bot") ;
+		Object result = ((Invocable) sengine).invokeMethod(pack, fnName, args);
+		if(result instanceof NativeJavaObject) result = ((NativeJavaObject)result).unwrap() ;  
+		
+		return result;
+	}
+
+	
 	public Object whisper(UserConnection source, WhisperMessage whisperMsg) {
 		
 		BotWhisperHandler<Object> returnnative = BotWhisperHandler.DEFAULT ;
@@ -276,6 +287,17 @@ public class BotScript {
 		if (result instanceof Rows) return Rows.class.cast(result) ;
 		throw new ScriptException("return type must be rows.class") ;
 	}
+
+	public void stop() {
+		ses.shutdown(); 
+		rsession.workspace().repository().shutdown() ;
+	}
+
+	public boolean existFunction(String botId, String fnName) {
+		Object pack = packages.get(botId) ;
+		return ArrayUtil.contains(((NativeObject)pack).getAllIds(), fnName) ;
+	}
+
 }
 
 
