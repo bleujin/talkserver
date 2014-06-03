@@ -172,9 +172,10 @@ new function(){
 	
 	this.recent = function(scriptMsg, cparam, source){
 		var offset = cparam.remainAsInt(0, 10) ;
+		var skip = cparam.remainAsInt(1, 0) ;
 		var roomId = scriptMsg.fromRoomId() ;
 		
-		var recent100 = session.pathBy("/rooms/" + roomId + "/messages").children().descending('messageId').offset(offset).toList() ;
+		var recent100 = session.pathBy("/rooms/" + roomId + "/messages").children().descending('messageId').offset(offset).skip(skip).toList() ;
 		java.util.Collections.reverse(recent100) ;
 		var unreadMsg = recent100.iterator();
 		while(unreadMsg.hasNext()){
@@ -326,6 +327,38 @@ new function(){
 		}
 		
 		return {message:'latitude:' + lat + ', longitude:' + lon};
+	}, 
+	
+	this.friends = function(scriptMsg, cparam){
+		
+		var option = cparam.remain(0) ;
+	
+		var text = '' ;
+		if (option > ' ' && session.exists('/users/' + option)){
+			session.tranSync(function(wsession) {
+				wsession.pathBy('/users/'+ scriptMsg.fromUserId()).refTos('friends', '/users/' + option) ;
+			}) ;
+		
+			text = option + ' added at friends' ;
+		} else {
+	
+			// list friend
+			var friends = session.pathBy('/users/'+ scriptMsg.fromUserId()).refChildren('friends').toList() ;
+			if (friends.size() == 0) {
+				text = 'no friends' ; 
+			} else {
+				var iters = friends.iterator() ;
+				text = '<ul>' ;
+				while(iters.hasNext()){
+					var friend = iters.next() ;
+					var onClickMsg = "client.chat(\"/invite " + friend.property('userId').asString() + "\")" ;
+					text += "<li><a href='#' onclick='" + onClickMsg + "'>" + friend.property('userId').asString() + "</a> : " + friend.property('nickname').asString() + "</li>" ;
+				}
+				text += '</ul>' ;
+			}
+		}
+			
+		return {message:text} ;
 	}, 
 	
 	

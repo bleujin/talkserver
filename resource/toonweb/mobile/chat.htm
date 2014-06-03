@@ -220,7 +220,7 @@
 
 <script type="text/javascript">
     WEB_SOCKET_SWF_LOCATION = "/toonweb/WebSocketMain.swf";  // Set URL of your WebSocketMain.swf here:
-    WEB_SOCKET_DEBUG = true;  // Set this to dump debug message from Flash to console.log:
+    WEB_SOCKET_DEBUG = false;  // Set this to dump debug message from Flash to console.log:
 
     function jsonToString(obj) {
         var t = typeof (obj);
@@ -262,21 +262,21 @@
 					
                     if (!!navigator.geolocation){
                         navigator.geolocation.getCurrentPosition(function(position){
-                            console.log(position.coords.latitude + ',' + position.coords.longitude) ;
+                            chatclient.log(position.coords.latitude + ',' + position.coords.longitude) ;
                             chatclient.command('/user/addGPSWith', {latitude:position.coords.latitude, longitude:position.coords.longitude, userId:'$config.sender$'}) ;
                         }, function(error){
-                            console.log('error : ' +  error.message);
+                            chatclient.log('error : ' +  error.message);
                         });
 
                     } else {
-                        console.log('not supported navigator') ;
+                        chatclient.log('not supported navigator') ;
                     }
                     
 					heartBeatJob = setTimeout(connManager.reconnect , 30000) ;
                 };
 
                 ws.onmessage = function(e) {
-                    console.log(e.data);
+                    chatclient.log(e.data);
                  	clearTimeout(heartBeatJob) ;
                  	heartBeatJob = setTimeout(connManager.reconnect, 30000) ;
                     if('HEARTBEAT' == e.data) {
@@ -349,7 +349,7 @@
                         }, 1000);
                     },
                     error : function(request,status,error){
-                        console.log('error' + status + error);
+                        chatclient.log('error' + status + error);
                         alert('Not Connect Server');
                     }
                 }) ;
@@ -654,7 +654,7 @@
                     requestId: msgId
                 }
             });
-            console.log('send : ' + chatMsg);
+            this.log('send : ' + chatMsg);
             connManager.getConnection().send(chatMsg);
 
             \$('#message').val('');
@@ -669,6 +669,10 @@
             });
             connManager.getConnection().send(cmdMsg);
         };
+        
+        this.log = function(msg){
+        	console.log(msg) ;
+        } ;
 
         this.close = function() {
             connManager.getConnection().close();

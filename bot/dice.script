@@ -51,11 +51,11 @@ new function(){
 //		this.sendMessage("onExit", bm, {message :"Bye"}) ;
 	}, 
 	
-	this.whenIN = function(bm){
+	this.whenIN = function(roomId){
 		
 	}, 
 	
-	this.whenOUT = function(bm){
+	this.whenOUT = function(roomId){
 
 	}
 	

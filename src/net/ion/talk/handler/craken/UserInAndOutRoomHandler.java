@@ -59,7 +59,7 @@ public class UserInAndOutRoomHandler implements CDDHandler {
             	ReadNode userNode = wsession.readSession().ghostBy("/bots/" + userId) ;
             	if (! userNode.isGhost()) {
             		if (userNode.property("owner").asBoolean()) wsession.pathBy("/rooms/" + roomId).append("owner", userId) ;
-					if (bs.existFunction(userId, "whenIN")) bs.callFrom(userId, "whenIN", roomId) ;
+					bs.callFrom(userId, "whenIN", roomId) ;
             	}
             	
             	
@@ -94,7 +94,7 @@ public class UserInAndOutRoomHandler implements CDDHandler {
             	ReadNode userNode = wsession.readSession().ghostBy("/bots/" + userId) ;
             	if (! userNode.isGhost()) {
             		if (userNode.property("owner").asBoolean()) wsession.pathBy("/rooms/" + roomId).unset("owner", userId) ;
-					if (bs.existFunction(userId, "whenIN")) bs.callFrom(userId, "whenOUT", roomId) ;
+					bs.callFrom(userId, "whenOUT", roomId) ;
             	}
 
                 String messageId = new ObjectId().toString();
