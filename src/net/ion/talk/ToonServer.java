@@ -81,8 +81,8 @@ public class ToonServer {
 					.restSection("resource")
 						.path("resource").addUrlPattern("/{path}").matchMode(EnumClass.IMatchMode.STARTWITH).handler(ResourceLet.class)
 						
-					.restSection("bot")
-						.path("bot").addUrlPattern("/{botId}").matchMode(IMatchMode.STARTWITH).handler(EmbedBotLet.class)
+					.restSection("image")
+						.path("bot").addUrlPattern("/bot/icon/{botId}.jpg").handler(BotIconLet.class)
 						
 					.restSection("session")
 						.addPreFilter(new ToonAuthenticator("user"))
@@ -97,7 +97,7 @@ public class ToonServer {
 						.path("toonweb").addUrlPattern("/").matchMode(IMatchMode.STARTWITH).handler(ToonWebResourceLet.class)
 						
 					.restSection("upload")
-						.path("upload").addUrlPattern("/{userId}/{resource}").addUrlPattern("/{userId}/{resource}/{fieldname}").handler(UploadLet.class)
+						.path("upload").addUrlPattern("/{userId}/{resource}").addUrlPattern("/{userId}/{resource}/{fieldname}").handler(net.ion.talk.let.UploadLet.class)
 						
 					.restSection("admin").addAttribute("baseDir", "./resource/template")
 						.path("node").addUrlPattern("/repository/{renderType}").matchMode(IMatchMode.STARTWITH).handler(NodeLet.class)

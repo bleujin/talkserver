@@ -68,7 +68,7 @@ new function(){
                         .property("messageId", messageId);
             }) ;
       
-	
+		java.lang.System.out.println('DICE') ;
 //		this.sendMessage("onEnter", bm, {message :"Hello " + "dd"+ " I'm EchoBot"}) ;	
 	}, 
 	
