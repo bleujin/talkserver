@@ -12,9 +12,7 @@ import org.apache.lucene.index.CorruptIndexException;
 public class TestBMailer extends TestCase {
 
 	public void testFirst() throws CorruptIndexException, IOException {
-		ScheduledExecutorService ses = Executors.newScheduledThreadPool(2);
-
-		BBotMailer mailer = BBotMailer.create(ses);
+		BBotMailer mailer = BBotMailer.create();
 		
 		mailer.send("airkjh@i-on.net", "도움말");
 	}

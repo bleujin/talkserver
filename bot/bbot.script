@@ -1,7 +1,7 @@
 new function() {
 
     var sysout = java.lang.System.out;
-
+    var mailer = {};
 
     if(!Date.prototype.yyyymmdd) {
         Date.prototype.yyyymmdd = function() {
@@ -21,7 +21,9 @@ new function() {
         session.tran(function(wsession) {
             wsession.pathBy("/bots/bbot").property("owner", true) ;
         }) ;
-	};
+
+        mailer = net.ion.framework.mail.BBotMailer.create();
+    };
 	
 	this.onEnter = function(bm) {
 		var roomId = bm.roomId() ;
@@ -685,7 +687,7 @@ new function() {
         {name:'기타',code:'05', groupCode: '8349', groupName: '해외출장비'}
 	];
 
-    function isValidDate(str) {
+    function isDate(str) {
         // validate year as 4 digits, month as 01-12, and day as 01-31
         if ((str = str.match (/^(\d{4})(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])$/))) {
            // make a date
@@ -699,7 +701,7 @@ new function() {
 
     var commands = {
 
-        send: function(bm, cmd, message) {
+        response: function(bm, cmd, message) {
             bm.source().sendMessage(
                 rb.makeCommandBuilder("/whisper/bbot/" + cmd)
                   .inner("result")
@@ -712,7 +714,7 @@ new function() {
         },
 
         passthrough: function(bm, receivers) {
-            // impossible to handle, pass through message
+
             var roomId = bm.fromRoomId() ;
             var time = new Date().getTime();
             var messageId = new net.ion.framework.util.ObjectId().toString();
@@ -726,24 +728,24 @@ new function() {
                     .property("requestId", bm.asString('requestId'))
                     .property("options", "{event:'onMessage'}")
                     .property("clientScript", bm.clientScript())
-                    .property("time",time.toString())
+                    .property("time",new Date().getTime().toString())
                     .property("_owner", _myBotId)
                     .property("messageId", messageId);
             }) ;
         },
 
-        parse: function(command) {
+        newJob: function(command) {
             for(var i = 0, max = this.jobs.length; i < max; i++) {
-                if(this.jobs[i].keyword == command) {
+                if(this.jobs[i].name == command) {
                     return new this.jobs[i].fn();
                 }
             }
-            return dummy;
+            return undefined;
         },
 
         jobs: [
             {
-                keyword: '월차',
+                name: '휴가',
 
                 fn: function() {
                     var self = this;
@@ -751,12 +753,12 @@ new function() {
                     var reason = '일신상의 사유';
 
                     this.command = function() {
-                        return '월차';
+                        return '휴가';
                     };
 
                     this.start = function(bm) {
-                        var startMsg = '월차를 신청을 시작합니다. 입력 항목은 [1] 날짜, [2] 사유입니다. 사유를 입력하지 않으면 기본으로 일신상의 사유로 입력됩니다';
-                        commands.send(bm, 'start', startMsg);
+                        var startMsg = '휴가 신청을 시작합니다. 입력 항목은 [1] 날짜, [2] 사유입니다. 사유를 입력하지 않으면 기본으로 일신상의 사유로 입력됩니다';
+                        commands.response(bm, 'start', startMsg);
                     };
 
                     this.onMessage = function(bm) {
@@ -764,37 +766,44 @@ new function() {
                         var option = '' + command.fnName();
                         var value = '' + command.remain(0);
 
-                        if(option == '날짜') {
+                        if(option == '날짜' || option == '1') {
                             if(value == '내일') {
                                 var d = new Date();
                                 d.setDate(d.getDate() + 1);
                                 date = d.yyyymmdd();
-                                commands.send(bm, 'onMessage', '날짜를 ' + date + ' 로 설정하셨습니다');
-                            } else if(isValidDate(value)) {
+                                commands.response(bm, 'onMessage', '날짜를 ' + date + ' 로 설정하셨습니다');
+                            } else if(isDate(value)) {
                                 date = value;
-                                commands.send(bm, 'onMessage', '날짜를 ' + date + ' 로 설정하셨습니다');
+                                commands.response(bm, 'onMessage', '날짜를 ' + date + ' 로 설정하셨습니다');
                             } else {
-                                commands.send(bm, 'onMessage', '날짜를 잘못 입력하셨어요. "날짜 20140510"과 같은 포맷이거나 내일 월차이면 "날짜 내일" 이라고 입력해주세요');
+                                commands.response(bm, 'onMessage', '날짜를 잘못 입력하셨어요. "날짜 20140510"과 같은 포맷이거나 내일 월차이면 "날짜 내일" 이라고 입력해주세요');
                             }
-                        } else if(option == '사유') {
+                        } else if(option == '사유' || option == '2') {
                             reason = value;
-                            commands.send(bm, 'onMessage', '사유를 ' + reason + ' 로 설정하셨습니다');
+                            commands.response(bm, 'onMessage', '사유를 ' + reason + ' 로 설정하셨습니다');
+                        } else {
+                            commands.response(bm, 'onMessage', '알 수 없는 명령어입니다');
                         }
                     };
 
                     this.confirm = function(bm) {
-                        var startMsg = '아래 내용으로 월차를 신청하시겠습니까?<br/>날짜: ' + self.date + '<br/>사유: ' + self.reason ;
-                        commands.send(bm, 'confirm', startMsg);
+                        var startMsg = '아래 내용으로 월차를 신청하시겠습니까? 내용이 맞으면 네 아니면 아니오를 입력하세요<br/>날짜: ' + date + '<br/>사유: ' + reason ;
+                        commands.response(bm, 'confirm', startMsg);
+                        return true;
+                    };
+
+                    this.buildMessage = function() {
+                        return java.lang.String.format('휴가,%s,%s', date, reason);
                     };
 
                     this.finish = function(bm) {
-                        commands.send(bm, 'finish', '월차 신청이 완료되었습니다.');
+                        commands.response(bm, 'finish', '휴가 신청이 완료되었습니다.');
                     }
                 }
             },
 
             {
-                keyword: '반차',
+                name: '반차',
 
                 fn : function() {
                     this.status = '';
@@ -808,7 +817,7 @@ new function() {
 
                     this.start = function(bm) {
                         var startMsg = '반차를 신청을 시작합니다. 입력 항목은 [1] 날짜, [2] 사유입니다. 날짜를 입력하지 않으면 내일, 사유를 입력하지 않으면 기본으로 일신상의 사유로 입력됩니다';
-                        commands.send(bm, 'start', startMsg);
+                        commands.response(bm, 'start', startMsg);
                     };
 
                     this.onMessage = function(bm) {
@@ -816,38 +825,45 @@ new function() {
                         var option = '' + command.fnName();
                         var value = '' + command.remain(0);
 
-                        if(option == '날짜') {
+                        if(option == '날짜' || option == '1') {
 
                             if(value == '내일') {
                                 var d = new Date();
                                 d.setDate(d.getDate() + 1);
 
                                 var date = d.yyyymmdd();
-                                commands.send(bm, 'onMessage', '날짜를 ' + date + ' 로 설정하셨습니다');
-                            } else if(isValidDate(value)) {
+                                commands.response(bm, 'onMessage', '날짜를 ' + date + ' 로 설정하셨습니다');
+                            } else if(isDate(value)) {
                                 var date = value;
-                                commands.send(bm, 'onMessage', '날짜를 ' + date + ' 로 설정하셨습니다');
+                                commands.response(bm, 'onMessage', '날짜를 ' + date + ' 로 설정하셨습니다');
                             } else {
-                                commands.send(bm, 'onMessage', '날짜를 잘못 입력하셨어요. "날짜 20140510"과 같은 포맷이거나 내일 월차이면 "날짜 내일" 이라고 입력해주세요');
+                                commands.response(bm, 'onMessage', '날짜를 잘못 입력하셨어요. "날짜 20140510"과 같은 포맷이거나 내일 월차이면 "날짜 내일" 이라고 입력해주세요');
                             }
-                        } else if(option == '사유') {
+                        } else if(option == '사유' || option == '2') {
                             reason = value;
-                            commands.send(bm, 'onMessage', '사유를 ' + reason + ' 로 설정하셨습니다');
+                            commands.response(bm, 'onMessage', '사유를 ' + reason + ' 로 설정하셨습니다');
+                        } else {
+                            commands.response(bm, 'onMessage', '알 수 없는 명령어입니다');
                         }
                     };
 
                     this.confirm = function(bm) {
-                        var startMsg = '아래 내용으로 반차를 신청하시겠습니까?<br/>날짜: ' + date + '<br/>사유: ' + reason ;
-                        commands.send(bm, 'confirm', startMsg);
+                        var startMsg = '아래 내용으로 반차를 신청하시겠습니까? 내용이 맞으면 네 아니면 아니오를 입력하세요<br/>날짜: ' + date + '<br/>사유: ' + reason ;
+                        commands.response(bm, 'confirm', startMsg);
+                        return true;
+                    };
+
+                    this.buildMessage = function() {
+                        return java.lang.String.format('반차,%s,%s', date, reason);
                     };
 
                     this.finish = function(bm) {
-                        commands.send(bm, 'finish', '반차 신청이 완료되었습니다.');
+                        commands.response(bm, 'finish', '반차 신청이 완료되었습니다.');
                     }
                 }
             },
             {
-                keyword: '청구서',
+                name: '청구서',
 
                 fn: function() {
                     var status = '';
@@ -858,16 +874,19 @@ new function() {
                     var description = '';
 
                     this.start = function(bm) {
-                        commands.send(bm, 'start', '청구서 신청을 시작합니다. 입력 항목은 프로젝트, 항목, 금액, 내용입니다.');
+                        commands.response(bm, 'start', '청구서 신청을 시작합니다. 입력 항목은 [1] 프로젝트, [2] 항목(검색), [3] 금액, [4] 내용 입니다.');
                     };
 
+                    this.command = function() {
+                        return '청구서';
+                    }
 
                     this.onMessage = function(bm) {
                         var command = bm.asCommand();
                         var option = '' + command.fnName();
                         var value = '' + command.remain(0);
 
-                        if(option == '프로젝트') {
+                        if(option == '프로젝트' || option == '1') {
                             var searched = '<ol>';
 
                             for(var i = 0 ; i < projects.length; i++) {
@@ -875,7 +894,7 @@ new function() {
 
                                 if(project.code == value || project.name == value) {
                                     projectCode = project.code;
-                                    commands.send(bm, 'onMessage', '프로젝트를 ' + project.name + '(' + projectCode + ') 로 설정하셨습니다');
+                                    commands.response(bm, 'onMessage', '프로젝트를 ' + project.name + '(' + projectCode + ') 로 설정하셨습니다');
                                     return ;
                                 } else if(project.code.indexOf(value) > -1 || project.name.indexOf(value) > -1) {
                                     searched += '<li><a href="javascript:client.chat(\'프로젝트 '+project.code+'\');">' + project.code + ':' + project.name + '</a></li>';
@@ -883,9 +902,10 @@ new function() {
                             }
 
                             var searchResult = '검색된 프로젝트 계정은 아래와 같습니다 <br/>원하시는 항목을 선택해 주세요<br/>' + searched + '</ol>';
-                            commands.send(bm, 'onMessage', searchResult);
 
-                        } else if(option == '항목') {
+                            commands.response(bm, 'onMessage', searchResult);
+
+                        } else if(option == '항목' || option == '2') {
 
                             var accountSearched = '<ol>';
 
@@ -893,49 +913,61 @@ new function() {
                                 var account = accounts[i];
 
                                 if(account.code.indexOf(value) > -1 || account.name.indexOf(value) > -1 || account.groupCode.indexOf(value) > -1 || account.groupName.indexOf(value) > -1) {
-                                    var accountArgs = 'accountvalue ' + account.code + ',' + account.groupCode;
+                                    var accountArgs = '@bbot accountvalue ' + account.code + ',' + account.groupCode;
                                     accountSearched += '<li><a href="javascript:client.chat(\'' + accountArgs + '\');">' + account.groupName + '/' + account.name + '</a></li>';
                                 }
                             }
 
-                            commands.send(bm, 'onMessage', '검색된 항목은 다음과 같습니다<br/>' + accountSearched + '<br>원하시는 항목을 선택해 주세요');
+                            commands.response(bm, 'onMessage', '검색된 항목은 다음과 같습니다<br/>' + accountSearched + '<br>원하시는 항목을 선택해 주세요');
 
-                        } else if(option == 'accountvalue') {           // 항목에서 검색한 내용을 클릭하면 이 커맨드를 전송
-
-                            var accountItems = value.split(',');
-
-                            accountCode = accountItems[0];
-                            summaryCode = accountItems[1];
-
-                            commands.send(bm, 'onMessage', '계정코드를 ' + accountCode + ', 적요 코드를 ' + summaryCode + '로 설정하였습니다');
-
-                        } else if(option == '금액') {
+                        } else if(option == '금액' || option == '3') {
 
                             amount = value;
-                            commands.send(bm, 'onMessage', '금액을 ' + amount + '원으로 설정하셨습니다');
+                            commands.response(bm, 'onMessage', '금액을 ' + amount + '원으로 설정하셨습니다');
 
-                        } else if(option == '내용') {
+                        } else if(option == '내용' || option == '4') {
 
                             description = command.remains();
-                            commands.send(bm, 'onMessage', '금액을 ' + description + ' 로 설정하셨습니다');
+                            commands.response(bm, 'onMessage', '금액을 ' + description + ' 로 설정하셨습니다');
 
+                        } else {
+                            commands.response(bm, 'onMessage', '알 수 없는 명령어입니다');
                         }
                     };
 
+                    this.accountCd = function(code) {
+                        accountCode = code;
+                    };
+
+                    this.summaryCd = function(code) {
+                        summaryCode = code;
+                    };
+
                     this.confirm = function(bm) {
-                        var startMsg = '아래 내용으로 청구서를 신청하시겠습니까?<br/>신청하시려면 네 라고 입력해 주세요'
+
+                        if(projectCode == '' || accountCode == '' || summaryCode == '' || amount == 0 || description == '') {
+                            commands.response(bm, 'confirm', '입력되지 않은 청구서 항목이 있습니다. 다시 확인해 주세요');
+                            return false;
+                        }
+
+                        var startMsg = '아래 내용으로 청구서를 신청하시겠습니까?<br/>신청하시려면 네, 아니면 아니오 라고 입력해 주세요'
                         startMsg += '<ol><li>프로젝트: ' + projectCode + '</li>'
                         startMsg += '<li>계정코드: ' + accountCode + '</li>' ;
                         startMsg += '<li>적요코드: ' + summaryCode + '</li>' ;
                         startMsg += '<li>금액: ' + amount + '</li>' ;
                         startMsg += '<li>내용: ' + description + '</li></ol>' ;
 
-                        commands.send(bm, 'confirm', startMsg);
-                    },
+                        commands.response(bm, 'confirm', startMsg);
+                        return true;
+                    };
+
+                    this.buildMessage = function() {
+                        return java.lang.String.format('청구서,%s,%s,%s,%s', projectCode, accountCode, summaryCode, amount, description);
+                    };
 
                     this.finish = function(bm) {
-                        commands.send(bm, 'finish', '청구서 신청이 완료되었습니다.');
-                    }
+                        commands.response(bm, 'finish', '청구서 신청이 완료되었습니다.');
+                    };
                 }
             }
         ]
@@ -944,84 +976,85 @@ new function() {
     var _myBotId = 'bbot';
     var progress = {};
 
-    var dummy = new function() {
-        this.start = function(bm) {};
-        this.onMessage = function(bm) {};
-        this.finish = function(bm) {};
-        this.confirm = function(bm) {};
-    };
-
     var myBBotJob = function(roomId, sender) {
-        var workingJobs = progress[roomId];
-
-        for(var i = 0; i < workingJobs.length; i++) {
-            var workingJob = workingJobs[i];
-
-            if(workingJob.requestUser == sender) {
-                return workingJob.handler;
-            }
-        }
-
-        return undefined;
+        return progress[roomId + '-' + sender];
     };
 
     var removeJob = function(roomId, sender) {
-        var workingJobs = progress[roomId];
-
-        for(var i = 0; i < workingJobs.length; i++) {
-            var workingJob = workingJobs[i];
-
-            if(workingJob.requestUser == sender) {
-
-            }
-        }
-
-    }
+        delete progress[roomId + '-' + sender];
+    };
 
 	this.onMessage = function(bm) {
 
-        if (! bm.isBlank('_owner')) return ;
+        if (!bm.isBlank('_owner')) return ;
 
-        if (session.exists("/bots/"+ bm.fromUserId())) {
+        var sender = bm.fromUserId();
+
+        if (session.exists("/bots/"+ sender)) {
             return ;
         }
 
 	    var message = bm.asCommand();
-        var roomId = bm.roomId();
-        var sender = bm.fromUserId();
+        var roomId = bm.fromRoomId();
         var command = '' + message.remain(0);
         var myJob = myBBotJob(roomId, sender);
 
         if(message.fnName() == 'bbot' && myJob === undefined) {
-            progress[roomId] = {
-                requestUser: sender,
-                handler: commands.parse(command)
+            myJob = commands.newJob(command);
+            if(!myJob) {
+                commands.response(bm, 'onMessage', '알 수 없는 명령어입니다. 현재 지원하는 명령어는 휴가/반차/청구서 입니다.');
+                return ;
             }
+            progress[roomId + '-' + sender] = myJob;
         }
 
         if(myJob) {
-            // set receivers to sender then passthrough
-            commands.passthrough(bm, bm.fromUserId());
+            // 진행 중인 Job이 있는 경우 sender의 메세지는 websocket으로 다시 돌려준다.
+            bm.source().sendMessage(
+                rb.makeCommandBuilder("/whisper/bbot/passthrough")
+                    .inner("result")
+                    .property("sender", bm.fromUserId())
+                    .property("clientScript", "client.room().message(args);")
+                    .property("message", bm.message())
+                    .property("options", "{event:'onMessage'}")
+                    .property("time", new Date().getTime().toString())
+                    .property("messageId", new net.ion.framework.util.ObjectId().toString()).build().talkMessage()
+            ) ;
 
+            if(message.fnName() == '취소') {
+                commands.response(bm, 'onMessage', '진행중인 작업이 취소되었습니다');
+                removeJob(roomId, sender);
+                return ;
+            }
+
+            // '' (start) -> progress loop -> confirm -> finish
             if(!myJob.status || myJob.status == '') {
 
                 myJob.start(bm, command);
                 myJob.status = 'progress';
 
-            } else if(myJob.status == 'progress' && command == myJob.command()) {               // type same command again --> send confirm message
-
-                myJob.confirm(bm);
-                myJob.status = 'confirm';
-
             } else if(myJob.status == 'progress' && command != myJob.command()) {
 
                 myJob.onMessage(bm);
+
+            } else if(myJob.status == 'progress' && command == myJob.command()) {               // type same command again --> send confirm message
+                var validState = myJob.confirm(bm);
+
+                if(validState) {
+                    myJob.status = 'confirm';
+                };
 
             } else if(myJob.status == 'confirm') {
                 var cmd = message.fnName();
 
                 if(cmd == '네') {
-                    myJob.finish(bm);
+                    try {
+                        mailer.send(sender, myJob.buildMessage()).get();
+                        myJob.finish(bm);
+                    } catch(ex) {
+                        commands.response(bm, 'onMessage', ex.toString());
+                    }
+
                     removeJob(roomId, sender);
                 } else {
                     myJob.status = 'progress';
@@ -1029,26 +1062,40 @@ new function() {
             }
 
         } else {
-            // passthrough to all members
+            // BBot 작업 진행중이 아니거나 다른 사용자가 입력한 값은 passthrough 한다
             commands.passthrough(bm);
         }
 
 	};
 
 	this.onWhisper = function(source, whisperMsg) {
+        var cmd = whisperMsg.asCommand();
+        var option = '' + cmd.fnName();
+        var value = '' + cmd.remain(0);
+        var myJob = myBBotJob(whisperMsg.fromRoomId(), whisperMsg.fromUserId());
+        if(option == 'accountvalue' && myJob.command() == '청구서') {           // 항목에서 검색한 내용을 클릭하면 이 커맨드를 귓속말로 전송
 
+            var accountItems = value.split(',');
+
+            myJob.accountCd(accountItems[0]);
+            myJob.summaryCd(accountItems[1]);
+
+            commands.response(whisperMsg, 'onMessage', '계정코드를 ' + accountCode + ', 적요 코드를 ' + summaryCode + '로 설정하였습니다');
+        }
 	};
 	
 	this.onEnter = function(bm){
 		// do nothing currently
 	}, 
 	
-	this.onExit = function(params){
-		// do nothing currently
-		current.reset();
-	}, 
+	this.onExit = function(bm){
+        var roomId = bm.fromRoomId();
+        var exitUser = bm.fromUserId();
+
+        removeJob(roomId, exitUser);
+	},
 	
-	this.onFilter = function(params){
+	this.onFilter = function(bm){
 		// do nothing currently
 	}	
 }
