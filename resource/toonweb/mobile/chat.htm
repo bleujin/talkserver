@@ -153,34 +153,34 @@
 </head>
 <body>
 <div data-url="chatMain" data-role="page" class="jqm-demos" id="chatMain" data-title="ToonTalk Mobile">
-    <div data-role="header" data-position="fixed">
+    <div data-role="header" data-id="header" data-position="fixed" data-tap-toggle="false">
         <h1>ToonTalk Mobile</h1>
         <a href="#nav-panel" data-icon="bars" data-iconpos="notext">Menu</a>
         <a href="#help" data-icon="info" data-iconpos="notext" class="ui-btn-right">Help</a>
     </div>
 
     <div role="main" id="chatBody" class="ui-content jqm-content jqm-fullwidth">
-        <div data-role="tabs" id="chatScreens" data-position="fixed">
+        <div data-role="tabs" id="chatScreens">
             <div id="roomList" data-role="navbar" data-iconpos="right">
                 <ul>
                     <li roomNumber='Home'><a href="#Home" id='tab-Home' data-ajax="false" data-transition="slide">Home</a></li>
                 </ul>
             </div>
-            <div id="chatRooms">
+            <div id="chatRooms" style="overflow: auto;">
                 <div id="Home" class="ui-body-d ui-content" style="height: 100%;">
                 </div>
             </div>
         </div>
     </div>
 
-    <div data-role="panel" data-poistion="left" data-position-fixed="true" data-display="push" data-theme="a" id="nav-panel">
+    <div data-role="panel" data-poistion="left" data-display="push" data-theme="a" id="nav-panel">
         <ul data-role="listview" id="menuTab">
             <li data-icon="delete"><a href="#" data-rel="close">Close menu</a></li>
             <li id="link-Home"><a href="#" onclick='javascript:client.getRoomManager().select("Home");'>Home</a></li>
         </ul>
     </div>
 
-    <div data-role="footer" data-position="fixed" style="vertical-align: middle;">
+    <div data-role="footer" data-position="fixed" style="vertical-align: middle;" data-tap-toggle="false">
         <div style="margin-left: 15px; margin-right: 15px; float: left; width: 70%; min-width:70%;">
             <input data-clear-btn="true" name="message" id="message" value="" type="text">
         </div>
@@ -214,8 +214,66 @@
     <div data-role=header data-add-back-btn="true">
         <h1>Bot</h1>
     </div>
+    <div data-role="collapsibleset" data-theme="a" data-content-theme="a">
+        <div data-role="collapsible">
+            <h3>야구봇</h3>
+            <p>프로야구 2014년도 선수 기록을 표시해주는 봇입니다.</p>
+            <p>ID: baseball</p>
+            <h4>사용법</h4>
+            <p>타자 순위를 보려면 채팅창에 "야구봇 타자"라고 입력해 주세요</p>
+            <p>타자 뒤에 아무런 하위 옵션이 없으면 타율이 기본값입니다.</p>
+            <p>다음과 같은 하위 옵션을 사용할 수 있습니다.</p>
+            <p>
+                <ul>
+                    <li>타석</li>
+                    <li>타수</li>
+                    <li>안타</li>
+                    <li>홈런</li>
+                    <li>득점</li>
+                    <li>타점</li>
+                    <li>볼넷</li>
+                    <li>삼진</li>
+                    <li>도루</li>
+                    <li>BABIP</li>
+                    <li>타율</li>
+                    <li>출루율</li>
+                    <li>장타율</li>
+                    <li>OPS</li>
+                    <li>wOBA</li>
+                    <li>WAR</li>
+                </ul>
+            </p>
+            <p>예) 타자들의 홈런 순위를 보려면 "야구봇 타자 홈런" 이라고 입력하세요</p>
+            <p>투수 순위를 보려면 채팅창에 "야구봇 투수"라고 입력해 주세요</p>
+            <p>투수 뒤에 아무런 하위 옵션이 없으면 평균자책점이 기본값입니다.</p>
+            <p>다음과 같은 하위 옵션을 사용할 수 있습니다.</p>
+            <p>
 
-    Help Bot
+            <ul>
+                <li>승</li>
+                <li>패</li>
+                <li>세이브</li>
+                <li>홀드</li>
+                <li>선발</li>
+                <li>이닝</li>
+                <li>삼진</li>
+                <li>볼넷</li>
+                <li>홈런</li>
+                <li>ERA</li>
+                <li>WAR</li>
+            </ul>
+            </p>
+            <p>예) 투수들의 승리 순위를 보려면 "야구봇 타자 승" 이라고 입력하세요</p>
+        </div>
+        <div data-role="collapsible">
+            <h3>심심이</h3>
+            <p>심심이와 자유롭게 대화해보세요</p>
+        </div>
+        <div data-role="collapsible">
+            <h3>BBot</h3>
+            <p>대화로 B@를 이용하세요</p>
+        </div>
+    </div>
 </div>
 
 <script type="text/javascript">
