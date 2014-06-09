@@ -966,7 +966,7 @@ new function() {
                     };
 
                     this.buildMessage = function() {
-                        return java.lang.String.format('청구서,%s,%s,%s,%s', projectCode, accountCode, summaryCode, amount, description);
+                        return java.lang.String.format('청구서,%s,%s,%s,%s,%s', projectCode, accountCode, summaryCode, amount, description);
                     };
 
                     this.finish = function(bm) {
@@ -1003,7 +1003,9 @@ new function() {
         var command = '' + message.remain(0);
         var myJob = myBBotJob(roomId, sender);
 
-        if(message.fnName() == 'bbot' && myJob === undefined) {
+        var myJobNotFound = (message.fnName() == 'bbot' && myJob === undefined);
+
+        if(myJobNotFound) {
             myJob = commands.newJob(command);
             if(!myJob) {
                 commands.response(bm, 'onMessage', '알 수 없는 명령어입니다. 현재 지원하는 명령어는 휴가/반차/청구서 입니다.');
@@ -1077,6 +1079,7 @@ new function() {
         var option = '' + cmd.fnName();
         var value = '' + cmd.remain(0);
         var myJob = myBBotJob(whisperMsg.fromRoomId(), whisperMsg.fromUserId());
+
         if(option == 'accountvalue' && myJob.command() == '청구서') {           // 항목에서 검색한 내용을 클릭하면 이 커맨드를 귓속말로 전송
 
             var accountItems = value.split(',');
