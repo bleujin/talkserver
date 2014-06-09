@@ -1046,7 +1046,7 @@ new function() {
 
                 if(validState) {
                     myJob.status = 'confirm';
-                };
+                }
 
             } else if(myJob.status == 'confirm') {
                 var cmd = message.fnName();
@@ -1084,7 +1084,7 @@ new function() {
             myJob.accountCd(accountItems[0]);
             myJob.summaryCd(accountItems[1]);
 
-            commands.response(whisperMsg, 'onMessage', '계정코드를 ' + accountCode + ', 적요 코드를 ' + summaryCode + '로 설정하였습니다');
+            commands.response(whisperMsg, 'onMessage', '계정코드를 ' + accountItems[0] + ', 적요 코드를 ' + accountItems[1] + '로 설정하였습니다');
         }
 	};
 	
