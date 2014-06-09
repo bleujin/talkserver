@@ -96,6 +96,9 @@ public class ToonServer {
 					.restSection("toonweb")
 						.path("toonweb").addUrlPattern("/").matchMode(IMatchMode.STARTWITH).handler(ToonWebResourceLet.class)
 						
+					.restSection("upload")
+						.path("upload").addUrlPattern("/{userId}/{resource}").addUrlPattern("/{userId}/{resource}/{fieldname}").handler(UploadLet.class)
+						
 					.restSection("admin").addAttribute("baseDir", "./resource/template")
 						.path("node").addUrlPattern("/repository/{renderType}").matchMode(IMatchMode.STARTWITH).handler(NodeLet.class)
 						.path("event").addUrlPattern("/event/").matchMode(IMatchMode.STARTWITH).handler(MonitorLet.class)

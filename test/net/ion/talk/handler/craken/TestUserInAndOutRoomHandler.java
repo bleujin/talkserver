@@ -19,7 +19,7 @@ public class TestUserInAndOutRoomHandler extends TestCrakenBase {
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		rsession.workspace().cddm().add(new UserInAndOutRoomHandler()).add(new TalkMessageHandler(NewClient.create()));
+		rsession.workspace().cddm().add(UserInAndOutRoomHandler.test()).add(new TalkMessageHandler(NewClient.create()));
 
 		rsession.tran(new TransactionJob<Object>() {
 			@Override

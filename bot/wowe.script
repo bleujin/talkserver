@@ -266,9 +266,6 @@ SOOTHE  - %s은 %s을(를) 보며 모든 일이 잘될거라고 달랩니다.  \
 	}, 
 	
 	this.onExit = function(bm){
-	}, 
+	} 
 	
-	this.onFilter = function(bm){
-		// bm.message....
-	}
 }

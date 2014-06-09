@@ -79,7 +79,7 @@ public class TestWoweBot extends TestCase {
 		bs.readDir(new File("./bot")) ;
 		
 		assertEquals(Boolean.TRUE, session.pathBy("/bots/wowe").property("owner").asBoolean()) ;
-		session.workspace().cddm().add(new UserInAndOutRoomHandler()) ;
+		session.workspace().cddm().add(UserInAndOutRoomHandler.test()) ;
 
 		session.tran(new TransactionJob<Void>() {
 			@Override

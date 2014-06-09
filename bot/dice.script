@@ -44,14 +44,36 @@ new function(){
 	}, 
 	
 	this.onEnter = function(bm){
-		//this.sendMessage("onEnter", bm, {message :"Hello " + bm.fromUserId() + " I'm EchoBot"}) ;
+		
 	}, 
 	
 	this.onExit = function(bm){
 //		this.sendMessage("onExit", bm, {message :"Bye"}) ;
 	}, 
 	
-	this.onFilter = function(bm){
+	this.whenIN = function(roomId){	
+
+     var selfBotId= 'dice'
+     var time = new Date().getTime();
+	 var messageId = new net.ion.framework.util.ObjectId().toString();
+            session.tran(function(wsession) {
+                var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + messageId)
+                        .property("message", "주사위")
+                        .refTo("sender", "/users/"+selfBotId)
+                        .property("roomId", roomId)
+                        .property("options", "{event:'onMessage'}")
+                        .property("listener", "client.room().sendMessage(args);")
+                        .property("clientScript", "client.sensor().addListener(args);")
+                        .property("time",time.toString())
+                        .property("messageId", messageId);
+            }) ;
+      
+	
+//		this.sendMessage("onEnter", bm, {message :"Hello " + "dd"+ " I'm EchoBot"}) ;	
+	}, 
+	
+	this.whenOUT = function(roomId){
 
 	}
+	
 }
