@@ -523,9 +523,10 @@
                 	var messageBlock = \$('<div></div>');
                 	var messageInner = \$('<div></div>');
                 	
-
+					// if (mcontent < ' ') return ;
+					
                 	if (senderId == chatclient.sender) {
-                	 messageBlock.attr('align', 'right');
+                	 	messageBlock.attr('align', 'right');
 	                	messageInner.html("<embed src='"+ mcontent + "' width='320' height='155' type='image/svg+xml' pluginspage='http://www.adobe.com/svg/viewer/install/' />");
                 	} else {
                 	 messageBlock.attr('align', 'left');
