@@ -66,9 +66,7 @@ public class BotScript {
 		sengine.put("rb", TalkResponseBuilder.create());
 		sengine.put("nc", nc);
 		sengine.put("bc", RestClient.create(nc, rsession));
-		// sengine.put("bbotmailer", BBotMailer.create(ses));
-
-		this.rsession = rsession;
+		this.rsession = rsession ;
 	}
 
 	public static BotScript create(ReadSession rsession, ScheduledExecutorService ses, NewClient nc) {

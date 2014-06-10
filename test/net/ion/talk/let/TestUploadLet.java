@@ -14,7 +14,6 @@ import net.ion.radon.aclient.StringPart;
 import net.ion.radon.aclient.multipart.FilePart;
 import net.ion.radon.core.Aradon;
 import net.ion.radon.util.AradonTester;
-import net.ion.talk.TalkEngine;
 
 public class TestUploadLet extends TestCase {
 
@@ -45,7 +44,7 @@ public class TestUploadLet extends TestCase {
 					.addBodyPart(new FilePart("thumb", file))
 					.addBodyPart(new StringPart("name", "한글이름")).setBodyEncoding("UTF-8").execute().get();
 		assertEquals(200, response.getStatusCode());
-//		Debug.line(response.getUTF8Body());
+		//Debug.line(response.getUTF8Body());
 		nc.close();
 	}
 

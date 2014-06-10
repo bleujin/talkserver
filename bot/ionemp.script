@@ -311,7 +311,7 @@ new function(){
 		var makeMessage = '<ol>' ;
 		for(var i in found){
 			var femp = found[i] ;
-			makeMessage += '<li>' + femp.emp.name + ',' + femp.emp.mphone + ',' + femp.emp.email + ',' + femp.emp.action + '</li>' ;
+			makeMessage += '<br>' + femp.emp.name + ',' + femp.emp.mphone + ',' + femp.emp.email + ',' + femp.emp.action + '</br>' ;
 		}
 		makeMessage += '</ol>'
 		

@@ -1,0 +1,115 @@
+new function(){
+
+    var _myBotId = 'baseball' ;
+    var ranker = net.ion.talk.bot.baseball.PlayerRanker.create();
+
+    var hitterOpt = {
+        '타석': {engName: 'TP', sort: 'desc'},
+        '타수': {engName: 'AB', sort: 'desc'},
+        '안타': {engName: 'H', sort: 'desc'},
+        '홈런': {engName: 'HR', sort: 'desc'},
+        '득점': {engName: 'R', sort: 'desc'},
+        '타점': {engName: 'RBI', sort: 'desc'},
+        '볼넷': {engName: 'BB', sort: 'desc'},
+        '삼진': {engName: 'K', sort: 'desc'},
+        '도루': {engName: 'SB', sort: 'desc'},
+        'BABIP': {engName: 'BABIP', sort: 'desc'},
+        '타율': {engName: 'AVG', sort: 'desc'},
+        '출루율': {engName: 'OBP', sort: 'desc'},
+        '장타율': {engName: 'SLG', sort: 'desc'},
+        'OPS': {engName: 'OPS', sort: 'desc'},
+        'wOBA': {engName: 'wOBA', sort: 'desc'},
+        'WAR': {engName: 'WAR', sort: 'desc'}
+    };
+
+    var pitcherOpt = {
+        '승': {engName: 'W', sort: 'desc'},
+        '패': {engName: 'L', sort: 'desc'},
+        '세이브': {engName: 'SV', sort: 'desc'},
+        '홀드': {engName: 'holds', sort: 'desc'},
+        '선발': {engName: 'GS', sort: 'desc'},
+        '이닝': {engName: 'IP', sort: 'desc'},
+        '삼진': {engName: 'K9', sort: 'desc'},
+        '볼넷': {engName: 'BB9', sort: 'desc'},
+        '홈런': {engName: 'HR9', sort: 'desc'},
+        'ERA': {engName: 'ERA', sort: 'asc'},
+        'WAR': {engName: 'WRA', sort: 'desc'}
+    };
+
+    this.onLoad = function(){
+
+    },
+
+    this.onMessage = function(bm){
+
+        if(!bm.message().startsWith('야구봇') || session.exists("/bots/"+ bm.fromUserId())) return ;
+
+        var roomId = bm.fromRoomId() ;
+        var selfBotId = bm.toUserId() ;
+        var time= new Date().getTime();
+        var messageId=new net.ion.framework.util.ObjectId().toString();
+
+        var cmd = bm.asCommand();
+        var opt = cmd.remain(0);
+        var subOpt = cmd.remain(1);
+        var players = [];
+
+        var playerOpt = '';
+
+        if(opt == '타자') {
+            subOpt = (subOpt && subOpt == '' ? '타율' : subOpt);
+            playerOpt = hitterOpt[subOpt];
+            players = ranker.getTopNHitter(20, playerOpt.engName, playerOpt.sort);
+        } else {
+            subOpt = (subOpt && subOpt == '' ? 'ERA' : subOpt);
+            playerOpt = pitcherOpt[subOpt];
+            players = ranker.getTopNPitcher(20, playerOpt.engName, playerOpt.sort);
+
+        }
+        var message = subOpt + '순위 (KBReport.com 제공)<br/><ol>';
+        var playersObj = eval('(' + players + ')');
+
+        for(var i = 0; i < playersObj.length; i++) {
+            var player = playersObj[i];
+            message += '<li> ' + player['선수명'] + '(' + player['팀명'] + ')' + ':' + player[subOpt];
+        }
+        message += '</ol>';
+
+        session.tran(function(wsession) {
+            var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + messageId)
+                .property("message", message)
+                .refTo("sender", "/users/"+selfBotId)
+                .property("roomId", roomId)
+                .property("options", "{event:'onMessage'}")
+                .property("clientScript", bm.clientScript())
+                .property("time",time.toString())
+                .property("messageId", messageId);
+
+        }) ;
+    },
+
+
+    this.onWhisper = function(source, whisperMsg){
+        source.sendMessage(
+            rb.makeCommandBuilder("/whisper/echo")
+                .inner("result")
+                .property("sender", "echo")
+                .property("clientScript", "client.room().message(args);")
+                .property("message", whisperMsg.message())
+                .property("options", "{event:'onWhisper'}")
+                .property("messageId", new net.ion.framework.util.ObjectId().toString()).build().talkMessage()) ;
+    },
+
+
+    this.onEnter = function(bm){
+        this.sendMessage("onEnter", bm, {message :"Hello " + bm.fromUserId() + " I'm EchoBot"}) ;
+    },
+
+    this.onExit = function(bm){
+//		this.sendMessage("onExit", bm, {message :"Bye"}) ;
+    },
+
+    this.onFilter = function(bm){
+
+    }
+}
