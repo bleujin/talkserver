@@ -48,8 +48,7 @@ new function(){
 
 		
 
-		return rb.create().newInner().property(message, "message, sender.userId as sender,sender.nickname as senderNickname,requestId, clientScript,options,time,listener").property("roomId",roomId).property("notifyId",params.asString("notifyId")).property("messageId",message.fqn().name()).build().toJsonElement();
-
+		return rb.create().newInner().property(message, "message, sender.userId as sender, sender.nickname as senderNickname, requestId, clientScript, options, time, listener, toon").property("roomId",roomId).property("notifyId",params.asString("notifyId")).property("messageId",message.fqn().name()).build().toJsonElement();
 	}, 
 	
 	//메세지 아이디 값보다 큰 메세지를 읽어 옴

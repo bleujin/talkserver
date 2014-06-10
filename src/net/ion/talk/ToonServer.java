@@ -83,6 +83,8 @@ public class ToonServer {
 						
 					.restSection("image")
 						.path("bot").addUrlPattern("/bot/icon/{botId}.jpg").handler(BotIconLet.class)
+						.path("bimage").addUrlPattern("/bimage/{botId}/").matchMode(IMatchMode.STARTWITH).handler(BotImageLet.class)
+						.path("svg").addUrlPattern("/svg/{roomId}/{type}/{messageId}.svg").handler(MessageSVGLet.class)
 						
 					.restSection("session")
 						.addPreFilter(new ToonAuthenticator("user"))

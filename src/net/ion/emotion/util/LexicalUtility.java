@@ -73,9 +73,6 @@ public class LexicalUtility {
 	}
 
 	private void parseLexiconFile(List<AffectWord> wordList, String fileName) throws IOException {
-		// URL fileURL = this.getClass().getResource(fileName);
-		// File file = new File(fileURL.getFile());
-		// BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF8"));
 		BufferedReader in = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(fileName), "UTF8"));
 		String line = in.readLine();
 		while (line != null) {
@@ -94,7 +91,6 @@ public class LexicalUtility {
 	 * @return {@link AffectWord}
 	 */
 	private AffectWord parseLine(String line) {
-		AffectWord value;
 		String[] text = line.split(" ");
 		String word = text[0];
 		double generalWeight = Double.parseDouble(text[1]);
@@ -104,8 +100,7 @@ public class LexicalUtility {
 		double fearWeight = Double.parseDouble(text[5]);
 		double disgustWeight = Double.parseDouble(text[6]);
 		double surpriseWeight = Double.parseDouble(text[7]);
-		value = new AffectWord(word, generalWeight, happinessWeight, sadnessWeight, angerWeight, fearWeight, disgustWeight, surpriseWeight, normalisator);
-		return value;
+		return new AffectWord(word, generalWeight, happinessWeight, sadnessWeight, angerWeight, fearWeight, disgustWeight, surpriseWeight, normalisator);
 	}
 
 	/**

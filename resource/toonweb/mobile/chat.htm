@@ -455,11 +455,43 @@
 
                     appendMsg(roomId, args);
                 };
+                
+                this.toon = function(args) {
+                	var senderId = (args.sender || 'system');
+                	var roomId = args.roomId || manager.activeRoomId();
+                	var mcontent = (args.toon || '').replace('{type}', (senderId == chatclient.sender) ? 'sender' : 'receiver') ;
+
+                	var roomEl = \$('#' + roomId);
+                	var messageBlock = \$('<div></div>');
+                	var messageInner = \$('<div></div>');
+                	
+
+                	if (senderId == chatclient.sender) {
+                	 messageBlock.attr('align', 'right');
+	                	messageInner.html("<embed src='"+ mcontent + "' width='320' height='155' type='image/svg+xml' pluginspage='http://www.adobe.com/svg/viewer/install/' />");
+                	} else {
+                	 messageBlock.attr('align', 'left');
+	                	messageInner.html("<embed src='"+ mcontent + "' width='320' height='155' type='image/svg+xml' pluginspage='http://www.adobe.com/svg/viewer/install/' />");
+                	}
+                	
+                	messageBlock.attr('id', args.messageId).attr('title', jsonToString(args));
+                	messageBlock.append(messageInner);
+                	
+                	
+                	roomEl.append(messageBlock);
+                	manager.scrollToBottom();
+                } ;
 
                 this.leave = function() {
                     var roomId = manager.activeRoomId();
                     manager.remove(roomId);
                     manager.select('Home');
+                } ;
+                
+                this.background = function(args){
+                	var roomEl = \$('#' + args.roomId);
+                	console.log(args.message) ;
+                	roomEl.css("background", "url('" + args.message + "')");  
                 }
             };
 
