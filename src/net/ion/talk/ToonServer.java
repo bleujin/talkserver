@@ -97,7 +97,7 @@ public class ToonServer {
 						.path("toonweb").addUrlPattern("/").matchMode(IMatchMode.STARTWITH).handler(ToonWebResourceLet.class)
 						
 					.restSection("upload")
-						.path("upload").addUrlPattern("/{userId}/{resource}").addUrlPattern("/{userId}/{resource}/{fieldname}").handler(UploadLet.class)
+						.path("upload").addUrlPattern("/{userId}/{resource}").addUrlPattern("/{userId}/{resource}/{fieldname}").handler(net.ion.talk.let.UploadLet.class)
 						
 					.restSection("admin").addAttribute("baseDir", "./resource/template")
 						.path("node").addUrlPattern("/repository/{renderType}").matchMode(IMatchMode.STARTWITH).handler(NodeLet.class)

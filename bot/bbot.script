@@ -1,0 +1,1108 @@
+new function() {
+
+    var sysout = java.lang.System.out;
+    var mailer = {};
+
+    if(!Date.prototype.yyyymmdd) {
+        Date.prototype.yyyymmdd = function() {
+
+            var yyyy = this.getFullYear().toString();
+
+            var mm = (this.getMonth() + 1).toString();
+
+            var dd = this.getDate().toString();
+
+
+            return yyyy + (mm[1] ? mm : '0'+mm[0]) + (dd[1] ? dd : '0'+dd[0]);
+        };
+    };
+
+	this.onLoad = function() {
+        session.tran(function(wsession) {
+            wsession.pathBy("/bots/bbot").property("owner", true) ;
+        }) ;
+
+        mailer = net.ion.framework.mail.BBotMailer.create();
+    };
+	
+	this.onEnter = function(bm) {
+		var roomId = bm.roomId() ;
+		var selfBotId = bm.botId() ;
+
+		if ("bbot" == bm.sender()) return ;
+		
+        session.tran(function(wsession) {
+            var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + bm.newMsgId())
+                    .property("message", "Hello I'm B@ Bot")
+                    .refTo("sender","/users/"+ selfBotId)
+                    .property("roomId", roomId)
+                    .property("event", 'onMessage')
+                    .property("clientScript", bm.clientScript())
+                    .property("messageId", bm.messageId());
+        }) ;
+	};
+
+	var projects = [
+	    {code:'01298',name:'2014년 소상공인시장진흥공단 전산장비 유지보수_14.04.25~2015.04.24'},
+        {code:'01297',name:'삼성에버랜드 웹컨텐츠관리시스템(WCMS)개선 계약'},
+        {code:'01296',name:'올댓 홈페이지 CMS 솔루션 디자인 탬플릿 개발용역_신한카드'},
+        {code:'01295',name:'2014년 KT MVNO 사업관리시스템 개발유지보수_14.05.01~14.12.31'},
+        {code:'01294',name:'스마트라이프디자인 리뉴얼_CMS 개발'},
+        {code:'01293',name:'2014 하나은행 CMS 유지보수'},
+        {code:'01292',name:'용인시 디지털산업진흥원 홈페이지 고도화 사업'},
+        {code:'01291',name:'2014년 무선포털(완자존, 컨텐츠존) 및 오픈넷 KOA 운영'},
+        {code:'01290',name:'2014년 CASS 및 MUSE 통합 개발유지보수'},
+        {code:'01289',name:'오! 포인트 리뉴얼 웹/앱 사이트 컨텐츠 관리시스템(CMS) 연계 구축 계약서'},
+        {code:'01288',name:'KCA 방송프로그램 제작지원 사업관리시스템 서버운용 및 리뉴얼·유지보수 관리용역'},
+        {code:'01287',name:'2014년 CASS WM 시스템 운영 유지보수'},
+        {code:'01286',name:'스쿨톡(School Talk)'},
+        {code:'01285',name:'2014 브라질 월드컵 CMS 연계부문 개발 및 지원'},
+        {code:'01284',name:'K.K ASHISUTO 12차(14.05~15.04)'},
+        {code:'01283',name:'2014년 방송프로그램 유통정보 통합관리체계 구축 사업'},
+        {code:'01282',name:'KBS 디지털뉴스룸 3단계 구축 사업_중계서버'},
+        {code:'01281',name:'2014 iMnews CMS & 검색엔진 유지보수 계약서 PJT'},
+        {code:'01279',name:'2014년 사법부 데이터센터 전산장비 유지보수 사업'},
+        {code:'01278',name:'건강보험심사평가원 2014년 정보통신시스템 유지보수'},
+        {code:'01277',name:'SBS미디어넷 CMS 유지보수 14.05.01~15.04.30'},
+        {code:'01276',name:'KBS유무선 한글홈페이지 서비스 CMS 연계부문 개발운영_2014'},
+        {code:'01275',name:'모바일 마케팅 플랫폼 구축 인프라 추가 도입건_삼성생명'},
+        {code:'01274',name:'대교 스마트 MOS 고도화 개발 용역<14.03.12~14.08.31>'},
+        {code:'01273',name:'MVNO CSBS 시스템(S/W_이미지솔루션) 소프트웨어 유지보수 위탁계약 _온세텔레콤'},
+        {code:'01272',name:'디자인팀'},
+        {code:'01271',name:'중견기업 종합정보시스템 ISP관련 기술환경/현황분석 및_(주)그립'},
+        {code:'01270',name:'2014 인천국제공항 u-airport 서비스 운영'},
+        {code:'01269',name:'통합그룹웨어(TOSS) 문서관리시스템<2014>_산업은행'},
+        {code:'01268',name:'2014년 삼성에버랜드 CMS 솔루션 유지보수'},
+        {code:'01267',name:'2014 강북구청 CMS 유지보수 PJT'},
+        {code:'01266',name:'2014 KOICA 정보시스템 통합유지보수 PJT'},
+        {code:'01265',name:'동부증권 2014년도 DOMA 운영유지보수'},
+        {code:'01263',name:'2014년(01월~04월)올레마켓 시스템 통합 유지보수_스퀘어네트'},
+        {code:'01262',name:'해피머니 모바일 오피스 개발_14.02.17~14.05.16'},
+        {code:'01261',name:'포스코ICT 컨텐츠 관리시스템 유지보수 계약(2014년-1,2분기)'},
+        {code:'01260',name:'파이낸셜뉴스 디지털 시스템 개편'},
+        {code:'01254',name:'2014년 DATA 080 서비스 운영'},
+        {code:'01253',name:'2014 건강보험심사평가원 CMS 용역 지원'},
+        {code:'01252',name:'개발파트'},
+        {code:'01251',name:'제품관리파트'},
+        {code:'01250',name:'2014년 업무포털 운영 및 개선사업(문체부)_유큐브'},
+        {code:'01249',name:'ING생명 웹 접근성을 강화환 홈페이지 재구축_엘지씨엔에스'},
+        {code:'01248',name:'올레마켓 쿠폰 수용개발(셀러)'},
+        {code:'01247',name:'KBS 디지털뉴스룸 3단계 구축 사업'},
+        {code:'01246',name:'개편 CMS 코딩 외주 용역 계약'},
+        {code:'01245',name:'한국가스공사 정보화기기 통합유지보수 용역(14.01.01~14.02.28)'},
+        {code:'01244',name:'2013년 한국콘텐츠진흥원 정보시스템 통합위탁운영_유지보수부문'},
+        {code:'01243',name:'2014 KBS CMS 1,2단계 시스템 소프트웨어 유지보수 계약'},
+        {code:'01241',name:'K.K ASHISUTO 11차'},
+        {code:'01240',name:'올레마켓 쿠폰 수용개발(셀러) 13.12.19~14.05.31'},
+        {code:'01240',name:'mBiz사업팀'},
+        {code:'01238',name:'2013 삼성에버랜드 CMS&검색엔진유지보수'},
+        {code:'01237',name:'2013 환경디지털도서관 및 관련 정보시스템 통합 유지관리'},
+        {code:'01235',name:'서울대학교 2012년도 IT 서비스 운영 및 유지보수 통합관리사업'},
+        {code:'01234',name:'제품/서비스기획팀'},
+        {code:'01233',name:'교육센터'},
+        {code:'01229',name:'선도벤처연계-Study GPS'},
+        {code:'01228',name:'Big Data 기반'},
+        {code:'01227',name:'공동주택용 자원 통합'},
+        {code:'01226',name:'직무발령보상(WBS)'},
+        {code:'01225',name:'차세대 플랫폼 개발'},
+        {code:'01224',name:'전력IT 2단계사업'},
+        {code:'01223',name:'전력요금제 실정산시스템'},
+        {code:'01222',name:'스마트전력포털1차년도'},
+        {code:'01221',name:'공동 주택용 DR 1차년도'},
+        {code:'01220',name:'스마트그리드 기기 보안기술 2단계2차년도'},
+        {code:'01219',name:'스마트그리드 기기 보안기술 연구개발 2차년도'},
+        {code:'01218',name:'ATC 우수제조기술연구센터사업 2차년도'},
+        {code:'01217',name:'ATC 우수제조기술연구센터사업'},
+        {code:'01216',name:'툰톡(인도네시아향 메신저 앱) 개발'},
+        {code:'01214',name:'엔지니어링협회 디지털자산관리 시스템 구축을'},
+        {code:'01213',name:'사내시스템개발팀'},
+        {code:'01212',name:'아제르바이잔 전자정부 교육센터 구축사업'},
+        {code:'01211',name:'ING생명보험 ICS6.0 업그레이드 솔루션'},
+        {code:'01210',name:'금융정보분석원 시스템 구축(ICS 5.0)'},
+        {code:'01209',name:'모빌리티사업본부'},
+        {code:'01208',name:'MPLAN파트'},
+        {code:'01207',name:'MSERVICE파트'},
+        {code:'01206',name:'MDEVR파트'},
+        {code:'01205',name:'MDEVC파트'},
+        {code:'01204',name:'MDEVB파트'},
+        {code:'01203',name:'MDEVA파트'},
+        {code:'01202',name:'M&D본부'},
+        {code:'01201',name:'마케팅팀'},
+        {code:'01200',name:'디자인제작팀'},
+        {code:'01199',name:'디자인크리에이티브팀'},
+        {code:'01198',name:'디자인퍼블리싱팀'},
+        {code:'01197',name:'인사/총무파트'},
+        {code:'01196',name:'회계파트'},
+        {code:'01195',name:'사업지원팀'},
+        {code:'01194',name:'사업지원본부'},
+        {code:'01193',name:'영업본부'},
+        {code:'01192',name:'영업팀'},
+        {code:'01191',name:'전략영업팀'},
+        {code:'01190',name:'SDP사업본부'},
+        {code:'01189',name:'ISDP사업팀'},
+        {code:'01188',name:'SDP전략기획팀'},
+        {code:'01187',name:'CSDP사업팀'},
+        {code:'01186',name:'SHIN사업본부'},
+        {code:'01185',name:'C&C파트'},
+        {code:'01184',name:'비지니스인프라파트'},
+        {code:'01183',name:'컨텐트융합파트'},
+        {code:'01182',name:'솔루션사업본부'},
+        {code:'01181',name:'DSI팀'},
+        {code:'01180',name:'SMARTINFRA사업팀'},
+        {code:'01179',name:'DAM팀'},
+        {code:'01178',name:'스마트그리드개발팀'},
+        {code:'01177',name:'QA팀'},
+        {code:'01176',name:'신사업개발팀'},
+        {code:'01175',name:'일본사업팀'},
+        {code:'01174',name:'ECM서비스개발팀'},
+        {code:'01173',name:'플랫폼서비스개발팀'},
+        {code:'01172',name:'모바일서비스개발팀'},
+        {code:'01171',name:'CXM서비스개발팀'},
+        {code:'01170',name:'프리세일즈팀'},
+        {code:'01169',name:'프로젝트수행팀'},
+        {code:'01168',name:'프로젝트매니지먼트팀'},
+        {code:'01167',name:'수행개발팀'},
+        {code:'01166',name:'RND사업본부'},
+        {code:'01165',name:'건강보험심사평가원 2013년 정보통신시스템'},
+        {code:'01164',name:'전사'},
+        {code:'01163',name:'회계'},
+        {code:'01162',name:'2014년 삼성생명 통합 유지보수 PJT'},
+        {code:'01161',name:'2014 imbc CMS 시스템 유지보수 PJT'},
+        {code:'01160',name:'신한카드 탑스클럽 CMS 운영 지원 PJT'},
+        {code:'01159',name:'세계일류상품 관리시스템 구축 PJT'},
+        {code:'01158',name:'2013년 하반기 올레마켓 고도화 개발(셀러)'},
+        {code:'01157',name:'롯데수퍼 EC사이트의 상품정보 종합관리 시스템'},
+        {code:'01156',name:'LECS 플랫폼의 상품정보 종합관리 시스템'},
+        {code:'01155',name:'혁신기업기술개발사업'},
+        {code:'01154',name:'MSI(Market Support Information) 시스템 개편 용역'},
+        {code:'01153',name:'LECS 플랫폼 상품정보 종합관리 시스템 구축 개발'},
+        {code:'01152',name:'슈퍼 EC사이트 상품정보 종합관리 시스템 구축 개발'},
+        {code:'01151',name:'삼성전자 온라인스토어전용 모바일 애플리케이션 개발'},
+        {code:'01150',name:'2014 KOICA 정보시스템 통합유지보수 PJT'},
+        {code:'01149',name:'북미 실증용 Open-ADR2.0 기반 DRMS 고도화 개발 PJT'},
+        {code:'01148',name:'2013 현대상선 CMS 유지보수 PJT'},
+        {code:'01146',name:'동부증권 DOMA Mobile Platform 추가 개발 프로젝트 PJT'},
+        {code:'01145',name:'삼성생명 모바일 웹진개발 PJT'},
+        {code:'01144',name:'현대백화점 시스템 유지보수 계약 PJT'},
+        {code:'01143',name:'e터치 시스템 리뉴얼 인프라 도입건 PJT'},
+        {code:'01142',name:'2013년도 KT MVNO 사업관리시스템 신규기능 개발'},
+        {code:'01141',name:'AXA손해보험 CMS 도입 계약 PJT'},
+        {code:'01140',name:'정보보호기술 온라인학습장 시스템 고도화 용역 PJT'},
+        {code:'01139',name:'2013 대통령기록포털 콘텐츠 구축사업 PJT'},
+        {code:'01138',name:'KT 통합 CMS R2 PJT'},
+        {code:'01137',name:'신한카드 CMS 오퍼레이트 및 교육 PJT'},
+        {code:'01136',name:'더클락웍스 Bigture서비스 개발용역'},
+        {code:'01135',name:'삼성생명 모바일 웹진 개발 PJT'},
+        {code:'01134',name:'파이롯트 조립영상정보시스템 확장 및 재구축'},
+        {code:'01133',name:'롯데관광개발 2013년 통합 유지보수 PJT'},
+        {code:'01132',name:'지방법원 홈페이지 웹접근성 개선 3단계 사업 cms 용역계약 PJT'},
+        {code:'01131',name:'디지틀조선일보 CMS 솔루션 공급 계약 PJT'},
+        {code:'01130',name:'iMnews CMS 개편 작업 용역 계약서 PJT'},
+        {code:'01129',name:'비씨카드 정보시스템 통합유지보수 PJT'},
+        {code:'01128',name:'CJ헬로비전 스마트 플랫폼 인프라 구축 PJT'},
+        {code:'01127',name:'KBS CMS 1,2단계 시스템 소프트웨어 유지보수 PJT'},
+        {code:'01126',name:'오!포인트사이트 컨텐츠관리시스템(CMS) 연계 구축 계약서 PJT'},
+        {code:'01125',name:'홈페이지 CMS 솔루션 디자인 템플릿 개발용역 PJT'},
+        {code:'01124',name:'2013 KTM 미디어 eForm 서비스 계약 PJT'},
+        {code:'01123',name:'하나대투증권 오픈웹 및 장애인차별법 대응 홈페이지 재개발 PJT'},
+        {code:'01122',name:'삼성생명 은퇴포털 유지보수 PJT'},
+        {code:'01121',name:'삼성생명 홈페이지 개편 PJT'},
+        {code:'01120',name:'쌍용자동차 2차년도 유지보수 PJT'},
+        {code:'01119',name:'홈페이지 CMS 유지보수 업체선정 PJT'},
+        {code:'01118',name:'현대위아 eCatalog 구축계약서 PJT'},
+        {code:'01117',name:'WFO시스템 운영업무 이관에 따른 IDS Client 도입 건 PJT'},
+        {code:'01114',name:'하나대투증권 2013년 IWS 유지보수 PJT'},
+        {code:'01113',name:'하나은행 2013 CMS 유지보수 PJT'},
+        {code:'01112',name:'2013년 대구은행 CMS 유지보수 PJT'},
+        {code:'01111',name:'2013년 도코모향 WAC 시스템 유지보수(셀러)용역'},
+        {code:'01110',name:'비상교육 출판자원 관리 시스템 구축 PJT'},
+        {code:'01109',name:'Bigture for 한화아쿠아리움 프로젝트'},
+        {code:'01108',name:'병무청 I-ON Web Analytics Server 유지보수 PJT'},
+        {code:'01107',name:'대전시청 콘텐츠관리솔루션 유지관리 계약서 PJT'},
+        {code:'01106',name:'GenomeCloud의 유전체 DB 구축 사업'},
+        {code:'01105',name:'롯데인터넷면세점 통합관리 시스템 구축 프로젝트'},
+        {code:'01104',name:'공단 디지털자산관리시스템(IDAS) 유지보수 용역 계약 PJT'},
+        {code:'01103',name:'전자신문인터넷 CMS 유지보수 PJT'},
+        {code:'01102',name:'KT 키봇2 플랫폼 운영(유지보수 포함)용역 PJT'},
+        {code:'01100',name:'디지털 패션백과사전(선도벤처연계)'},
+        {code:'01099',name:'소셜마케팅 홍보 시스템(선도벤처연계)'},
+        {code:'01098',name:'2013 스마트러닝 플랫폼 바로풀기(선도벤처연계)'},
+        {code:'01097',name:'동부증권 모바일 마케팅 플랫폼(DOMA) 유지보수프로젝트 PJT'},
+        {code:'01096',name:'KT 키봇다중지능검사 웹사이트개발'},
+        {code:'01095',name:'빅데이터 산업원천과제'},
+        {code:'01094',name:'2013년 무선포털(완전자유존,컨텐츠존) 시스템 운영유지보수'},
+        {code:'01093',name:'대외 홈페이지용 콘텐츠관리시스템 1식 PJT'},
+        {code:'01092',name:'삼성에버랜드 E&A 사이트 템플릿 용역 PJT'},
+        {code:'01091',name:'삼성에버랜드 50주년 사이트 ICS 용역 PJT'},
+        {code:'01090',name:'삼성에버랜드 검색엔진 뷰테이블 용역 PJT'},
+        {code:'01089',name:'olleh tv 웹플랫폼 구축 용역 PJT'},
+        {code:'01088',name:'모바일 영업지원시스템 구축 프로젝트 PJT'},
+        {code:'01087',name:'2013년 CASS WM 시스템 운영 유지보수'},
+        {code:'01085',name:'KT iptv PJT'},
+        {code:'01084',name:'모바일 홈페이지 컨텐츠 관리 솔루션 수정개발 PJT'},
+        {code:'01083',name:'환경부 DB 구축 사업 내 DB 마이그레이션 부문 PJT'},
+        {code:'01081',name:'수원대/수원과학대학교 차세대 통합정보시스템 구축 PJT'},
+        {code:'01080',name:'한국도로공사 ICS(CMS)&ICLAS(웹로그분석) 유지보수 PJT'},
+        {code:'01079',name:'증권전문가 앱(APP) 운영'},
+        {code:'01078',name:'2013년 오픈넷 KOA 운영 및 개발 유지보수'},
+        {code:'01077',name:'2013년 강동구청 포털사이트 유지보수 PJT'},
+        {code:'01075',name:'2013년 통합전산센터 정보시스템 통합 유지보수 PJT'},
+        {code:'01073',name:'2013년 올레마켓 Seller,K-Apps GW 유지보수'},
+        {code:'01072',name:'2013년 MUSE 시스템 유지보수'},
+        {code:'01071',name:'KT 키봇3 구축 PJT'},
+        {code:'01069',name:'iMnews 통합검색 유지보수 계약 PJT'},
+        {code:'01068',name:'2013년 CASS 통합 유지보수'},
+        {code:'01067',name:'2013 ING생명 CMS 유지보수 계약 PJT'},
+        {code:'01066',name:'2013 iMnews CMS & 검색엔진 유지보수 계약서 PJT'},
+        {code:'01065',name:'2013년 사이버머니 환불 시스템 개발유지보수'},
+        {code:'01064',name:'스마트라이프디자인 사이트 개선 개발 계약 PJT'},
+        {code:'01063',name:'2013년 MVNO 사업지원포탈 유지보수'},
+        {code:'01062',name:'동부증권 모바일마케팅플랫폼(DOMA) 추가개발프로젝트 PJT'},
+        {code:'01061',name:'경주 U-관광서비스 CMS 유지보수 PJT'},
+        {code:'01060',name:'삼성생명 웹접근성 개선 프로젝트 PJT'},
+        {code:'01059',name:'운항정보표출시스템(FIDS) 국산화 연구개발사업 PJT'},
+        {code:'01058',name:'동부생명 모바일 고객지원 2차 구축 PJT'},
+        {code:'01057',name:'2013 인천국제공항 u-airport CMS 유지보수 PJT'},
+        {code:'01056',name:'2013 디지틀조선일보 CMS 유지보수 PJT'},
+        {code:'01055',name:'2013년 올레마켓 OASIS 개발 유지보수'},
+        {code:'01054',name:'모바일 컨텐츠 관리용 CMS 솔루션 구매 PJT'},
+        {code:'01053',name:'삼성에버랜드 CMS & 검색엔진 유지보수 PJT'},
+        {code:'01051',name:'KT 전사통합 CMS ITO 사업(2013년도) PJT'},
+        {code:'01050',name:'화이트리스트 연계 기능 개발'},
+        {code:'01049',name:'2013년 1분기 올레톡 유지보수'},
+        {code:'01048',name:'13년 장차법 대응 신한카드 홈페이지 리뉴얼 사업 PJT'},
+        {code:'01047',name:'2013년 DATA 080 서비스 운영'},
+        {code:'01046',name:'2013년 마이캘린더 안드로이드 버전 개발'},
+        {code:'01045',name:'대구은행 CMS 솔루션 업그레이드 및 템플릿팅 PJT'},
+        {code:'01044',name:'2013년 대법원CMS 유지보수 PJT'},
+        {code:'01043',name:'2013 강북구청 CMS 유지보수 PJT'},
+        {code:'01042',name:'컨텐츠 관리시스템 유지보수 계약(2013년) 1식 PJT'},
+        {code:'01041',name:'수출초보기업 해외 진출 지원 사업'},
+        {code:'01040',name:'2013년 통합그룹웨어(TOSS) 문서관리시스템 유지보수 PJT'},
+        {code:'01039',name:'스마트콘텐츠 번역지원사업'},
+        {code:'01038',name:'통합 OPEN API 센터구축 용역'},
+        {code:'01037',name:'2013 SBS 미디어넷 CMS 유지보수 PJT'},
+        {code:'01036',name:'외교통상부 본부통합관리시스템 2중화사업 PJT'},
+        {code:'01035',name:'쌍용자동차 2012 CMS 유지보수 PJT'},
+        {code:'01034',name:'통합그룹웨어(TOSS) 문서관리시스템 유지보수 건 PJT'},
+        {code:'01033',name:'2012년 4분기 도코모향 WAC 개발유지보수(셀러)용역 계약'},
+        {code:'01032',name:'K.K ASHISUTO 10차'},
+        {code:'01031',name:'전자카다로그 및 전단지(LG유플러스) PJT'},
+        {code:'01030',name:'kt 통합 CMS SM 사업_C-pms PJT'},
+        {code:'01028',name:'올레마켓 인프라 고도화 2차 개발 (셀러,CASS)'},
+        {code:'01027',name:'2012년 CASS WM 운영 유지보수'},
+        {code:'01026',name:'올레마켓소비자보호 관련 리스크 대응 (셀러)'},
+        {code:'01025',name:'올레마켓 Seller 영상 수용 개발'},
+        {code:'01024',name:'올레마켓 Seller시스템 올레tv 앱 수용 개발'},
+        {code:'01023',name:'올레마켓 사이버머니 환불 프로세스 구축(Seller)'},
+        {code:'01022',name:'현대엘리베이터 페이지 추가개발 용역 계약서 PJT'},
+        {code:'01021',name:'건강보험심사평가원 2012년 정보화사업 PJT'},
+        {code:'01020',name:'2012 금융정보분석원 시스템 고도화 PJT'},
+        {code:'01019',name:'한국방송통신전파진흥원(KCA) 컨텐츠 유통시스템 개발 PGT'},
+        {code:'01018',name:'2012 iMBC CMS 유지보수 PJT'},
+        {code:'01017',name:'KDI 정책대학원 DAM 고도화 사업 PJT'},
+        {code:'01016',name:'삼성생명 IDS 솔루션 구축 PJT'},
+        {code:'01015',name:'T’s FUTURE 시스템 구축 프로젝트'},
+        {code:'01014',name:'올레마켓 전자상거래법 수용 개발(Seller)'},
+        {code:'01013',name:'2012 현대상선 통합유지보수 계약 PJT'},
+        {code:'01012',name:'컨텐츠 관리시스템 유지보수용역1식 PJT'},
+        {code:'01011',name:'전통시장통합DB및포털사이트개편용역 PJT'},
+        {code:'01010',name:'롯데인터넷면세점 다국어 모바일서비스구축'},
+        {code:'01009',name:'2012년 4분기 K-Apps Seller 개발유지보수'},
+        {code:'01008',name:'2012년 4분기 올레마켓 OASIS 개발유지보수'},
+        {code:'01007',name:'한국국제협력단 2012년 정보시스템 통합유지보수 용역 PJT'},
+        {code:'01006',name:'화성시청 CMS 구축 지원 PJT'},
+        {code:'01005',name:'IPTV기반 문화관광 글로벌방송 기반 구축사업 PJT'},
+        {code:'01004',name:'현대백화점 유지보수 2013 PJT'},
+        {code:'01002',name:'2012년 정산정책 반영을 위한 MVNO KPM 시스템 개발'},
+        {code:'01001',name:'뉴미디어 통합CMS 3단계 구축사업 PJT'},
+        {code:'01000',name:'올레마켓 할인존 및 고도화 개발 (Seller)'},
+        {code:'00999',name:'현대라이프 온라인 다이렉트 채널 구축 PJT'},
+        {code:'00998',name:'동부증권 모바일 마케팅 플랫폼 구축 건 PJT'},
+        {code:'00997',name:'수원대학교 차세대 통합정보시스템 구축 사업 PJT'},
+        {code:'00996',name:'Kmeg 구축 프로젝트'},
+        {code:'00995',name:'스마트러닝(SLP) 지원을 위한 CASS 시스템 연동 개발'},
+        {code:'00994',name:'올레마켓 ID전환 및 타사가입자 수용개발(Seller)'},
+        {code:'00993',name:'eTrading 마케팅 기능 개발'},
+        {code:'00992',name:'한화증권 MTS 추가 개발 건 PJT'},
+        {code:'00991',name:'온나라 팩스서버 구축 및 주요 sw 구매 PJT'},
+        {code:'00990',name:'2012년 3분기 K-Apps Seller 개발유지보수'},
+        {code:'00989',name:'2012년 3분기 올레마켓 OASIS 개발유지보수'},
+        {code:'00987',name:'한국도로공사 CMS deploy client module 추가 PJT'},
+        {code:'00986',name:'KT 키봇2 서비스 플랫폼 고도화 용역 PJT'},
+        {code:'00985',name:'서울대학교 2012년도 CMS 유지보수 PJT'},
+        {code:'00984',name:'2012 대통령기록관 콘텐츠 구축사업 PJT'},
+        {code:'00983',name:'KT 키봇2 오픈 에코 플랫폼 웹사이트 개발 용역 PJT'},
+        {code:'00982',name:'한국도로공사 2012년 CMS & 웹로그분석 솔루션 유지보수 PJT'},
+        {code:'00981',name:'2012년 롯데관광 ICS IDAS 솔루션 유지보수 PJT'},
+        {code:'00980',name:'2012년 하반기 올레톡 유지보수'},
+        {code:'00979',name:'2012년 마이캘린더 앱 기능개선(하반기)'},
+        {code:'00978',name:'한국콘텐츠진흥원 2012년 CMS 유지보수 PJT'},
+        {code:'00977',name:'비씨카드 2012 CMS 유지보수 PJT'},
+        {code:'00976',name:'IYAA.com의 커뮤니티 개발 관리'},
+        {code:'00975',name:'KT 키봇2 플랫폼 운영유지보수 PJT'},
+        {code:'00974',name:'비씨카드 IDS 업그레이드 PJT'},
+        {code:'00973',name:'2012년 대구은행 CMS 유지보수 PJT'},
+        {code:'00972',name:'삼성생명 은퇴포털 사이트 인프라 도입 계약 PJT'},
+        {code:'00971',name:'롯데손해보험 이미지 시스템 자동변환 개발 용역 PJT'},
+        {code:'00970',name:'비씨카드 Loun.G 사이트 CMS 연계 구축 PJT'},
+        {code:'00969',name:'하나대투증권 2012년 IWS 유지보수 PJT'},
+        {code:'00968',name:'하나은행 2012년 CMS 유지보수 PJT'},
+        {code:'00967',name:'한국보건복지정보개발원 2012년 추가 CMS 유지보수 PJT'},
+        {code:'00966',name:'신한카드 CMS솔루션 디자인 템플릿 개발용역 단가계약 PJT'},
+        {code:'00965',name:'경주시 u-관광서비스 CMS 유지보수 PJT'},
+        {code:'00964',name:'ing생명보험 모바일 웹사이트 구축 용역 PJT'},
+        {code:'00963',name:'KT 키봇2 글로벌 지원 웹 개발 용역 PJT'},
+        {code:'00962',name:'KT 키봇2 OTN 고도화에 따른 CMS 기능 개발 용역 PJT'},
+        {code:'00961',name:'2012년도 형사사법 유지보수 PJT'},
+        {code:'00960',name:'코리아메디케어 CMS 유지보수 PJT'},
+        {code:'00959',name:'NTT 도코모 Seller 개발'},
+        {code:'00958',name:'스마트콘텐츠 해외마케팅 지원사업'},
+        {code:'00957',name:'SBS골프채널 웹사이트 개편 용역 PJT'},
+        {code:'00956',name:'온세텔레콤 MVNO 이미지시스템 구축 PJT'},
+        {code:'00955',name:'올레증권 모바일 증권 서비스'},
+        {code:'00954',name:'2012년 올레마켓 Seller 개발유지보수'},
+        {code:'00953',name:'라임덕(2012선도벤처연계)'},
+        {code:'00952',name:'실시간 역량평가 시스템(선도벤처연계)'},
+        {code:'00951',name:'AcTable(선도벤처연계)'},
+        {code:'00950',name:'스마트러닝 플랫폼 바로풀기(선도벤처연계)'},
+        {code:'00949',name:'글로벌 강소기업 육성과제'},
+        {code:'00948',name:'롯데손해보험 2012년 이미지시스템 유지보수 PJT'},
+        {code:'00947',name:'imnews 2012년 CMS&검색엔진 유지보수 PJT'},
+        {code:'00946',name:'삼성생명 ICS 솔루션 도입 PJT'},
+        {code:'00945',name:'한국고용정보원 2012 전산장비 유지보수 용역 PJT'},
+        {code:'00944',name:'ing생명보험 2012년 CMS 유지보수 PJT'},
+        {code:'00943',name:'강동구청 2012년 CMS 유지보수 PJT'},
+        {code:'00942',name:'디지털조선일보 2012년 CMS 유지보수 PJT'},
+        {code:'00941',name:'2012년 MVNO 사업지원포탈 유지보수'},
+        {code:'00940',name:'(주)교원 교육용 디지털 콘텐츠 개발'},
+        {code:'00939',name:'올레마켓 Seller K-Apps 서버 개발 유지보수'},
+        {code:'00938',name:'2012년 CASS 통합 유지보수'},
+        {code:'00937',name:'nipa 서울대학교병원 비즈니스 모델링 PJT'},
+        {code:'00936',name:'건강보험심사평가원 2012년 CMS 유지보수 PJT'},
+        {code:'00935',name:'병무청 2012 IWS 유지보수 PJT'},
+        {code:'00934',name:'2012년 상반기 올레톡 유지보수'},
+        {code:'00933',name:'통계청 2012년 CMS 유지보수 PJT'},
+        {code:'00932',name:'한화증권 원장통합 개발'},
+        {code:'00931',name:'한화증권 모바일 Push 서비스 개발'},
+        {code:'00930',name:'2012년 MUSE 시스템 유지보수'},
+        {code:'00929',name:'2012 SW수출멘토링지원사업'},
+        {code:'00928',name:'12년 오픈넷 KOA 운영 및 개발'},
+        {code:'00927',name:'현대로지엠 사명변경 CMS 용역 PJT'},
+        {code:'00926',name:'2012년 K사 Icafe 유지보수 PJT'},
+        {code:'00925',name:'회원가입신청서 이미지 시스템 PJT'},
+        {code:'00924',name:'OASIS 상품관리 및 정산기능 제공을 위한 올레마켓 셀'},
+        {code:'00923',name:'홈 IMC본부 단말 촬영'},
+        {code:'00922',name:'12년 무선포털(완전자유존, 컨텐트존) 시스템 운영유지'},
+        {code:'00921',name:'삼성SDS 메모플(안드로이드앱) 개발/개선'},
+        {code:'00920',name:'현장지원앱 마이캘린더 기능개선'},
+        {code:'00919',name:'12년 커머스인프라 운영 유지보수(1차)'},
+        {code:'00918',name:'삼성에버랜드 2012년 CMS&검색 유지보수 PJT'},
+        {code:'00917',name:'강북구청 2012년 CMS 유지보수 PJT'},
+        {code:'00916',name:'한화증권 과도기시스템 구축 PJT'},
+        {code:'00915',name:'한화증권 모의투자증권(한화증권2012)'},
+        {code:'00914',name:'WBS프로젝트'},
+        {code:'00913',name:'삼성생명 은퇴포탈 구축 PJT'},
+        {code:'00912',name:'이미지 시스템 윈7 업그레이드 PJT'},
+        {code:'00911',name:'2012년 A&D신용정보 문서관리시스템 유지보수 PJT'},
+        {code:'00910',name:'2012년 CASS 통합개발 유지 보수'},
+        {code:'00909',name:'2012 데이터080 사업 총괄 업무대행'},
+        {code:'00908',name:'코리아리즘 웹페이지 퍼블리싱 용역'},
+        {code:'00907',name:'대법원 2012년 CMS 유지보수 PJT'},
+        {code:'00906',name:'대법원 2012년 CMS 유지보수 PJT'},
+        {code:'00905',name:'2012년 올레톡 개발유지보수'},
+        {code:'00904',name:'대전시청 2012년 홈페이지 관리자 솔루션 유지보수 용역 PJT'},
+        {code:'00902',name:'KT Olleh Talk 추가 고도화 개발용역'},
+        {code:'00901',name:'이미지 처리 시스템 윈7 업그레이드 PJT'},
+        {code:'00900',name:'신한카드 모바일 웹 사이트 구축 CMS 개발 용역 PJT'},
+        {code:'00899',name:'팔라독 홈페이지 용역'},
+        {code:'00898',name:'KDI국제정책대학원 발주사업 DAM 납품 PJT'},
+        {code:'00897',name:'매드머니 수익쉐어 (서울투자방송)'},
+        {code:'00896',name:'12년 올레증권 인프라 운영/유지보수'},
+        {code:'00895',name:'글로벌마켓 수익쉐어 (이데일리)'},
+        {code:'00894',name:'신한카드 CMS 템플릿 추가 개발 용역 PJT'},
+        {code:'00893',name:'TOON Talk Service exclusive license for indonesia'},
+        {code:'00892',name:'NOREN e.Form Server Royalty fe'},
+        {code:'00891',name:'현장 영업지원 앱 안드로이드 버전 개발'},
+        {code:'00890',name:'아시아트래블모바일 CMS 라이선스 공급 PJT'},
+        {code:'00889',name:'한국환경산업기술원 Rhodes 납품 PJT'},
+        {code:'00888',name:'롯데면세점 모바일웹 및 하이브리드 앱 개발'},
+        {code:'00887',name:'SBS웹사이트 CMS 솔루션 적용 PJT'},
+        {code:'00886',name:'법원 홈페이지 컨텐츠 관리 도구 업그레이드 PJT'},
+        {code:'00884',name:'SBS 골프채널 IWS 업그레이드 PJT'},
+        {code:'00883',name:'메리츠종금증권 차세대 독립시스템 대응개발'},
+        {code:'00882',name:'WAC Network API 개발(셀러시스템 및 G/W)'},
+        {code:'00881',name:'한화증권 mobile SFA'},
+        {code:'00880',name:'환경부 오라클 DBMS 납품 PJT'},
+        {code:'00879',name:'2011년 한국보건복지정보개발원 CMS 유지보수 PJT'},
+        {code:'00878',name:'Olleh Talk 2.0 서비스 개발'},
+        {code:'00877',name:'대원미디어 포털서비스 개발 제작 용역 PJT'},
+        {code:'00876',name:'KT BIT 통합CMS 구축 프로젝트 PJT'},
+        {code:'00875',name:'MVNO KPM 사업지원포탈사이트 통합SDP적용'},
+        {code:'00874',name:'금융정보분석원 시스템 구축 IDAS 도입 PJT PJT'},
+        {code:'00873',name:'금융정보분석원 시스템 구축 ICS5.0 도입 PJT'},
+        {code:'00872',name:'국민건강보험공단 CMS 유지보수 2011년 2개월 추가 PJT'},
+        {code:'00871',name:'MEMOPLE(구 소셜노트) 2차 개발'},
+        {code:'00870',name:'CJ E&M(주) 이미지 CMS 솔루션 커스터마이징 용역'},
+        {code:'00869',name:'CJ E&M(주) 이미디 CMS 솔루션 납품'},
+        {code:'00868',name:'키봇2 체험을 위한 iPad App 개발'},
+        {code:'00867',name:'홈상품 홍보를 위한 마이캘린더 App 운용'},
+        {code:'00866',name:'심평원 국민홈페이지 개편 / CMS 업그레이드 PJT'},
+        {code:'00865',name:'현대백화점 유지보수 2012 PJT'},
+        {code:'00864',name:'SBS골프채널 IWS 업그레이드 PJT'},
+        {code:'00863',name:'SBS 웹사이트 CMS 솔루션 적용 계약서 PJT'},
+        {code:'00862',name:'에버랜드 리조트 웹사이트 개발 용역 PJT'},
+        {code:'00861',name:'SK브로드밴드 폰꾸미기 개발 계약 PJT'},
+        {code:'00860',name:'현대상선 통합유지보수 계약 PJT'},
+        {code:'00859',name:'소셜노트 수정 GUI 적용 개발'},
+        {code:'00858',name:'IYAA 사이트 개발'},
+        {code:'00857',name:'2011년 대통령기록포털 콘텐츠 구축 용역 PJT'},
+        {code:'00856',name:'팬택 SKYme 서비스 운용 용역 (추가)계약 PJT'},
+        {code:'00855',name:'한국국제협력단 2011년 정보시스템 통합유지보수 용역 PJT'},
+        {code:'00854',name:'KT 올레마켓 셀러 단말 OS 버전관리기능'},
+        {code:'00853',name:'KBS 뉴미디어 통합CMS 구축 통합 CMS시스템 고도화 PJT'},
+        {code:'00852',name:'KT 키봇 2 구축 PJT'},
+        {code:'00851',name:'포스코ICT 콘텐츠 몰 시스템 추가 연계 구축 PJT'},
+        {code:'00850',name:'KBS 모바일 웹사이트 개편 용역 PJT'},
+        {code:'00849',name:'말레이시아 MAMPU'},
+        {code:'00848',name:'한화증권 iPad MTS개발'},
+        {code:'00847',name:'삼성증권 태블릿PC MTS개발'},
+        {code:'00846',name:'2011년 올레톡 서버 개발 유지보수(3분기)'},
+        {code:'00845',name:'ing생명 CMS 기능 개선 개발 용역 PJT'},
+        {code:'00844',name:'전자신문 CMS 솔루션 구축 1차 사업 PJT'},
+        {code:'00842',name:'선도벤처연계지원사업(쏘캣)'},
+        {code:'00841',name:'소셜디자인마켓플랫폼(쏘캣)'},
+        {code:'00840',name:'올레톡 서비스 고도화 개발(서버)'},
+        {code:'00839',name:'통합개발지원 운영(Motive센터 운영) 용역 계약서'},
+        {code:'00838',name:'2011년 CASS WM 운영 유지보수'},
+        {code:'00837',name:'2011년 3분기 올레마켓 Seller Site 콘텐츠 업로드 운'},
+        {code:'00836',name:'문화체육관광부 디지털 문화행정 자산관리 시스템 구축 PJT'},
+        {code:'00835',name:'세종대학교 차세대시스템 구축 PJT'},
+        {code:'00834',name:'IONPay 시스템 개발'},
+        {code:'00833',name:'IONPay System Development'}
+	];
+
+	var accounts = [
+        {name:'기타',code:'06', groupCode: '8338', groupName: '광고선전비(판)'},
+        {name:'광고물제작(기념품)',code:'02', groupCode: '8338', groupName: '광고선전비(판)'},
+        {name:'카달로그',code:'04', groupCode: '8338', groupName: '광고선전비(판)'},
+        {name:'전시회참가',code:'05', groupCode: '8338', groupName: '광고선전비(판)'},
+        {name:'동영상제작',code:'07', groupCode: '8338', groupName: '광고선전비(판)'},
+        {name:'세미나참가',code:'08', groupCode: '8338', groupName: '광고선전비(판)'},
+
+        {name:'워크샵	',code:'01', groupCode: '6279', groupName: '교육훈련비(용역)'},
+        {name:'외부교육',code:'02', groupCode: '6279', groupName: '교육훈련비(용역)'},
+        {name:'사내교통',code:'03', groupCode: '6279', groupName: '교육훈련비(용역)'},
+        {name:'기타',code:'04', groupCode: '6279', groupName: '교육훈련비(용역)'},
+        {name:'컨퍼런스참석',code:'05', groupCode: '6279', groupName: '교육훈련비(용역)'},
+        {name:'채용검진',code:'06', groupCode: '6279', groupName: '교육훈련비(용역)'},
+
+        {name:'워크샵',code:'01',code:'06', groupCode: '8289', groupName: '교육훈련비(판)'},
+        {name:'외부교육',code:'02', groupCode: '8289', groupName: '교육훈련비(판)'},
+        {name:'사내교통',code:'03', groupCode: '8289', groupName: '교육훈련비(판)'},
+        {name:'기타',code:'04', groupCode: '8289', groupName: '교육훈련비(판)'},
+        {name:'컨퍼런스참석',code:'05', groupCode: '8289', groupName: '교육훈련비(판)'},
+        {name:'채용검진',code:'06', groupCode: '8289', groupName: '교육훈련비(판)'},
+
+        {name:'도서구입비',code:'01', groupCode: '6289', groupName: '도서인쇄비(용역)'},
+        {name:'제안서인쇄',code:'02', groupCode: '6289', groupName: '도서인쇄비(용역)'},
+        {name:'카달로그 인쇄',code:'03', groupCode: '6289', groupName: '도서인쇄비(용역)'},
+        {name:'기타',code:'04', groupCode: '6289', groupName: '도서인쇄비(용역)'},
+        {name:'명함',code:'05', groupCode: '6289', groupName: '도서인쇄비(용역)'},
+
+        {name:'기타',code:'04', groupCode: '8329', groupName: '도서인쇄비(판)'},
+        {name:'명함',code:'05', groupCode: '8329', groupName: '도서인쇄비(판)'},
+        {name:'도서구입비',code:'01', groupCode: '8329', groupName: '도서인쇄비(판)'},
+        {name:'제안서인쇄',code:'02', groupCode: '8329', groupName: '도서인쇄비(판)'},
+        {name:'카달로그 인쇄',code:'03', groupCode: '8329', groupName: '도서인쇄비(판)'},
+
+        {name:'청구서	',code:'06', groupCode: '2629', groupName: '미지급비용'},
+
+        {name:'식대-회식대',code:'01', groupCode: '6119', groupName: '복리후생비(용역)'},
+        {name:'식대-음료대	',code:'06', groupCode: '6119', groupName: '복리후생비(용역)'},
+        {name:'복지-MT',code:'07', groupCode: '6119', groupName: '복리후생비(용역)'},
+        {name:'식대-고객동석',code:'20', groupCode: '6119', groupName: '복리후생비(용역)'},
+        {name:'식대-야근식대',code:'21', groupCode: '6119', groupName: '복리후생비(용역)'},
+        {name:'식대-중식대	',code:'22', groupCode: '6119', groupName: '복리후생비(용역)'},
+        {name:'식대-입사자간담회',code:'23', groupCode: '6119', groupName: '복리후생비(용역)'},
+        {name:'식대-휴일식대',code:'24', groupCode: '6119', groupName: '복리후생비(용역)'},
+        {name:'식대-다과',code:'25', groupCode: '6119', groupName: '복리후생비(용역)'},
+        {name:'복지-행사준비',code:'26', groupCode: '6119', groupName: '복리후생비(용역)'},
+        {name:'식대-출장',code:'27', groupCode: '6119', groupName: '복리후생비(용역)'},
+        {name:'기타',code:'33', groupCode: '6119', groupName: '복리후생비(용역)'},
+
+        {name:'식대-야근식대',code:'21', groupCode: '8109', groupName: '복리후생비(판)'},
+        {name:'식대-입사자간담회',code:'23', groupCode: '8109', groupName: '복리후생비(판)'},
+        {name:'식대-휴일식대',code:'24', groupCode: '8109', groupName: '복리후생비(판)'},
+        {name:'복지-행사준비',code:'26', groupCode: '8109', groupName: '복리후생비(판)'},
+        {name:'식대-회식대	',code:'01', groupCode: '8109', groupName: '복리후생비(판)'},
+        {name:'식대-음료대	',code:'06', groupCode: '8109', groupName: '복리후생비(판)'},
+        {name:'복지-MT',code:'07', groupCode: '8109', groupName: '복리후생비(판)'},
+        {name:'식대-고객동석',code:'20', groupCode: '8109', groupName: '복리후생비(판)'},
+        {name:'식대-중식대	',code:'22', groupCode: '8109', groupName: '복리후생비(판)'},
+        {name:'식대-다과',code:'25', groupCode: '8109', groupName: '복리후생비(판)'},
+        {name:'식대-출장',code:'27', groupCode: '8109', groupName: '복리후생비(판)'},
+        {name:'기타',code:'33', groupCode: '8109', groupName: '복리후생비(판)'},
+
+        {name:'연회비	',code:'02', groupCode: '6219', groupName: '세금과공과(용역)'},
+        {name:'소프트웨어등록비',code:'03', groupCode: '6219', groupName: '세금과공과(용역)'},
+        {name:'기타(등록세외)',code:'06', groupCode: '6219', groupName: '세금과공과(용역)'},
+        {name:'인지대	',code:'07', groupCode: '6219', groupName: '세금과공과(용역)'},
+
+        {name:'연회비	',code:'02', groupCode: '8229', groupName: '세금과공과(판)'},
+        {name:'인지대	',code:'07', groupCode: '8229', groupName: '세금과공과(판)'},
+        {name:'소프트웨어등록비',code:'03', groupCode: '8229', groupName: '세금과공과(판)'},
+        {name:'기타(등록세외)',code:'06', groupCode: '8229', groupName: '세금과공과(판)'},
+
+        {name:'사무용품구입',code:'01', groupCode: '6309', groupName: '소모품비(용역)'},
+        {name:'토너구입',code:'02', groupCode: '6309', groupName: '소모품비(용역)'},
+        {name:'소모자재구입',code:'03', groupCode: '6309', groupName: '소모품비(용역)'},
+        {name:'차,음료구입	',code:'04', groupCode: '6309', groupName: '소모품비(용역)'},
+        {name:'기타구입',code:'05', groupCode: '6309', groupName: '소모품비(용역)'},
+        {name:'전산용품구입',code:'08', groupCode: '6309', groupName: '소모품비(용역)'},
+
+        {name:'사무용품구입',code:'01', groupCode: '8159', groupName: '소모품비(판)'},
+        {name:'토너구입',code:'02', groupCode: '8159', groupName: '소모품비(판)'},
+        {name:'소모자재구입',code:'03', groupCode: '8159', groupName: '소모품비(판)'},
+        {name:'차,음료구입	',code:'04', groupCode: '8159', groupName: '소모품비(판)'},
+        {name:'기타구입',code:'05', groupCode: '8159', groupName: '소모품비(판)'},
+        {name:'전산용품구입',code:'08', groupCode: '8159', groupName: '소모품비(판)'},
+
+        {name:'컴퓨터수리',code:'01', groupCode: '6249', groupName: '수선비(용역)'},
+        {name:'프린터수리',code:'02', groupCode: '6249', groupName: '수선비(용역)'},
+        {name:'기타수리',code:'03', groupCode: '6249', groupName: '수선비(용역)'},
+
+        {name:'프린터수리',code:'02', groupCode: '8259', groupName: '수선비(판)'},
+        {name:'컴퓨터수리',code:'01', groupCode: '8259', groupName: '수선비(판)'},
+        {name:'기타수리',code:'03', groupCode: '8259', groupName: '수선비(판)'},
+
+        {name:'국내출장비(식대)',code:'01', groupCode: '6129', groupName: '여비교통비(용)'},
+        {name:'국내출장비(숙박)',code:'02', groupCode: '6129', groupName: '여비교통비(용)'},
+        {name:'국내출장비(교통비)',code:'03', groupCode: '6129', groupName: '여비교통비(용)'},
+        {name:'시내교통비(버스)',code:'05', groupCode: '6129', groupName: '여비교통비(용)'},
+        {name:'시내교통비(택시)',code:'06', groupCode: '6129', groupName: '여비교통비(용)'},
+        {name:'야근교통비',code:'07', groupCode: '6129', groupName: '여비교통비(용)'},
+        {name:'통행료',code:'09', groupCode: '6129', groupName: '여비교통비(용)'},
+        {name:'국내출장비(택시)',code:'14', groupCode: '6129', groupName: '여비교통비(용)'},
+        {name:'운전대행수수',code:'15', groupCode: '6129', groupName: '여비교통비(용)'},
+        {name:'하이패스이용',code:'16', groupCode: '6129', groupName: '여비교통비(용)'},
+        {name:'기타',code:'17', groupCode: '6129', groupName: '여비교통비(용)'},
+        {name:'주차비',code:'08', groupCode: '6129', groupName: '여비교통비(용)'},
+        {name:'유류비',code:'12', groupCode: '6129', groupName: '여비교통비(용)'},
+
+        {name:'하이패스이용',code:'16', groupCode: '8119', groupName: '여비교통비(판)'},
+        {name:'국내출장비(식대)',code:'01', groupCode: '8119', groupName: '여비교통비(판)'},
+        {name:'국내출장비(숙박)',code:'02', groupCode: '8119', groupName: '여비교통비(판)'},
+        {name:'국내출장비(교통비)',code:'03', groupCode: '8119', groupName: '여비교통비(판)'},
+        {name:'시내교통비(버스)',code:'05', groupCode: '8119', groupName: '여비교통비(판)'},
+        {name:'시내교통비(택시)',code:'06', groupCode: '8119', groupName: '여비교통비(판)'},
+        {name:'야근교통비',code:'07', groupCode: '8119', groupName: '여비교통비(판)'},
+        {name:'주차비	',code:'08', groupCode: '8119', groupName: '여비교통비(판)'},
+        {name:'통행료	',code:'09', groupCode: '8119', groupName: '여비교통비(판)'},
+        {name:'유류비	',code:'12', groupCode: '8119', groupName: '여비교통비(판)'},
+        {name:'국내출장비(택시)',code:'14', groupCode: '8119', groupName: '여비교통비(판)'},
+        {name:'운전대행수수',code:'15', groupCode: '8119', groupName: '여비교통비(판)'},
+        {name:'기타',code:'17', groupCode: '8119', groupName: '여비교통비(판)'},
+
+        {name:'기타',code:'04', groupCode: '6329', groupName: '운반비(용역)'},
+        {name:'퀵써비스요금',code:'01', groupCode: '6329', groupName: '운반비(용역)'},
+        {name:'택배',code:'02', groupCode: '6329', groupName: '운반비(용역)'},
+        {name:'착불배송료',code:'03', groupCode: '6329', groupName: '운반비(용역)'},
+
+        {name:'퀵써비스요금',code:'01', groupCode: '8379', groupName: '운반비(판)'},
+        {name:'택배',code:'02', groupCode: '8379', groupName: '운반비(판)'},
+        {name:'착불배송료',code:'03', groupCode: '8379', groupName: '운반비(판)'},
+        {name:'기타',code:'04', groupCode: '8379', groupName: '운반비(판)'},
+
+        {name:'거래처접대비/신용카드(개인)',code:'01', groupCode: '8127', groupName: '접대비(판)'},
+        {name:'거래처접대비/신용카드(법인)',code:'02', groupCode: '8127', groupName: '접대비(판)'},
+        {name:'화환대금',code:'03', groupCode: '8127', groupName: '접대비(판)'},
+        {name:'거래처접대(선물대)',code:'04', groupCode: '8127', groupName: '접대비(판)'},
+        {name:'기타',code:'05', groupCode: '8127', groupName: '접대비(판)'},
+        {name:'거래처경조사',code:'06', groupCode: '8127', groupName: '접대비(판)'},
+
+        {name:'은행조회수수료',code:'05', groupCode: '6319', groupName: '지급수수료(용역)'},
+        {name:'교육-강사료	',code:'11', groupCode: '6319', groupName: '지급수수료(용역)'},
+        {name:'세탁비용',code:'20', groupCode: '6319', groupName: '지급수수료(용역)'},
+        {name:'협회가입비',code:'32', groupCode: '6319', groupName: '지급수수료(용역)'},
+        {name:'제, 증명 발급수수료',code:'04', groupCode: '6319', groupName: '지급수수료(용역)'},
+        {name:'법인등기부등본/인감증명서발급',code:'21', groupCode: '6319', groupName: '지급수수료(용역)'},
+        {name:'재활용분리수거',code:'24', groupCode: '6319', groupName: '지급수수료(용역)'},
+        {name:'청소대행수수료',code:'26', groupCode: '6319', groupName: '지급수수료(용역)'},
+        {name:'신용평가수수료',code:'28', groupCode: '6319', groupName: '지급수수료(용역)'},
+        {name:'기타',code:'34', groupCode: '6319', groupName: '지급수수료(용역)'},
+
+        {name:'은행조회수수료',code:'05', groupCode: '8319', groupName: '지급수수료(판)'},
+        {name:'교육-강사료	',code:'11', groupCode: '8319', groupName: '지급수수료(판)'},
+        {name:'세탁비용',code:'20', groupCode: '8319', groupName: '지급수수료(판)'},
+        {name:'재활용분리수거',code:'24', groupCode: '8319', groupName: '지급수수료(판)'},
+        {name:'청소대행수수료',code:'26', groupCode: '8319', groupName: '지급수수료(판)'},
+        {name:'신용평가수수료',code:'28', groupCode: '8319', groupName: '지급수수료(판)'},
+        {name:'기타',code:'34', groupCode: '8319', groupName: '지급수수료(판)'},
+        {name:'제, 증명 발급수수료',code:'04', groupCode: '8319', groupName: '지급수수료(판)'},
+        {name:'법인등기부등본/인감증명서발급',code:'21', groupCode: '8319', groupName: '지급수수료(판)'},
+        {name:'협회가입비',code:'32', groupCode: '8319', groupName: '지급수수료(판)'},
+
+
+        {name:'수리',code:'02', groupCode: '6269', groupName: '차량유지비(용역)'},
+        {name:'정기정검',code:'03', groupCode: '6269', groupName: '차량유지비(용역)'},
+        {name:'유류비-법인차량',code:'01', groupCode: '6269', groupName: '차량유지비(용역)'},
+        {name:'기타',code:'04', groupCode: '6269', groupName: '차량유지비(용역)'},
+        {name:'세차비-법인차량',code:'05', groupCode: '6269', groupName: '차량유지비(용역)'},
+
+        {name:'유류비-법인차량',code:'01', groupCode: '8279', groupName: '차량유지비(판)'},
+        {name:'수리',code:'02',code:'01', groupCode: '8279', groupName: '차량유지비(판)'},
+        {name:'정기정검',code:'03',code:'01', groupCode: '8279', groupName: '차량유지비(판)'},
+        {name:'기타',code:'04',code:'01', groupCode: '8279', groupName: '차량유지비(판)'},
+        {name:'세차비-법인차량',code:'05',code:'01', groupCode: '8279', groupName: '차량유지비(판)'},
+
+        {name:'통신-프리서버호스틍비',code:'02', groupCode: '6149', groupName: '통신비(용역)'},
+        {name:'통신-국제전화비',code:'06', groupCode: '6149', groupName: '통신비(용역)'},
+        {name:'인터넷회선',code:'07', groupCode: '6149', groupName: '통신비(용역)'},
+        {name:'우편',code:'08', groupCode: '6149', groupName: '통신비(용역)'},
+        {name:'기타',code:'09', groupCode: '6149', groupName: '통신비(용역)'},
+        {name:'핸드폰요금-팀장',code:'13', groupCode: '6149', groupName: '통신비(용역)'},
+        {name:'통신- 무선 Aircup-A형',code:'01', groupCode: '6149', groupName: '통신비(용역)'},
+        {name:'통신-인터넷전화',code:'03', groupCode: '6149', groupName: '통신비(용역)'},
+        {name:'통신-국내전화비',code:'04', groupCode: '6149', groupName: '통신비(용역)'},
+        {name:'핸드폰요금-슈퍼엔지니어링',code:'14', groupCode: '6149', groupName: '통신비(용역)'},
+
+        {name:'통신- 무선 Aircup-A형',code:'01', groupCode: '8139', groupName: '통신비(판)'},
+        {name:'통신-프리서버호스틍비	',code:'02', groupCode: '8139', groupName: '통신비(판)'},
+        {name:'통신-인터넷전화',code:'03', groupCode: '8139', groupName: '통신비(판)'},
+        {name:'통신-국내전화비',code:'04', groupCode: '8139', groupName: '통신비(판)'},
+        {name:'통신-국제전화비',code:'06', groupCode: '8139', groupName: '통신비(판)'},
+        {name:'핸드폰요금-팀장',code:'13', groupCode: '8139', groupName: '통신비(판)'},
+        {name:'인터넷회선',code:'07', groupCode: '8139', groupName: '통신비(판)'},
+        {name:'우편',code:'08', groupCode: '8139', groupName: '통신비(판)'},
+        {name:'기타',code:'09', groupCode: '8139', groupName: '통신비(판)'},
+        {name:'핸드폰요금-슈퍼엔지니어링',code:'14', groupCode: '8139', groupName: '통신비(판)'},
+
+        {name:'여권발급수수',code:'04', groupCode: '8349', groupName: '해외출장비'},
+        {name:'해외출장비(일비)',code:'06', groupCode: '8349', groupName: '해외출장비'},
+        {name:'해외출장비(숙박비)',code:'07', groupCode: '8349', groupName: '해외출장비'},
+        {name:'항공권예약',code:'01', groupCode: '8349', groupName: '해외출장비'},
+        {name:'비자발급',code:'02', groupCode: '8349', groupName: '해외출장비'},
+        {name:'출장비정산',code:'03', groupCode: '8349', groupName: '해외출장비'},
+        {name:'기타',code:'05', groupCode: '8349', groupName: '해외출장비'}
+	];
+
+    function isDate(str) {
+        // validate year as 4 digits, month as 01-12, and day as 01-31
+        if ((str = str.match (/^(\d{4})(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])$/))) {
+           // make a date
+           str[0] = new Date (+str[1], +str[2] - 1, +str[3]);
+           // check if month stayed the same (ie that day number is valid)
+           if (str[0].getMonth () === +str[2] - 1)
+              return str[0];
+        }
+        return undefined;
+    }
+
+    var commands = {
+
+        response: function(bm, cmd, message) {
+            bm.source().sendMessage(
+                rb.makeCommandBuilder("/whisper/bbot/" + cmd)
+                  .inner("result")
+                    .property("sender", "bbot")
+                    .property("clientScript", "client.room().message(args);")
+                    .property("message", message)
+                    .property("options", "{event:'onMessage'}")
+                    .property("messageId", new net.ion.framework.util.ObjectId().toString()).build().talkMessage()
+            ) ;
+        },
+
+        passthrough: function(bm, receivers) {
+
+            var roomId = bm.fromRoomId() ;
+            var time = new Date().getTime();
+            var messageId = new net.ion.framework.util.ObjectId().toString();
+
+            session.tran(function(wsession) {
+                var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + messageId)
+                    .property("message", bm.message())
+                    .refTo("sender", "/users/"+bm.fromUserId())
+                    .property("roomId", roomId)
+                    .property("receivers", receivers ? receivers : '')
+                    .property("requestId", bm.asString('requestId'))
+                    .property("options", "{event:'onMessage'}")
+                    .property("clientScript", bm.clientScript())
+                    .property("time",new Date().getTime().toString())
+                    .property("_owner", _myBotId)
+                    .property("messageId", messageId);
+            }) ;
+        },
+
+        newJob: function(command) {
+            for(var i = 0, max = this.jobs.length; i < max; i++) {
+                if(this.jobs[i].name == command) {
+                    return new this.jobs[i].fn();
+                }
+            }
+            return undefined;
+        },
+
+        jobs: [
+            {
+                name: '휴가',
+
+                fn: function() {
+                    var self = this;
+                    var date = new Date().yyyymmdd();
+                    var reason = '일신상의 사유';
+
+                    this.command = function() {
+                        return '휴가';
+                    };
+
+                    this.start = function(bm) {
+                        var startMsg = '휴가 신청을 시작합니다. 입력 항목은 [1] 날짜, [2] 사유입니다. 사유를 입력하지 않으면 기본으로 일신상의 사유로 입력됩니다';
+                        commands.response(bm, 'start', startMsg);
+                    };
+
+                    this.onMessage = function(bm) {
+                        var command = bm.asCommand();
+                        var option = '' + command.fnName();
+                        var value = '' + command.remain(0);
+
+                        if(option == '날짜' || option == '1') {
+                            if(value == '내일') {
+                                var d = new Date();
+                                d.setDate(d.getDate() + 1);
+                                date = d.yyyymmdd();
+                                commands.response(bm, 'onMessage', '날짜를 ' + date + ' 로 설정하셨습니다');
+                            } else if(isDate(value)) {
+                                date = value;
+                                commands.response(bm, 'onMessage', '날짜를 ' + date + ' 로 설정하셨습니다');
+                            } else {
+                                commands.response(bm, 'onMessage', '날짜를 잘못 입력하셨어요. "날짜 20140510"과 같은 포맷이거나 내일 월차이면 "날짜 내일" 이라고 입력해주세요');
+                            }
+                        } else if(option == '사유' || option == '2') {
+                            reason = value;
+                            commands.response(bm, 'onMessage', '사유를 ' + reason + ' 로 설정하셨습니다');
+                        } else {
+                            commands.response(bm, 'onMessage', '알 수 없는 명령어입니다');
+                        }
+                    };
+
+                    this.confirm = function(bm) {
+                        var msg = '아래 내용으로 월차를 신청하시겠습니까? 내용이 맞으면 네 아니면 아니오를 입력하세요<br/>날짜: ' + date + '<br/>사유: ' + reason ;
+                        commands.response(bm, 'confirm', msg);
+
+                        return true;
+                    };
+
+                    this.buildMessage = function() {
+                        return java.lang.String.format('휴가,%s,%s', date, reason);
+                    };
+
+                    this.finish = function(bm) {
+                        commands.response(bm, 'finish', '휴가 신청이 완료되었습니다.');
+                    }
+                }
+            },
+
+            {
+                name: '반차',
+
+                fn : function() {
+                    this.status = '';
+
+                    var date = new Date().yyyymmdd();
+                    var reason = '일신상의 사유';
+
+                    this.command = function() {
+                        return '반차';
+                    };
+
+                    this.start = function(bm) {
+                        var startMsg = '반차를 신청을 시작합니다. 입력 항목은 [1] 날짜, [2] 사유입니다. 날짜를 입력하지 않으면 내일, 사유를 입력하지 않으면 기본으로 일신상의 사유로 입력됩니다';
+                        commands.response(bm, 'start', startMsg);
+                    };
+
+                    this.onMessage = function(bm) {
+                        var command = bm.asCommand();
+                        var option = '' + command.fnName();
+                        var value = '' + command.remain(0);
+
+                        if(option == '날짜' || option == '1') {
+
+                            if(value == '내일') {
+                                var d = new Date();
+                                d.setDate(d.getDate() + 1);
+
+                                var date = d.yyyymmdd();
+                                commands.response(bm, 'onMessage', '날짜를 ' + date + ' 로 설정하셨습니다');
+                            } else if(isDate(value)) {
+                                var date = value;
+                                commands.response(bm, 'onMessage', '날짜를 ' + date + ' 로 설정하셨습니다');
+                            } else {
+                                commands.response(bm, 'onMessage', '날짜를 잘못 입력하셨어요. "날짜 20140510"과 같은 포맷이거나 내일 월차이면 "날짜 내일" 이라고 입력해주세요');
+                            }
+                        } else if(option == '사유' || option == '2') {
+                            reason = value;
+                            commands.response(bm, 'onMessage', '사유를 ' + reason + ' 로 설정하셨습니다');
+                        } else {
+                            commands.response(bm, 'onMessage', '알 수 없는 명령어입니다');
+                        }
+                    };
+
+                    this.confirm = function(bm) {
+                        var msg = '아래 내용으로 반차를 신청하시겠습니까? 내용이 맞으면 네 아니면 아니오를 입력하세요<br/>날짜: ' + date + '<br/>사유: ' + reason ;
+                        commands.response(bm, 'confirm', msg);
+
+                        return true;
+                    };
+
+                    this.buildMessage = function() {
+                        return java.lang.String.format('반차,%s,%s', date, reason);
+                    };
+
+                    this.finish = function(bm) {
+                        commands.response(bm, 'finish', '반차 신청이 완료되었습니다.');
+                    }
+                }
+            },
+            {
+                name: '청구서',
+
+                fn: function() {
+
+                    var projectCode = '';
+                    var accountCode = '';
+                    var summaryCode = '';
+                    var amount = 0;
+                    var description = '';
+
+                    this.status = '';
+
+                    this.start = function(bm) {
+                        commands.response(bm, 'start', '청구서 신청을 시작합니다. 입력 항목은 [1] 프로젝트, [2] 항목(검색), [3] 금액, [4] 내용 입니다.');
+                    };
+
+                    this.command = function() {
+                        return '청구서';
+                    }
+
+                    this.onMessage = function(bm) {
+                        var command = bm.asCommand();
+                        var option = '' + command.fnName();
+                        var value = '' + command.remain(0);
+
+                        if(option == '프로젝트' || option == '1') {
+                            var searched = '<ol>';
+
+                            for(var i = 0 ; i < projects.length; i++) {
+                                var project = projects[i];
+
+                                if(project.code == value || project.name == value) {
+                                    projectCode = project.code;
+                                    commands.response(bm, 'onMessage', '프로젝트를 ' + project.name + '(' + projectCode + ') 로 설정하셨습니다');
+                                    return ;
+                                } else if(project.code.indexOf(value) > -1 || project.name.indexOf(value) > -1) {
+                                    searched += '<li><a href="javascript:client.chat(\'프로젝트 '+project.code+'\');">' + project.code + ':' + project.name + '</a></li>';
+                                }
+                            }
+
+                            var searchResult = '검색된 프로젝트 계정은 아래와 같습니다 <br/>원하시는 항목을 선택해 주세요<br/>' + searched + '</ol>';
+
+                            commands.response(bm, 'onMessage', searchResult);
+
+                        } else if(option == '항목' || option == '2') {
+
+                            var accountSearched = '<ol>';
+
+                            for(var i = 0; i < accounts.length; i++) {
+                                var account = accounts[i];
+
+                                if(account.code.indexOf(value) > -1 || account.name.indexOf(value) > -1 || account.groupCode.indexOf(value) > -1 || account.groupName.indexOf(value) > -1) {
+                                    var internalMsg = '@bbot accountvalue ' + account.code + ',' + account.groupCode;
+                                    accountSearched += '<li><a href="javascript:client.chat(\'' + internalMsg + '\');">' + account.groupName + '/' + account.name + '</a></li>';
+                                }
+                            }
+
+                            commands.response(bm, 'onMessage', '검색된 항목은 다음과 같습니다<br/>' + accountSearched + '<br>원하시는 항목을 선택해 주세요');
+
+                        } else if(option == '금액' || option == '3') {
+
+                            amount = value;
+                            commands.response(bm, 'onMessage', '금액을 ' + amount + '원으로 설정하셨습니다');
+
+                        } else if(option == '내용' || option == '4') {
+
+                            description = command.remains();
+                            commands.response(bm, 'onMessage', '내용을 ' + description + ' 로 설정하셨습니다');
+
+                        } else {
+                            commands.response(bm, 'onMessage', '알 수 없는 명령어입니다');
+                        }
+                    };
+
+                    this.accountCd = function(code) {
+                        accountCode = code;
+                    };
+
+                    this.summaryCd = function(code) {
+                        summaryCode = code;
+                    };
+
+                    this.confirm = function(bm) {
+
+                        if(projectCode == '' || accountCode == '' || summaryCode == '' || amount == 0 || description == '') {
+                            commands.response(bm, 'confirm', '입력되지 않은 청구서 항목이 있습니다. 다시 확인해 주세요');
+                            return false;
+                        }
+
+                        var msg = '아래 내용으로 청구서를 신청하시겠습니까?<br/>신청하시려면 네, 아니면 아니오 라고 입력해 주세요'
+                        msg += '<ol><li>프로젝트: ' + projectCode + '</li>'
+                        msg += '<li>계정코드: ' + accountCode + '</li>' ;
+                        msg += '<li>적요코드: ' + summaryCode + '</li>' ;
+                        msg += '<li>금액: ' + amount + '</li>' ;
+                        msg += '<li>내용: ' + description + '</li></ol>' ;
+
+                        commands.response(bm, 'confirm', msg);
+                        return true;
+                    };
+
+                    this.buildMessage = function() {
+                        return java.lang.String.format('청구서,%s,%s,%s,%s,%s', projectCode, accountCode, summaryCode, amount, description);
+                    };
+
+                    this.finish = function(bm) {
+                        commands.response(bm, 'finish', '청구서 신청이 완료되었습니다.');
+                    };
+                }
+            }
+        ]
+    };
+
+    var _myBotId = 'bbot';
+    var progress = {};
+
+    var myBBotJob = function(roomId, sender) {
+        return progress[roomId + '-' + sender];
+    };
+
+    var removeJob = function(roomId, sender) {
+        delete progress[roomId + '-' + sender];
+    };
+
+	this.onMessage = function(bm) {
+
+        if (!bm.isBlank('_owner')) return ;
+
+        var sender = bm.fromUserId();
+
+        if (session.exists("/bots/"+ sender)) {
+            return ;
+        }
+
+	    var message = bm.asCommand();
+        var roomId = bm.fromRoomId();
+        var command = '' + message.remain(0);
+        var myJob = myBBotJob(roomId, sender);
+
+        var myJobNotFound = (message.fnName() == 'bbot' && myJob === undefined);
+
+        if(myJobNotFound) {
+            myJob = commands.newJob(command);
+            if(!myJob) {
+                commands.response(bm, 'onMessage', '알 수 없는 명령어입니다. 현재 지원하는 명령어는 휴가/반차/청구서 입니다.');
+                return ;
+            }
+            progress[roomId + '-' + sender] = myJob;
+        }
+
+        if(myJob) {
+            // 진행 중인 Job이 있는 경우 sender의 메세지는 websocket으로 다시 돌려준다.
+            bm.source().sendMessage(
+                rb.makeCommandBuilder("/whisper/bbot/passthrough")
+                    .inner("result")
+                    .property("sender", bm.fromUserId())
+                    .property("clientScript", "client.room().message(args);")
+                    .property("message", bm.message())
+                    .property("options", "{event:'onMessage'}")
+                    .property("time", new Date().getTime().toString())
+                    .property("messageId", new net.ion.framework.util.ObjectId().toString()).build().talkMessage()
+            ) ;
+
+            if(message.fnName() == '취소') {
+                commands.response(bm, 'onMessage', '진행중인 작업이 취소되었습니다');
+                removeJob(roomId, sender);
+                return ;
+            }
+
+            // '' (start) -> progress loop -> confirm -> finish
+            if(!myJob.status || myJob.status == '') {
+
+                myJob.start(bm, command);
+                myJob.status = 'progress';
+
+            } else if(myJob.status == 'progress' && command != myJob.command()) {
+
+                myJob.onMessage(bm);
+
+            } else if(myJob.status == 'progress' && command == myJob.command()) {               // type same command again --> send confirm message
+                var validState = myJob.confirm(bm);
+
+                if(validState) {
+                    myJob.status = 'confirm';
+                }
+
+            } else if(myJob.status == 'confirm') {
+                var cmd = message.fnName();
+
+                if(cmd == '네') {
+                    try {
+                        mailer.send(sender, myJob.buildMessage()).get();
+                        myJob.finish(bm);
+                    } catch(ex) {
+                        commands.response(bm, 'onMessage', ex.toString());
+                    }
+
+                    removeJob(roomId, sender);
+                } else {
+                    myJob.status = 'progress';
+                }
+            }
+
+        } else {
+            // BBot 작업 진행중이 아니거나 다른 사용자가 입력한 값은 passthrough 한다
+            commands.passthrough(bm);
+        }
+
+	};
+
+	this.onWhisper = function(source, whisperMsg) {
+        var cmd = whisperMsg.asCommand();
+        var option = '' + cmd.fnName();
+        var value = '' + cmd.remain(0);
+        var myJob = myBBotJob(whisperMsg.fromRoomId(), whisperMsg.fromUserId());
+
+        if(option == 'accountvalue' && myJob.command() == '청구서') {           // 항목에서 검색한 내용을 클릭하면 이 커맨드를 귓속말로 전송
+
+            var accountItems = value.split(',');
+
+            myJob.accountCd(accountItems[0]);
+            myJob.summaryCd(accountItems[1]);
+
+            commands.response(whisperMsg, 'onMessage', '계정코드를 ' + accountItems[0] + ', 적요 코드를 ' + accountItems[1] + '로 설정하였습니다');
+        }
+	};
+	
+	this.onEnter = function(bm){
+		// do nothing currently
+	}, 
+	
+	this.onExit = function(bm){
+        var roomId = bm.fromRoomId();
+        var exitUser = bm.fromUserId();
+
+        removeJob(roomId, exitUser);
+	},
+	
+	this.onFilter = function(bm){
+		// do nothing currently
+	}	
+}
