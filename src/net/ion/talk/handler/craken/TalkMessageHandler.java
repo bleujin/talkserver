@@ -9,6 +9,7 @@ import net.ion.craken.listener.CDDHandler;
 import net.ion.craken.listener.CDDModifiedEvent;
 import net.ion.craken.listener.CDDRemovedEvent;
 import net.ion.craken.node.ISession;
+import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteNode;
 import net.ion.craken.node.WriteSession;
@@ -16,6 +17,7 @@ import net.ion.craken.node.crud.WriteChildren;
 import net.ion.craken.tree.PropertyId;
 import net.ion.craken.tree.PropertyValue;
 import net.ion.framework.util.ObjectUtil;
+import net.ion.framework.util.SetUtil;
 import net.ion.framework.util.StringUtil;
 import net.ion.radon.aclient.NewClient;
 import net.ion.talk.ToonServer;
@@ -69,13 +71,6 @@ public class TalkMessageHandler implements CDDHandler {
 
                 Map<PropertyId, PropertyValue> pmap = event.getValue() ;
 
-                //Syncbot에 의한 Filter 메지시 이벤트면 무시
-//                if (isFilterMessage(pmap)) return null;
-
-                //SyncBot이 있으면 메시지 선 처리.
-//                WriteChildren syncBots = wsession.pathBy("/rooms/" + getRoomId(resolveMap) + "/members").children().filter(SYNCBotFilter);
-//                sendMessageToSyncBot(wsession, resolveMap, pmap, syncBots);
-
                 //유저에게 전송
                 String roomId = resolveMap.get(Const.Room.RoomId) ;
                 String messageId = resolveMap.get(Const.Message.MessageId) ;
@@ -83,55 +78,30 @@ public class TalkMessageHandler implements CDDHandler {
 				boolean exclusiveSender = pmap.containsKey(exPropertyId) ? pmap.get(exPropertyId).asBoolean() : false ;
                 String senderRef = pmap.get(PropertyId.refer(Message.Sender)).asString() ;
                 
-//                Debug.line('x', roomId, wsession.pathBy("/rooms/roomroom/messages/" + messageId).transformer(net.ion.craken.node.convert.Functions.WRITE_TOFLATMAP));
-                Set<String> users = wsession.pathBy("/rooms/" + roomId + "/members").childrenNames();
-                Set receivers = getReceivers(pmap).asSet() ;
                 
-                for(String userId : users){
-                    //귓속말에 자기 자신이 없으면 continue;
-//                    pmap.get(PropertyId.fromIdString(Const.Message.Receivers)).asSet();
-                	if (exclusiveSender && senderRef.endsWith("/" + userId)) continue ;
-                    if (StringUtil.isBlank(getReceivers(pmap).asString()) || receivers.contains(userId))  
-                    	writeNotification(wsession, userId, roomId, messageId);
+                ReadSession rsession = wsession.readSession() ;
+                Set<String> receivers = getReceivers(pmap).asSet() ;
+                if (rsession.ghostBy("/rooms/" + roomId).hasProperty("owner") && (!rsession.pathBy("/rooms/" + roomId + "/messages/" + messageId).hasProperty("_owner"))){ // exist owner
+                	 String[] owners = rsession.pathBy("/rooms/" + roomId).property("owner").asStrings() ;
+                	 receivers = SetUtil.create(owners) ;
+                } else {
+                	if (StringUtil.isBlank(getReceivers(pmap).asString())){
+                		receivers = wsession.pathBy("/rooms/" + roomId + "/members").childrenNames(); 
+                	} 
+                	
+                	if (exclusiveSender){
+                		receivers.remove(StringUtil.substringAfter(senderRef, "/")) ;
+                	}
+	
+                }
+
+                for(String userId : receivers){
+                   	writeNotification(wsession, userId, roomId, messageId);
                 }
                 
-
-                //유저의 방 나감 이벤트일 경우 처리
-//                ifUserOnExit(wsession, resolveMap, pmap);
-
-
                 return null;
             }
         };
-    }
-
-    private void ifUserOnExit(WriteSession wsession, Map<String,String> resolveMap, Map<PropertyId,PropertyValue> pmap) {
-        //유저 퇴장시 방의 유저에게 퇴장 Notify 생성
-        if("onExit".equals(pmap.get(PropertyId.fromIdString(Const.Message.Options)).json().asString("event"))){
-            String sender = pmap.get(PropertyId.fromIdString(Const.Message.Message)).stringValue();
-            writeNotification(wsession, sender, getRoomId(resolveMap), getMessageId(resolveMap));
-        }
-    }
-
-    private void sendMessageToSyncBot(WriteSession wsession, Map<String, String> resolveMap, Map<PropertyId, PropertyValue> pmap, WriteChildren syncBots) throws IOException, ExecutionException, InterruptedException {
-        for(WriteNode botRef : syncBots){
-            String botId = botRef.fqn().name();
-
-            //귓속말에 자기 자신이 없으면 continue;
-            if (ignoreNonWhisper(botId, getReceivers(pmap))) continue;
-
-            if(wsession.exists("/bots/"+botId) && wsession.pathBy("/bots/"+botId).ref("bot").property(Const.Bot.isSyncBot).stringValue().equals("true")){
-                nc.preparePost(wsession.pathBy("/users/" + botId).property(Const.Bot.RequestURL).stringValue())
-                        .addParameter(Const.Message.Options, "{event:'onFilter'}")
-                        .addParameter(Const.Message.CausedEvent, pmap.get(PropertyId.fromIdString(Const.Message.Options)).stringValue())
-                        .addParameter(Const.Message.Sender, pmap.get(PropertyId.fromIdString(Const.Message.Sender)).stringValue())
-                        .addParameter(Const.Bot.BotId, botId)
-                        .addParameter(Const.Message.Message, pmap.get(PropertyId.fromIdString(Const.Message.Message)).stringValue())
-                        .addParameter(Const.Message.MessageId, getMessageId(resolveMap))
-                        .addParameter(Const.Room.RoomId, getRoomId(resolveMap))
-                        .execute().get();
-            }
-        }
     }
 
     private void writeNotification(WriteSession wsession, String receiver, String roomId, String messageId) {
@@ -152,23 +122,8 @@ public class TalkMessageHandler implements CDDHandler {
             return session.workspace().repository().memberId();
     }
 
-    private boolean isFilterMessage(Map<PropertyId, PropertyValue> pmap) {
-        return (pmap.get(PropertyId.fromIdString(Const.Message.Filter)) != null);
-    }
-
-    private boolean ignoreNonWhisper(String botId, PropertyValue receivers) {
-        return (StringUtil.isNotBlank(receivers.asString()) && !receivers.asSet().contains(botId));
-    }
-
     private PropertyValue getReceivers(Map<PropertyId, PropertyValue> pmap) {
         return ObjectUtil.coalesce(pmap.get(PropertyId.fromIdString(Const.Message.Receivers)), PropertyValue.NotFound);
     }
 
-    private String getMessageId(Map<String, String> resolveMap) {
-        return resolveMap.get(Const.Message.MessageId);
-    }
-
-    private String getRoomId(Map<String, String> resolveMap) {
-        return resolveMap.get(Const.Room.RoomId);
-    }
 }

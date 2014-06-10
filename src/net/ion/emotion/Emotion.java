@@ -28,24 +28,15 @@ package net.ion.emotion;
  */
 
 public class Emotion implements Comparable<Emotion> {
-
-	public static int NEUTRAL = -1;
-
-	public static int HAPPINESS = 0;
-
-	public static int SADNESS = 1;
-
-	public static int FEAR = 2;
-
-	public static int ANGER = 3;
-
-	public static int DISGUST = 4;
-
-	public static int SURPRISE = 5;
+	
+	public enum EType {
+		ANGER, DISGUST, FEAR, HAPPINESS, NEUTRAL, SADNESS, SURPRISE
+	}
+	
 
 	private double weight;
 
-	private int type;
+	private EType type;
 
 	/**
 	 * Class constructor which sets weight and type of the emotion.
@@ -56,7 +47,7 @@ public class Emotion implements Comparable<Emotion> {
 	 *            type of the emotion (happiness, sadness, fear, anger, disgust, or surprise)
 	 */
 
-	public Emotion(double weight, int type) {
+	public Emotion(double weight, EType type) {
 		this.weight = weight;
 		this.type = type;
 	}
@@ -69,9 +60,8 @@ public class Emotion implements Comparable<Emotion> {
 	 * @return integer representing the result
 	 */
 	public int compareTo(Emotion arg0) {
-		int value = (int) (100 * (arg0.getWeight() - weight));
-		// make sure each emotion will be considered, even if it is weight-even
-		// with another one
+		int value = (int) (100 * (arg0.weight() - weight));
+		// make sure each emotion will be considered, even if it is weight-even with another one
 		if (value == 0)
 			return 1;
 		return value;
@@ -82,7 +72,7 @@ public class Emotion implements Comparable<Emotion> {
 	 * 
 	 * @return emotion type (integer constant defined by this class)
 	 */
-	public int getType() {
+	public EType etype() {
 		return type;
 	}
 
@@ -92,7 +82,7 @@ public class Emotion implements Comparable<Emotion> {
 	 * @param type
 	 *            emotion type (integer constant defined by this class)
 	 */
-	public void setType(int type) {
+	public void etype(EType type) {
 		this.type = type;
 	}
 
@@ -101,7 +91,7 @@ public class Emotion implements Comparable<Emotion> {
 	 * 
 	 * @return double representing the emotional weight
 	 */
-	public double getWeight() {
+	public double weight() {
 		return weight;
 	}
 
@@ -111,7 +101,7 @@ public class Emotion implements Comparable<Emotion> {
 	 * @param value
 	 *            double representing the emotional weight
 	 */
-	public void setWeight(double value) {
+	public void weight(double value) {
 		this.weight = value;
 	}
 

@@ -249,7 +249,8 @@ public class BotScript {
 
 	public Object callFrom(String botId, String fnName, Object... args) throws ScriptException, NoSuchMethodException {
 		if (!existFunction(botId, fnName))
-			throw new NoSuchMethodError("No Such Method : " + fnName);
+			return null ; // ignore
+//			throw new NoSuchMethodError("No Such Method : " + fnName);
 
 		Object pack = packages.get(botId);
 		if (pack == null)
