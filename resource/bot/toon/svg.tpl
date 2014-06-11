@@ -9,7 +9,12 @@
   </textPath>
   </text>
   
-   <foreignObject id="msgtext" x="10" y="10" width="100" height="150">
+ 
+  <g id="character" style="fill-opacity:0.9; stroke-opacity:0.9">
+  <image xlink:href="./char/bat/sadness.png" x="0" y="90" height="90px" width="90px" opacity="0.7"/>
+  </g>
+  
+   <foreignObject x="10" y="10" width="150" height="150" id="msgtext">
     <body xmlns="http://www.w3.org/1999/xhtml">
   	Here is a <strong>paragraph</strong> that requires <em>word wrap</em>
   	<ul>
@@ -19,14 +24,8 @@
         </ul>
   	</body>
   </foreignObject>
+  <use id="use" xlink:href="#msgtext" />
   
- 
-  
-  <g transform="translate(100,180) scale(-1,1)">
-  <image xlink:href="/image/bimage/toon/char/bat/sad.png" x="0" y="-130" height="90px" width="90px"/>
-  </g>
-  
-    <use id="use" xlink:href="#msgtext" />
   
   Sorry, your browser does not support inline SVG.
 </svg>

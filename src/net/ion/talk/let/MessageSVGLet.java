@@ -8,6 +8,7 @@ import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.tree.PropertyValue;
+import net.ion.emotion.Emotion;
 import net.ion.emotion.EmotionalState;
 import net.ion.emotion.Empathyscope;
 import net.ion.framework.mte.Engine;
@@ -50,7 +51,9 @@ public class MessageSVGLet implements IServiceLet {
 		}
 		
 		Engine engine = rsession.workspace().parseEngine();
-		Map<String, Object> map = MapUtil.chainKeyMap().put("node", messageNode).put("message", message).put("charId", StringUtil.defaultIfEmpty(charId, "bat")).put("emotion", es.getStrongestEmotion().etype().toString().toLowerCase()).toMap() ;
+		Emotion emotion = es.getStrongestEmotion();
+		
+		Map<String, Object> map = MapUtil.chainKeyMap().put("node", messageNode).put("message", message).put("charId", StringUtil.defaultIfEmpty(charId, "bat")).put("emotion", emotion.etype().toString().toLowerCase()).toMap() ;
 		String result = engine.transform(template, map) ;
 		
 
