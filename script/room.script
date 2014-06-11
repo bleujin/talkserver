@@ -56,7 +56,7 @@ new function(){
 		var roomId=params.asString("roomId");
 		var unreadMessages = session.pathBy("/rooms/" + roomId + "/messages").children().where("this.messageId >= '" + params.asString("messageId") + "'").ascending('messageId');
 	
-		return rb.create().newInner().inlist("messages", unreadMessages,"message,sender.userId as sender,sender.nickname as senderNickname,requestId, clientScript,options, messageId,time,fromRoomId,listener").property("roomId", roomId).build().toJsonElement();
+		return rb.create().newInner().inlist("messages", unreadMessages,"message,sender.userId as sender,sender.nickname as senderNickname,requestId, clientScript,options, messageId,time,fromRoomId,listener,toon").property("roomId", roomId).build().toJsonElement();
 
 	},
 	 

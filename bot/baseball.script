@@ -91,9 +91,9 @@ new function(){
 
     this.onWhisper = function(source, whisperMsg){
         source.sendMessage(
-            rb.makeCommandBuilder("/whisper/echo")
+            rb.makeCommandBuilder("/whisper/baseball")
                 .inner("result")
-                .property("sender", "echo")
+                .property("sender", "baseball")
                 .property("clientScript", "client.room().message(args);")
                 .property("message", whisperMsg.message())
                 .property("options", "{event:'onWhisper'}")
