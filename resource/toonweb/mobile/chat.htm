@@ -515,6 +515,11 @@
                 };
                 
                 this.toon = function(args) {
+                	if (! args.toon) {
+                		this.message(args) ;
+                		return ;
+                	}
+                
                 	var senderId = (args.sender || 'system');
                 	var roomId = args.roomId || manager.activeRoomId();
                 	var mcontent = (args.toon || '').replace('{type}', (senderId == chatclient.sender) ? 'sender' : 'receiver') ;
@@ -523,7 +528,6 @@
                 	var messageBlock = \$('<div></div>');
                 	var messageInner = \$('<div></div>');
                 	
-					// if (mcontent < ' ') return ;
 					
                 	if (senderId == chatclient.sender) {
                 	 	messageBlock.attr('align', 'right');
