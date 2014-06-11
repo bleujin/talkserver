@@ -794,7 +794,7 @@ new function() {
                     };
 
                     this.buildMessage = function() {
-                        return java.lang.String.format('휴가,%s,%s', date, reason);
+                        return "휴가,"+date+","+reason;;
                     };
 
                     this.finish = function(bm) {
@@ -856,7 +856,9 @@ new function() {
                     };
 
                     this.buildMessage = function() {
-                        return java.lang.String.format('반차,%s,%s', date, reason);
+                       return "반차,"+date+","+reason;
+                    
+                      
                     };
 
                     this.finish = function(bm) {
@@ -966,7 +968,7 @@ new function() {
                     };
 
                     this.buildMessage = function() {
-                        return java.lang.String.format('청구서,%s,%s,%s,%s,%s', projectCode, accountCode, summaryCode, amount, description);
+                        return "청구서,"+projectCode+","+accountCode+","+ summaryCode+","+ amount+","+description;
                     };
 
                     this.finish = function(bm) {
