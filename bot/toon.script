@@ -1,6 +1,10 @@
 new function(){
 
 	var _myBotId = 'toon' ;
+    var pixelPerLine = net.ion.talk.bot.LineCalculator.PIXEL_PER_LINE;
+    var padding = net.ion.talk.bot.LineCalculator.BUBBLE_PADDING;
+    var characterHeight = 90;
+
 	this.onLoad = function(){
 		session.tran(function(wsession) {
 			wsession.pathBy("/bots/toon").property("owner", true) ;
@@ -17,7 +21,7 @@ new function(){
 			wsession.pathBy("/toons/character/seal") ;
 			wsession.pathBy("/toons/character/sheep") ;
 		}) ;
-	}, 	
+	};
 
 	this.onMessage = function(bm){
 		if (! bm.isBlank('_owner')) return ;
@@ -27,21 +31,23 @@ new function(){
 		var time= new Date().getTime();
 		var messageId=new net.ion.framework.util.ObjectId().toString();
 		var senderCharId = session.ghostBy("/users/" + bm.fromUserId()).property("character").asString() ;
-		
+
+        var msgHeight = Math.max(net.ion.talk.bot.LineCalculator.linesOf(bm.message()) * pixelPerLine, 120) + (padding * 2);
+
         session.tran(function(wsession) {
         var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + messageId)
                 .property("message", bm.message())
-                .property("toon", "/image/svg/" + bm.fromRoomId() + "/{type}/" + bm.messageId() + ".svg?charId=" + senderCharId)
+                .property("toon", "<embed type='image/svg+xml' pluginspage='http://www.adobe.com/svg/viewer/install/' width='250' height='"+msgHeight+"' src='/image/svg/" + bm.fromRoomId() + "/{type}/" + bm.messageId() + ".svg?charId=" + senderCharId + "'/>")
                 .refTo("sender", "/users/"+bm.fromUserId())
                 .property("roomId", roomId)
                 .property("requestId", bm.asString('requestId'))
-                .property("options", "{event:'onToon'}")
+                .property("options", "{event:'onMessage'}")
                 .property("clientScript", "client.room().toon(args)")
                 .property("time",time.toString())
                 .property("_owner", _myBotId) 
                 .property("messageId", messageId);
 		}) ;
-	}, 
+	};
 	
 	
 	this.onWhisper = function(source, whisperMsg){
@@ -52,12 +58,12 @@ new function(){
 			}) ;
 		}
 		 
-	}, 
+	};
 	
 	this.onEnter = function(bm){
-	}, 
+	};
 	
 	this.onExit = function(bm){
-	} 
+	};
 	
 }
