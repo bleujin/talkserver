@@ -35,7 +35,7 @@ new function(){
                         .refTo("sender", "/users/"+selfBotId)
                         .property("roomId", roomId)
                         .property("options", "{event:'onMessage'}")
-                        .property("clientScript", bm.clientScript())
+                        .property("clientScript", 'client.room().message(args);')
                         .property("time",time.toString())
                         .property("messageId", messageId);
 
