@@ -15,14 +15,6 @@ public class Empathyscope {
 
 	private static LexicalUtility lexUtil;
 
-	/*
-	 * private Empathyscope() throws IOException { //Required if we remove GUI and create object of this class, else LexUtil is always null lexUtil = LexicalUtility.getInstance(); }
-	 */
-
-	/*
-	 * public static Empathyscope getInstance() throws IOException { if (instance == null) { instance = new Empathyscope(); } return instance; }
-	 */
-
 	/**
 	 * Textual affect sensing behavior, the main NLP algorithm
 	 * 
@@ -38,8 +30,6 @@ public class Empathyscope {
 		List<String> sentences = ParsingUtility.parseSentences(text);
 
 		for (String sentence : sentences) {
-
-			System.out.println("- " + sentence);
 
 			// we imploy 6 heuristic rules to adjust emotive weights of the words:EKman's model
 
@@ -153,26 +143,20 @@ public class Empathyscope {
 			generalValence = -1;
 
 		if (happinessWeight > 0)
-			emotions.add(new Emotion(happinessWeight, Emotion.HAPPINESS));
+			emotions.add(new Emotion(happinessWeight, Emotion.EType.HAPPINESS));
 		if (sadnessWeight > 0)
-			emotions.add(new Emotion(sadnessWeight, Emotion.SADNESS));
+			emotions.add(new Emotion(sadnessWeight, Emotion.EType.SADNESS));
 		if (angerWeight > 0)
-			emotions.add(new Emotion(angerWeight, Emotion.ANGER));
+			emotions.add(new Emotion(angerWeight, Emotion.EType.ANGER));
 		if (fearWeight > 0)
-			emotions.add(new Emotion(fearWeight, Emotion.FEAR));
+			emotions.add(new Emotion(fearWeight, Emotion.EType.FEAR));
 		if (disgustWeight > 0)
-			emotions.add(new Emotion(disgustWeight, Emotion.DISGUST));
+			emotions.add(new Emotion(disgustWeight, Emotion.EType.DISGUST));
 		if (surpriseWeight > 0)
-			emotions.add(new Emotion(surpriseWeight, Emotion.SURPRISE));
+			emotions.add(new Emotion(surpriseWeight, Emotion.EType.SURPRISE));
 		if (emotions.isEmpty())
-			emotions.add(new Emotion((0.2 + generalWeight) / 1.2, Emotion.NEUTRAL));
+			emotions.add(new Emotion((0.2 + generalWeight) / 1.2, Emotion.EType.NEUTRAL));
 		return new EmotionalState(text, emotions, generalWeight, generalValence);
 	}
-	/*
-	 * public static void main(String args[]) throws Exception{ Empathyscope obj1=new Empathyscope(); System.out.println(obj1.feel("passion"));
-	 * 
-	 * 
-	 * }
-	 */
 
 }

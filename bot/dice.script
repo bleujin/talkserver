@@ -68,7 +68,6 @@ new function(){
                         .property("messageId", messageId);
             }) ;
       
-	
 //		this.sendMessage("onEnter", bm, {message :"Hello " + "dd"+ " I'm EchoBot"}) ;	
 	}, 
 	

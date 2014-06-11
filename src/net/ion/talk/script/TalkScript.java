@@ -197,12 +197,6 @@ public class TalkScript {
 
 			Object pack = packages.get(packName);
 			
-			if (rsession.ghostBy("/rooms/" + params.asString("roomId")).hasProperty("owner")){
-				params.set("receivers", rsession.pathBy("/rooms/" + params.asString("roomId")).property("owner").asStrings()) ;
-//				params.set(Const.Message.ClientScript, Message.UnDefinedClientScript) ;
-			}
-			
-			
 			if (pack == null) return shandler.onThrow(fullFnName, params, new IOException("not found package : " + fullFnName)) ;
 
 			Object result = ((Invocable) sengine).invokeMethod(pack, fnName, params);

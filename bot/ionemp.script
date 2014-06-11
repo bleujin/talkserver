@@ -157,7 +157,7 @@ new function(){
 한정선	사원	컨텐트융합파트	0	010-4040-7731	hjs0808 \n\
 황정우	대리	mPlan파트	0	010-2031-0640	shoyo119' ;
 
-	var _myBotId = 'ion' ;
+	var _myBotId = 'ionemp' ;
 	var empMap = {} ;
 	var toString = function(obj) {
 	    var str = '';
@@ -192,6 +192,52 @@ new function(){
 	}, 	
 
 	this.onMessage = function(bm){
+		if (session.exists("/bots/"+ bm.fromUserId())) return ;
+		var found = [] ;
+		var forfind = bm.message() ;
+		for(var key in empMap){
+			var emp = empMap[key] ;
+			var fvalue = (forfind.equals(emp.email) ? 60 : 0) +
+				(forfind.equals(emp.name) ? 50 : 0) +
+				(forfind.equals(emp.rule) ? 10 : 0) +
+				(forfind.equals(emp.dept) ? 10 : 0) +
+				(forfind.equals(emp.ino) ? 5 : 0) +
+				(forfind.equals(emp.mphone) ? 40 : 0) +
+				(emp.email.indexOf(forfind) >= 0 ? forfind.length() * 3 : 0) +
+				(emp.name.indexOf(forfind) >= 0 ? forfind.length() * 3 : 0) +
+				(emp.rule.indexOf(forfind) >= 0 ? forfind.length() * 1 : 0) +
+				(emp.dept.indexOf(forfind) >= 0 ? forfind.length() * 1 : 0) +
+				(emp.mphone.indexOf(forfind) >= 0 ? forfind.length() * 2 : 0) ;
+				 
+			if (fvalue > 0) found.push({'fvalue':fvalue, 'emp':emp}) ; 
+		}
+		if (found.length < 1) return ;
+		
+		found.sort(function(left, right){return left.fvalue - right.fvalue ;}) ;
+		
+		var makeMessage = '<ol>' ;
+		for(var i in found){
+			var femp = found[i] ;
+			makeMessage += '<li>' + femp.emp.name + ',' + femp.emp.mphone + ',' + femp.emp.email + ',' + femp.emp.action + '</li>' ;
+		}
+		makeMessage += '</ol>'
+		
+		var roomId = bm.fromRoomId() ;
+		var selfBotId = bm.toUserId() ;
+		var time= new Date().getTime();
+		var messageId=new net.ion.framework.util.ObjectId().toString();
+		
+        session.tran(function(wsession) {
+            var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + messageId)
+                    .property("message", makeMessage)
+                    .refTo("sender", "/users/"+_myBotId)
+                    .property("roomId", roomId)
+                    .property("options", "{event:'onMessage'}")
+                    .property("clientScript", bm.clientScript())
+                    .property("time",time.toString())
+                    .property("messageId", messageId);
+
+        }) ;
 	}, 
 	
 	
@@ -265,7 +311,7 @@ new function(){
 		var makeMessage = '<ol>' ;
 		for(var i in found){
 			var femp = found[i] ;
-			makeMessage += '<li>' + femp.emp.name + ',' + femp.emp.mphone + ',' + femp.emp.email + ',' + femp.emp.action + '</li>' ;
+			makeMessage += '<br>' + femp.emp.name + ',' + femp.emp.mphone + ',' + femp.emp.email + ',' + femp.emp.action + '</br>' ;
 		}
 		makeMessage += '</ol>'
 		

@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import junit.framework.TestCase;
 import net.ion.framework.util.Debug;
 import net.ion.framework.util.IOUtil;
+import net.ion.framework.util.InfinityThread;
 import net.ion.nradon.Radon;
 import net.ion.radon.aclient.NewClient;
 import net.ion.radon.aclient.Response;
@@ -13,7 +14,6 @@ import net.ion.radon.aclient.StringPart;
 import net.ion.radon.aclient.multipart.FilePart;
 import net.ion.radon.core.Aradon;
 import net.ion.radon.util.AradonTester;
-import net.ion.talk.TalkEngine;
 
 public class TestUploadLet extends TestCase {
 
@@ -22,7 +22,7 @@ public class TestUploadLet extends TestCase {
 	@Override
 	protected void setUp() throws Exception {
 		Aradon aradon = AradonTester.create().register("upload", "/{userId}/{resource}, /{userId}/{resource}/{fieldname}", UploadLet.class).getAradon();
-		this.radon = aradon.toRadon(9000).start().get();
+		this.radon = aradon.toRadon(9595).start().get();
 	}
 
 	@Override
@@ -31,6 +31,10 @@ public class TestUploadLet extends TestCase {
 		super.tearDown();
 	}
 
+	public void testInfinity() throws Exception {
+		new InfinityThread().startNJoin();
+	}
+	
 	public void testUpload() throws Exception {
 		NewClient nc = NewClient.create();
 		File file = new File("./resource/temp/한글이름.jpg");
@@ -40,7 +44,7 @@ public class TestUploadLet extends TestCase {
 					.addBodyPart(new FilePart("thumb", file))
 					.addBodyPart(new StringPart("name", "한글이름")).setBodyEncoding("UTF-8").execute().get();
 		assertEquals(200, response.getStatusCode());
-//		Debug.line(response.getUTF8Body());
+		//Debug.line(response.getUTF8Body());
 		nc.close();
 	}
 

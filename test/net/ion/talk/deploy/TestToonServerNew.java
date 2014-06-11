@@ -45,6 +45,7 @@ public class TestToonServerNew extends TestCase {
 			public Void handle(WriteSession wsession) throws Exception {
 				wsession.pathBy("/users/hero@i-on.net").property(User.UserId, "hero@i-on.net").property(User.Password, "1").property(User.NickName, "hero").property(User.StateMessage, "-_-;").property(User.Phone, "1042216492") ;
 				wsession.pathBy("/users/bleujin@i-on.net").property(User.UserId, "bleujin@i-on.net").property(User.Password, "1").property(User.NickName, "bleujin").property(User.StateMessage, "-_-a").property(User.Phone, "1042216492") ;
+				wsession.pathBy("/users/airkjh@i-on.net").property(User.UserId, "airkjh@i-on.net").property(User.Password, "1").property(User.NickName, "airkjh").property(User.StateMessage, "-_-a").property(User.Phone, "1042216491") ;
 				return null;
 			}
 		});

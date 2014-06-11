@@ -58,8 +58,8 @@ public class ParsingUtility {
 	 *            {@link String} which represents the sentence
 	 * @return {@link ArrayList} of {@link String} instances representing the words
 	 */
-	public static ArrayList<String> parseWords(String text) {
-		ArrayList<String> value = new ArrayList<String>();
+	public static List<String> parseWords(String text) {
+		List<String> value = new ArrayList<String>();
 
 		BreakIterator boundary = BreakIterator.getWordInstance();
 		boundary.setText(text);
