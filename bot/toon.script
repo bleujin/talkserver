@@ -27,7 +27,7 @@ new function(){
 		var time= new Date().getTime();
 		var messageId=new net.ion.framework.util.ObjectId().toString();
 		var senderCharId = session.ghostBy("/users/" + bm.fromUserId()).property("character").asString() ;
-
+		
         session.tran(function(wsession) {
         var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + messageId)
                 .property("message", bm.message())

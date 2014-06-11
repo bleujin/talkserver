@@ -161,11 +161,14 @@ new function(){
 		var unreadMsg = recent100.iterator();
 		while(unreadMsg.hasNext()){
 			var next = unreadMsg.next() ; 
+			
+			if (next.hasProperty("_owner")) continue ;
+			
 			if (next.property("receivers").asString() > ' ' && ! next.property("receivers").asSet().contains(scriptMsg.fromUserId())) continue ;
 			
 			source.sendMessage(rb.makeCommandBuilder("/whisper/system")
 			  .inner("result")
-				.property(next, "message, sender.userId as sender, sender.nickname as senderNickname, requestId, clientScript, options, messageId, time")
+				.property(next, "message, sender.userId as sender, sender.nickname as senderNickname, requestId, clientScript, options, messageId, time, listener, toon")
 				.property("roomId", roomId)
 				.build().talkMessage()) ;			
 		}
@@ -183,6 +186,9 @@ new function(){
 		var unreadMsg = recent100.iterator();
 		while(unreadMsg.hasNext()){
 			var next = unreadMsg.next() ; 
+			
+			if (next.hasProperty("_owner")) continue ;
+			
 			if (next.property("receivers").asString() > ' ' && ! next.property("receivers").asSet().contains(scriptMsg.fromUserId())) continue ;
 			
 			source.sendMessage(rb.makeCommandBuilder("/whisper/system")
@@ -396,30 +402,6 @@ new function(){
 		}) ;
 		
 		return ;
-		// return {message: '[userId:' + targetId + '] invite'} ;
-
-		/*
-		if(session.pathBy("/users/" + targetId).property("free").asBoolean() == true) { // in javascript why not affectd false ?
-			session.tranSync(function(wsession){
-				wsession.pathBy("/rooms/" + scriptMsg.fromRoomId() + "/members/" + targetId) ;
-			}) ;
-			
-			return {message: '[userId:' + targetId + '] invite'} ;
-		} else {
-			var sender = scriptMsg.fromUserId() ;
-			session.tranSync(function(wsession){
-				wsession.pathBy("/rooms/@" + targetId + "/messages/" + new net.ion.framework.util.ObjectId().toString())
-					.property("message", sender + ' invite you')
-                    .refTo("sender", "/users/" + sender)
-                    .property("fromRoomId", scriptMsg.fromRoomId())
-                    .property("options", "{event:'onWhisper'}")
-                    .property("clientScript", 'client.room().message(args)')
-                    .property("messageId", scriptMsg.messageId());
-			}) ;
-			
-			return {message: '[userId:' + targetId + '] invite-message received'} ;
-		}
-		*/
 	}, 
 	
 	

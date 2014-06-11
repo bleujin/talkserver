@@ -77,11 +77,14 @@ public class TalkMessageHandler implements CDDHandler {
                 PropertyId exPropertyId = PropertyId.normal(Message.ExclusiveSender);
 				boolean exclusiveSender = pmap.containsKey(exPropertyId) ? pmap.get(exPropertyId).asBoolean() : false ;
                 String senderRef = pmap.get(PropertyId.refer(Message.Sender)).asString() ;
+                String options = pmap.get(PropertyId.normal(Const.Message.Options)).asString() ;
                 
                 
                 ReadSession rsession = wsession.readSession() ;
                 Set<String> receivers = getReceivers(pmap).asSet() ;
-                if (rsession.ghostBy("/rooms/" + roomId).hasProperty("owner") && (!rsession.pathBy("/rooms/" + roomId + "/messages/" + messageId).hasProperty("_owner"))){ // exist owner
+                if (rsession.ghostBy("/rooms/" + roomId).property("owner").asSet().size() > 0 
+                		&& (!rsession.pathBy("/rooms/" + roomId + "/messages/" + messageId).hasProperty("_owner"))
+                		&& options.indexOf("onMessage") > 0){ // exist owner
                 	 String[] owners = rsession.pathBy("/rooms/" + roomId).property("owner").asStrings() ;
                 	 receivers = SetUtil.create(owners) ;
                 } else {
