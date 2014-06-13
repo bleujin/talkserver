@@ -19,10 +19,6 @@ import org.infinispan.notifications.Listener;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntryModified;
 import org.infinispan.notifications.cachelistener.event.CacheEntryModifiedEvent;
 
-/**
- * Created with IntelliJ IDEA. User: Ryun Date: 2014. 2. 11. Time: 오후 2:08 To change this template use File | Settings | File Templates.
- */
-
 @Listener(sync=false)
 public class NotificationListener implements WorkspaceListener{
 

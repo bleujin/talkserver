@@ -5,6 +5,8 @@ new function(){
 		session.tran(function(wsession) {
 			wsession.pathBy("/bots/toon").property("owner", true) ;
 			wsession.pathBy("/users/system").property("character", "penguin") ;
+			wsession.pathBy("/users/ionemp").property("character", "seal") ;
+			wsession.pathBy("/users/dice").property("character", "frog") ;
 			
 			wsession.pathBy("/toons/character/bat") ;
 			wsession.pathBy("/toons/character/bulldog") ;
@@ -35,7 +37,7 @@ new function(){
                 .refTo("sender", "/users/"+bm.fromUserId())
                 .property("roomId", roomId)
                 .property("requestId", bm.asString('requestId'))
-                .property("options", "{event:'onToon'}")
+                .property("options", "{event:'onMessage'}")
                 .property("clientScript", "client.room().toon(args)")
                 .property("time",time.toString())
                 .property("_owner", _myBotId) 

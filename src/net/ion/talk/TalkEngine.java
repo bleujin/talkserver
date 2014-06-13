@@ -15,26 +15,22 @@ import junit.framework.Assert;
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.node.ReadSession;
 import net.ion.framework.logging.LogBroker;
-import net.ion.framework.util.Debug;
 import net.ion.framework.util.ListUtil;
-import net.ion.message.push.sender.Pusher;
 import net.ion.message.sms.sender.SMSSender;
 import net.ion.nradon.WebSocketConnection;
 import net.ion.nradon.WebSocketHandler;
 import net.ion.radon.aclient.ClientConfig;
 import net.ion.radon.aclient.NewClient;
 import net.ion.radon.core.TreeContext;
-import net.ion.talk.TalkEngine.Reason;
 import net.ion.talk.account.AccountManager;
-import net.ion.talk.bot.BotManager;
 import net.ion.talk.engine.HeartBeat;
 import net.ion.talk.handler.TalkHandler;
 import net.ion.talk.handler.craken.NotificationListener;
 import net.ion.talk.handler.craken.NotifyStrategy;
 import net.ion.talk.handler.craken.TalkMessageHandler;
 import net.ion.talk.handler.craken.UserInAndOutRoomHandler;
+import net.ion.talk.handler.engine.PreHandler;
 import net.ion.talk.handler.engine.ServerHandler;
-import net.ion.talk.handler.engine.TalkCommandHandler;
 import net.ion.talk.handler.engine.TalkScriptHandler;
 import net.ion.talk.handler.engine.UserConnectionHandler;
 import net.ion.talk.handler.engine.WhisperHandler;
@@ -132,7 +128,11 @@ public class TalkEngine implements WebSocketHandler {
 
 		AccountManager am = context().getAttributeObject(AccountManager.class.getCanonicalName(), AccountManager.class);
 
-		registerHandler(new UserConnectionHandler()).registerHandler(ServerHandler.test()).registerHandler(new TalkScriptHandler()).registerHandler(new WhisperHandler()) ;
+		registerHandler(new UserConnectionHandler())   // handler connected user list 
+			.registerHandler(ServerHandler.test())     // handle started server list
+			.registerHandler(new PreHandler())
+			.registerHandler(new TalkScriptHandler())  // handle talkscript
+			.registerHandler(new WhisperHandler()) ;   // handle whisper
 
 		rsession.workspace().cddm().add(UserInAndOutRoomHandler.create(bs));
 		rsession.workspace().cddm().add(new TalkMessageHandler(nc));
@@ -205,6 +205,10 @@ public class TalkEngine implements WebSocketHandler {
 
 	public TalkScript talkScript() {
 		return context.getAttributeObject(TalkScript.class.getCanonicalName(), TalkScript.class);
+	}
+	
+	public BotScript botScript(){
+		return context.getAttributeObject(BotScript.class.getCanonicalName(), BotScript.class) ;
 	}
 
 	@Override

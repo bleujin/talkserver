@@ -179,8 +179,6 @@ public class BotScript {
 			e.printStackTrace();
 		} catch (ScriptException e) {
 			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
 		}
 		return packName;
 	}
@@ -247,7 +245,7 @@ public class BotScript {
 		return callFn(bm.toUserId() + "." + bm.eventName(), bm, BotResponseHandler.ReturnNative);
 	}
 
-	public Object callFrom(String botId, String fnName, Object... args) throws ScriptException, NoSuchMethodException {
+	public Object callFrom(String botId, String fnName, Object... args) throws ScriptException {
 		if (!existFunction(botId, fnName))
 			return null ; // ignore
 //			throw new NoSuchMethodError("No Such Method : " + fnName);
@@ -255,11 +253,16 @@ public class BotScript {
 		Object pack = packages.get(botId);
 		if (pack == null)
 			throw new IllegalArgumentException("not found bot");
-		Object result = ((Invocable) sengine).invokeMethod(pack, fnName, args);
-		if (result instanceof NativeJavaObject)
-			result = ((NativeJavaObject) result).unwrap();
+		
+		try {
+			Object result = ((Invocable) sengine).invokeMethod(pack, fnName, args);
+			if (result instanceof NativeJavaObject)
+				result = ((NativeJavaObject) result).unwrap();
 
-		return result;
+			return result;
+		} catch (NoSuchMethodException e) {
+			throw new ScriptException(e) ;
+		}
 	}
 
 	public Object whisper(UserConnection source, WhisperMessage whisperMsg) {

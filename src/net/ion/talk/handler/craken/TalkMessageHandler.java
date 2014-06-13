@@ -1,9 +1,7 @@
 package net.ion.talk.handler.craken;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 
 import net.ion.craken.listener.CDDHandler;
 import net.ion.craken.listener.CDDModifiedEvent;
@@ -11,21 +9,16 @@ import net.ion.craken.listener.CDDRemovedEvent;
 import net.ion.craken.node.ISession;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
-import net.ion.craken.node.WriteNode;
 import net.ion.craken.node.WriteSession;
-import net.ion.craken.node.crud.WriteChildren;
 import net.ion.craken.tree.PropertyId;
 import net.ion.craken.tree.PropertyValue;
 import net.ion.framework.util.ObjectUtil;
 import net.ion.framework.util.SetUtil;
 import net.ion.framework.util.StringUtil;
 import net.ion.radon.aclient.NewClient;
-import net.ion.talk.ToonServer;
 import net.ion.talk.bean.Const;
 import net.ion.talk.bean.Const.Message;
 import net.ion.talk.util.CalUtil;
-
-import com.google.common.base.Predicate;
 
 /**
  * Created with IntelliJ IDEA.
@@ -37,15 +30,6 @@ import com.google.common.base.Predicate;
 public class TalkMessageHandler implements CDDHandler {
 
     private final NewClient nc;
-
-    private static final Predicate<WriteNode> SYNCBotFilter = new Predicate<WriteNode>() {
-        @Override
-        public boolean apply(WriteNode userNode) {
-            if(!userNode.hasRef(Const.Ref.User)) return false;
-
-            return userNode.ref(Const.Ref.User).property(Const.Bot.isSyncBot).asBoolean();
-        }
-    };
 
     public TalkMessageHandler(NewClient nc) {
         this.nc = nc;
@@ -81,22 +65,23 @@ public class TalkMessageHandler implements CDDHandler {
                 
                 
                 ReadSession rsession = wsession.readSession() ;
-                Set<String> receivers = getReceivers(pmap).asSet() ;
-                if (rsession.ghostBy("/rooms/" + roomId).property("owner").asSet().size() > 0 
-                		&& (!rsession.pathBy("/rooms/" + roomId + "/messages/" + messageId).hasProperty("_owner"))
-                		&& options.indexOf("onMessage") > 0){ // exist owner
-                	 String[] owners = rsession.pathBy("/rooms/" + roomId).property("owner").asStrings() ;
-                	 receivers = SetUtil.create(owners) ;
-                } else {
-                	if (StringUtil.isBlank(getReceivers(pmap).asString())){
-                		receivers = wsession.pathBy("/rooms/" + roomId + "/members").childrenNames(); 
-                	} 
+                PropertyValue rvalue = ObjectUtil.coalesce(pmap.get(PropertyId.fromIdString(Const.Message.Receivers)), PropertyValue.NotFound);
+                Set<String> receivers = rvalue.asSet() ;
+//                if (rsession.ghostBy("/rooms/" + roomId).property("owner").asSet().size() > 0 
+//                		&& (!rsession.pathBy("/rooms/" + roomId + "/messages/" + messageId).hasProperty("_owner"))
+//                		&& options.indexOf("onMessage") > 0){ // exist owner
+//                	 String[] owners = rsession.pathBy("/rooms/" + roomId).property("owner").asStrings() ;
+//                	 receivers = SetUtil.create(owners) ;
+//                } else {
                 	
-                	if (exclusiveSender){
-                		receivers.remove(StringUtil.substringAfter(senderRef, "/")) ;
-                	}
-	
-                }
+				if (StringUtil.isBlank(rvalue.asString())){
+					receivers = wsession.pathBy("/rooms/" + roomId + "/members").childrenNames(); 
+				} 
+				
+				if (exclusiveSender){
+					receivers.remove(StringUtil.substringAfter(senderRef, "/")) ;
+				}
+//                }
 
                 for(String userId : receivers){
                    	writeNotification(wsession, userId, roomId, messageId);
@@ -108,7 +93,7 @@ public class TalkMessageHandler implements CDDHandler {
     }
 
     private void writeNotification(WriteSession wsession, String receiver, String roomId, String messageId) {
-//        String randomID = new ObjectId().toString();
+
         wsession.pathBy("/notifies/" + receiver).property(Const.Notify.LastNotifyId, messageId)
                 .child(messageId)
                 .property(Const.Connection.DelegateServer, getDelegateServer(receiver, wsession))
@@ -123,10 +108,6 @@ public class TalkMessageHandler implements CDDHandler {
             return session.pathBy("/connections/" + userId).property(Const.Connection.DelegateServer).stringValue();
         else
             return session.workspace().repository().memberId();
-    }
-
-    private PropertyValue getReceivers(Map<PropertyId, PropertyValue> pmap) {
-        return ObjectUtil.coalesce(pmap.get(PropertyId.fromIdString(Const.Message.Receivers)), PropertyValue.NotFound);
     }
 
 }

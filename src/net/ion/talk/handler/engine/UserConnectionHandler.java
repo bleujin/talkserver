@@ -17,9 +17,6 @@ import net.ion.talk.bean.Const.Connection;
 import net.ion.talk.bean.Const.User;
 import net.ion.talk.handler.TalkHandler;
 
-/**
- * Created with IntelliJ IDEA. User: Ryun Date: 2014. 2. 3. Time: 오후 3:36 To change this template use File | Settings | File Templates.
- */
 public class UserConnectionHandler implements TalkHandler {
 
 	private ReadSession rsession;

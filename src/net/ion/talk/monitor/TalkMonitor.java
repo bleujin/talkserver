@@ -51,9 +51,9 @@ public class TalkMonitor extends AbstractEventSourceResource{
 	public void onOpen(EventSourceConnection econn) throws Exception {
 		String pathPattern = StringUtil.substringAfter(econn.httpRequest().uri(), "/event/") ; // /event/room/@roomId
 		
-		Element element = new Element(econn, "/" + StringUtil.replaceEach(pathPattern, new String[]{"%7B", "%7D"}, new String[]{"{", "}"})) ;
+		Element element = new Element(econn, "/" + pathPattern.replaceAll("\\$(\\w*)\\$", "{$1}")) ; //   StringUtil.replaceEach(pathPattern, new String[]{"$", "$"}, new String[]{"{", "}"})
 		elements.add(element) ;
-		 ;
+
 		workspace.cddm().add(element.handler()) ;
 	}
 

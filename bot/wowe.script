@@ -186,86 +186,36 @@ SOOTHE  - %s은 %s을(를) 보며 모든 일이 잘될거라고 달랩니다.  \
 			}
 		} ;
 		session.tran(function(wsession) {
-			wsession.pathBy("/bots/wowe").property("owner", true) ;
+			wsession.pathBy("/bots/wowe").property("pre", true).property("owner", true) ;
 		}) ;
 		
 	}, 	
 
 	this.onMessage = function(bm){
-		if (! bm.isBlank('_owner')) return ;
-		if (session.exists("/bots/"+ bm.fromUserId())) {
-			return ;
-		}
-		
-		var cmd = bm.asCommand() ;
-		if (actionMap[cmd.fnName()]) {
-			this.onWhisper(bm.source(), bm) ;
-		} else {
-			var roomId = bm.fromRoomId() ;
-			var time= new Date().getTime();
-			var messageId=new net.ion.framework.util.ObjectId().toString();
-	        session.tran(function(wsession) {
-            var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + messageId)
-                    .property("message", bm.message())
-                    .refTo("sender", "/users/"+bm.fromUserId())
-                    .property("roomId", roomId)
-                    .property("requestId", bm.asString('requestId'))
-                    .property("options", "{event:'onMessage'}")
-                    .property("clientScript", bm.clientScript())
-                    .property("time",time.toString())
-                    .property("_owner", _myBotId) 
-                    .property("messageId", messageId);
-			}) ;
-		}
 	}, 
 	
 	
 	this.onWhisper = function(source, whisperMsg){
-		var cmd = whisperMsg.asCommand() ;
-
-		var roomId = whisperMsg.fromRoomId() ;
-		if (actionMap[cmd.fnName()] && roomId > ' '){
-			var selfBotId = whisperMsg.toUserId() ;
-			var time= new Date().getTime();
-			var messageId=new net.ion.framework.util.ObjectId().toString();
-			if (session.exists("/bots/"+ whisperMsg.fromUserId())) return ; // 
-			
-			var message = java.lang.String.format(actionMap[cmd.fnName()], [source.asString('nick'), cmd.remainAsString(0, '모두')]) ;
-			
-	        session.tran(function(wsession) {
-	            var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + messageId)
-	                    .property("message", message)
-	                    .refTo("sender", "/users/"+whisperMsg.fromUserId())
-	                    .property("roomId", roomId)
-	                    .property("options", "{event:'onMessage'}")
-	                    .property("clientScript", "client.room().message(args);")
-	                    .property("time",time.toString())
-	                    .property("_owner", _myBotId) 
-	                    .property("messageId", messageId);
-	
-	        }) ;
-		} else {
-			source.sendMessage(
-				rb.makeCommandBuilder("/whisper/wowe/" + cmd.fnName())
-				  .inner("result")
-				  	.property("sender", "wowe")
-					.property("clientScript", "client.room().message(args);")
-					.property("message", "not found emotion or not in room")
-					.property("options", "{event:'onWhisper'}")
-					.property("time", new Date().getTime().toString())
-					.property("messageId", new net.ion.framework.util.ObjectId().toString()).build().talkMessage()) ;
-		}
-		
 	}, 
 
 	this.sendMessage = function(event, bm, args){
-
 	}, 
 	
 	this.onEnter = function(bm){
 	}, 
 	
 	this.onExit = function(bm){
-	} 
+	}, 
+	
+	this.whenIN = function(roomId){
+	}, 
+	
+	this.onPre = function(tm){
+		var cmd = tm.asCommand() ;
+		if (actionMap[cmd.fnName()]) {
+			var message = java.lang.String.format(actionMap[cmd.fnName()], [tm.source().asString('nick'), cmd.remainAsString(0, '모두')]) ;
+			tm.resetParam("message", message) ;
+		}
+	}
 	
 }

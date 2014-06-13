@@ -21,6 +21,9 @@ public class Const {
         public static final String isSyncBot = "isSyncBot";
         public static final String Nickname = "nickname";
         public static final String StateMessage = "stateMessage";
+        
+		public static final String Pre = "pre";
+		public static final String PreBots = "prebots";
     }
 
     public static class Message {

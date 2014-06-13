@@ -17,9 +17,6 @@ import net.ion.talk.handler.TalkHandler;
 import net.ion.talk.script.ScriptResponseHandler;
 import net.ion.talk.script.TalkScript;
 
-/**
- * Created with IntelliJ IDEA. User: Ryun Date: 2014. 2. 5. Time: 오후 3:55 To change this template use File | Settings | File Templates.
- */
 public class TalkScriptHandler implements TalkHandler {
 
 	private TalkScript tscript;

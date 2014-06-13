@@ -110,20 +110,20 @@ new function(){
 //		importPackage(net.ion.framework.util)
 
 		var receivers = params.asStrings("receivers");
-		var randomId = new net.ion.framework.util.ObjectId().toString();
 		var time= new Date().getTime();
 		session.tranSync(function(wsession){
-			var msgNode=wsession.pathBy("/rooms/" + params.asString("roomId")+"/messages/"+randomId)
+			var msgNode=wsession.pathBy("/rooms/" + params.asString("roomId")+"/messages/"+params.asString("messageId"))
 				.property("message",params.asString("message"))
-				.property("messageId", randomId)
+				.property("messageId", params.asString("messageId"))
 				.refTo("sender","/users/"+params.asString("sender"))
 				.property("clientScript",params.asString("clientScript"))
 				.property("options","{event:'onMessage'}")
 //				.property("fromRoomId",params.asString("fromRoomId"))
 				.property("requestId",params.asString("requestId"))
-				.property("time",time.toString());
-
-		       msgNode.append("receivers", receivers);
+				.property("time",time.toString())
+				.append("receivers", receivers);
+				
+//		       msgNode.append("receivers", receivers);
 		});	
 	}
 

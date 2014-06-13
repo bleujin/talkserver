@@ -1,14 +1,6 @@
 package net.ion.talk.account;
 
-import net.ion.talk.responsebuilder.TalkResponse;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Ryun
- * Date: 2014. 2. 20.
- * Time: 오후 4:15
- * To change this template use File | Settings | File Templates.
- */
 public abstract class Account {
 
     private final Type type;

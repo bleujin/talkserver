@@ -33,11 +33,10 @@ new function(){
 	    var time = new Date().getTime();
 		var messageId = new net.ion.framework.util.ObjectId().toString();
 
-		var node = session.ghostBy("/users/her@i-on.net/connection") ;
+		var node = session.ghostBy("/users/hero@i-on.net/connection") ;
 		var lat = node.property('latitude').asString() ;
 		var lon = node.property('longitude').asString() ;
 
-		java.lang.System.out.println(lat + lon) ;
 
 		var wresult = new net.ion.talk.bot.Weather(nc, lat, lon).execute() ;
 		var wicon = wresult.icon() ;

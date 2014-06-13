@@ -52,8 +52,14 @@ public class ParameterMap {
 		
 	}
 
+	public ParameterMap reset(String name, Object value){
+		inner.remove(name) ;
+		return set(name, value) ;
+	}
+	
 	public ParameterMap set(String name, Object value){
 		inner.putParameter(name, value) ;
+		
 		return this ;
 	}
 	public ParameterMap set(String name, String[] value){

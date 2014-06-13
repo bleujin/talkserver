@@ -1,6 +1,0 @@
-new function(){
-
-	this.invite = function(params){
-			
-	} 
-} ;

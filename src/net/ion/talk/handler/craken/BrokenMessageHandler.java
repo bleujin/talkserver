@@ -20,13 +20,6 @@ import net.ion.talk.util.CalUtil;
 import com.google.common.base.Predicate;
 import com.sun.istack.internal.Nullable;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Ryun
- * Date: 2014. 4. 15.
- * Time: 오후 1:27
- * To change this template use File | Settings | File Templates.
- */
 public class BrokenMessageHandler implements TalkHandler {
 
     public static int NOTIFY_LIFE_TIME = 30000;
