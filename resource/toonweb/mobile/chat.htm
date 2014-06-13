@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, target-densityDpi=device-dpi">
 
     <link rel="stylesheet" href="/toonweb/jquery.mobile-1.4.2.min.css" />
@@ -14,6 +15,7 @@
     <script type="text/javascript" src="/toonweb/jquery.validate.min.js"></script>
     <script type="text/javascript" src="/toonweb/jquery.form.min.js"></script>
     <script type="text/javascript" src="/toonweb/js/toast/javascript/jquery.toastmessage.js"></script>
+    <script type="text/javascript" src="/toonweb/js/shake.js"></script>
 
     <script src=http://maps.googleapis.com/maps/api/js?sensor=true></script>
     <style type="text/css">
@@ -531,10 +533,12 @@
 					
                 	if (senderId == chatclient.sender) {
                 	 	messageBlock.attr('align', 'right');
-	                	messageInner.html("<embed src='"+ mcontent + "' width='320' height='155' type='image/svg+xml' pluginspage='http://www.adobe.com/svg/viewer/install/' />");
+//	                	messageInner.html("<embed src='"+ mcontent + "' width='320' height='500' type='image/svg+xml' pluginspage='http://www.adobe.com/svg/viewer/install/' />");
+                        messageInner.html(mcontent);
                 	} else {
                 	 messageBlock.attr('align', 'left');
-	                	messageInner.html("<embed src='"+ mcontent + "' width='320' height='155' type='image/svg+xml' pluginspage='http://www.adobe.com/svg/viewer/install/' />");
+                        messageInner.html(mcontent);
+//	                	messageInner.html("<embed src='"+ mcontent + "' width='320' height='500' type='image/svg+xml' pluginspage='http://www.adobe.com/svg/viewer/install/' />");
                 	}
                 	
                 	messageBlock.attr('id', args.messageId).attr('title', jsonToString(args));
@@ -784,6 +788,10 @@
         this.reload = function() {
             connManager.reload();
         };
+
+        this.connectionManager = function() {
+            return connManager;
+        };
     };
 
     var wsAddress = '$config.address$';
@@ -811,6 +819,39 @@
         \$(document).on('swiperight', '#chatMain', function(event) {
             client.getRoomManager().nextRoom(event);
         });
+
+        window.addEventListener('shake', shakeEventDidOccur, false);
+
+        //function to call when shake occurs
+        function shakeEventDidOccur (event) {
+            try {
+                var currentRoomId = client.getRoomManager().activeRoomId();
+                if(currentRoomId != 'Home') {
+                    var msgId = '' + new Date().getUTCMilliseconds();
+                    var chatMsg = jsonToString({
+                        id : msgId,
+                        script: '/room/sendMessageWith',
+                        params: {
+                            receivers: '',
+                            roomId: (currentRoomId == 'Home' ? '' : currentRoomId),
+                            message: '주사위',
+                            sender: sender,
+                            senderNickname: senderNickname,
+                            clientScript: 'client.undefined();',
+                            requestId: msgId
+                        }
+                    });
+                    client.connectionManager().getConnection().send(chatMsg);
+                }
+
+                event.preventDefault();
+                return false;
+
+            } catch(ex) {
+                alert(ex);
+            }
+
+        }
     });
 
 //    window.onload = initChat ;

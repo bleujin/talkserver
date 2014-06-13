@@ -1,13 +1,11 @@
 package net.ion.talk.let;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.Map;
 
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.ReadSession;
-import net.ion.craken.tree.PropertyValue;
 import net.ion.emotion.Emotion;
 import net.ion.emotion.EmotionalState;
 import net.ion.emotion.Empathyscope;
@@ -21,9 +19,9 @@ import net.ion.radon.core.annotation.DefaultValue;
 import net.ion.radon.core.annotation.FormParam;
 import net.ion.radon.core.annotation.PathParam;
 import net.ion.radon.core.let.InnerRequest;
+import net.ion.talk.bot.LineCalculator;
 import net.ion.talk.bot.ToonBot;
 
-import org.antlr.stringtemplate.StringTemplate;
 import org.apache.lucene.analysis.kr.utils.StringUtil;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
@@ -31,6 +29,8 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Get;
 
 public class MessageSVGLet implements IServiceLet {
+
+    private static final int CHARACTER_HEIGHT = 90;
 
 	@Get
 	public Representation viewSVG(@ContextParam("repository") RepositoryEntry rentry, @AnRequest InnerRequest request, 
@@ -52,8 +52,23 @@ public class MessageSVGLet implements IServiceLet {
 		
 		Engine engine = rsession.workspace().parseEngine();
 		Emotion emotion = es.getStrongestEmotion();
-		
-		Map<String, Object> map = MapUtil.chainKeyMap().put("node", messageNode).put("message", message).put("charId", StringUtil.defaultIfEmpty(charId, "bat")).put("emotion", emotion.etype().toString().toLowerCase()).toMap() ;
+
+        int lineNum = LineCalculator.linesOf(message);
+        int messageBodyHeight = lineNum * LineCalculator.PIXEL_PER_LINE;
+        int rectHeight = Math.max(messageBodyHeight, 90) ;
+        int characterY = rectHeight - CHARACTER_HEIGHT + 40;
+        int fromWhoY = rectHeight + (LineCalculator.BUBBLE_PADDING * 2) + 10;
+
+		Map<String, Object> map = MapUtil.chainKeyMap()
+                .put("node", messageNode)
+                .put("message", message)
+                .put("charId", StringUtil.defaultIfEmpty(charId, "bat"))
+                .put("emotion", emotion.etype().toString().toLowerCase())
+                .put("rectHeight", rectHeight)
+                .put("characterY", characterY)
+                .put("foreignObjectHeight", messageBodyHeight)
+                .put("fromWhoY", fromWhoY)
+                .toMap() ;
 		String result = engine.transform(template, map) ;
 		
 
