@@ -46,7 +46,7 @@ public class NotificationListener implements WorkspaceListener{
 			PropertyValue pvalue = pmap.get(PropertyId.fromIdString(Connection.DelegateServer)) ;
 			
 			if(pvalue != null && pvalue.stringValue().equals(this.memberId)){
-                am.newAccount(userId).onMessage(notifyId);
+                am.newAccount(userId).onMessage(notifyId, pmap);
             }
 		}
 	}

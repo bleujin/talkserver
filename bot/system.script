@@ -139,8 +139,8 @@ new function(){
 
 		session.tranSync(function(wsession){
 			if (! wsession.exists("/rooms/" + roomId)){ 
-			     wsession.pathBy("/rooms/" + roomId).property("roomId", roomId).property("title", "no title").child('members').child(scriptMsg.fromUserId()).refTo("user", "/users/"+scriptMsg.fromUserId()) ;
-				 wsession.pathBy("/openrooms/" + roomId).refTo("room", "/rooms/" + roomId).property("roomId", roomId) ;
+			    wsession.pathBy("/rooms/" + roomId).property("roomId", roomId).property("title", "no title").child('members').child(scriptMsg.fromUserId()).refTo("user", "/users/"+scriptMsg.fromUserId()) ;
+				wsession.pathBy("/openrooms/" + roomId).refTo("room", "/rooms/" + roomId).property("roomId", roomId) ;
 			}else if(!wsession.pathBy("/rooms/" + roomId+"/members/").hasChild(scriptMsg.fromUserId())){ 			
 				wsession.pathBy("/rooms/" + roomId).property("roomId", roomId).child('members').child(scriptMsg.fromUserId()).refTo("user", "/users/"+scriptMsg.fromUserId()) ;
 			}
@@ -154,6 +154,7 @@ new function(){
 			.property("message", "")
 			.property("roomId", roomId)
 			.property("options", "{event:'onWhisper'}")
+			.property("svgUrl", " ") 
 			.property("messageId", new net.ion.framework.util.ObjectId().toString()).build().talkMessage()) ;
 
 		var recent100 = session.pathBy("/rooms/" + roomId + "/messages").children().descending('messageId').offset(100).toList() ;
@@ -168,7 +169,9 @@ new function(){
 			
 			source.sendMessage(rb.makeCommandBuilder("/whisper/system")
 			  .inner("result")
-				.property(next, "message, sender.userId as sender, sender.nickname as senderNickname, requestId, clientScript, options, messageId, time, listener, toon")
+				// .property(next, "message, sender.userId as sender, sender.nickname as senderNickname, requestId, clientScript, options, messageId, time, listener, toon")
+				.property("svgUrl", "/svg/message/" + roomId + "/" + next.property("messageId").asString() + "?botId=")
+				.property("messageId", next.property("messageId").asString())
 				.property("roomId", roomId)
 				.build().talkMessage()) ;			
 		}

@@ -1,7 +1,11 @@
 package net.ion.talk.account;
 
+import org.infinispan.atomic.AtomicMap;
+
 import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.ReadSession;
+import net.ion.craken.tree.PropertyId;
+import net.ion.craken.tree.PropertyValue;
 import net.ion.talk.TalkEngine;
 import net.ion.talk.UserConnection;
 import net.ion.talk.responsebuilder.TalkResponse;
@@ -22,7 +26,7 @@ public class BotAccount extends Account{
 	}
 
 	@Override
-	public void onMessage(String notifyId) {
+	public void onMessage(String notifyId, AtomicMap<PropertyId, PropertyValue> pmap) {
         ReadNode notiNode = session.pathBy("/notifies/" + accountId() + "/" + notifyId);
         
         String senderId = notiNode.ref("message").ref("sender").property("userId").asString() ;

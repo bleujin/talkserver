@@ -51,10 +51,7 @@ public class UserInAndOutRoomHandler implements CDDHandler {
             public Void handle(WriteSession wsession) throws Exception {
             	ReadNode userNode = wsession.readSession().ghostBy("/bots/" + userId) ;
             	if (! userNode.isGhost()) {
-            		if (userNode.property(Const.Bot.Pre).asBoolean()) wsession.pathBy("/rooms/" + roomId).refTos(Const.Bot.PreBots, "/bots/" + userId) ;
-            		
-            		
-            		if (userNode.property("owner").asBoolean()) wsession.pathBy("/rooms/" + roomId).append("owner", userId) ;
+            		wsession.pathBy("/rooms/" + roomId).refTos("bots", "/bots/"+  userId) ;
 					bs.callFrom(userId, "whenIN", roomId) ;
             	}
             	
@@ -89,9 +86,7 @@ public class UserInAndOutRoomHandler implements CDDHandler {
 
             	ReadNode userNode = wsession.readSession().ghostBy("/bots/" + userId) ;
             	if (! userNode.isGhost()) {
-            		if (userNode.property(Const.Bot.Pre).asBoolean()) wsession.pathBy("/rooms/" + roomId).unRefTos(Const.Bot.PreBots, "/bots/" + userId) ;
-            		
-            		if (userNode.property("owner").asBoolean()) wsession.pathBy("/rooms/" + roomId).unset("owner", userId) ;
+            		wsession.pathBy("/rooms/" + roomId).unRefTos("bots", "/bots/"+  userId) ;
 					bs.callFrom(userId, "whenOUT", roomId) ;
             	}
 

@@ -1,5 +1,10 @@
 package net.ion.talk.account;
 
+import net.ion.craken.tree.PropertyId;
+import net.ion.craken.tree.PropertyValue;
+
+import org.infinispan.atomic.AtomicMap;
+
 
 public abstract class Account {
 
@@ -10,7 +15,7 @@ public abstract class Account {
 		CONNECTED_USER, DISCONNECTED_USER, BOT, NOT_REGISTERED, PROXY ;
 	}
 
-    public abstract void onMessage(String notifyId) ;
+    public abstract void onMessage(String notifyId, AtomicMap<PropertyId, PropertyValue> pmap) ;
 
     public Type type(){
         return type;

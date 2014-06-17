@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,6 +41,9 @@ import net.ion.talk.script.TalkScript;
 import org.restlet.Context;
 import org.restlet.routing.VirtualHost;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+
 public class TalkEngine implements WebSocketHandler {
 
 	public enum Reason {
@@ -58,13 +62,14 @@ public class TalkEngine implements WebSocketHandler {
 	private AtomicReference<Boolean> started = new AtomicReference<Boolean>(Boolean.FALSE);
 	private HeartBeat heartBeat ;
 
-
 	private TalkEngine(TreeContext context) throws IOException {
 		
 		this.context = context ;
 		this.worker = context.getAttributeObject(ScheduledExecutorService.class.getCanonicalName(), ScheduledExecutorService.class);
 		context.putAttribute(TalkEngine.class.getCanonicalName(), this);
 		this.heartBeat = new HeartBeat(worker) ;
+		
+		context.putAttribute(Cache.class.getCanonicalName(), CacheBuilder.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).build()) ;
 	}
 	
 	
@@ -79,6 +84,9 @@ public class TalkEngine implements WebSocketHandler {
 		return testCreate(context) ;
 	}
 
+	
+	
+	
 	
 	public static TalkEngine testCreate(TreeContext context) throws Exception {
 		if (context == null)

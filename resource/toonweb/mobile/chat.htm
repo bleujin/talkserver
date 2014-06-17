@@ -317,7 +317,7 @@
 
 				
                 ws.onopen = function() {
-                    roomManager.room().message({message: "Welcome to ToonTalk Mobile"});
+                    roomManager.room().message({message: "Welcome to ToonTalk Mobile", svgUrl:"/svg/command/0?message=Welcome%20to%20ToonTalk%20Mobile"});
                     connManager.status = 'connected';
 					
                     if (!!navigator.geolocation){
@@ -336,7 +336,6 @@
                 };
 
                 ws.onmessage = function(e) {
-                    chatclient.log(e.data);
                  	clearTimeout(heartBeatJob) ;
                  	heartBeatJob = setTimeout(connManager.reconnect, 30000) ;
                     if('HEARTBEAT' == e.data) {
@@ -345,41 +344,27 @@
                     }
 
                     var msg = eval('(' + e.data + ')');
+                    chatclient.log(e.data);
 
-                    if(msg.script == undefined && msg.notifyId != '') {
-                        chatclient.command('/room/listNotifyDataBy', {
-                            'notifyId': msg.notifyId,
-                            'userId': chatclient.sender
-                        });
-                        return;
-                    }
-
-                    if(msg.status != 'success') {
-                        var message = e.data;
-                        roomManager.room().error(message);
-                        return ;
-                    }
-
-//                    if(msg.script == '/room/sendMessageWith') return ;
-
-                    if(msg.script.startWith('/whisper/') || msg.script == '/room/listNotifyDataBy') {
+                    if(msg.result && msg.result.clientScript > ' ') {
                         var args = msg.result || {} ;
                         eval(msg.result.clientScript);
-                        return ;
+                    } else {
+                    	chatclient.room().message(msg.result) ;
+                        return;
                     }
+                    
                 };
 
                 ws.onclose = function() {
                    	window.clearInterval(heartBeatJob) ;
                     connManager.status = 'closed';
-                    roomManager.room().message({message: 'closed. retry connect'});
+                    roomManager.room().message({message: 'closed. retry connect', svgUrl:"/svg/command/0?message=closed.%20retry%20connect"});
                     connManager.reconnect();
                 };
 
                 ws.onerror = function() {
-                    roomManager.room().message({
-                        message: 'Error'
-                    });
+                    roomManager.room().message({message: 'Error', svgUrl:"/svg/command/0?message=Error"});
                 };
             };
 
@@ -436,7 +421,8 @@
                 };
 
                 this.error = function(message) {
-                    alert(message);
+                    // alert(message);
+                    console.log('error:' + message) ;
                 };
                 
                 this.clear = function(args) {
@@ -455,6 +441,9 @@
                 };
 
                 var appendMsg = function(roomId, args) {
+                
+                
+                	// if (true) return ;
                     var message = args.html || args.message ;
                     var senderId = (args.sender || 'system');
                     var senderTxt = '<img src="/image/bot/icon/' + senderId + '.jpg" valign="middle">' + (args.time ? new Date(1 * args.time) : new Date()).toLocaleTimeString('en-US', {hour:'numeric', minute:'numeric', second:'numeric'})  ;
@@ -468,18 +457,17 @@
 
                     if (senderId == chatclient.sender) {
                         messageBlock.attr('align', 'right');
-                        messageInner.attr('class', 'bubble me').addClass(whisper).html('<span style="word-wrap: break-word;">' + message + '</span>');
-                    } else if(senderId.indexOf('@') == -1) {            // if senderId does not contain '@', this is bot
-                        messageBlock.attr('align', 'left');
-                        messageInner.attr('class', 'bubble bot').addClass(whisper).html('<span style="word-wrap: break-word;">' + message + '</span>');
+                        messageInner.html(args.svg || "<embed src='"+ args.svgUrl + "&type=sender' type='image/svg+xml' pluginspage='http://www.adobe.com/svg/viewer/install/' />") ;
+                        // messageInner.attr('class', 'bubble me').addClass(whisper).html('<span style="word-wrap: break-word;">' + message + '</span>');
                     } else {
                         messageBlock.attr('align', 'left');
-                        messageInner.attr('class', 'bubble other').addClass(whisper).html('<span style="word-wrap: break-word;">' + message + '</span>');
+                        messageInner.html(args.svg || "<embed src='"+ args.svgUrl + "&type=receiver' type='image/svg+xml' pluginspage='http://www.adobe.com/svg/viewer/install/' />") ;
+                        //messageInner.attr('class', 'bubble other').addClass(whisper).html('<span style="word-wrap: break-word;">' + message + '</span>');
                     }
 
                     messageBlock.attr('id', args.messageId).attr('title', jsonToString(args));
                     messageBlock.append(messageInner);
-                    messageBlock.append('<span style="margin-left: 1em; ">' + senderTxt + '</span>');
+                    // messageBlock.append('<span style="margin-left: 1em; ">' + senderTxt + '</span>');
                     roomEl.append(messageBlock);
 
                     // scroll to bottom
@@ -490,6 +478,7 @@
                     var roomId = args.roomId || manager.activeRoomId();
 
                     if(\$('#' + args.messageId).length > 0) return;             // already received message... skip!
+
 
                     if(roomId.startWith('@')) {              // this if should be fixed...
                         this.toast({
@@ -533,12 +522,10 @@
 					
                 	if (senderId == chatclient.sender) {
                 	 	messageBlock.attr('align', 'right');
-//	                	messageInner.html("<embed src='"+ mcontent + "' width='320' height='500' type='image/svg+xml' pluginspage='http://www.adobe.com/svg/viewer/install/' />");
-                        messageInner.html(mcontent);
+	                	messageInner.html("<embed src='"+ mcontent + "' type='image/svg+xml' pluginspage='http://www.adobe.com/svg/viewer/install/' />");
                 	} else {
                 	 messageBlock.attr('align', 'left');
-                        messageInner.html(mcontent);
-//	                	messageInner.html("<embed src='"+ mcontent + "' width='320' height='500' type='image/svg+xml' pluginspage='http://www.adobe.com/svg/viewer/install/' />");
+	                	messageInner.html("<embed src='"+ mcontent + "' type='image/svg+xml' pluginspage='http://www.adobe.com/svg/viewer/install/' />");
                 	}
                 	
                 	messageBlock.attr('id', args.messageId).attr('title', jsonToString(args));

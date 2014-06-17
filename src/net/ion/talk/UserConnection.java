@@ -55,9 +55,6 @@ public class UserConnection {
 
 	
 	
-	
-	
-	
 	void close(Reason reason) {
 		inner.close();
 	}
@@ -79,7 +76,7 @@ public class UserConnection {
 		return "UserConnection[" + id() + "/" + accessToken() + "]";
 	}
 
-	WebSocketConnection inner() {
+	public WebSocketConnection inner() {
 		return inner;
 	}
 

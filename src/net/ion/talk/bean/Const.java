@@ -23,7 +23,9 @@ public class Const {
         public static final String StateMessage = "stateMessage";
         
 		public static final String Pre = "pre";
+		public static final String Post = "post";
 		public static final String PreBots = "prebots";
+		public static final String PostBot = "postbot";
     }
 
     public static class Message {
@@ -60,6 +62,8 @@ public class Const {
         public static final String LastNotifyId = "lastNotifyId";
         public static final String CreatedAt = "createdAt";
         public static final String NotifyId = "notifyId";
+        public static final String SVGUrl = "svgUrl" ;
+        public static final String SenderId = "senderId" ;
     }
 
     public class Ref {

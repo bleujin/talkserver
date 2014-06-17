@@ -18,7 +18,9 @@ import net.ion.talk.account.AccountManager;
 import net.ion.talk.bean.Const;
 import net.ion.talk.fake.FakeEvent;
 import net.ion.talk.responsebuilder.TalkResponse;
+
 import org.infinispan.atomic.AtomicHashMap;
+import org.infinispan.atomic.AtomicMap;
 import org.infinispan.notifications.cachelistener.event.Event;
 
 import java.io.IOException;
@@ -69,7 +71,7 @@ public class TestNotifySendHandler extends TestCase {
 
             return new Account(userId, null) {
                 @Override
-                public void onMessage(String notifyId) {
+                public void onMessage(String notifyId, AtomicMap<PropertyId, PropertyValue> pmap) {
                     FakeAccountManager.this.notifyId = notifyId;
                 }
             };

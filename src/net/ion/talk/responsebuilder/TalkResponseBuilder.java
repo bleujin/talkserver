@@ -6,10 +6,6 @@ import net.ion.framework.util.ObjectUtil;
 import net.ion.talk.ToonServer;
 import net.ion.talk.util.CalUtil;
 
-/**
- * Author: Ryunhee Han
- * Date: 2014. 1. 14.
- */
 public class TalkResponseBuilder {
 
     private TalkResponseBuilder() {

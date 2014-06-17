@@ -29,11 +29,11 @@ public class TestMessageSVGLet extends TestCase {
 	
 	public void testGet() throws Exception {
 		
-		Aradon aradon = AradonTester.create().register("image", "/svg/{roomId}/{type}/{messageId}.svg", MessageSVGLet.class).getAradon() ;
+		Aradon aradon = AradonTester.create().register("svg", "/message/{roomId}/{type}/{messageId}.svg", OldSVGLet.class).getAradon() ;
 		aradon.getServiceContext().putAttribute("repository", this.r) ;
 		
 		AradonClient ac = AradonClientFactory.create(aradon) ;
-		Response response = ac.createRequest("/image/svg/roomroom/sender/12345.svg?charId=bat").handle(Method.GET) ;
+		Response response = ac.createRequest("/svg/message/roomroom/sender/12345.svg?charId=bat").handle(Method.GET) ;
 	
 		Debug.line(response.getEntityAsText()) ;
 	}

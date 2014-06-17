@@ -4,14 +4,20 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
+import org.infinispan.atomic.AtomicMap;
+
 import javapns.notification.PushedNotifications;
 import net.ion.craken.node.ReadSession;
+import net.ion.craken.tree.PropertyId;
+import net.ion.craken.tree.PropertyValue;
 import net.ion.framework.logging.LogBroker;
 import net.ion.framework.parse.gson.JsonObject;
+import net.ion.framework.util.StringUtil;
 import net.ion.message.push.sender.AppleMessage;
 import net.ion.message.push.sender.GoogleMessage;
 import net.ion.message.push.sender.Pusher;
 import net.ion.message.push.sender.handler.PushResponseHandler;
+import net.ion.talk.bean.Const;
 import net.ion.talk.responsebuilder.TalkResponse;
 
 import com.google.android.gcm.server.Result;
@@ -37,8 +43,14 @@ public class DisconnectedAccount extends Account {
     }
 
     @Override
-    public void onMessage(final String notifyId)  {
-    	String message = new JsonObject().put("notifyId", notifyId).toString() ;
+    public void onMessage(final String notifyId, AtomicMap<PropertyId, PropertyValue> pmap)  {
+    	String message = new JsonObject()
+    			.put("notifyId", notifyId)
+    			.put("result", new JsonObject().put(Const.Room.RoomId,   StringUtil.substringAfterLast(pmap.get(PropertyId.refer(Const.Room.RoomId)).asString(), "/"))
+    							.put(Const.Message.MessageId,  notifyId)
+       							.put(Const.Message.Sender,  pmap.get(PropertyId.normal(Const.Notify.SenderId)).asString())
+    							.put(Const.Notify.SVGUrl, pmap.get(PropertyId.normal(Const.Notify.SVGUrl)).asString()))
+    				.toString() ;
         Future<Boolean> result = pusher.sendTo(accountId()).sendAsync(message, new PushResponseHandler<Boolean>() {
 			@Override
 			public Boolean onAPNSSuccess(AppleMessage amsg, PushedNotifications results) {

@@ -20,11 +20,31 @@ new function(){
 			wsession.pathBy("/toons/character/pig") ;
 			wsession.pathBy("/toons/character/seal") ;
 			wsession.pathBy("/toons/character/sheep") ;
+			
+			
+			wsession.pathBy("/bots/toon").property("sender", "./resource/bot/toon/sender.tpl").property("receiver", "./resource/bot/toon/receiver.tpl") ;
 		}) ;
 	};
 
+
+	this.onPost = function(paramMap, messageNode){
+		importPackage(net.ion.emotion) ;
+		
+		var emotion = Empathyscope.feel(paramMap.get('message')).getStrongestEmotion() ;
+		var rectHeight = paramMap.get('rectHeight') ;
+		var CHARACTER_HEIGHT = 90 ;
+
+        var characterY = rectHeight - CHARACTER_HEIGHT + 40;
+        paramMap.put("emotion", emotion.etype().toString().toLowerCase()) ;
+        paramMap.put("charId", messageNode.ref('sender').property('character').defaultValue("bat")) ;
+        
+        paramMap.put("characterY", parseInt(characterY)) ;
+	
+	} ;
+
 	this.onMessage = function(bm){
-		if (! bm.isBlank('_owner')) return ;
+// 		if (! bm.isBlank('_owner')) return ;
+		if (true) return ; 
 		
 		var cmd = bm.asCommand() ;
 		var roomId = bm.fromRoomId() ;
@@ -65,5 +85,18 @@ new function(){
 	
 	this.onExit = function(bm){
 	};
+	
+	this.whenIN = function(roomId){
+		session.tran(function(wsession){
+			wsession.pathBy("/rooms/" + roomId).refTos("postbot", "/bots/toon") ;
+		}) ;
+	} ;
+
+	this.whenOUT = function(roomId){
+		session.tran(function(wsession){
+			wsession.pathBy("/rooms/" + roomId).unRefTos("postbot", "/bots/toon") ;
+		}) ;
+	} ;
+	
 	
 }

@@ -208,13 +208,22 @@ SOOTHE  - %s은 %s을(를) 보며 모든 일이 잘될거라고 달랩니다.  \
 	}, 
 	
 	this.whenIN = function(roomId){
-	}, 
+		session.tran(function(wsession) {
+			wsession.pathBy("/rooms/" + roomId).refTos('prebots', '/bots/wowe') ;
+		}) ; 
+	},
 	
-	this.onPre = function(tm){
-		var cmd = tm.asCommand() ;
+	this.whenOUT = function(roomId){
+		session.tran(function(wsession) {
+			wsession.pathBy("/rooms/" + roomId).unRefTos('prebots', '/bots/wowe') ;
+		}) ; 
+	},  
+	
+	this.onPre = function(scriptMsg){
+		var cmd = scriptMsg.asCommand() ;
 		if (actionMap[cmd.fnName()]) {
-			var message = java.lang.String.format(actionMap[cmd.fnName()], [tm.source().asString('nick'), cmd.remainAsString(0, '모두')]) ;
-			tm.resetParam("message", message) ;
+			var message = java.lang.String.format(actionMap[cmd.fnName()], [scriptMsg.source().asString('nick'), cmd.remainAsString(0, '모두')]) ;
+			scriptMsg.resetParam("message", message) ;
 		}
 	}
 	

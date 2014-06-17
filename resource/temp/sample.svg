@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" 
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:svg="http://www.w3.org/2000/svg"
+    xml:space="preserve"
+    id="opatopa-world-canvas"
+    width="300" height="200"
+    viewBox="0 0 120 90">
+    
+    <rect x="0%" y="0%" width="100%" height="100%" fill="none" stroke="black"/>
+    <svg xmlns="http://www.w3.org/2000/svg" 
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        xmlns:svg="http://www.w3.org/2000/svg"
+        xml:space="preserve"
+        x="0" y="0"
+        width="100%" height="100%">
+        
+        
+        <text x="5" y ="10" fill="navy" font-size="12">
+        정보: 2014-06-17	10:15:36	61.250.201.157	-	-	-1	GET	/toonweb/swfobject.js	-	200	-	0	2	-	Mozilla/5.0 (Windows NT 6.1; WOW64; rv:30.0) Gecko/20100101 Firefox/30.0	-
+2014. 6. 17 오전 10:15:36 org.restlet.engine.log.LogFilter afterHandle
+정보: 2014-06-17	10:15:36	61.250.201.157	-	-	-1	GET	/toonweb/jquery-1.9.1.min.js	-	200	-	0	1	-	Mozilla/5.0 (Windows NT 6.1; WOW64; rv:30.0) Gecko/20100101 Firefox/30.0	-
+2014. 6. 17 오전 10:15:36 org.restlet.engine.log.LogFilter afterHandle
+정보: 2014-06-17	10:15:36	61.250.201.157	-	-	-1	GET	/toonweb/web_socket.js	-	200	-	0	2	-	Mozilla/5.0 (Windows NT 6.1; WOW64; rv:30.0) Gecko/20100101 Firefox/30.0	-
+2014. 6. 17 오전 10:15:36 org.restlet.engine.log.LogFilter afterHandle
+정보: 2014-06-17	10:15:36	61.250.201.157	-	-	-1	GET	/toonweb/jquery.validate.min.js	-	200	-	0	2	-	Mozilla/5.0 (Windows NT 6.1; WOW64; rv:30.0) Gecko/20100101 Firefox/30.0	-
+2014. 6. 17 오전 10:15:36 org.restlet.engine.log.LogFilter afterHandle
+정보: 2014-06-17	10:15:36	61.250.201.157	-	-	-1	GET	/toonweb/jquery.form.min.js	-	200	-	0	2	-	Mozilla/5.0 (Windows NT 6.1; WOW64; rv:30.0) Gecko/20100101 Firefox/30.0	-
+2014. 6. 17 오전 10:15:36 org.restlet.engine.log.LogFilter afterHandle
+정보: 2014-06-17	10:15:36	61.250.201.157	-	-	-1	GET	/toonweb/js/toast/javascript/jquery.toastmessage.js	-	200	-	0	1	-	Mozilla/5.0 (Windows NT 6.1; WOW64; rv:30.0) Gecko/20100101 Firefox/30.0	-
+2014. 6. 17 오전 10:15:36 org.restlet.engine.log.LogFilter afterHandle
+정보: 2014-06-17	10:15:36	61.250.201.157	-	-	-1	GET	/toonweb/js/shake.js	-	200	-	0	6	-	Mozilla/5.0 (Windows NT 6.1; WOW64; rv:30.0) Gecko/20100101 Firefox/30.0	-
+2014. 6. 17 오전 10:15:38 org.restlet.engine.log.LogFilter afterHandle
+정보: 2014-06-17	10:15:38	61.250.201.157	-	-	-1	
+        </text>
+        
+    </svg>
+</svg>

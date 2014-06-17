@@ -32,6 +32,7 @@ import net.ion.framework.util.ObjectUtil;
 import net.ion.framework.util.StringUtil;
 import net.ion.radon.aclient.NewClient;
 import net.ion.talk.UserConnection;
+import net.ion.talk.bean.Const.Bot;
 import net.ion.talk.bean.Const.Message;
 import net.ion.talk.bean.Const.Status;
 import net.ion.talk.bot.connect.RestClient;
@@ -166,7 +167,7 @@ public class BotScript {
 			rsession.tran(new TransactionJob<Void>() {
 				@Override
 				public Void handle(WriteSession wsession) throws Exception {
-					wsession.pathBy("/bots/" + packName).refTo("user", "/users/" + packName);
+					wsession.pathBy("/bots/" + packName).property(Bot.BotId, packName).refTo("user", "/users/" + packName);
 					wsession.pathBy("/users/" + packName).property("userId", packName).property("nickname", packName + " bot").property("stateMessage", "normal").property("free", true);
 					wsession.pathBy("/rooms/@" + packName + "/members/" + packName).refTo("user", "/users/" + packName);
 					return null;

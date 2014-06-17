@@ -5,9 +5,11 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.apache.ecs.xhtml.a;
+import org.infinispan.atomic.AtomicMap;
 
 import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.ReadSession;
+import net.ion.craken.tree.PropertyId;
 import net.ion.craken.tree.PropertyValue;
 import net.ion.framework.logging.LogBroker;
 import net.ion.framework.util.MapUtil;
@@ -35,7 +37,7 @@ public class AccountManager {
 	
 	private Account NotRegisteredUser = new Account("notFound", Type.NOT_REGISTERED) {
 		@Override
-		public void onMessage(String notifyId) {
+		public void onMessage(String notifyId, AtomicMap<PropertyId, PropertyValue> pmap) {
 			log.warning("not registed user");
 		}
 	};
