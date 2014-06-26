@@ -11,7 +11,6 @@ import net.ion.radon.core.TreeContext;
 import net.ion.radon.core.annotation.*;
 import net.ion.radon.core.let.InnerRequest;
 import net.ion.talk.bean.Const;
-import net.ion.talk.bot.LineCalculator;
 import net.ion.talk.handler.template.DummyPath;
 import net.ion.talk.script.BotScript;
 import org.restlet.data.MediaType;
@@ -27,8 +26,6 @@ import java.util.Map;
 
 public class MessageSVGLet implements IServiceLet  {
 
-    private static final int CHARACTER_HEIGHT = 90;
-
 	@Get
 	public Representation viewSVG(@ContextParam("repository") RepositoryEntry rentry, @AnRequest InnerRequest request, @AnContext TreeContext context, 
 				@PathParam("roomId") String roomId, @PathParam("messageId") String messageId, @FormParam("type") @DefaultValue("sender") final String type, @FormParam("botId") String botId) throws IOException, ScriptException {
@@ -40,35 +37,25 @@ public class MessageSVGLet implements IServiceLet  {
 		
 		final Engine engine = rsession.workspace().parseEngine() ;
 
-		final int lineNum = LineCalculator.linesOf(message);
-        final int messageBodyHeight = lineNum * LineCalculator.PIXEL_PER_LINE;
-        final int rectHeight = Math.max(messageBodyHeight, 90) ;
-        final int fromWhoY = rectHeight + (LineCalculator.BUBBLE_PADDING * 2) + 10;
-		
 		Map<String, Object> map = MapUtil.chainKeyMap()
                 .put("node", messageNode)
                 .put("message", message)
-                .put("rectHeight", rectHeight)
-                .put("foreignObjectHeight", messageBodyHeight)
-                .put("fromWhoY", fromWhoY)
                 .toMap() ;
 
 		ReadNode roomNode = rsession.pathBy("/rooms/" + roomId);
+
 		if (roomNode.hasRef(Const.Bot.PostBot) && roomNode.refChildren(Const.Bot.PostBot).toList().size() > 0) {
-			
 			ReadNode postNode = roomNode.ref(Const.Bot.PostBot) ;
 			String typePath = postNode.property(type).asString() ;
 			String template = IOUtil.toStringWithClose(new FileInputStream(new File(typePath))) ;
-			
+
 			BotScript bs = context.getAttributeObject(BotScript.class.getCanonicalName(), BotScript.class) ;
-			bs.callFrom(botId, "onPost", map, messageNode) ;
-			
+			bs.callFrom(postNode.fqn().name(), "onPost", map, messageNode) ;
+
 			String rendered = engine.transform(template, map) ;
 			return new StringRepresentation(rendered, MediaType.IMAGE_SVG) ;
 		}
-		
 
-		
 		String template = "" ;
 		if ("sender".equals(type)){
 			template = IOUtil.toStringWithClose(DummyPath.class.getResourceAsStream("default_sender.tpl")) ;

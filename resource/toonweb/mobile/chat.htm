@@ -456,16 +456,18 @@
                     var style = '';
 
                     if (senderId == chatclient.sender) {
-                        messageBlock.attr('align', 'right');
-                        messageInner.html(args.svg || "<embed src='"+ args.svgUrl + "&type=sender' type='image/svg+xml' pluginspage='http://www.adobe.com/svg/viewer/install/' />") ;
+//                        messageBlock.attr('align', 'right');
+                        messageBlock.css('text-align', 'right');
+                        messageInner.html(args.svg || "<embed width='100%' src='"+ args.svgUrl + "&type=sender' type='image/svg+xml' pluginspage='http://www.adobe.com/svg/viewer/install/' />") ;
                         // messageInner.attr('class', 'bubble me').addClass(whisper).html('<span style="word-wrap: break-word;">' + message + '</span>');
                     } else {
-                        messageBlock.attr('align', 'left');
-                        messageInner.html(args.svg || "<embed src='"+ args.svgUrl + "&type=receiver' type='image/svg+xml' pluginspage='http://www.adobe.com/svg/viewer/install/' />") ;
+//                        messageBlock.attr('align', 'left');
+                        messageBlock.css('text-align', 'left');
+                        messageInner.html(args.svg || "<embed width='100%' src='"+ args.svgUrl + "&type=receiver' type='image/svg+xml' pluginspage='http://www.adobe.com/svg/viewer/install/' />") ;
                         //messageInner.attr('class', 'bubble other').addClass(whisper).html('<span style="word-wrap: break-word;">' + message + '</span>');
                     }
 
-                    messageBlock.attr('id', args.messageId).attr('title', jsonToString(args));
+                    messageBlock.attr('id', args.messageId).attr('title', jsonToString(args)).css('padding-bottom','10px');
                     messageBlock.append(messageInner);
                     // messageBlock.append('<span style="margin-left: 1em; ">' + senderTxt + '</span>');
                     roomEl.append(messageBlock);
@@ -577,7 +579,7 @@
 
                 navbar.navbar("destroy");
                 li.appendTo(\$("#roomList ul"));
-                \$('#chatRooms').append('<div style="margin-bottom: 20px;" id="'+roomId+ '"></div>');
+                \$('#chatRooms').append('<div style="overflow-x: hidden; margin-bottom: 20px;" id="'+roomId+ '"></div>');
                 navbar.navbar();
                 \$('#chatScreens').tabs('refresh');
                 \$('#menuTab').append('<li id="link-' + roomId + '"><a href="#" onclick="javascript:client.getRoomManager().select(\'' + roomId + '\');">' + roomId + '</a></li>');

@@ -160,6 +160,14 @@ new function(){
 		var recent100 = session.pathBy("/rooms/" + roomId + "/messages").children().descending('messageId').offset(100).toList() ;
 		java.util.Collections.reverse(recent100) ;
 		var unreadMsg = recent100.iterator();
+        var postBotInRoom = ''
+
+        var roomNode = session.pathBy("/rooms/" + roomId), postBotInRoom = '';
+
+        if(roomNode.hasRef(net.ion.talk.bean.Const.Bot.PostBot)) {
+            roomNode.ref(net.ion.talk.bean.Const.Bot.PostBot).fqn().name()
+        }
+
 		while(unreadMsg.hasNext()){
 			var next = unreadMsg.next() ; 
 			
@@ -170,9 +178,10 @@ new function(){
 			source.sendMessage(rb.makeCommandBuilder("/whisper/system")
 			  .inner("result")
 				// .property(next, "message, sender.userId as sender, sender.nickname as senderNickname, requestId, clientScript, options, messageId, time, listener, toon")
-				.property("svgUrl", "/svg/message/" + roomId + "/" + next.property("messageId").asString() + "?botId=")
+				.property("svgUrl", "/svg/message/" + roomId + "/" + next.property("messageId").asString() + "?botId=" + postBotInRoom)
 				.property("messageId", next.property("messageId").asString())
 				.property("roomId", roomId)
+                .property("sender", next.ref("sender").fqn().name())
 				.build().talkMessage()) ;			
 		}
 		
