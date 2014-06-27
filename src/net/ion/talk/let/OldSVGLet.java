@@ -19,7 +19,6 @@ import net.ion.radon.core.annotation.DefaultValue;
 import net.ion.radon.core.annotation.FormParam;
 import net.ion.radon.core.annotation.PathParam;
 import net.ion.radon.core.let.InnerRequest;
-import net.ion.talk.bot.LineCalculator;
 import net.ion.talk.bot.ToonBot;
 
 import org.apache.lucene.analysis.kr.utils.StringUtil;
@@ -43,12 +42,13 @@ public class OldSVGLet implements IServiceLet {
 
 		
 		
-		
+        /*  LineCalculator deleted. comment out following codes
+
         final int lineNum = LineCalculator.linesOf(message);
         final int messageBodyHeight = lineNum * LineCalculator.PIXEL_PER_LINE;
         final int rectHeight = Math.max(messageBodyHeight, 90) ;
         final int fromWhoY = rectHeight + (LineCalculator.BUBBLE_PADDING * 2) + 10;
-		
+
 		Map<String, Object> map = MapUtil.chainKeyMap()
                 .put("node", messageNode)
                 .put("message", message)
@@ -78,8 +78,11 @@ public class OldSVGLet implements IServiceLet {
 
         
         
-        
+
         String result = engine.transform(template, map) ;
 		return new StringRepresentation(result, MediaType.IMAGE_SVG) ;
+		*/
+        return null;
+
 	}
 }
