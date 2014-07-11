@@ -9,7 +9,9 @@ import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
 import net.ion.craken.node.crud.RepositoryImpl;
+import net.ion.framework.parse.gson.JsonElement;
 import net.ion.framework.parse.gson.JsonObject;
+import net.ion.framework.util.Debug;
 import net.ion.radon.aclient.ClientConfig;
 import net.ion.radon.aclient.NewClient;
 import net.ion.talk.bean.Const;
@@ -29,7 +31,7 @@ public class TestBotClient extends TestCase {
 
 		BotCompletionHandler<Void> handler = new BotCompletionHandler<Void>() {
 			@Override
-			public Void onCompleted(final JsonObject response) {
+			public Void onCompleted(final JsonElement response) {
 				session.tran(new TransactionJob<Void>() {
 					@Override
 					public Void handle(WriteSession wsession) throws Exception {
@@ -65,7 +67,36 @@ public class TestBotClient extends TestCase {
 		NewClient nc = NewClient.create() ;
 		RestClient.create(nc, session) ;
 	}
-	
+
+
+    public void testHuebot() throws IOException {
+        RepositoryImpl repo = RepositoryImpl.inmemoryCreateWithTest();
+        ReadSession session = repo.login("test");
+
+        NewClient nc = NewClient.create() ;
+        RestClient rc = RestClient.create(nc, session);
+
+        String url = "http://192.168.11.16/api/newdeveloper/lights/1/state";
+        String messageBody = new JsonObject().put("on", false).toString();
+
+        Debug.line(messageBody);
+
+        rc.putRequest(url).setBody(messageBody).put(new BotCompletionHandler<Object>() {
+            @Override
+            public Object onCompleted(JsonElement response) {
+                JsonObject jsonObject = response.getAsJsonArray().get(0).getAsJsonObject();
+
+                Debug.line(jsonObject.has("success"));
+                return null;
+            }
+
+            @Override
+            public Object onThrowable(Throwable t) {
+                return null;
+            }
+        });
+
+    }
 	
 	
 }

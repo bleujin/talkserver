@@ -3,6 +3,7 @@ package net.ion.talk.bot.connect;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
+import net.ion.framework.parse.gson.JsonElement;
 import org.restlet.data.Method;
 
 import net.ion.framework.parse.gson.JsonObject;
@@ -44,6 +45,11 @@ public class RestRequestBuilder {
 		return this ;
 	}
 
+    public RestRequestBuilder setBody(String body) {
+        reqBuilder.setBody(body);
+        return this;
+    }
+
 
 	public <T> T get(final BotCompletionHandler<T> handler) throws IOException {
 		return execute(reqBuilder.setMethod(Method.GET).build(), handler);		
@@ -67,8 +73,8 @@ public class RestRequestBuilder {
 			return nc.executeRequest(request, new AsyncCompletionHandler<T>() {
 				@Override
 				public T onCompleted(Response response) throws Exception {
-					JsonObject json = new JsonParser().parse(response.getTextBody()).getAsJsonObject();
-					return handler.onCompleted(json);
+                    JsonElement element = new JsonParser().parse(response.getTextBody());
+					return handler.onCompleted(element);
 				}
 			}).get();
 		} catch (InterruptedException e) {

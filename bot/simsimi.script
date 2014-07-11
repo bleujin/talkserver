@@ -13,10 +13,12 @@ new function() {
 		
 		var handler = new net.ion.talk.bot.connect.BotCompletionHandler() {
 			onCompleted: function(jsonResponse) {
+                var response = jsonResponse.getAsJsonObject();
+
 				session.tran(function(wsession) {
 					var roomId = bm.fromRoomId() ;
 					var selfBotId = bm.toUserId() ;
-					var resp = eval('(' + jsonResponse + ')');
+					var resp = eval('(' + response + ')');
 					var messageId=new net.ion.framework.util.ObjectId().toString();
 					
 					

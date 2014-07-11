@@ -75,8 +75,6 @@ var ChatBubble = function(config) {
     var bubbleWidth = Math.min(parseInt(screenWidth * 0.65), 400) - (toonBubble ? 80 : 0)
     var characterWidth = 60
 
-    console.log(windowSize().width)
-
     var matrix = function() {
         var coordinates = {}
 
@@ -192,6 +190,24 @@ var ChatBubble = function(config) {
         return this
     }
 
+    this.drawUploadBubble = function() {
+        var height = 70
+        var svg = SVG(svgId).size(screenWidth, height)
+
+        bubble = svg.group()
+
+        bubble.opacity(0)
+
+        var background = drawBubble(svg)
+        var indicator = svg.image('/toonweb/img/svg/loading-bubble.svg')
+
+        return this;
+    }
+
+    this.clearChildren = function() {
+        bubble.parent.clear();              // bubble.parent ==> SVG element
+    }
+
     this.from = function(_sender) {
         this.sender = _sender
         return this
@@ -213,6 +229,20 @@ var ChatBubble = function(config) {
     }
 
     // bubble effect
+    this.fadeOut = function(duration) {
+        if(!bubble) return;
+
+        var _duration = duration || 500;
+        bubble.animate(_duration, '>', 0).opacity(0);
+    }
+
+    this.fadeIn = function(duration) {
+        if(!bubble) return ;
+
+        var _duration = duration || 500;
+        bubble.animate(_duration, '<', 0).opacity(1);
+    }
+
     this.vibrate = function(duration) {
         if(bubble) {
             var originX = bubble.x(), originY = bubble.y();
