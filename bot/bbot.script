@@ -1018,6 +1018,7 @@ new function() {
 
         if(myJob) {
             // 진행 중인 Job이 있는 경우 sender의 메세지는 websocket으로 다시 돌려준다.
+            /*
             bm.source().sendMessage(
                 rb.makeCommandBuilder("/whisper/bbot/passthrough")
                     .inner("result")
@@ -1027,7 +1028,7 @@ new function() {
                     .property("options", "{event:'onWhisper'}")
                     .property("time", new Date().getTime().toString())
                     .property("messageId", new net.ion.framework.util.ObjectId().toString()).build().talkMessage()
-            ) ;
+            ) ; */
 
             if(message.fnName() == '취소') {
                 commands.response(bm, 'onMessage', '진행중인 작업이 취소되었습니다');
@@ -1071,7 +1072,7 @@ new function() {
 
         } else {
             // BBot 작업 진행중이 아니거나 다른 사용자가 입력한 값은 passthrough 한다
-            commands.passthrough(bm);
+            // commands.passthrough(bm);
         }
 
 	};

@@ -7,6 +7,7 @@ import java.io.PrintStream;
 import java.util.Date;
 
 import javax.mail.Address;
+import javax.mail.Flags.Flag;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
@@ -30,6 +31,7 @@ public interface MessageHandler<T> {
 			for (int i = 0; i < msgs.length; i++) {
 				pout.println("MESSAGE #" + (i + 1) + ":");
 				printEnvelope(msgs[i]);
+				msgs[i].setFlag(Flag.SEEN, true);  
 			}
 		}
 
@@ -46,7 +48,7 @@ public interface MessageHandler<T> {
 					pout.println("TO: " + a[j].toString());
 				}
 			}
-			
+			pout.println("messageId :"+ message.getHeader("Message-ID")[0]) ;
 			String subject = message.getSubject();
 			Date receivedDate = message.getReceivedDate();
 			String content = message.getContent().toString();

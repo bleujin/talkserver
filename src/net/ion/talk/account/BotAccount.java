@@ -2,12 +2,15 @@ package net.ion.talk.account;
 
 import org.infinispan.atomic.AtomicMap;
 
+import com.google.common.cache.Cache;
+
 import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.tree.PropertyId;
 import net.ion.craken.tree.PropertyValue;
 import net.ion.talk.TalkEngine;
 import net.ion.talk.UserConnection;
+import net.ion.talk.handler.engine.WhisperUserConnection;
 import net.ion.talk.responsebuilder.TalkResponse;
 import net.ion.talk.script.BotMessage;
 import net.ion.talk.script.BotScript;
@@ -32,7 +35,9 @@ public class BotAccount extends Account{
         String senderId = notiNode.ref("message").ref("sender").property("userId").asString() ;
         UserConnection sender = tengine.findConnection(senderId) ;
         
-		bs.callFromOnMessage(BotMessage.create(sender, accountId(), notiNode)) ;
+        WhisperUserConnection conn = new WhisperUserConnection(tengine.context().getAttributeObject(Cache.class.getCanonicalName(), Cache.class), sender);
+        
+		bs.callFromOnMessage(BotMessage.create(conn, accountId(), notiNode)) ;
 	}
 
 }

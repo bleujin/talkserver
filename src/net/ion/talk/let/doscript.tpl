@@ -43,5 +43,18 @@
 	    </div>
 	</div>
     </form>
+    <!--
+    session.tran(function(wsession){
+   wsession.pathBy("/rooms/33/messages/2222")
+   .refTo('sender', '/users/bleujin@i-on.net')
+   .property('message', 'HelloWorld')
+   .property('messageId', '2222')
+   .property('requestId', '1234')
+   .property('receivers', '')
+   .property('options', 'event:onMessage') 
+   .property('time', new Date().getTime()) 
+   .property('clientScript', 'client.room().message(args.message)') ;
+}) ;
+    -->
 </body>
 </html>

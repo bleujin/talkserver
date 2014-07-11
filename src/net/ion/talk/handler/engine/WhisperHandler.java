@@ -46,7 +46,7 @@ public class WhisperHandler implements TalkHandler {
 	public void onMessage(TalkEngine tengine, UserConnection uconn, ReadSession rsession, final TalkMessage tmsg) {
 		if (tmsg.messageType() != MType.WHISPER)
 			return;
-		final WhisperUserConnection wuconn = new WhisperUserConnection(tengine.context().getAttributeObject(Cache.class.getCanonicalName(), Cache.class), uconn, rsession.workspace().parseEngine());
+		final WhisperUserConnection wuconn = new WhisperUserConnection(tengine.context().getAttributeObject(Cache.class.getCanonicalName(), Cache.class), uconn);
 
 		final WhisperMessage whisper = WhisperMessage.create(wuconn, tmsg);
 		final String userId = whisper.toUserId();
@@ -79,32 +79,4 @@ public class WhisperHandler implements TalkHandler {
 
 }
 
-class WhisperUserConnection extends UserConnection {
 
-	private Engine engine;
-	private Cache<String, String> messageCache;
-
-	protected WhisperUserConnection(Cache<String, String> messageCache, UserConnection uconn, Engine engine) {
-		super(uconn.inner());
-		this.messageCache = messageCache;
-		this.engine = engine;
-	}
-
-	public void sendMessage(String message) {
-		JsonObject json = JsonObject.fromString(message);
-
-		String messageId = json.asJsonObject("result").asString("messageId");
-		messageCache.put(messageId, message);
-
-		if (json.asJsonObject("result").has("svgUrl"))
-			super.sendMessage(json.toString());
-		else {
-			json.asJsonObject("result").put("svgUrl", "/svg/command/" + messageId + "?botId=");
-			super.sendMessage(json.toString());
-		}
-		// json.asJsonObject("result").put("svg", "<svg width='100%' height='25' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'><text x='5' y ='10' fill='navy' font-size='12'>"
-		// + JsonUtil.findSimpleObject(json, "result/message") + "</text></svg>") ;
-		// super.sendMessage(json.toString());
-	}
-
-}

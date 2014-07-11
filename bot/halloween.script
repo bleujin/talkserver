@@ -1,0 +1,50 @@
+new function(){
+
+	var _myBotId = 'halloween' ;
+
+	this.onLoad = function(){
+
+	}, 
+
+	this.onMessage = function(bm){
+	}, 
+	
+	
+	this.onWhisper = function(source, whisperMsg){
+
+	}, 
+
+	this.sendMessage = function(event, bm, args){
+
+	}, 
+	
+	this.onEnter = function(bm){
+	}, 
+	
+	this.onExit = function(bm){
+	}, 
+	
+	this.whenIN = function(roomId){	
+
+	    var selfBotId= 'halloween' ;
+	    var time = new Date().getTime();
+		var messageId = new net.ion.framework.util.ObjectId().toString();
+
+
+		session.tran(function(wsession) {
+            var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + messageId)
+                .property("message", "http://y3x.ru/sandbox/halloween/halloween.svg")
+                .refTo("sender", "/users/"+_myBotId)
+                .property("roomId", roomId)
+                .property("options", "{event:'onMessage'}")
+                .property("clientScript", 'client.room().background(args)')
+                .property("time",time.toString())
+                .property("messageId", messageId);
+        }) ;
+	}, 
+	
+	this.whenOUT = function(roomId){
+
+	}
+	
+}

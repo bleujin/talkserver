@@ -56,6 +56,7 @@ public class Mailer {
 
 					/* Get the messages which is unread in the Inbox */
                     Message messages[] = inbox.search(new FlagTerm(new Flags(Flag.SEEN), false));
+//                    Message messages[] = inbox.getMessages() ;
 
 					/* Use a suitable FetchProfile */
                     FetchProfile fp = new FetchProfile();

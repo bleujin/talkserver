@@ -69,7 +69,7 @@ public class TalkEngine implements WebSocketHandler {
 		context.putAttribute(TalkEngine.class.getCanonicalName(), this);
 		this.heartBeat = new HeartBeat(worker) ;
 		
-		context.putAttribute(Cache.class.getCanonicalName(), CacheBuilder.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).build()) ;
+		context.putAttribute(Cache.class.getCanonicalName(), CacheBuilder.newBuilder().expireAfterWrite(300, TimeUnit.SECONDS).build()) ;
 	}
 	
 	

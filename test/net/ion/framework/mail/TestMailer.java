@@ -33,17 +33,17 @@ public class TestMailer extends TestCase {
     private String userPwd = StringUtil.defaultIfEmpty(System.getProperty("mail.password"), "bleujin7");
 
     public void xtestSendMail() throws Exception {
-        Mailer mailer = MailConfigBuilder.create().sendConfig().server("smtp.i-on.net").mailUserId("bleujin@i-on.net").mailUserPwd(userPwd).buildConfig().confirmValidOfSendMailConfig().createMailer();
+        Mailer mailer = MailConfigBuilder.create().sendConfig().server("smtp.i-on.net").mailUserId("bleujin@i-on.net").mailUserPwd("bleujin7").buildConfig().confirmValidOfSendMailConfig().createMailer();
 
         mailer.sendMail(new MessageCreater() {
             @Override
             public MimeMessage makeMessage(MimeMessage msg) throws MessagingException, UnsupportedEncodingException {
-                msg.addRecipient(Message.RecipientType.TO, new InternetAddress("bleujin@gmail.com"));
+                msg.addRecipient(Message.RecipientType.TO, new InternetAddress("bleujin@i-on.net"));
                 msg.setSubject(MimeUtility.encodeText("한글 제목!", "UTF-8", "B"));
                 msg.setContentLanguage(new String[]{"UTF-8"});
                 msg.setSentDate(new Date());
                 msg.setHeader("Content-Type", "text/html; charset=UTF-8");
-                msg.setText("<h1>한글 내용</h1>", "UTF-8");
+                msg.setText("<h1>한글 내용2</h1>", "UTF-8");
                 return msg;
             }
         }).get();
@@ -53,8 +53,13 @@ public class TestMailer extends TestCase {
         Mailer mailer = MailConfigBuilder.create().receiveConfig().server("smtp.i-on.net").mailUserId("bleujin@i-on.net").mailUserPwd(userPwd).protocol(Protocol.POP3).buildConfig().confirmValidOfReceiveMailConfig().createMailer();
 
         mailer.unreadMessage(MessageHandler.PRINTER);
+        mailer.unreadMessage(MessageHandler.PRINTER);
     }
 
+    public void testDate() throws Exception {
+		Debug.line(new Date(1403759916210L)) ;
+	}
+    
     public void xtestMessageWriteHandler() {
         Mailer mailer = MailConfigBuilder.create().receiveConfig().server("smtp.i-on.net").mailUserId("bleujin@i-on.net").mailUserPwd(userPwd).protocol(Protocol.POP3).buildConfig().confirmValidOfReceiveMailConfig().createMailer();
 

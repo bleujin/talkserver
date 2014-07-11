@@ -31,20 +31,14 @@ new function(){
 		importPackage(net.ion.emotion) ;
 		
 		var emotion = Empathyscope.feel(paramMap.get('message')).getStrongestEmotion() ;
-		var rectHeight = paramMap.get('rectHeight') ;
-		var CHARACTER_HEIGHT = 90 ;
 
-        var characterY = rectHeight - CHARACTER_HEIGHT + 40;
         paramMap.put("emotion", emotion.etype().toString().toLowerCase()) ;
         paramMap.put("charId", messageNode.ref('sender').property('character').defaultValue("bat")) ;
-        
-        paramMap.put("characterY", parseInt(characterY)) ;
-	
 	} ;
 
 	this.onMessage = function(bm){
 // 		if (! bm.isBlank('_owner')) return ;
-		if (true) return ; 
+		/*
 		
 		var cmd = bm.asCommand() ;
 		var roomId = bm.fromRoomId() ;
@@ -67,6 +61,7 @@ new function(){
                 .property("_owner", _myBotId) 
                 .property("messageId", messageId);
 		}) ;
+		*/
 	};
 	
 	

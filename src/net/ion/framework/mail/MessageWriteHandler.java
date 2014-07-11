@@ -9,6 +9,7 @@ import java.io.Writer;
 import java.util.Date;
 
 import javax.mail.Address;
+import javax.mail.Flags;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
