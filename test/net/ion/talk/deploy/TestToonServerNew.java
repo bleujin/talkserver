@@ -31,7 +31,7 @@ public class TestToonServerNew extends TestCase {
 		String filePath = "./resource/craken";
 		FileUtil.deleteDirectory(new File(filePath));
 		
-//		RepositoryEntry rentry = RepositoryEntry.testSoloFile(filePath) ;
+	//	RepositoryEntry rentry = RepositoryEntry.testSoloFile(filePath) ;
 		RepositoryEntry rentry = RepositoryEntry.test() ;
 		ScheduledExecutorService worker = Executors.newScheduledThreadPool(10) ;
 

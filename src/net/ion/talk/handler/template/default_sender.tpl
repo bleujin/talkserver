@@ -1,30 +1,15 @@
-<svg width="240" height="70" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" onload="init()">
-
-<script>
-<![CDATA[
-var xmlns="http://www.w3.org/2000/svg"
-
-function init(){
-    var dialogbox = document.getElementById("msg_${node.property(messageId).asString()}") ;
-    dialogbox.setAttribute("height", "40") ;
-}
-
-]]>
-</script>
-
-   <rect x="0" y="5" rx="10" ry="10" width="230" height="${rectHeight}" style="fill:aquamarine;stroke:black;stroke-width:2;opacity:0.1" id="msg_${node.property(messageId).asString()}"/>
-
-   <foreignObject x="10" y="15" width="230" height="${foreignObjectHeight}" id="msgtext">
-    <body xmlns="http://www.w3.org/1999/xhtml" style="text-align: left;">
-        <span style="word-wrap: break-word; font-size:12px">${message}</span>
-  	</body>
-  </foreignObject>
-  <use id="use" xlink:href="#msgtext" />
-
-  <text x="10" y="65" fill="navy" font-size="11">
-      ${node.property(time).asDateFmt(HH:mm:ss)} from ${node.ref(sender).property(nickname).asString()}
-  </text>
-
-
-  Sorry, your browser does not support inline SVG.
+<svg version="1.1" id="svg_${node.property(messageId).asString()}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" xml:space="preserve" height="70">
+    <g id="bubble_${node.property(messageId).asString()}" opacity="1" height="70">
+        <rect id="rect_${node.property(messageId).asString()}" width="250" height="55" x="0" rx="10" ry="10" style="fill: rgb(127, 255, 212); stroke: rgb(0, 0, 0); stroke-width: 2px; opacity: 0.1;"/>
+        <foreignObject id="body_${node.property(messageId).asString()}" width="250" height="70" x="0" y="10">
+            <body xmlns="http://www.w3.org/1999/xhtml">
+                <div id="msg_${node.property(messageId).asString()}" style="width: 230px; font-size:12px; white-space: pre-wrap; white-space: -moz-pre-wrap; white-space: -pre-wrap; white-space: -o-pre-wrap; word-wrap: break-word;">
+                ${message}
+                </div>
+            </body>
+        </foreignObject>
+        <text>
+            <tspan id="sender_${node.property(messageId).asString()}" dy="13" x="0" style="font-size: 10px">${node.property(time).asDateFmt(HH:mm:ss)} from ${node.ref(sender).property(nickname).asString()}</tspan>
+        </text>
+    </g>
 </svg>

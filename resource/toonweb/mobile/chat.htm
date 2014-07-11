@@ -15,9 +15,13 @@
     <script type="text/javascript" src="/toonweb/jquery.validate.min.js"></script>
     <script type="text/javascript" src="/toonweb/jquery.form.min.js"></script>
     <script type="text/javascript" src="/toonweb/js/toast/javascript/jquery.toastmessage.js"></script>
+    <script type="text/javascript" src="/toonweb/js/upload/jquery.ui.widget.js"></script>
+    <script type="text/javascript" src="/toonweb/js/upload/jquery.iframe-transport.js"></script>
+    <script type="text/javascript" src="/toonweb/js/upload/jquery.fileupload.js"></script>
     <script type="text/javascript" src="/toonweb/js/shake.js"></script>
 
     <script src=http://maps.googleapis.com/maps/api/js?sensor=true></script>
+
     <style type="text/css">
         .bubble {
             position: relative;
@@ -170,6 +174,7 @@
             </div>
             <div id="chatRooms" style="overflow: auto;">
                 <div id="Home" class="ui-body-d ui-content" style="height: 100%;">
+
                 </div>
             </div>
         </div>
@@ -183,6 +188,9 @@
     </div>
 
     <div data-role="footer" data-position="fixed" style="vertical-align: middle;" data-tap-toggle="false">
+        <div style="margin-left: 15px; margin-right: 15px; float: left;">
+            <a href="#uploadPanel" data-rel="popup" data-transition="slideup" class="ui-btn ui-icon-plus ui-btn-icon-notext ui-corner-all">No text</a>
+        </div>
         <div style="margin-left: 15px; margin-right: 15px; float: left; width: 70%; min-width:70%;">
             <input data-clear-btn="true" name="message" id="message" value="" type="text">
         </div>
@@ -190,7 +198,49 @@
             <button onclick="javascript:client.chat();" class="ui-btn ui-btn-inline" onkeyup="blockMove;">Send</button>
             <!--button onclick="javascript:client.getRoomManager().clear(client.getRoomManager().activeRoomId());" class="ui-btn ui-btn-inline">Clear</button-->
         </div>
+    </div>
 
+
+    <style>
+        .table {
+            display:table;
+            width:100%;
+            height:100%;
+        }
+        .row {
+            display:table-row;
+            height:100%;
+        }
+        .cell {
+            display:table-cell;
+            width:33%;
+            height:100%;
+        }
+        .cell > img {
+            width:100%;
+            height:auto;
+        }
+    </style>
+    <div id="uploadPanel" data-role="popup" style="width: 250px; height: 250px; background: #c1e2b3;">
+        <div class="table">
+            <div class="row">
+                <div class="cell">
+                    <div style="text-align: center;">
+                        <label for="fileupload">
+                            <img src="/toonweb/img/icon/photo.png"/>
+                            <span style="font-size: 11;">Photo</span>
+                        </label>
+                        <input id="fileupload" style="display: none;" type="file" onchange="client.onStartUpload(this);"/>
+                    </div>
+                </div>
+                <div class="cell">
+
+                </div>
+                <div class="cell">
+
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -305,6 +355,8 @@
         this.sender = sender;
         this.nickname = senderNickName;
         var chatclient = this;
+
+        var bubblesOnUpload = {};
 
         var connManager = new function() {
             var ws;
@@ -456,18 +508,15 @@
                     var style = '';
 
                     if (senderId == chatclient.sender) {
-                        messageBlock.attr('align', 'right');
-                        messageInner.html(args.svg || "<embed src='"+ args.svgUrl + "&type=sender' type='image/svg+xml' pluginspage='http://www.adobe.com/svg/viewer/install/' />") ;
-                        // messageInner.attr('class', 'bubble me').addClass(whisper).html('<span style="word-wrap: break-word;">' + message + '</span>');
+                        messageBlock.css('text-align', 'right');
+                        messageInner.html(args.svg || "<embed width='100%' src='"+ args.svgUrl + "&type=sender' type='image/svg+xml' pluginspage='http://www.adobe.com/svg/viewer/install/' />") ;
                     } else {
-                        messageBlock.attr('align', 'left');
-                        messageInner.html(args.svg || "<embed src='"+ args.svgUrl + "&type=receiver' type='image/svg+xml' pluginspage='http://www.adobe.com/svg/viewer/install/' />") ;
-                        //messageInner.attr('class', 'bubble other').addClass(whisper).html('<span style="word-wrap: break-word;">' + message + '</span>');
+                        messageBlock.css('text-align', 'left');
+                        messageInner.html(args.svg || "<embed width='100%' src='"+ args.svgUrl + "&type=receiver' type='image/svg+xml' pluginspage='http://www.adobe.com/svg/viewer/install/' />") ;
                     }
 
-                    messageBlock.attr('id', args.messageId).attr('title', jsonToString(args));
+                    messageBlock.attr('id', args.messageId).attr('title', jsonToString(args)).css('padding-bottom','10px');
                     messageBlock.append(messageInner);
-                    // messageBlock.append('<span style="margin-left: 1em; ">' + senderTxt + '</span>');
                     roomEl.append(messageBlock);
 
                     // scroll to bottom
@@ -577,7 +626,7 @@
 
                 navbar.navbar("destroy");
                 li.appendTo(\$("#roomList ul"));
-                \$('#chatRooms').append('<div style="margin-bottom: 20px;" id="'+roomId+ '"></div>');
+                \$('#chatRooms').append('<div style="overflow-x: hidden; margin-bottom: 20px;" id="'+roomId+ '"></div>');
                 navbar.navbar();
                 \$('#chatScreens').tabs('refresh');
                 \$('#menuTab').append('<li id="link-' + roomId + '"><a href="#" onclick="javascript:client.getRoomManager().select(\'' + roomId + '\');">' + roomId + '</a></li>');
@@ -778,6 +827,30 @@
 
         this.connectionManager = function() {
             return connManager;
+        };
+
+        this.onStartUpload = function(input) {
+            var messageId = '', message = '', receivedTime = '';
+            var chatBubble = MyMessage.create(messageId, message).drawUploadBubble();
+            bubblesOnUpload[messageId] = chatBubble;
+
+            \$('#fileupload').fileupload({
+                dataType: 'json',
+                done: function() {
+                    chatclient.onFinishUpload(messageId);
+                }
+            });
+        };
+
+        this.onFinishUpload = function(messageId) {
+            var onUploadBubble = bubblesOnUpload[messageId],
+                duration = 500;
+
+            if(onUploadBubble) {
+                onUploadBubble.fadeOut(duration);
+                onUploadBubble.clearChildren();
+                onUploadBubble.fadeIn(duration);
+            }
         };
     };
 
