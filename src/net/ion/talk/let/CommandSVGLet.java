@@ -31,7 +31,7 @@ public class CommandSVGLet implements IServiceLet {
 		Cache<String, String> messageCache = context.getAttributeObject(Cache.class.getCanonicalName(), Cache.class) ;
 		
 		if ("0".equals(messageId)){
-			return new StringRepresentation("<svg width='200' height='20' xmlns='http://www.w3.org/2000/svg'><text x='5' y ='10' fill='navy' font-size='11'>" + message + "</text></svg>", MediaType.IMAGE_SVG) ;
+			return new StringRepresentation("<svg id='svg_0' width='200' height='20' xmlns='http://www.w3.org/2000/svg'><text id='msg_0' x='5' y ='10' fill='navy' font-size='11'>" + message + "</text></svg>", MediaType.IMAGE_SVG) ;
 		}
 		
 		String msgBody = messageCache.get(messageId, new Callable<String>() {

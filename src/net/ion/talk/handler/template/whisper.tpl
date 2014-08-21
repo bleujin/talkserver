@@ -48,7 +48,7 @@
 
     <foreignObject x="65" y="15" width="220" height="40" id="msgtext">
         <body xmlns="http://www.w3.org/1999/xhtml" style="text-align: left;">
-            <span style="word-wrap: break-word; font-size:12px">${message}</span>
+            <div id="msg_${node.property(messageId).asString()}" style="font-size:12px; white-space: pre-wrap; white-space: -moz-pre-wrap; white-space: -pre-wrap; white-space: -o-pre-wrap; word-wrap: break-word;">${message}</div>
         </body>
     </foreignObject>
     <use id="use" xlink:href="#msgtext" />
