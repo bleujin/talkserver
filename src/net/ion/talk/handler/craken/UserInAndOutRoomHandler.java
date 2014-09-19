@@ -1,7 +1,6 @@
 package net.ion.talk.handler.craken;
 
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.Map;
 
 import net.ion.craken.listener.CDDHandler;
@@ -59,7 +58,7 @@ public class UserInAndOutRoomHandler implements CDDHandler {
                 String messageId = new ObjectId().toString();
                 wsession.pathBy("/rooms/" + roomId + "/messages/")
                         .child(messageId)
-                    //    .property(Message.ExclusiveSender, true) 
+                    //    .property(Message.ExclusiveSender, true)  // -_-??
                         .property(Message.Options, "{event:'onEnter'}")
                         .property(Room.RoomId, roomId)
                         .property(Message.Time, Calendar.getInstance().getTimeInMillis())

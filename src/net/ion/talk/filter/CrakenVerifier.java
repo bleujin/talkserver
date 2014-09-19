@@ -1,14 +1,15 @@
 package net.ion.talk.filter;
 
+import java.util.concurrent.Executor;
+
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
+import net.ion.nradon.HttpRequest;
+import net.ion.nradon.handler.authentication.PasswordAuthenticator;
 
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.security.Verifier;
 
-public class CrakenVerifier implements Verifier {
+public class CrakenVerifier implements PasswordAuthenticator {
 
 	private ReadSession session;
 
@@ -18,22 +19,6 @@ public class CrakenVerifier implements Verifier {
 
 	public static CrakenVerifier test(ReadSession session) throws Exception {
 		return new CrakenVerifier(session).addUser("emanon", "emanon");
-	}
-
-	@Override
-	public int verify(Request request, Response response) {
-
-		if (request.getChallengeResponse() == null) {
-			return Verifier.RESULT_MISSING;
-		}
-		String id = request.getChallengeResponse().getIdentifier();
-		String pushId = String.valueOf(request.getChallengeResponse().getSecret());
-		if (!session.exists("/users/" + id))
-			return Verifier.RESULT_INVALID;
-		if (!session.pathBy("/users/" + id).property("pushId").stringValue().equals(pushId))
-			return Verifier.RESULT_INVALID;
-
-		return Verifier.RESULT_VALID;
 	}
 
 	// Only Use Test
@@ -48,4 +33,12 @@ public class CrakenVerifier implements Verifier {
 		return this;
 	}
 
+	public void authenticate(HttpRequest request, String username, String password, ResultCallback callback, Executor handlerExecutor) {
+		String expectedPassword = session.pathBy("/users/" + username).property("pushId").stringValue();
+		if (expectedPassword != null && password.equals(expectedPassword)) {
+			callback.success();
+		} else {
+			callback.failure();
+		}
+	}
 }

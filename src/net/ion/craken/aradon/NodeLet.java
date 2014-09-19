@@ -4,10 +4,16 @@ import java.io.IOException;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.aradon.render.Renderer;
 import net.ion.craken.node.ReadSession;
-import net.ion.craken.node.Repository;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteNode;
 import net.ion.craken.node.WriteSession;
@@ -16,53 +22,45 @@ import net.ion.framework.parse.gson.JsonElement;
 import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.parse.gson.JsonParser;
 import net.ion.framework.util.StringUtil;
-import net.ion.nradon.let.IServiceLet;
-import net.ion.radon.core.annotation.AnRequest;
-import net.ion.radon.core.annotation.ContextParam;
-import net.ion.radon.core.annotation.FormParam;
-import net.ion.radon.core.annotation.PathParam;
+import net.ion.radon.core.ContextParam;
 
-import org.apache.commons.lang.StringUtils;
-import org.restlet.Request;
-import org.restlet.representation.Representation;
-import org.restlet.resource.Delete;
-import org.restlet.resource.Get;
-import org.restlet.resource.Post;
+@Path("/node/repository/{renderType}")
+public class NodeLet {
 
-public class NodeLet implements IServiceLet {
-
-	@Get
-	public Representation pathBy(@ContextParam("repository") RepositoryEntry repository, @PathParam("renderType") String renderType, @AnRequest Request req) throws IOException {
-		ReadSession session = repository.login();
-		String uri = getRequestURIOnly(req);
-		return Renderer.create(session).from(uri, renderType).render();
+	
+	private ReadSession session;
+	public NodeLet(@ContextParam("repository") RepositoryEntry repository) throws IOException{
+		this.session = repository.login() ;
+	}
+	
+	@GET
+	@Path("/{remain : .*}")
+	public Object pathBy(@PathParam("renderType") String renderType, @PathParam("remain") String remainPath) throws IOException {
+		return Renderer.create(session).from("/" + remainPath, renderType).render();
 	}
 
-	@Post
-	public String upsert(@ContextParam("repository") RepositoryEntry repository, @FormParam("body") String body, @AnRequest Request req) throws Exception {
-		String uri = getRequestURIOnly(req);
-
-		ReadSession session = repository.login();
-		upsertNode(session, uri, body);
+	@POST
+	@Path("/{remain : .*}")
+	public String upsert(@FormParam("body") String body, @PathParam("remain") String remainPath) throws Exception {
+		upsertNode(session, remainPath, body);
 
 		return "success";
 	}
 
-	@Delete
-	public String delete(@ContextParam("repository") RepositoryEntry repository,  @AnRequest Request req) throws Exception {
+	@DELETE
+	@Path("/{remain : .*}")
+	public String delete(@PathParam("remain") String remainPath) throws Exception {
 
-		final String nodePath = getNodePathFrom(req);
-
-		ReadSession session = repository.login();
+		final String nodePath = remainPath;
 		deleteNode(session, nodePath);
 
 		return "success";
 	}
 
-	void upsertNode(ReadSession session, String uri, String body) throws Exception {
-		final String nodePath = getNodePathFrom(uri);
+	void upsertNode(ReadSession session, final String nodePath, String body) throws Exception {
+//		final String nodePath = getNodePathFrom(uri);
 		final JsonObject json = JsonParser.fromString(body).getAsJsonObject();
-		final String paramToUpdate = StringUtil.substringAfterLast(uri, ".");
+		final String paramToUpdate = StringUtil.substringAfterLast(nodePath, ".");
 
 		session.tranSync(new TransactionJob<Void>() {
 			@Override
@@ -133,16 +131,16 @@ public class NodeLet implements IServiceLet {
 		});
 	}
 
-	private String getNodePathFrom(Request req) {
-		String requestURI = getRequestURIOnly(req);
-		return getNodePathFrom(requestURI);
-	}
+//	private String getNodePathFrom(Request req) {
+//		String requestURI = getRequestURIOnly(req);
+//		return getNodePathFrom(requestURI);
+//	}
 
 	private String getNodePathFrom(String requestURI) {
 		return StringUtil.substringBeforeLast(requestURI, ".");
 	}
 
-	private String getRequestURIOnly(Request req) {
-		return StringUtils.substringBeforeLast(req.getResourceRef().getRemainingPart(), "?");
-	}
+//	private String getRequestURIOnly(Request req) {
+//		return StringUtils.substringBeforeLast(req.getResourceRef().getRemainingPart(), "?");
+//	}
 }

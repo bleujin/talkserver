@@ -1,16 +1,14 @@
 package net.ion.craken.aradon.render;
 
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import net.ion.craken.aradon.TestCrakenBase;
-import net.ion.craken.aradon.render.Renderer;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
 import net.ion.framework.parse.gson.JsonArray;
 import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.util.Debug;
-import net.ion.radon.core.representation.JsonObjectRepresentation;
-
-import org.restlet.data.MediaType;
-import org.restlet.representation.StringRepresentation;
 
 public class TestRenderer extends TestCrakenBase {
 
@@ -31,8 +29,7 @@ public class TestRenderer extends TestCrakenBase {
 	}
 
 	public void testFirst() {
-		JsonObjectRepresentation rep = (JsonObjectRepresentation) renderer.from("/airkjh", "json").render();
-		JsonObject json = rep.getJsonObject();
+		JsonObject json = (JsonObject) renderer.from("/airkjh", "json").render();
 
 		assertEquals("airkjh", json.get("name").getAsString());
 	}
@@ -47,8 +44,7 @@ public class TestRenderer extends TestCrakenBase {
 	}
 
 	public void testAllProps() {
-		JsonObjectRepresentation rep = (JsonObjectRepresentation) renderer.from("/airkjh", "json").render();
-		JsonObject json = rep.getJsonObject();
+		JsonObject json = (JsonObject) renderer.from("/airkjh", "json").render();
 
 		assertEquals("airkjh", json.get("name").getAsString());
 		assertEquals(100, json.get("int").getAsInt());
@@ -56,8 +52,7 @@ public class TestRenderer extends TestCrakenBase {
 	}
 
 	public void testSingleProp() {
-		JsonObjectRepresentation rep = (JsonObjectRepresentation) renderer.from("/airkjh.name", "json").render();
-		JsonObject json = rep.getJsonObject();
+		JsonObject json = (JsonObject) renderer.from("/airkjh.name", "json").render();
 
 		assertEquals("airkjh", json.get("name").getAsString());
 		assertEquals(null, json.get("int"));
@@ -65,69 +60,23 @@ public class TestRenderer extends TestCrakenBase {
 	}
 
 	public void testMultiProp() {
-		JsonObjectRepresentation rep = (JsonObjectRepresentation) renderer.from("/airkjh.name,boolean", "json").render();
-		JsonObject json = rep.getJsonObject();
+		JsonObject json = (JsonObject) renderer.from("/airkjh.name,boolean", "json").render();
 
 		assertEquals("airkjh", json.get("name").getAsString());
 		assertEquals(null, json.get("int"));
 		assertEquals(false, json.get("boolean").getAsBoolean());
 	}
 
-	public void testAllPropsToHtml() {
-		StringRepresentation rep = (StringRepresentation) renderer.from("/airkjh", "html").template("test-all-prop.tpl").render();
-
-		assertEquals(MediaType.TEXT_HTML, rep.getMediaType());
-		Debug.line(rep.getText());
-	}
-
-	public void testOnePropToHtml() {
-		StringRepresentation rep = (StringRepresentation) renderer.from("/airkjh.name", "html").template("test-single-prop.tpl").render();
-
-		assertEquals(MediaType.TEXT_HTML, rep.getMediaType());
-		assertEquals("<body>name:airkjh</body>", rep.getText());
-	}
-
-	public void testNoPropsNoTemplateSpecified() {
-		StringRepresentation rep = (StringRepresentation) renderer.from("/airkjh", "html").render();
-
-		assertTrue(rep.getText().startsWith("<!--explorer.tpl-->"));
-	}
-
-	public void testPropsNoTemplate() {
-		StringRepresentation rep = (StringRepresentation) renderer.from("/airkjh.name", "html").render();
-
-		assertTrue(rep.getText().startsWith("<!--edit_value.tpl-->"));
-	}
-
-	public void testChildren() throws Exception {
-		addNode("/airkjh/child1", "/airkjh/child2");
-
-		JsonObjectRepresentation representation = (JsonObjectRepresentation) renderer.from("/airkjh/", "json").render();
-		JsonArray array = representation.getJsonArray();
-
-		assertEquals(2, array.size());
-	}
-
-	public void testChildrenHtml() throws Exception {
-		addNode("/airkjh/child1", "/airkjh/child2");
-
-		StringRepresentation rep = (StringRepresentation) renderer.from("/airkjh/", "html").render();
-
-		assertTrue(rep.getText().startsWith("<!--children.tpl-->"));
-	}
-
 	public void testNotExistNode() {
-		JsonObjectRepresentation rep = (JsonObjectRepresentation) renderer.from("airkjh2", "json").render();
-		JsonObject json = rep.getJsonObject();
-
+		JsonObject json = (JsonObject) renderer.from("airkjh2", "json").render();
+		
 		assertEquals("{}", json.toString());
 	}
 
 	public void testNotExistProperty_json() throws Exception {
 		// when property doesn't exist is request in html, the property is
 		// rendered to null
-		JsonObjectRepresentation rep = (JsonObjectRepresentation) renderer.from("/airkjh.age", "json").render();
-		JsonObject actual = rep.getJsonObject();
+		JsonObject actual = (JsonObject) renderer.from("/airkjh.age", "json").render();
 
 		JsonObject expected = new JsonObject();
 		expected.put("age", null);
@@ -135,12 +84,49 @@ public class TestRenderer extends TestCrakenBase {
 		assertEquals(expected.toString(), actual.toString());
 	}
 
+	public void testAllPropsToHtml() {
+		Response rep = (Response) renderer.from("/airkjh", "html").template("test-all-prop.tpl").render();
+		Debug.line(rep.getEntity());
+	}
+
+	public void testOnePropToHtml() {
+		Response rep = (Response) renderer.from("/airkjh.name", "html").template("test-single-prop.tpl").render();
+		assertEquals("<body>name:airkjh</body>", rep.getEntity());
+	}
+
+	public void testNoPropsNoTemplateSpecified() {
+		Response rep = (Response) renderer.from("/airkjh", "html").render();
+
+		assertTrue(rep.getEntity().toString().startsWith("<!--explorer.tpl-->"));
+	}
+
+	public void testPropsNoTemplate() {
+		Response rep = (Response) renderer.from("/airkjh.name", "html").render();
+
+		assertTrue(rep.getEntity().toString().startsWith("<!--edit_value.tpl-->"));
+	}
+
+	public void testChildren() throws Exception {
+		addNode("/airkjh/child1", "/airkjh/child2");
+
+		JsonArray array = (JsonArray) renderer.from("/airkjh/", "json").render();
+		assertEquals(2, array.size());
+	}
+
+	public void testChildrenHtml() throws Exception {
+		addNode("/airkjh/child1", "/airkjh/child2");
+
+		Response rep = (Response) renderer.from("/airkjh/", "html").render();
+
+		assertTrue(rep.getEntity().toString().startsWith("<!--children.tpl-->"));
+	}
+
 	public void testNotExistProperty_html() {
 		// when property doesn't exist is request in html, the property is
 		// rendered to blank
-		StringRepresentation rep = (StringRepresentation) renderer.from("/airkjh.age", "html").template("test-single-prop.tpl").render();
+		Response rep = (Response) renderer.from("/airkjh.age", "html").template("test-single-prop.tpl").render();
 
-		assertEquals("<body>name:</body>", rep.getText());
+		assertEquals("<body>name:</body>", rep.getEntity());
 	}
 
 	private void addNode(final String... paths) throws Exception {

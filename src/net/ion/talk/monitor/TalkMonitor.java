@@ -1,6 +1,5 @@
 package net.ion.talk.monitor;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -17,13 +16,12 @@ import net.ion.craken.node.crud.TreeNodeKey;
 import net.ion.craken.tree.PropertyId;
 import net.ion.craken.tree.PropertyValue;
 import net.ion.framework.parse.gson.JsonObject;
-import net.ion.framework.util.ListUtil;
 import net.ion.framework.util.StringUtil;
-import net.ion.nradon.AbstractEventSourceResource;
 import net.ion.nradon.EventSourceConnection;
+import net.ion.nradon.EventSourceHandler;
 import net.ion.nradon.EventSourceMessage;
 
-public class TalkMonitor extends AbstractEventSourceResource{
+public class TalkMonitor implements EventSourceHandler{
 
 	private CopyOnWriteArrayList<Element> elements = new CopyOnWriteArrayList<Element>() ;
 	private Workspace workspace; 

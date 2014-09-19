@@ -1,15 +1,13 @@
 package net.ion.talk.bot;
 
 import java.io.IOException;
-import java.util.Map;
-
-import org.antlr.stringtemplate.StringTemplate;
 
 import net.ion.craken.node.ReadSession;
 import net.ion.emotion.EmotionalState;
 import net.ion.emotion.Empathyscope;
 import net.ion.framework.util.IOUtil;
-import net.ion.framework.util.MapUtil;
+
+import org.antlr.stringtemplate.StringTemplate;
 
 public class ToonBot {
 

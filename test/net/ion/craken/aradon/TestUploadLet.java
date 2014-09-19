@@ -1,50 +1,53 @@
 package net.ion.craken.aradon;
 
 import java.io.File;
-import java.io.IOException;
 
-import net.ion.radon.client.AradonClient;
-import net.ion.radon.client.AradonClientFactory;
-import net.ion.radon.client.HttpMultipartEntity;
-import net.ion.radon.core.EnumClass;
-import net.ion.radon.util.AradonTester;
+import junit.framework.TestCase;
+import net.ion.craken.aradon.bean.RepositoryEntry;
+import net.ion.craken.node.ReadSession;
+import net.ion.nradon.Radon;
+import net.ion.nradon.config.RadonConfiguration;
+import net.ion.radon.aclient.NewClient;
+import net.ion.radon.aclient.Response;
+import net.ion.radon.aclient.StringPart;
+import net.ion.radon.aclient.multipart.FilePart;
+import net.ion.radon.core.let.PathHandler;
 
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.data.Method;
+public class TestUploadLet extends TestCase {
 
-public class TestUploadLet extends TestCrakenBase {
-
-    private AradonTester tester;
+	private Radon radon;
+	private NewClient nc;
+	private RepositoryEntry rentry;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        tester = AradonTester.create().putAttribute("repository", r).register("", "/upload", EnumClass.IMatchMode.EQUALS, UploadLet.class);
-    }
-
-    public void testFirst() throws IOException {
-        Request request = new Request(Method.POST, "riap://component/upload");
-
-        String nodePath = "/node1/node2/node";
-        File uploadFile = new File("./resource/template/js/jsoneditor-icons.png");
-
-        HttpMultipartEntity entity = new HttpMultipartEntity();
-
-        entity.addParameter("workspace", "test");
-        entity.addParameter("path", nodePath);
-        entity.addParameter("uploadFile", uploadFile);
-
-        request.setEntity(entity.makeRepresentation());
-        tester.getAradon().handle(request);
-
-        assertTrue(session.exists(nodePath));
-        assertNotNull(session.pathBy(nodePath).property("blob"));
+        this.radon = RadonConfiguration.newBuilder(9999).add(new PathHandler(UploadLet.class).prefixURI("/upload")).startRadon() ;
+        this.rentry = radon.getConfig().getServiceContext().putAttribute("repository", RepositoryEntry.test()) ;
+    	this.nc = NewClient.create() ;
     }
     
-    public void testNotMultipartPost() throws IOException {
-    	AradonClient client = AradonClientFactory.create(tester.getAradon());
-    	Response response = client.createRequest("/upload").handle(Method.POST);
+    @Override
+    public void tearDown() throws Exception {
+    	radon.stop().get() ;
+    	nc.close() ;
+    	super.tearDown();
+    }
+
+    public void testFirst() throws Exception {
+    	Response response = nc.preparePost("http://localhost:9999/upload")
+    			.addBodyPart(new StringPart("workspace", "test"))
+    			.addBodyPart(new StringPart("path", "/node1/node2/node"))
+    			.addBodyPart(new FilePart("uploadFile",  new File("./resource/template/js/jsoneditor-icons.png")))
+    			.execute().get() ;
+
+    	ReadSession session = rentry.login() ;
+        assertTrue(session.exists("/node1/node2/node"));
+        assertNotNull(session.pathBy("/node1/node2/node").property("blob"));
+    }
+    
+    public void xtestNotMultipartPost() throws Exception {
+    	Response response = nc.preparePost("http://localhost:9999/upload").execute().get() ;
     	
     	assertEquals(406, response.getStatus().getCode()); // not acceptable
     }

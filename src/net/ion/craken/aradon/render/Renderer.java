@@ -5,6 +5,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.Workspace;
@@ -17,12 +20,6 @@ import net.ion.framework.parse.gson.JsonArray;
 import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.util.IOUtil;
 import net.ion.framework.util.MapUtil;
-import net.ion.radon.core.representation.JsonObjectRepresentation;
-
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
 
 import com.google.common.base.Function;
 import com.google.common.collect.HashBasedTable;
@@ -69,15 +66,15 @@ public class Renderer {
 		return this;
 	}
 
-	public Representation render() {
+	public Object render() {
 		ReadNode node = session.ghostBy(renderRequest.getNodePath());
 
-		Function<ReadNode, ? extends Representation> transformer = findSuitableTransformer();
+		Function<ReadNode, ? extends Object> transformer = findSuitableTransformer();
 
 		return node.transformer(transformer);
 	}
 
-    Function<ReadNode, ? extends Representation> findSuitableTransformer() {
+    Function<ReadNode, ? extends Object> findSuitableTransformer() {
         RenderType renderType = renderRequest.getType();
 		boolean isChildrenRequest = renderRequest.isChildrenRequest();
 		
@@ -139,12 +136,11 @@ public class Renderer {
 class NodeJsonRenderFunction implements RenderFunction {
 
 	@Override
-	public Function<ReadNode, ? extends Representation> getTransformer(final RenderRequest renderRequest) {
-		return new Function<ReadNode, JsonObjectRepresentation>() {
+	public Function<ReadNode, ? extends Object> getTransformer(final RenderRequest renderRequest) {
+		return new Function<ReadNode, JsonObject>() {
 			@Override
-			public JsonObjectRepresentation apply(ReadNode node) {
-				JsonObject jsonObject = Renderer.transformToJson(renderRequest.getPropsToRender()).apply(node);
-				return new JsonObjectRepresentation(jsonObject);
+			public JsonObject apply(ReadNode node) {
+				return Renderer.transformToJson(renderRequest.getPropsToRender()).apply(node);
 			}
 		};
 	}
@@ -153,12 +149,12 @@ class NodeJsonRenderFunction implements RenderFunction {
 class NodeHtmlFunction implements RenderFunction {
 
     @Override
-    public Function<ReadNode, ? extends Representation> getTransformer(final RenderRequest request) {
+    public Function<ReadNode, Response> getTransformer(final RenderRequest request) {
     	
 
-        return new Function<ReadNode, StringRepresentation>() {
+        return new Function<ReadNode, Response>() {
             @Override
-            public StringRepresentation apply(ReadNode node) {
+            public Response apply(ReadNode node) {
                 Workspace workspace = ((ReadSession) node.session()).workspace();
                 Engine parseEngine = workspace.parseEngine();
                 String wsName = workspace.wsName();
@@ -185,7 +181,7 @@ class NodeHtmlFunction implements RenderFunction {
 
                     String transformed = parseEngine.transform(template, propertyMap);
 
-                    return new StringRepresentation(transformed, MediaType.TEXT_HTML, Language.valueOf("UTF-8"));
+                    return Response.ok().entity(transformed).type(MediaType.TEXT_HTML).build() ;
 
                 } catch (IOException e) {
                     throw new IllegalStateException(e);
@@ -198,10 +194,10 @@ class NodeHtmlFunction implements RenderFunction {
 class ChildrenJson implements RenderFunction {
 
 	@Override
-	public Function<ReadNode, ? extends Representation> getTransformer(final RenderRequest renderRequest) {
-		return new Function<ReadNode, JsonObjectRepresentation>() {
+	public Function<ReadNode, JsonArray> getTransformer(final RenderRequest renderRequest) {
+		return new Function<ReadNode, JsonArray>() {
 			@Override
-			public JsonObjectRepresentation apply(ReadNode node) {
+			public JsonArray apply(ReadNode node) {
 				JsonArray children = new JsonArray();
 				ReadChildren readChildren = node.children();
 
@@ -209,7 +205,7 @@ class ChildrenJson implements RenderFunction {
 					children.add(rnode.fqn().toJson());
 				}
 
-				return new JsonObjectRepresentation(children);
+				return children;
 			}
 		};
 	}
@@ -218,10 +214,10 @@ class ChildrenJson implements RenderFunction {
 class ChildrenHtmlFunction implements RenderFunction {
 
     @Override
-    public Function<ReadNode, ? extends Representation> getTransformer(final RenderRequest request) {
-        return new Function<ReadNode, StringRepresentation>() {
+    public Function<ReadNode, Response> getTransformer(final RenderRequest request) {
+        return new Function<ReadNode, Response>() {
             @Override
-            public StringRepresentation apply(ReadNode node) {
+            public Response apply(ReadNode node) {
                 Workspace workspace = ((ReadSession) node.session()).workspace();
                 Engine parseEngine = workspace.parseEngine();
                 String wsName = workspace.wsName();
@@ -238,7 +234,7 @@ class ChildrenHtmlFunction implements RenderFunction {
                     			.put("children", node.children()).put("workspace", wsName).toMap();
                     String transformed = parseEngine.transform(template, propertyMap);
 
-                    return new StringRepresentation(transformed, MediaType.TEXT_HTML, Language.valueOf("UTF-8"));
+                    return Response.ok().entity(transformed).type(MediaType.TEXT_HTML).build();
                 } catch (IOException e) {
                     throw new IllegalStateException(e);
                 }

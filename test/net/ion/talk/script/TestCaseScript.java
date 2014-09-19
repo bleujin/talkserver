@@ -1,27 +1,17 @@
 package net.ion.talk.script;
 
 import java.io.File;
-import java.io.InputStream;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.restlet.representation.InputRepresentation;
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
-
 import net.ion.craken.node.crud.TestBaseCrud;
+import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.util.Debug;
-import net.ion.framework.util.InfinityThread;
-import net.ion.framework.util.MapUtil;
-import net.ion.framework.util.ObjectId;
-import net.ion.radon.core.let.MultiValueMap;
-import net.ion.radon.core.representation.JsonObjectRepresentation;
 import net.ion.talk.ParameterMap;
 import net.ion.talk.let.ScriptExecLet;
-import net.ion.talk.responsebuilder.TalkResponseBuilder;
 
 public class TestCaseScript extends TestBaseCrud {
 	private ScheduledExecutorService ses;
@@ -40,10 +30,9 @@ public class TestCaseScript extends TestBaseCrud {
 	
 	public void testWhenNullReturnInExecScript() throws Exception {
 		ParameterMap params = ParameterMap.BLANK ;
-		final String returnType = "json" ;
-		
-		Representation rep = ts.callFn("test/refTos", params, ScriptExecLet.MakeDefaultResponseHandler(returnType)) ;
-		Debug.line(rep, rep.getText());
+
+		JsonObject rep = ts.callFn("test/refTos", params, ScriptExecLet.jsonHandler()).getAsJsonObject() ;
+		Debug.line(rep, rep);
 	}
 	
 	public void testWhenStringArray() throws Exception {

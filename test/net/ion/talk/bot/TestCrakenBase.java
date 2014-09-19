@@ -7,9 +7,7 @@ import net.ion.talk.bean.Const;
 import net.ion.talk.responsebuilder.TalkResponse;
 import net.ion.talk.responsebuilder.TalkResponseBuilder;
 
-/**
- * Created with IntelliJ IDEA. User: Ryun Date: 2014. 2. 3. Time: 오후 6:30 To change this template use File | Settings | File Templates.
- */
+
 public class TestCrakenBase extends TestCase {
 
 	protected ReadSession rsession;

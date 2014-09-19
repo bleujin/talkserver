@@ -1,9 +1,5 @@
 package net.ion.talk.account;
 
-import org.infinispan.atomic.AtomicMap;
-
-import com.google.common.cache.Cache;
-
 import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.tree.PropertyId;
@@ -11,9 +7,12 @@ import net.ion.craken.tree.PropertyValue;
 import net.ion.talk.TalkEngine;
 import net.ion.talk.UserConnection;
 import net.ion.talk.handler.engine.WhisperUserConnection;
-import net.ion.talk.responsebuilder.TalkResponse;
 import net.ion.talk.script.BotMessage;
 import net.ion.talk.script.BotScript;
+
+import org.infinispan.atomic.AtomicMap;
+
+import com.google.common.cache.Cache;
 
 public class BotAccount extends Account{
 
@@ -29,7 +28,7 @@ public class BotAccount extends Account{
 	}
 
 	@Override
-	public void onMessage(String notifyId, AtomicMap<PropertyId, PropertyValue> pmap) {
+	public void onMessage(String notifyId, EventMap pmap) {
         ReadNode notiNode = session.pathBy("/notifies/" + accountId() + "/" + notifyId);
         
         String senderId = notiNode.ref("message").ref("sender").property("userId").asString() ;

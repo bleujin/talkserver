@@ -8,13 +8,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Ryun
- * Date: 2014. 3. 2.
- * Time: 오후 2:21
- * To change this template use File | Settings | File Templates.
- */
+
 public class TestComparator extends TestCase {
 
     public void testFirst() throws Exception {

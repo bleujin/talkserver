@@ -1,53 +1,54 @@
 package net.ion.craken.aradon;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.MediaType;
 
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.node.ReadSession;
-import net.ion.craken.node.Repository;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
-import net.ion.nradon.let.IServiceLet;
-import net.ion.radon.core.annotation.AnRequest;
-import net.ion.radon.core.annotation.ContextParam;
-import net.ion.radon.core.annotation.FormParam;
-import net.ion.radon.core.representation.JsonObjectRepresentation;
+import net.ion.framework.util.IOUtil;
+import net.ion.radon.core.ContextParam;
 
-import org.apache.commons.fileupload.FileItem;
-import org.restlet.Request;
-import org.restlet.data.MediaType;
-import org.restlet.data.Status;
-import org.restlet.representation.Representation;
-import org.restlet.resource.Post;
-import org.restlet.resource.ResourceException;
+import org.jboss.resteasy.plugins.providers.multipart.InputBody;
+import org.jboss.resteasy.plugins.providers.multipart.InputPart;
+import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
+ 
 
-public class UploadLet implements IServiceLet {
+@Path("")
+public class UploadLet {
 
-	@Post
-	public Representation upsert(@ContextParam("repository") RepositoryEntry repository, @AnRequest Request request, @FormParam("path") final String nodePath, @FormParam("uploadFile") final FileItem fileItem) throws Exception {
-
-		if (isMultipartRequest(request)) {
-			writeBlob(repository, nodePath, fileItem);
-			return new JsonObjectRepresentation("{\"success\":true}");
-
-		} else {
-			throw new ResourceException(Status.CLIENT_ERROR_NOT_ACCEPTABLE, "No multipart request");
-		}
+	@POST
+	@Path("")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	public String upsert(@ContextParam("repository") RepositoryEntry repository, MultipartFormDataInput minput) throws Exception {
+		
+		 // @FormParam("path") final String nodePath, @FormParam("uploadFile") final FileItem fileItem 
+		Map<String, List<InputPart>> mmap = minput.getFormDataMap() ;
+		String nodePath = InputBody.create("path", mmap.get("path").get(0)).asString() ;
+		InputStream input = InputBody.create("uploadFile", mmap.get("uploadFile").get(0)).asStream() ;
+		
+		writeBlob(repository, nodePath, input);
+		IOUtil.toStringWithClose(input) ;
+		return new String("{\"success\":true}");
 	}
 
-	private void writeBlob(RepositoryEntry rentry, final String nodePath, final FileItem fileItem) throws IOException, Exception {
+	private void writeBlob(RepositoryEntry rentry, final String nodePath, final InputStream input) throws IOException, Exception {
 		ReadSession session = rentry.login();
 		session.tranSync(new TransactionJob<Void>() {
 			@Override
 			public Void handle(WriteSession wsession) throws Exception {
-				wsession.pathBy(nodePath).blob("blob", fileItem.getInputStream());
+				wsession.pathBy(nodePath).blob("blob", input);
 				return null;
 			}
 		}, InternalServerErrorHandler.DEFAULT);
-	}
-
-	private boolean isMultipartRequest(Request request) {
-		return MediaType.MULTIPART_FORM_DATA.equals(request.getEntity().getMediaType(), true);
 	}
 
 }

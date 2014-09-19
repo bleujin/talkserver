@@ -6,27 +6,25 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
 
-import org.restlet.resource.Get;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 
+import junit.framework.TestCase;
 import net.ion.framework.util.Debug;
 import net.ion.nradon.Radon;
-import net.ion.nradon.let.IServiceLet;
+import net.ion.nradon.config.RadonConfiguration;
 import net.ion.radon.aclient.NewClient;
 import net.ion.radon.aclient.Response;
-import net.ion.radon.core.Aradon;
-import net.ion.radon.core.annotation.AnRequest;
-import net.ion.radon.core.annotation.PathParam;
-import net.ion.radon.core.let.InnerRequest;
-import net.ion.radon.util.AradonTester;
-import net.ion.talk.handler.engine.ServerHandler;
+import net.ion.radon.core.let.PathHandler;
 import net.ion.talk.util.NetworkUtil;
-import junit.framework.TestCase;
 
 public class TestAddress extends TestCase {
 
 	public void testAtAddress() throws Exception {
-		Aradon aradon = AradonTester.create().register("bot", "/{botId}/{pwd}", EchoLet.class).getAradon();
-		Radon radon = aradon.toRadon(9000).start().get();
+		Radon radon = RadonConfiguration.newBuilder(9000)
+				.add(new PathHandler(EchoLet.class))
+				.start().get();
 
 		NewClient nc = NewClient.create();
 
@@ -99,11 +97,12 @@ public class TestAddress extends TestCase {
 
 
 
+@Path("/{botId}/{pwd}")
+class EchoLet {
 
-class EchoLet implements IServiceLet {
-
-	@Get
-	public String echo(@AnRequest InnerRequest request, @PathParam("botId") String botId, @PathParam("pwd") String pwd) {
+	
+	@GET
+	public String echo(@PathParam("botId") String botId, @PathParam("pwd") String pwd) {
 		return botId + "/" + pwd;
 	}
 }

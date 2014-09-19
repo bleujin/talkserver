@@ -1,15 +1,16 @@
 package net.ion.talk.filter;
 
+import java.net.SocketAddress;
+
 import net.ion.framework.util.StringUtil;
-import net.ion.radon.core.IService;
-import net.ion.radon.core.filter.IFilterResult;
-import net.ion.radon.core.filter.IRadonFilter;
+import net.ion.nradon.HttpControl;
+import net.ion.nradon.HttpHandler;
+import net.ion.nradon.HttpRequest;
+import net.ion.nradon.HttpResponse;
+import net.ion.nradon.Radon;
+import net.ion.nradon.handler.event.ServerEvent.EventType;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.restlet.Request;
-import org.restlet.Response;
-
-public class RefererAllowFilter extends IRadonFilter {
+public class RefererAllowFilter implements HttpHandler {
 
 	private String[] address;
 
@@ -21,19 +22,25 @@ public class RefererAllowFilter extends IRadonFilter {
 		this.address = StringUtil.split(addresss, ", ");
 	}
 
-	public static IRadonFilter test() {
+	public static RefererAllowFilter test() {
 		return new RefererAllowFilter("localhost, 127.0.0.1");
 	}
 
 	@Override
-	public IFilterResult afterHandle(IService iservice, Request request, Response response) {
-		return IFilterResult.CONTINUE_RESULT;
+	public void onEvent(EventType event, Radon radon) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
-	public IFilterResult preHandle(IService iservice, Request request, Response response) {
-		String clientAddress = request.getClientInfo().getAddress();
-		return (clientAddress == null || ArrayUtils.contains(address, clientAddress)) ? IFilterResult.CONTINUE_RESULT : IFilterResult.STOP_RESULT;
+	public int order() {
+		return 0;
+	}
+
+	@Override
+	public void handleHttpRequest(HttpRequest request, HttpResponse response, HttpControl control) throws Exception {
+		SocketAddress remote = request.remoteAddress() ;
+		
 	}
 
 }

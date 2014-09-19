@@ -4,13 +4,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.http.HttpHeaders;
-
 import net.ion.framework.util.ObjectUtil;
 import net.ion.nradon.HttpRequest;
 import net.ion.nradon.WebSocketConnection;
 import net.ion.talk.TalkEngine.Reason;
 import net.ion.talk.util.CalUtil;
+
+import org.apache.http.HttpHeaders;
 
 public class UserConnection {
 

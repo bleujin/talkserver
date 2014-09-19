@@ -8,13 +8,7 @@ import net.ion.craken.node.WriteSession;
 import net.ion.framework.util.MapUtil;
 import net.ion.talk.bean.Const;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Ryun
- * Date: 2014. 2. 19.
- * Time: 오후 4:56
- * To change this template use File | Settings | File Templates.
- */
+
 public class BotManager {
 
     private final ReadSession session;

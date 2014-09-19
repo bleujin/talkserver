@@ -171,7 +171,7 @@ SOOTHE  - %s은 %s을(를) 보며 모든 일이 잘될거라고 달랩니다.  \
 	var actionMap = {} ;
 	var _myBotId = 'wowe' ;
 	this.onLoad = function(){
-		var reader = new net.ion.radon.impl.util.CsvReader(new java.io.StringReader(actions)) ;
+		var reader = new net.ion.radon.util.csv.CsvReader(new java.io.StringReader(actions)) ;
 		reader.setFieldDelimiter('-');
 		reader.setBlockDelimiter('\n');
 

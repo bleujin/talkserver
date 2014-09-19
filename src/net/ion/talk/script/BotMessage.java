@@ -2,7 +2,6 @@ package net.ion.talk.script;
 
 import net.ion.craken.node.ReadNode;
 import net.ion.framework.parse.gson.JsonObject;
-import net.ion.framework.util.ObjectId;
 import net.ion.framework.util.StringUtil;
 import net.ion.talk.UserConnection;
 import net.ion.talk.bean.Const;

@@ -1,14 +1,21 @@
 package net.ion.craken.aradon;
 
+import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
-import net.ion.craken.tree.PropertyId;
 import net.ion.framework.util.Debug;
 
 public class TestNodeLet extends TestCrakenBase {
 
-    private NodeLet let = new NodeLet();
+    private NodeLet let ;
+    
+    @Override
+    public void setUp() throws Exception {
+    	super.setUp();
+    	this.let = new NodeLet(RepositoryEntry.test()); ;
+    }
+    
 
     public void testFirst() throws Exception {
 

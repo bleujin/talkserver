@@ -7,32 +7,33 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Map;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+
 import net.ion.framework.util.IOUtil;
 import net.ion.framework.util.MapUtil;
-import net.ion.nradon.let.IServiceLet;
-import net.ion.radon.core.annotation.AnRequest;
-import net.ion.radon.core.let.InnerRequest;
 
 import org.antlr.stringtemplate.StringTemplate;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.resource.Get;
 
-public class MonitorLet implements IServiceLet{
+@Path("/event")
+public class MonitorLet {
 
-	@Get
-	public Representation view(@AnRequest InnerRequest request) throws FileNotFoundException, IOException{
+	
+	@GET
+	@Path("/{remain: .*}")
+	@Produces(javax.ws.rs.core.MediaType.TEXT_HTML)
+	public String view(@PathParam("remain") String remainPath) throws FileNotFoundException, IOException{
 		File tplFile = new File("./resource/toonweb/event.htm") ;
 		final StringWriter template = new StringWriter();
 		IOUtil.copyNClose( new FileReader(tplFile), template) ;
 		
 		StringTemplate st = new StringTemplate(template.toString());
-		Map<String, String> configMap = MapUtil.<String>chainKeyMap().put("path", request.getRemainPath()).toMap() ;
+		Map<String, String> configMap = MapUtil.<String>chainKeyMap().put("path", remainPath).toMap() ;
 		
 		st.setAttribute("config", configMap);
 		
-		return new StringRepresentation(st.toString(), MediaType.TEXT_HTML, Language.ALL);
+		return st.toString() ;
 	}
 }

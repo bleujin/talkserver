@@ -1,25 +1,5 @@
 package net.ion.talk;
 
-import net.ion.craken.aradon.MonitorLet;
-import net.ion.craken.aradon.NodeLet;
-import net.ion.craken.aradon.UploadLet;
-import net.ion.craken.aradon.bean.RepositoryEntry;
-import net.ion.craken.node.ReadSession;
-import net.ion.nradon.Radon;
-import net.ion.radon.core.Aradon;
-import net.ion.radon.core.EnumClass;
-import net.ion.radon.core.EnumClass.IMatchMode;
-import net.ion.radon.core.config.ConfigurationBuilder;
-import net.ion.radon.core.security.ChallengeAuthenticator;
-import net.ion.talk.filter.CrakenVerifier;
-import net.ion.talk.filter.ToonAuthenticator;
-import net.ion.talk.let.*;
-import net.ion.talk.monitor.TalkMonitor;
-import net.ion.talk.toonweb.ClientLet;
-import net.ion.talk.toonweb.MobileClientLet;
-import net.ion.talk.toonweb.ReloadLet;
-import net.ion.talk.toonweb.ToonWebResourceLet;
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -28,15 +8,42 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 
+import net.ion.craken.aradon.MonitorLet;
+import net.ion.craken.aradon.NodeLet;
+import net.ion.craken.aradon.UploadLet;
+import net.ion.craken.aradon.bean.RepositoryEntry;
+import net.ion.craken.node.ReadSession;
+import net.ion.nradon.Radon;
+import net.ion.nradon.config.RadonConfiguration;
+import net.ion.nradon.handler.authentication.BasicAuthenticationHandler;
+import net.ion.nradon.handler.logging.LoggingHandler;
+import net.ion.nradon.handler.logging.SimpleLogSink;
+import net.ion.nradon.netty.NettyWebServer;
+import net.ion.nradon.restlet.FileMetaType;
+import net.ion.radon.core.let.PathHandler;
+import net.ion.talk.filter.CrakenVerifier;
+import net.ion.talk.filter.ToonVerifier;
+import net.ion.talk.let.BotImageLet;
+import net.ion.talk.let.LoginLet;
+import net.ion.talk.let.SVGLet;
+import net.ion.talk.let.PhoneAuthLet;
+import net.ion.talk.let.ResourceLet;
+import net.ion.talk.let.ScriptDoLet;
+import net.ion.talk.let.ScriptExecLet;
+import net.ion.talk.monitor.TalkMonitor;
+import net.ion.talk.toonweb.ClientLet;
+import net.ion.talk.toonweb.MobileClientLet;
+import net.ion.talk.toonweb.ReloadLet;
+import net.ion.talk.toonweb.ToonLogSink;
+import net.ion.talk.toonweb.ToonWebResourceLet;
+
 public class ToonServer {
 
 	private enum Status {
 		INITED, READY, STARTED, STOPED ;
 	}
 	
-	private Aradon aradon;
 	private Radon radon;
-
 	private AtomicReference<Status> status = new AtomicReference<ToonServer.Status>(Status.STOPED) ;
 	
 	private RepositoryEntry repoEntry;
@@ -59,64 +66,95 @@ public class ToonServer {
 	
 	
 	private ToonServer init() throws Exception {
-		CrakenVerifier verifier = CrakenVerifier.test(repoEntry.login());
+		FileMetaType.init(); 
+
+		RadonConfiguration config = RadonConfiguration.newBuilder(9000)
+			.add(new LoggingHandler(new ToonLogSink()))
+			.add("/auth/*", new BasicAuthenticationHandler(CrakenVerifier.test(repoEntry.login())))
+			.add("/auth/*", new PathHandler(LoginLet.class).prefixURI("/auth"))
+			
+			.add("/admin/*", new PathHandler(NodeLet.class, MonitorLet.class, ResourceLet.class, ScriptDoLet.class, UploadLet.class).prefixURI("admin"))
+			
+			.add("/bot/*", new PathHandler(BotImageLet.class))
+			
+			.add("/register/*", new PathHandler(PhoneAuthLet.class).prefixURI("/register"))
+			.add("/execute/*", new PathHandler(ScriptExecLet.class))
+			.add("/svg/*", new PathHandler(SVGLet.class))
+			
+			.add("/session/*", new BasicAuthenticationHandler(new ToonVerifier(repoEntry.login())))
+			.add("/session/*", new PathHandler(ClientLet.class))
+			
+			.add("/mobile/*", new BasicAuthenticationHandler(new ToonVerifier(repoEntry.login())))
+			.add("/mobile/*", new PathHandler(MobileClientLet.class))
+			
+			.add("/toonweb/*", new PathHandler(ToonWebResourceLet.class))
+			.add("/upload/*", new PathHandler(net.ion.talk.let.UploadLet.class))
+			.build() ;
 		
-		ConfigurationBuilder cbuilder = ConfigurationBuilder.newBuilder()	
-				.aradon()
-					.addAttribute(RepositoryEntry.EntryName, repoEntry)
-					.addAttribute(ScheduledExecutorService.class.getCanonicalName(), worker)
-				.sections()
-					.restSection("auth").addPreFilter(new ChallengeAuthenticator("users", verifier))
-						.path("login").addUrlPattern("/login").matchMode(IMatchMode.STARTWITH).handler(LoginLet.class)
-						
-					.restSection("register")
-						.path("smsAuth").addUrlPattern("/SMSAuth").matchMode(EnumClass.IMatchMode.STARTWITH).handler(PhoneAuthLet.class)
-						
-					.restSection("script")
-						.path("script").addUrlPattern("/").matchMode(EnumClass.IMatchMode.EQUALS).handler(ScriptConfirmLet.class)
-						
-					.restSection("execute")
-						.path("execute").addUrlPattern("/").matchMode(IMatchMode.STARTWITH).handler(ScriptExecLet.class)
-						
-					.restSection("resource")
-						.path("resource").addUrlPattern("/{path}").matchMode(EnumClass.IMatchMode.STARTWITH).handler(ResourceLet.class)
-						
-					.restSection("image")
-						.path("bot").addUrlPattern("/bot/icon/{botId}.jpg").handler(BotIconLet.class)
-						.path("bimage").addUrlPattern("/bimage/{botId}/").matchMode(IMatchMode.STARTWITH).handler(BotImageLet.class)
-						
-					.restSection("svg")
-						.path("message").addUrlPattern("/message/{roomId}/{messageId}").handler(MessageSVGLet.class)
-						.path("command").addUrlPattern("/command/{messageId}").handler(CommandSVGLet.class)
-						
-					.restSection("session")
-						.addPreFilter(new ToonAuthenticator("user"))
-						.path("client").addUrlPattern("/").handler(ClientLet.class)
-						.path("reload").addUrlPattern("/reload").handler(ReloadLet.class)
-
-                    .restSection("mobile")
-                        .addPreFilter(new ToonAuthenticator("user"))
-                        .path("client").addUrlPattern("/").handler(MobileClientLet.class)
-
-					.restSection("toonweb")
-						.path("toonweb").addUrlPattern("/").matchMode(IMatchMode.STARTWITH).handler(ToonWebResourceLet.class)
-						
-					.restSection("upload")
-						.path("upload").addUrlPattern("/{userId}/{resource}").addUrlPattern("/{userId}/{resource}/{fieldname}").handler(net.ion.talk.let.UploadLet.class)
-						
-					.restSection("admin").addAttribute("baseDir", "./resource/template")
-						.path("node").addUrlPattern("/repository/{renderType}").matchMode(IMatchMode.STARTWITH).handler(NodeLet.class)
-						.path("event").addUrlPattern("/event/").matchMode(IMatchMode.STARTWITH).handler(MonitorLet.class)
-						.path("template").addUrlPattern("/template").matchMode(EnumClass.IMatchMode.STARTWITH).handler(ResourceLet.class)
-						.path("doscript").addUrlPattern("/script").matchMode(EnumClass.IMatchMode.EQUALS).handler(ScriptDoLet.class)
-						.path("upload").addUrlPattern("/upload").matchMode(IMatchMode.STARTWITH).handler(UploadLet.class).toBuilder() ;
-
-		this.aradon = Aradon.create(cbuilder.build());
-		this.radon = aradon.toRadon(9000);
+		config.getServiceContext().putAttribute(RadonConfiguration.class.getCanonicalName(), config);
+		config.getServiceContext().putAttribute("resourceDir", "./resource/toonweb") ;
+		config.getServiceContext().putAttribute("templateDir", "./resource/template") ;
+		config.getServiceContext().putAttribute(RepositoryEntry.EntryName, repoEntry);
+		config.getServiceContext().putAttribute(ScheduledExecutorService.class.getCanonicalName(), worker);
 		
-		this.talkEngine = TalkEngine.create(aradon.getServiceContext()) ;
+		
+        this.radon = new NettyWebServer(config);
+        
+		this.talkEngine = TalkEngine.create(radon.getConfig().getServiceContext()) ;
 		radon.add("/websocket/{id}/{accessToken}", talkEngine) ;
 		radon.add("/event/*", TalkMonitor.create(repoEntry.login())) ;
+		
+//		ConfigurationBuilder cbuilder = ConfigurationBuilder.newBuilder()	
+//				.aradon()
+//					.addAttribute(RepositoryEntry.EntryName, repoEntry)
+//					.addAttribute(ScheduledExecutorService.class.getCanonicalName(), worker)
+//				.sections()
+//					.restSection("auth").addPreFilter(new ChallengeAuthenticator("users", verifier))
+//						.path("login").addUrlPattern("/login").matchMode(IMatchMode.STARTWITH).handler(LoginLet.class)
+				
+//					.restSection("register")
+//						.path("smsAuth").addUrlPattern("/SMSAuth").matchMode(EnumClass.IMatchMode.STARTWITH).handler(PhoneAuthLet.class)
+						
+//					.restSection("script")
+//						.path("script").addUrlPattern("/").matchMode(EnumClass.IMatchMode.EQUALS).handler(ScriptConfirmLet.class)
+//						
+//					.restSection("execute")
+//						.path("execute").addUrlPattern("/").matchMode(IMatchMode.STARTWITH).handler(ScriptExecLet.class)
+						
+//					.restSection("resource")
+//						.path("resource").addUrlPattern("/{path}").matchMode(EnumClass.IMatchMode.STARTWITH).handler(ResourceLet.class)
+						
+//					.restSection("image")
+//						.path("bot").addUrlPattern("/bot/icon/{botId}.jpg").handler(BotImageLet.class)
+//						.path("bimage").addUrlPattern("/bimage/{botId}/").matchMode(IMatchMode.STARTWITH).handler(BotImageLet.class)
+						
+//					.restSection("svg")
+//						.path("message").addUrlPattern("/message/{roomId}/{messageId}").handler(SVGLet.class)
+//						.path("command").addUrlPattern("/command/{messageId}").handler(CommandSVGLet.class)
+						
+//					.restSection("session")
+//						.addPreFilter(new ToonAuthenticator("user"))
+//						.path("client").addUrlPattern("/").handler(ClientLet.class)
+//						.path("reload").addUrlPattern("/reload").handler(ReloadLet.class)
+
+//                    .restSection("mobile")
+//                        .addPreFilter(new ToonAuthenticator("user"))
+//                        .path("client").addUrlPattern("/").handler(MobileClientLet.class)
+
+//					.restSection("toonweb")
+//						.path("toonweb").addUrlPattern("/").matchMode(IMatchMode.STARTWITH).handler(ToonWebResourceLet.class)
+						
+//					.restSection("upload")
+//						.path("upload").addUrlPattern("/{userId}/{resource}").addUrlPattern("/{userId}/{resource}/{fieldname}").handler(net.ion.talk.let.UploadLet.class)
+//						
+//					.restSection("admin").addAttribute("baseDir", "./resource/template")
+//						.path("node").addUrlPattern("/repository/{renderType}").matchMode(IMatchMode.STARTWITH).handler(NodeLet.class)
+//						.path("event").addUrlPattern("/event/").matchMode(IMatchMode.STARTWITH).handler(MonitorLet.class)
+//						.path("template").addUrlPattern("/template").matchMode(EnumClass.IMatchMode.STARTWITH).handler(ResourceLet.class)
+//						.path("doscript").addUrlPattern("/script").matchMode(EnumClass.IMatchMode.EQUALS).handler(ScriptDoLet.class)
+//						.path("upload").addUrlPattern("/upload").matchMode(IMatchMode.STARTWITH).handler(net.ion.craken.aradon.UploadLet.class).toBuilder() 
+//					;
+
 		
 		status.set(Status.INITED);
 		return this;
@@ -143,20 +181,15 @@ public class ToonServer {
 //		repoEntry.shutdown();
 //		worker.shutdown(); 
 //		worker.awaitTermination(2, TimeUnit.SECONDS) ;
-		if (aradon != null) aradon.stop();
 		if (radon != null) radon.stop().get();
 		
 		status.set(Status.STOPED);
 		return this ;
 	}
 
-	public Aradon aradon() {
-		checkStarted();
-		return aradon;
-	}
 
 	private void checkStarted() {
-		if (aradon == null)
+		if (radon == null)
 			throw new IllegalStateException("Aradon not started");
 	}
 
@@ -168,16 +201,16 @@ public class ToonServer {
 
 	public TalkEngine talkEngine() {
 		checkStarted();
-		return aradon.getServiceContext().getAttributeObject(TalkEngine.class.getCanonicalName(), TalkEngine.class);
+		return radon.getConfig().getServiceContext().getAttributeObject(TalkEngine.class.getCanonicalName(), TalkEngine.class);
 	}
 
 	public ToonServer addAttribute(Object value) {
-		aradon.getServiceContext().putAttribute(value.getClass().getCanonicalName(), value);
+		radon.getConfig().getServiceContext().putAttribute(value.getClass().getCanonicalName(), value);
 		return this;
 	}
 
 	public <T> T getAttribute(String key, Class<T> clz) {
-		return aradon.getServiceContext().getAttributeObject(key, clz);
+		return radon.getConfig().getServiceContext().getAttributeObject(key, clz);
 	}
 
 	public String getHostAddress() {

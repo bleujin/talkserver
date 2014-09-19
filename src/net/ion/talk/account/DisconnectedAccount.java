@@ -1,10 +1,7 @@
 package net.ion.talk.account;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
-
-import org.infinispan.atomic.AtomicMap;
 
 import javapns.notification.PushedNotifications;
 import net.ion.craken.node.ReadSession;
@@ -18,18 +15,13 @@ import net.ion.message.push.sender.GoogleMessage;
 import net.ion.message.push.sender.Pusher;
 import net.ion.message.push.sender.handler.PushResponseHandler;
 import net.ion.talk.bean.Const;
-import net.ion.talk.responsebuilder.TalkResponse;
+
+import org.infinispan.atomic.AtomicMap;
 
 import com.google.android.gcm.server.Result;
 
 
-/**
- * Created with IntelliJ IDEA.
- * User: Ryun
- * Date: 2014. 2. 20.
- * Time: 오후 5:04
- * To change this template use File | Settings | File Templates.
- */
+
 public class DisconnectedAccount extends Account {
 
     private final Pusher pusher;
@@ -43,13 +35,14 @@ public class DisconnectedAccount extends Account {
     }
 
     @Override
-    public void onMessage(final String notifyId, AtomicMap<PropertyId, PropertyValue> pmap)  {
+    public void onMessage(final String notifyId, EventMap pmap)  {
+    	
     	String message = new JsonObject()
     			.put("notifyId", notifyId)
-    			.put("result", new JsonObject().put(Const.Room.RoomId,   StringUtil.substringAfterLast(pmap.get(PropertyId.refer(Const.Room.RoomId)).asString(), "/"))
+    			.put("result", new JsonObject().put(Const.Room.RoomId,   StringUtil.substringAfterLast(pmap.refer(Const.Room.RoomId).asString(), "/"))
     							.put(Const.Message.MessageId,  notifyId)
-       							.put(Const.Message.Sender,  pmap.get(PropertyId.normal(Const.Notify.SenderId)).asString())
-    							.put(Const.Notify.SVGUrl, pmap.get(PropertyId.normal(Const.Notify.SVGUrl)).asString()))
+       							.put(Const.Message.Sender,  pmap.property(Const.Notify.SenderId).asString())
+    							.put(Const.Notify.SVGUrl, pmap.property(Const.Notify.SVGUrl).asString()))
     				.toString() ;
         Future<Boolean> result = pusher.sendTo(accountId()).sendAsync(message, new PushResponseHandler<Boolean>() {
 			@Override

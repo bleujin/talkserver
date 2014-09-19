@@ -9,7 +9,7 @@ import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
 import net.ion.craken.tree.PropertyId;
 import net.ion.craken.tree.PropertyValue;
-import net.ion.framework.util.MapUtil;
+import net.ion.framework.parse.gson.JsonObject;
 import net.ion.radon.core.TreeContext;
 import net.ion.talk.FakeWebSocketConnection;
 import net.ion.talk.TalkEngine;
@@ -21,6 +21,7 @@ import net.ion.talk.account.AccountManager;
 import net.ion.talk.account.BotAccount;
 import net.ion.talk.account.ConnectedUserAccount;
 import net.ion.talk.account.DisconnectedAccount;
+import net.ion.talk.account.EventMap;
 import net.ion.talk.account.ProxyAccount;
 import net.ion.talk.bean.Const;
 import net.ion.talk.bean.Const.User;
@@ -28,17 +29,8 @@ import net.ion.talk.bot.TestCrakenBase;
 import net.ion.talk.responsebuilder.TalkResponse;
 
 import org.infinispan.atomic.AtomicHashMap;
-import org.infinispan.atomic.AtomicMap;
-import org.restlet.Context;
-import org.restlet.routing.VirtualHost;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Ryun
- * Date: 2014. 4. 16.
- * Time: 오전 10:30
- * To change this template use File | Settings | File Templates.
- */
+
 public class TestAccountManager extends TestCrakenBase{
 
     private AccountManager am;
@@ -47,7 +39,7 @@ public class TestAccountManager extends TestCrakenBase{
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        TreeContext context = TreeContext.createRootContext(new VirtualHost(new Context())) ;
+        TreeContext context = TreeContext.createRootContext() ;
         context.putAttribute(RepositoryEntry.EntryName, rentry) ;
         context.putAttribute(ScheduledExecutorService.class.getCanonicalName(), Executors.newScheduledThreadPool(2)) ;
         tengine = TalkEngine.testCreate(context).init().startEngine() ;
@@ -107,9 +99,9 @@ public class TestAccountManager extends TestCrakenBase{
 		tengine.onOpen(fake);
         Account account = am.newAccount(user);
         TalkResponse notifyMsg = createNotify(user, notifyId);
-        account.onMessage(notifyId, new AtomicHashMap<PropertyId, PropertyValue>());
+        account.onMessage(notifyId, EventMap.EMPTY);
         
-        assertEquals(notifyMsg.toString(), fake.recentMsg());
+        assertEquals(JsonObject.fromString(notifyMsg.toString()).asString("notifyId"), JsonObject.fromString(fake.recentMsg()).asString("notifyId"));
     }
 
     public void testSendToDisconnectedUser() throws Exception {
@@ -119,7 +111,7 @@ public class TestAccountManager extends TestCrakenBase{
 			public Account create(AccountManager am, String userId, UserConnection uconn) {
 				return new Account("ryun", Type.DISCONNECTED_USER){
 					@Override
-					public void onMessage(String notifyId, AtomicMap<PropertyId, PropertyValue> pmap) {
+					public void onMessage(String notifyId, EventMap pmap) {
 						recevied.set(notifyId);
 					}};
 			}
@@ -129,7 +121,7 @@ public class TestAccountManager extends TestCrakenBase{
 
         Account account = am.newAccount("ryun");
         TalkResponse notifyMsg = createNotify("ryun", notifyId);
-        account.onMessage(notifyId, new AtomicHashMap<PropertyId, PropertyValue>());
+        account.onMessage(notifyId, EventMap.EMPTY);
 
         assertEquals("1234", recevied.get());
 
@@ -153,7 +145,7 @@ public class TestAccountManager extends TestCrakenBase{
         });
 
         TalkResponse notifyMsg = createNotify(bot, notifyId);
-        account.onMessage(notifyId, new AtomicHashMap<PropertyId, PropertyValue>());
+        account.onMessage(notifyId, EventMap.EMPTY);
 
     }
 

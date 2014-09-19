@@ -6,9 +6,7 @@ import javapns.notification.PushedNotifications;
 import junit.framework.TestCase;
 import net.ion.message.push.sender.handler.PushResponseHandler;
 
-/**
- * Author: Ryunhee Han Date: 2014. 1. 23.
- */
+
 public class BaseTest extends TestCase {
 
 	public static String INVALID_DEVICE_TOKEN = "a7303190e155b41450e7ce0d7262114b3fa4d2fb2081da2f9786356e973114e7";

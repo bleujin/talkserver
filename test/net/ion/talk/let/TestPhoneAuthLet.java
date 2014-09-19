@@ -6,15 +6,12 @@ import junit.framework.TestCase;
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.ReadSession;
-import net.ion.craken.node.crud.ReadChildren;
 import net.ion.framework.util.Debug;
 import net.ion.message.sms.sender.SMSSender;
 import net.ion.nradon.Radon;
+import net.ion.nradon.config.RadonConfiguration;
 import net.ion.radon.aclient.NewClient;
-import net.ion.radon.core.Aradon;
-import net.ion.radon.core.EnumClass.IMatchMode;
-import net.ion.radon.core.config.Configuration;
-import net.ion.radon.core.config.ConfigurationBuilder;
+import net.ion.radon.core.let.PathHandler;
 import net.ion.talk.util.NetworkUtil;
 
 public class TestPhoneAuthLet extends TestCase {
@@ -28,16 +25,11 @@ public class TestPhoneAuthLet extends TestCase {
 		this.repoEntry = RepositoryEntry.test();
 		SMSSender smsSender = SMSSender.create(NewClient.create());
 
-		Configuration configuration = ConfigurationBuilder.newBuilder()	
-			.aradon()
-				.addAttribute(RepositoryEntry.EntryName, repoEntry)
-				.addAttribute(SMSSender.class.getCanonicalName(), smsSender)
-			.sections()
-				.restSection("register")
-					.path("phoneAuth").addUrlPattern("/SMSAuth").matchMode(IMatchMode.STARTWITH).handler(PhoneAuthLet.class).build() ;
+		radon = RadonConfiguration.newBuilder(9000)
+			.add(new PathHandler(PhoneAuthLet.class).prefixURI("/register")).startRadon() ;
 		
-		radon = Aradon.create(configuration).toRadon() ;
-		radon.start().get() ;
+		radon.getConfig().getServiceContext().putAttribute(RepositoryEntry.EntryName, repoEntry) ;
+		radon.getConfig().getServiceContext().putAttribute(SMSSender.class.getCanonicalName(), smsSender) ;
     }
 
 	@Override
@@ -49,7 +41,7 @@ public class TestPhoneAuthLet extends TestCase {
 	
 	public void testRequest() throws Exception {
     	NewClient nc = NewClient.create() ;
-        net.ion.radon.aclient.Response response = nc.preparePost(NetworkUtil.httpAddress(9000, "/register/SMSAuth")).addParameter("phone", "+821091399660").execute().get();
+        net.ion.radon.aclient.Response response = nc.preparePost(NetworkUtil.httpAddress(9000, "/register/SMSAuth")).addParameter("phone", "+821042216492").execute().get();
         assertEquals(200, response.getStatus().getCode());
 
         Debug.line(response.getTextBody());

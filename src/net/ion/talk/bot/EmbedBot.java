@@ -10,13 +10,7 @@ import net.ion.craken.tree.PropertyValue;
 import net.ion.framework.util.ObjectId;
 import net.ion.talk.bean.Const;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Ryun
- * Date: 2014. 2. 19.
- * Time: 오후 2:26
- * To change this template use File | Settings | File Templates.
- */
+
 public abstract class EmbedBot {
 
     protected final ReadSession rsession;

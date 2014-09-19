@@ -1,11 +1,9 @@
 package net.ion.talk.script;
 
 import java.io.File;
-import java.util.Set;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-
-import org.bouncycastle.asn1.tsp.TSTInfo;
 
 import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.TransactionJob;
@@ -15,11 +13,8 @@ import net.ion.craken.node.crud.TestBaseCrud;
 import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.util.Debug;
 import net.ion.framework.util.MapUtil;
-import net.ion.radon.aclient.Response.ResponseBuilder;
-import net.ion.radon.core.let.MultiValueMap;
 import net.ion.talk.ParameterMap;
 import net.ion.talk.responsebuilder.TalkResponseBuilder;
-import junit.framework.TestCase;
 
 public class TestRoomScript extends TestBaseCrud {
 	private ScheduledExecutorService ses;
@@ -34,8 +29,7 @@ public class TestRoomScript extends TestBaseCrud {
 	}
 	
 	public void testCreateWith() throws Exception {
-		
-		MultiValueMap mvm = MultiValueMap.create(MapUtil.<Object>chainKeyMap().put("members", "bleujin").put("sender", "bleujin").put("roomId", "1234").toMap());
+		Map<String, String> mvm = MapUtil.<String>chainKeyMap().put("members", "bleujin").put("sender", "bleujin").put("roomId", "1234").toMap();
 		ParameterMap params = ParameterMap.create(mvm);
 		Object obj = ts.callFn("room/createWith", params) ;
 		
@@ -51,7 +45,7 @@ public class TestRoomScript extends TestBaseCrud {
 			}
 		}) ;
 		
-		MultiValueMap mvm = MultiValueMap.create(MapUtil.<Object>chainKeyMap().put("members", "bleujin").put("sender", "bleujin").put("roomId", "1234").toMap());
+		Map<String, String> mvm = MapUtil.<String>chainKeyMap().put("members", "bleujin").put("sender", "bleujin").put("roomId", "1234").toMap();
 		ParameterMap params = ParameterMap.create(mvm);
 		Object obj = ts.callFn("room/banWith", params) ;
 		
@@ -79,8 +73,7 @@ public class TestRoomScript extends TestBaseCrud {
 	public void testInfoBy() throws Exception {
 		testCreateWith(); 
 
-		
-		MultiValueMap mvm = MultiValueMap.create(MapUtil.<Object>chainKeyMap().put("roomId", "1234").toMap());
+		Map<String, String> mvm = MapUtil.<String>chainKeyMap().put("roomId", "1234").toMap();
 		ParameterMap params = ParameterMap.create(mvm);
 		JsonObject result = JsonObject.fromString(ts.callFn("room/infoBy", params).toString()) ;
 		
@@ -98,7 +91,7 @@ public class TestRoomScript extends TestBaseCrud {
 			}
 		}) ;
 		
-		MultiValueMap mvm = MultiValueMap.create(MapUtil.<Object>chainKeyMap().put("userId", "bleujin").put("notifyId", "1234").toMap());
+		Map<String, String> mvm = MapUtil.<String>chainKeyMap().put("userId", "bleujin").put("notifyId", "1234").toMap();
 		ParameterMap params = ParameterMap.create(mvm);
 		JsonObject result = JsonObject.fromString(ts.callFn("room/listNotifyDataBy", params).toString()) ;
 		
@@ -115,7 +108,7 @@ public class TestRoomScript extends TestBaseCrud {
 			}
 		}) ;
 
-		MultiValueMap mvm = MultiValueMap.create(MapUtil.<Object>chainKeyMap().put("roomId", "1234").put("messageId", "3").toMap());
+		Map<String, String> mvm = MapUtil.<String>chainKeyMap().put("roomId", "1234").put("messageId", "3").toMap();
 		ParameterMap params = ParameterMap.create(mvm);
 		JsonObject result = JsonObject.fromString(ts.callFn("room/listUnreadMessageBy", params).toString()) ;
 		
@@ -124,25 +117,20 @@ public class TestRoomScript extends TestBaseCrud {
 	}
 	
 	public void testRemoveNotifyDataWith() throws Exception {
-		
-		MultiValueMap mvm = MultiValueMap.create(MapUtil.<Object>chainKeyMap().put("userId", "bleujin").put("notifyId", "1234").toMap());
-		ParameterMap params = ParameterMap.create(mvm);
+		ParameterMap params = ParameterMap.create(MapUtil.<String>chainKeyMap().put("userId", "bleujin").put("notifyId", "1234").toMap());
 		ts.callFn("room/removeNotifyDataWith", params) ;
 	}
 	
 	public void testSendMessageWith() throws Exception {
-		MultiValueMap mvm = MultiValueMap.create(MapUtil.<Object>chainKeyMap()
+		Map<String, String> mvm = MapUtil.<String>chainKeyMap()
+					.put("messageId", "mmmiii")
 					.put("roomId", "1234")
-					.put("sender", "bleujin").put("message", "Hi Bleujin").put("clientScript", ";").put("event", "onMessage").toMap());
+					.put("sender", "bleujin").put("message", "Hi Bleujin").put("clientScript", ";").put("event", "onMessage").toMap();
 		ParameterMap params = ParameterMap.create(mvm);
 		ts.callFn("room/sendMessageWith", params) ;
 		
 		ReadNode node = session.pathBy("/rooms/1234/messages").children().firstNode() ;
-		
-		assertEquals("onMessage", node.property("event").asString()); 
+		assertEquals("{event:'onMessage'}", node.property("options").asString()); 
 	}
-	
-	
-	
 	
 }

@@ -1,10 +1,7 @@
 package net.ion.talk.bot;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.nio.charset.Charset;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -14,9 +11,8 @@ import net.ion.craken.node.ReadSession;
 import net.ion.framework.util.Debug;
 import net.ion.framework.util.StringUtil;
 import net.ion.radon.aclient.NewClient;
-import net.ion.radon.impl.util.CsvReader;
+import net.ion.radon.util.csv.CsvReader;
 import net.ion.talk.TalkMessage;
-import net.ion.talk.UserConnection;
 import net.ion.talk.fake.FakeUserConnection;
 import net.ion.talk.script.BotScript;
 import net.ion.talk.script.WhisperMessage;

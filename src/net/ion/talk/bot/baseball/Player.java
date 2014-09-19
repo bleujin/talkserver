@@ -1,9 +1,9 @@
 package net.ion.talk.bot.baseball;
 
+import java.util.Map;
+
 import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.util.MapUtil;
-
-import java.util.Map;
 
 public class Player {
 

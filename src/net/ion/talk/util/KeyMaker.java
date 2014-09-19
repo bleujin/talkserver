@@ -6,7 +6,7 @@ import java.util.Date;
 import net.ion.framework.util.HashFunction;
 import net.ion.framework.util.StringUtil;
 import net.ion.nradon.helpers.Hex;
-import net.ion.radon.impl.util.CipherUtil;
+import net.ion.radon.util.csv.CipherUtil;
 
 public class KeyMaker {
 

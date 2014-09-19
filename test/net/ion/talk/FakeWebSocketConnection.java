@@ -1,24 +1,20 @@
 package net.ion.talk;
 
-import java.io.IOException;
 import java.net.SocketAddress;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.Executor;
 
-import net.ion.framework.util.Debug;
 import net.ion.framework.util.ListUtil;
 import net.ion.framework.util.MapUtil;
 import net.ion.framework.util.ObjectUtil;
 import net.ion.nradon.HttpRequest;
 import net.ion.nradon.WebSocketConnection;
+import net.ion.nradon.helpers.HttpCookie;
 
 import org.jboss.netty.channel.ChannelFuture;
-import org.restlet.data.Cookie;
-import org.restlet.data.MediaType;
-import org.restlet.representation.Representation;
 
 public class FakeWebSocketConnection implements WebSocketConnection {
 
@@ -238,7 +234,7 @@ public class FakeWebSocketConnection implements WebSocketConnection {
 			}
 			
 			@Override
-			public List<Cookie> cookies() {
+			public List<HttpCookie> cookies() {
 				// TODO Auto-generated method stub
 				return null;
 			}
@@ -250,16 +246,11 @@ public class FakeWebSocketConnection implements WebSocketConnection {
 			}
 			
 			@Override
-			public Cookie cookie(String s) {
+			public HttpCookie cookie(String s) {
 				// TODO Auto-generated method stub
 				return null;
 			}
 			
-			@Override
-			public Representation bodyAsRepresentation(MediaType mediatype) throws IOException {
-				// TODO Auto-generated method stub
-				return null;
-			}
 			
 			@Override
 			public byte[] bodyAsBytes() {

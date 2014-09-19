@@ -10,9 +10,7 @@ import net.ion.talk.FakeWebSocketConnection;
 import net.ion.talk.TalkEngine;
 import net.ion.talk.bean.Const;
 
-/**
- * Created with IntelliJ IDEA. User: Ryun Date: 2014. 2. 3. Time: 오후 5:15 To change this template use File | Settings | File Templates.
- */
+
 public class TestUserConnectionHandler extends TestCase {
 
 	private WebSocketConnection ryun = FakeWebSocketConnection.create("ryun");

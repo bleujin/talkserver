@@ -1,46 +1,44 @@
 package net.ion.talk.toonweb;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+
 import net.ion.framework.util.ObjectUtil;
-import net.ion.nradon.let.IServiceLet;
-import net.ion.radon.core.annotation.AnRequest;
-import net.ion.radon.core.annotation.ContextParam;
-import net.ion.radon.core.let.InnerRequest;
+import net.ion.radon.core.ContextParam;
+import net.ion.radon.core.let.FileResponseBuilder;
 
-import org.apache.commons.io.FilenameUtils;
-import org.restlet.data.Status;
-import org.restlet.representation.InputRepresentation;
-import org.restlet.representation.Representation;
-import org.restlet.resource.Get;
-import org.restlet.resource.ResourceException;
+@Path("/toonweb")
+public class ToonWebResourceLet {
 
-public class ToonWebResourceLet  implements IServiceLet {
-
-	@Get
-	public Representation deliverFile(@ContextParam("baseDir") String baseDir, @AnRequest InnerRequest request) throws IOException {
-
-		final String resourceHome = ObjectUtil.coalesce(baseDir, "./resource/toonweb/");
-        String resourceName = request.getPathReference().getPath();
-        String extension = FilenameUtils.getExtension(request.getRemainPath());
-
-        if("/".equals(resourceName)) {
-            resourceName = "/index.html";
-            extension = "html";
-        }
-
-        File file = new File(resourceHome + resourceName);
-
+	@GET
+	@Path("/")
+	public Response indexFile(@ContextParam("resourceDir") String baseDir) throws IOException {
+		final String dirHome = ObjectUtil.coalesce(baseDir, "./resource/toonweb/");
+        File file = new File(dirHome, "index.html");
 		if (file.exists()) {
-			FileInputStream fis = new FileInputStream(file);
-
-			return new InputRepresentation(fis, request.getPathService().getAradon().getMetadataService().getMediaType(extension));
+			return new FileResponseBuilder(file).build() ;
 		} else {
-			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND) ;
+			return Response.status(Status.NOT_FOUND).build() ;
 		}
 	}
-
+	
+	@GET
+	@Path("/{remain:.*}")
+	public Response deliverFile(@ContextParam("resourceDir") String baseDir, @DefaultValue("") @PathParam("remain") String resourceName) throws IOException {
+		final String dirHome = ObjectUtil.coalesce(baseDir, "./resource/toonweb/");
+        File file = new File(dirHome, resourceName);
+		if (file.exists()) {
+			return new FileResponseBuilder(file).build() ;
+		} else {
+			return Response.status(404).build() ;
+		}
+	}
 }
 

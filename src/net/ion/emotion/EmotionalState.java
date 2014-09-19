@@ -18,13 +18,9 @@
  */
 package net.ion.emotion;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.SortedSet;
-import java.util.TreeSet;
 
 import net.ion.emotion.Emotion.EType;
-import net.ion.framework.util.ListUtil;
 
 /**
  * Defines emotional content of the text.

@@ -4,27 +4,20 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.apache.ecs.xhtml.a;
-import org.infinispan.atomic.AtomicMap;
-
-import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.tree.PropertyId;
 import net.ion.craken.tree.PropertyValue;
 import net.ion.framework.logging.LogBroker;
 import net.ion.framework.util.MapUtil;
 import net.ion.message.push.sender.Pusher;
-import net.ion.radon.aclient.NewClient;
 import net.ion.talk.TalkEngine;
 import net.ion.talk.UserConnection;
 import net.ion.talk.account.Account.Type;
-import net.ion.talk.bean.Const;
-import net.ion.talk.responsebuilder.TalkResponse;
 import net.ion.talk.script.BotScript;
 
-/**
- * Created with IntelliJ IDEA. User: Ryun Date: 2014. 2. 20. Time: 오후 4:15 To change this template use File | Settings | File Templates.
- */
+import org.infinispan.atomic.AtomicMap;
+
+
 public class AccountManager {
 
 	private final Pusher pusher;
@@ -37,7 +30,7 @@ public class AccountManager {
 	
 	private Account NotRegisteredUser = new Account("notFound", Type.NOT_REGISTERED) {
 		@Override
-		public void onMessage(String notifyId, AtomicMap<PropertyId, PropertyValue> pmap) {
+		public void onMessage(String notifyId, EventMap pmap) {
 			log.warning("not registed user");
 		}
 	};

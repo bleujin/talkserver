@@ -2,25 +2,35 @@ package net.ion.talk.let;
 
 import java.io.File;
 
-import org.restlet.data.MediaType;
-import org.restlet.representation.FileRepresentation;
-import org.restlet.representation.Representation;
-import org.restlet.resource.Get;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Response;
 
-import net.ion.nradon.let.IServiceLet;
-import net.ion.radon.core.annotation.AnRequest;
-import net.ion.radon.core.annotation.PathParam;
-import net.ion.radon.core.let.InnerRequest;
+import net.ion.radon.core.let.FileResponseBuilder;
 
-public class BotImageLet implements IServiceLet {
+@Path("/bot")
+public class BotImageLet {
 
-	@Get
-	public Representation viewWebImage(@AnRequest InnerRequest request, @PathParam("botId") String botId){
+	@GET
+	@Path("/icon/{botId}.jpg")
+	public Response viewWebImage(@PathParam("botId") String botId){
 		
-		File file = new File("./resource/bot/" + botId + "/" + request.getRemainPath()) ;
+		File file = new File("./resource/bot/" + botId + "_web.jpg") ;
 		if (! file.exists()) {
 			file = new File("./resource/bot/unknown.jpg") ;
 		}
-		return new FileRepresentation(file, MediaType.IMAGE_JPEG) ;
+		return new FileResponseBuilder(file).build() ;
+	}
+
+	@GET
+	@Path("/bimage/{botId}/{remain : .*}")
+	public Response viewWebImage(@PathParam("botId") String botId, @PathParam("remain") String remainPath){
+		
+		File file = new File("./resource/bot/" + botId + "/" + remainPath) ;
+		if (! file.exists()) {
+			file = new File("./resource/bot/unknown.jpg") ;
+		}
+		return new FileResponseBuilder(file).build() ;
 	}
 }

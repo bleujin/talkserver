@@ -22,10 +22,7 @@ import net.ion.rosetta.Parser;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
-/**
- * Author: Ryunhee Han
- * Date: 2014. 1. 14.
- */
+
 public abstract class AbstractBuilder {
 
     private Cache<String, Object> props = CacheBuilder.newBuilder().build() ;

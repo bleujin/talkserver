@@ -11,9 +11,7 @@ public class TestAllLet extends TestCase {
 		TestSuite result = new TestSuite("Test All Let");
 
 		result.addTestSuite(TestLoginLet.class);
-		result.addTestSuite(TestScriptEditLet.class);
 		result.addTestSuite(TestScriptExecLet.class);
-		result.addTestSuite(TestResourceLet.class);
 
 		return result;
 	}

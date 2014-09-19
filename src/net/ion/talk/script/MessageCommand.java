@@ -1,7 +1,6 @@
 package net.ion.talk.script;
 
 import net.ion.framework.util.NumberUtil;
-import net.ion.framework.util.ObjectUtil;
 import net.ion.framework.util.StringUtil;
 
 public class MessageCommand {

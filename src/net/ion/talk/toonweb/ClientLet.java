@@ -1,81 +1,82 @@
 package net.ion.talk.toonweb;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
-import net.ion.framework.parse.gson.JsonObject;
-import net.ion.framework.util.Debug;
 import net.ion.framework.util.IOUtil;
 import net.ion.framework.util.MapUtil;
-import net.ion.nradon.let.IServiceLet;
-import net.ion.radon.core.TreeContext;
-import net.ion.radon.core.annotation.AnContext;
-import net.ion.radon.core.annotation.AnRequest;
-import net.ion.radon.core.annotation.ContextParam;
-import net.ion.radon.core.annotation.FormParam;
-import net.ion.radon.core.annotation.PathParam;
-import net.ion.radon.core.let.InnerRequest;
-import net.ion.talk.TalkEngine;
+import net.ion.nradon.handler.authentication.BasicAuthenticationHandler;
+import net.ion.radon.core.ContextParam;
 import net.ion.talk.bean.Const.User;
 import net.ion.talk.let.LoginLet;
 
 import org.antlr.stringtemplate.StringTemplate;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.data.Status;
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.resource.Get;
-import org.restlet.resource.Post;
-import org.restlet.resource.ResourceException;
+import org.jboss.resteasy.spi.HttpRequest;
 
-public class ClientLet implements IServiceLet {
+@Path("/session")
+public class ClientLet {
 
-	@Get @Post
-	public Representation viewPage(
-				@ContextParam("repository") RepositoryEntry rentry, @AnRequest InnerRequest request) throws IOException, InterruptedException, ExecutionException{
-		
-		final String userId = request.getClientInfo().getUser().getIdentifier() ;
-		ReadSession session = rentry.login() ;
-		String websocketURI = LoginLet.targetAddress(session, userId) ;
-		
+	@GET @POST
+	@Path("/")
+	@Produces(MediaType.TEXT_HTML)
+	public Response viewPage(@ContextParam("repository") RepositoryEntry rentry, @Context HttpRequest request) throws IOException, InterruptedException, ExecutionException {
+
+		final String userId = (String) request.getAttribute(BasicAuthenticationHandler.USERNAME);
+		ReadSession session = rentry.login();
+		String websocketURI = LoginLet.targetAddress(session, userId);
+
 		// net.ion.toon.aradon.ClientLet
-		String fileName = "./resource/toonweb/chat.htm" ;
+		String fileName = "./resource/toonweb/chat.htm";
 		File tplFile = new File(fileName);
 		if (!tplFile.exists())
-			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "not found template file : " + fileName);
+			return Response.status(Status.NOT_FOUND).build() ;
 
 		final StringWriter template = new StringWriter();
-		IOUtil.copyNClose( new FileReader(tplFile), template) ;
-		
-		
-		String nickName = session.pathBy("/users/" + userId).property(User.NickName).asString() ;
+		IOUtil.copyNClose(new FileReader(tplFile), template);
+
+		String nickName = session.pathBy("/users/" + userId).property(User.NickName).asString();
 		StringTemplate st = new StringTemplate(template.toString());
-		Map<String, String> configMap = MapUtil.<String>chainKeyMap().put("address", websocketURI).put("sender", userId).put("nickName", nickName).toMap() ;
-		
+		Map<String, String> configMap = MapUtil.<String> chainKeyMap().put("address", websocketURI).put("sender", userId).put("nickName", nickName).toMap();
+
 		st.setAttribute("config", configMap);
-		
+
 		session.tran(new TransactionJob<Void>() {
 			@Override
 			public Void handle(WriteSession wsession) throws Exception {
-				wsession.pathBy("/connections/" + userId).property("source", "web") ;
+				wsession.pathBy("/connections/" + userId).property("source", "web");
 				return null;
 			}
 		});
-		
-		
-		
-		return new StringRepresentation(st.toString(), MediaType.TEXT_HTML, Language.ALL);
+
+		return Response.ok().entity(st.toString()).build() ;
+	}
+
+	@GET
+	@POST
+	@Produces(javax.ws.rs.core.MediaType.TEXT_PLAIN)
+	@Path("/reload")
+	public String websocketURI(@ContextParam("repository") RepositoryEntry rentry, @Context HttpRequest request) throws IOException, InterruptedException, ExecutionException {
+		final String userId = (String) request.getAttribute(BasicAuthenticationHandler.USERNAME);
+		ReadSession session = rentry.login();
+		String websocketURI = LoginLet.targetAddress(session, userId);
+
+		return websocketURI;
 	}
 }

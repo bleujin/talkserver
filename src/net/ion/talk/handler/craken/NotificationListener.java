@@ -9,10 +9,8 @@ import net.ion.craken.node.crud.TreeNodeKey;
 import net.ion.craken.tree.PropertyId;
 import net.ion.craken.tree.PropertyValue;
 import net.ion.talk.account.AccountManager;
+import net.ion.talk.account.EventMap;
 import net.ion.talk.bean.Const.Connection;
-import net.ion.talk.bean.Const.User;
-import net.ion.talk.responsebuilder.TalkResponse;
-import net.ion.talk.responsebuilder.TalkResponseBuilder;
 
 import org.infinispan.atomic.AtomicMap;
 import org.infinispan.notifications.Listener;
@@ -42,11 +40,11 @@ public class NotificationListener implements WorkspaceListener{
 			final String userId = resolveMap.get("userId");
 			final String notifyId = resolveMap.get("notifyId");
 
-			AtomicMap<PropertyId, PropertyValue> pmap = event.getValue() ;
-			PropertyValue pvalue = pmap.get(PropertyId.fromIdString(Connection.DelegateServer)) ;
+			EventMap emap = EventMap.create(event) ;
+			PropertyValue pvalue = emap.idString(Connection.DelegateServer) ;
 			
 			if(pvalue != null && pvalue.stringValue().equals(this.memberId)){
-                am.newAccount(userId).onMessage(notifyId, pmap);
+                am.newAccount(userId).onMessage(notifyId, emap);
             }
 		}
 	}

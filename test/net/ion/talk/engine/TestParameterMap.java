@@ -1,35 +1,35 @@
 package net.ion.talk.engine;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Map;
 
-import net.ion.talk.ParameterMap;
-import net.ion.talk.util.NetworkUtil;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 
-import org.restlet.data.Method;
-import org.restlet.resource.Post;
-import org.restlet.resource.Put;
-
+import junit.framework.TestCase;
 import net.ion.framework.util.Debug;
-import net.ion.framework.util.IOUtil;
 import net.ion.nradon.Radon;
-import net.ion.nradon.let.IServiceLet;
-import net.ion.radon.aclient.FluentStringsMap;
+import net.ion.nradon.config.RadonConfiguration;
 import net.ion.radon.aclient.NewClient;
 import net.ion.radon.aclient.Request;
 import net.ion.radon.aclient.RequestBuilder;
 import net.ion.radon.aclient.Response;
 import net.ion.radon.aclient.multipart.FilePart;
 import net.ion.radon.aclient.multipart.StringPart;
-import net.ion.radon.core.Aradon;
-import net.ion.radon.core.annotation.AnRequest;
-import net.ion.radon.core.let.InnerRequest;
-import net.ion.radon.core.let.MultiValueMap;
-import net.ion.radon.util.AradonTester;
-import junit.framework.TestCase;
+import net.ion.radon.core.let.PathHandler;
+import net.ion.talk.ParameterMap;
+import net.ion.talk.util.NetworkUtil;
+
+import org.jboss.netty.handler.codec.http.HttpMethod;
+import org.jboss.resteasy.plugins.providers.multipart.FormDataHandler;
+import org.jboss.resteasy.plugins.providers.multipart.InputBody;
+import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
+import org.jboss.resteasy.spi.HttpRequest;
 
 public class TestParameterMap extends TestCase {
 
@@ -39,8 +39,7 @@ public class TestParameterMap extends TestCase {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		Aradon aradon = AradonTester.create().register("test", "/param", ParamLet.class).register("test", "/params", ParamsLet.class).getAradon();
-		this.radon = aradon.toRadon(8999).start().get();
+		this.radon = RadonConfiguration.newBuilder(8999).add(new PathHandler(ParamLet.class, ParamsLet.class).prefixURI("/test")).startRadon() ;
 		this.client = NewClient.create();
 	}
 
@@ -51,15 +50,18 @@ public class TestParameterMap extends TestCase {
 		super.tearDown();
 	}
 
-	public void testParamType() throws Exception {
+	public void testFormParamType() throws Exception {
 
-		Response response = client.preparePost(NetworkUtil.httpAddress(8999, "/test/param")).addParameter("string", "?�녕").addParameter("int", "1").addParameter("long", "1").execute().get();
+		Response response = client.preparePost(NetworkUtil.httpAddress(8999, "/test/param")).addParameter("string", "안녕").addParameter("int", "1").addParameter("long", "1").execute().get();
 		assertEquals("ok", response.getTextBody());
 	}
 
-	public void testMultiPartType() throws Exception {
+	public void testMultiPartForm() throws Exception {
 
-		Response response = client.preparePut(NetworkUtil.httpAddress(8999, "/test/param")).addBodyPart(new StringPart("string", "안녕")).addBodyPart(new StringPart("int", "1")).addBodyPart(new StringPart("long", "1")).addBodyPart(new FilePart("file", new File("./resource/testScript.js"))).execute()
+		Response response = client.preparePut(NetworkUtil.httpAddress(8999, "/test/param"))
+				.addBodyPart(new StringPart("string", "안녕"))
+				.addBodyPart(new StringPart("int", "1")).addBodyPart(new StringPart("long", "1"))
+				.addBodyPart(new FilePart("file", new File("./resource/testScript.js"))).execute()
 				.get();
 
 		assertEquals("ok", response.getTextBody());
@@ -67,7 +69,7 @@ public class TestParameterMap extends TestCase {
 
 	public void xtestParamsType() throws Exception {
 
-		final Request request = new RequestBuilder().setUrl(NetworkUtil.httpAddress(8999, "/test/params")).setMethod(Method.POST)
+		final Request request = new RequestBuilder().setUrl(NetworkUtil.httpAddress(8999, "/test/params")).setMethod(HttpMethod.POST)
 					.addParameter("string", "안녕").addParameter("string", "안녕2").build();
 		Debug.line(request.getParams());
 
@@ -77,33 +79,42 @@ public class TestParameterMap extends TestCase {
 
 }
 
-class ParamLet implements IServiceLet {
+@Path("/param")
+class ParamLet {
 
-	@Put
-	public String viewStremaParam(@AnRequest InnerRequest req) throws IOException {
-		ParameterMap params = ParameterMap.create(req.getFormParameter());
-		Debug.line(params.asString("string"), params.asInt("int"), params.asLong("long"), IOUtil.toStringWithClose(params.asStream("file")));
+	@PUT
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	public String viewStremaParam(MultipartFormDataInput input) throws IOException {
+		final ParameterMap params = ParameterMap.create() ;
+		input.dataHandle(new FormDataHandler<Void>() {
+			@Override
+			public Void handle(InputBody ibody) throws IOException {
+				params.addValue(ibody.name(), ibody.asString()) ;
+				return null;
+			}
+		}) ;
 
+		Debug.line(params.asString("string"), params.asStrings("string"), params.asInt("int"), params.asString("file"));
 		return "ok";
 	}
 
-	@Post
-	public String viewParam(@AnRequest InnerRequest req) {
-		ParameterMap params = ParameterMap.create(req.getFormParameter());
-		Debug.line(params.asString("string"), params.asInt("int"), params.asLong("long"));
+	@POST
+	public String viewParam(@Context HttpRequest req, @FormParam("string") String svalue) {
+		ParameterMap params = ParameterMap.create(req);
+		Debug.line(req.getFormParameters().getFirst("string"), params.asString("string"), params.asInt("int"), params.asLong("long"), svalue);
 
 		return "ok";
 	}
 }
 
-class ParamsLet implements IServiceLet {
-	@Post
-	public String viewParams(@AnRequest InnerRequest req) {
+@Path("/params")
+class ParamsLet  {
+	@POST
+	public String viewParams(@Context HttpRequest req) {
 
-		ParameterMap params = ParameterMap.create(req.getFormParameter());
+		ParameterMap params = ParameterMap.create(req);
 
 		Debug.line(params.asStrings("string"));
-
 		return "ok";
 	}
 

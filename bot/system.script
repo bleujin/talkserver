@@ -1,4 +1,7 @@
 new function(){
+	importPackage(net.ion.framework.util) ;
+		
+
 	var toString = function(obj) {
 	    var str = '';
 	    for (var p in obj) {
@@ -130,8 +133,6 @@ new function(){
 	}, 
 
 	this.join = function(scriptMsg, cparam, source){
-		importPackage(net.ion.framework.util) ;
-		
 		var roomId = cparam.remain(0) ;
 		if (StringUtil.isBlank(roomId)) {
 			return {message:'roomId cannt blank'} ;
@@ -175,7 +176,7 @@ new function(){
 			
 			if (next.property("receivers").asString() > ' ' && ! next.property("receivers").asSet().contains(scriptMsg.fromUserId())) continue ;
 			
-			source.sendMessage(rb.makeCommandBuilder("/whisper/system")
+			source.sendMessage(rb.makeCommandBuilder("/whisper/system/" + cparam.fnName())
 			  .inner("result")
 				// .property(next, "message, sender.userId as sender, sender.nickname as senderNickname, requestId, clientScript, options, messageId, time, listener, toon")
 				.property("svgUrl", "/svg/message/" + roomId + "/" + next.property("messageId").asString() + "?botId=" + postBotInRoom)
@@ -356,7 +357,7 @@ new function(){
 		var lon = node.property('longitude').asString() ;
 		
 		if (cparam.remain(0).equals("google")){
-			return { message: "<img src='http://maps.googleapis.com/maps/api/staticmap?center=" + lat + "," + lon + "&zoom=16&size=300x400&sensor=false'>" };		
+			return { message: "<img src='http://maps.googleapis.com/maps/api/staticmap?center=" + lat + "," + lon + "&amp;zoom=16&amp;size=300x400&amp;sensor=false' />" };		
 		}
 		
 		return {message:'latitude:' + lat + ', longitude:' + lon};
@@ -406,13 +407,14 @@ new function(){
 		} 
 		
 		if(session.pathBy("/rooms/" + scriptMsg.fromRoomId()+"/members/").hasChild(targetId)){
-			 return {message: '[userId:' + targetId + '] is member'} ;		
+			 return {message: '[userId:' + targetId + '] already is member'} ;		
 		}
 		
 		session.tranSync(function(wsession){
 			wsession.pathBy("/rooms/" + scriptMsg.fromRoomId() + "/members/" + targetId).refTo("user", "/users/"+scriptMsg.fromUserId()) ;
 		}) ;
 		
+
 		return ;
 	}, 
 	

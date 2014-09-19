@@ -9,9 +9,7 @@ import net.ion.framework.util.Debug;
 import net.ion.talk.FakeWebSocketConnection;
 import net.ion.talk.TalkEngine;
 
-/**
- * Created with IntelliJ IDEA. User: Ryun Date: 2014. 2. 5. Time: 오전 10:36 To change this template use File | Settings | File Templates.
- */
+
 public class TestWebSocketTalkMessageHandler extends TestCase {
 
 	private TalkEngine tengine;
@@ -77,19 +75,20 @@ public class TestWebSocketTalkMessageHandler extends TestCase {
 	public void testEmptyMessage() {
 		tengine.onOpen(ryun);
 		tengine.onMessage(ryun, "{}");
-		assertEquals("illegal message : {}", ryun.recentMsg());
-		tengine.onMessage(ryun, "");
-		assertEquals("illegal message : ", ryun.recentMsg());
+		assertEquals("failure", JsonObject.fromString(ryun.recentMsg()).asString("status"));
+		tengine.onMessage(ryun, "''");
+		assertEquals("failure", JsonObject.fromString(ryun.recentMsg()).asString("status"));
 	}
 
 	public void testInvalidScriptWillBeEchoed() {
 		tengine.onOpen(ryun);
-		tengine.onMessage(ryun, "{a}");
-		assertEquals("illegal message : {a}", ryun.recentMsg());
-		tengine.onMessage(ryun, "{안녕}");
-		assertEquals("illegal message : {안녕}", ryun.recentMsg());
-		tengine.onMessage(ryun, "{\"cript\":\"hell\"}");
-		assertEquals("illegal message : {\"cript\":\"hell\"}", ryun.recentMsg());
+		tengine.onMessage(ryun, "{k:0}");
+		Debug.line(ryun.recentMsg());
+		assertEquals("failure", JsonObject.fromString(ryun.recentMsg()).asString("status"));
+//		tengine.onMessage(ryun, "{안녕}");
+//		assertEquals("illegal message : {안녕}", ryun.recentMsg());
+//		tengine.onMessage(ryun, "{\"cript\":\"hell\"}");
+//		assertEquals("illegal message : {\"cript\":\"hell\"}", ryun.recentMsg());
 	}
 
 }

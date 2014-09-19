@@ -170,7 +170,7 @@ new function(){
 	} ;
 	
 	this.onLoad = function(){
-		var reader = new net.ion.radon.impl.util.CsvReader(new java.io.StringReader(emps)) ;
+		var reader = new net.ion.radon.util.csv.CsvReader(new java.io.StringReader(emps)) ;
 		reader.setFieldDelimiter('\t');
 		reader.setBlockDelimiter('\n');
 

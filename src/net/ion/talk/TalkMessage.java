@@ -1,12 +1,10 @@
 package net.ion.talk;
 
-import scala.xml.PrettyPrinter.Para;
+import java.util.Map;
+
 import net.ion.framework.parse.gson.JsonObject;
-import net.ion.framework.parse.gson.JsonUtil;
-import net.ion.framework.util.ObjectUtil;
+import net.ion.framework.util.MapUtil;
 import net.ion.framework.util.StringUtil;
-import net.ion.talk.script.MessageCommand;
-import net.ion.talk.script.ScriptMessage;
 
 public abstract class TalkMessage {
 
@@ -42,9 +40,9 @@ public abstract class TalkMessage {
 	
 	public abstract String userMessage() ;
 	
-	public abstract TalkMessage setParam(String name, Object value) ;
+	public abstract TalkMessage setParam(String name, String value) ;
 
-	public abstract TalkMessage resetParam(String name, Object value) ;
+	public abstract TalkMessage resetParam(String name, String value) ;
 
 }
 
@@ -59,7 +57,13 @@ class TalkNormalMessage extends TalkMessage {
 	TalkNormalMessage(JsonObject json) {
 		this.id = json.asString("id") ;
 		this.scriptPath = json.asString("script") ;
-		this.params = ParameterMap.create(json.asJsonObject("params")) ;
+
+		JsonObject paramJson = json.asJsonObject("params") ;
+		Map<String, String> map = MapUtil.newMap() ;
+		for(String key : paramJson.keySet()){
+			map.put(key, paramJson.asString(key)) ;// case sensitive
+		}
+		this.params = ParameterMap.create(map) ;
 		this.plainMessage = json.toString() ;
 	}
 
@@ -91,12 +95,12 @@ class TalkNormalMessage extends TalkMessage {
 		return plainMessage;
 	}
 	
-	public TalkNormalMessage setParam(String name, Object value){
+	public TalkNormalMessage setParam(String name, String value){
 		params.set(name, value) ;
 		return this ;
 	}
 	
-	public TalkNormalMessage resetParam(String name, Object value){
+	public TalkNormalMessage resetParam(String name, String value){
 		params.reset(name, value) ;
 		return this ;
 	}
@@ -151,12 +155,12 @@ class IllegalTalkMessage extends TalkMessage{
 		return StringUtil.EMPTY ;
 	}
 	
-	public TalkMessage setParam(String name, Object value) {
+	public TalkMessage setParam(String name, String value) {
 		return this ;
 	}
 	
 	
-	public TalkMessage resetParam(String name, Object value) {
+	public TalkMessage resetParam(String name, String value) {
 		return this ;
 	}
 }

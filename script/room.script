@@ -1,4 +1,7 @@
 new function(){
+	importPackage(net.ion.framework.util)
+	importPackage(java.lang)
+
 	// 방에 초대 (방이 없을때는 방이 생성 됨)
 	this.createWith = function(params){
 		var members= params.asStrings("members");
@@ -107,7 +110,6 @@ new function(){
 	}, 
 	// 메세지 전송
 	this.sendMessageWith = function(params){
-//		importPackage(net.ion.framework.util)
 
 		var receivers = params.asStrings("receivers");
 		var time= new Date().getTime();
@@ -124,6 +126,8 @@ new function(){
 				.append("receivers", receivers);
 				
 //		       msgNode.append("receivers", receivers);
+
+			
 		});	
 	}
 

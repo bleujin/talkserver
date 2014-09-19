@@ -1,12 +1,11 @@
 package net.ion.framework.mail;
 
+import java.util.concurrent.Future;
+
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 public class BBotMailer {
 

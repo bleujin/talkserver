@@ -7,25 +7,23 @@ import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
 import net.ion.framework.util.Debug;
 import net.ion.nradon.Radon;
+import net.ion.nradon.stub.StubHttpResponse;
 import net.ion.radon.aclient.NewClient;
-import net.ion.radon.aclient.Response;
-import net.ion.radon.core.Aradon;
-import net.ion.radon.util.AradonTester;
+import net.ion.radon.client.StubServer;
 import net.ion.talk.bean.Const;
 
 public class TestSVGLet extends TestCase {
 
 	private Radon radon;
 	private RepositoryEntry rentry;
+	private StubServer ss;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		Aradon aradon = AradonTester.create().register("svg", "/message/{roomId}/{messageId}", MessageSVGLet.class).getAradon();
-		this.rentry = RepositoryEntry.test();
-		aradon.getServiceContext().putAttribute(rentry.EntryName, rentry) ;
-		
-		this.radon = aradon.toRadon(9000).start().get() ;
+		// Aradon aradon = AradonTester.create().register("svg", "/message/{roomId}/{messageId}", SVGLet.class).getAradon();
+		this.ss = StubServer.create(SVGLet.class) ;
+		this.rentry = ss.treeContext().putAttribute(rentry.EntryName, RepositoryEntry.test()) ;
 	}
 	
 	@Override
@@ -53,9 +51,8 @@ public class TestSVGLet extends TestCase {
 		}) ;
 		
 		NewClient nc = NewClient.create();
-		Response response = nc.prepareGet("http://61.250.201.157:9000/svg/message/roomroom/12345?type=sender&botId=wowe").execute().get() ;
-		
-		Debug.line(response.getTextBody()) ;
+		StubHttpResponse response = ss.request("/svg/message/roomroom/12345?type=sender&botId=wowe").get() ;
+		Debug.line(response.contentsString()) ;
 		nc.close(); 
 	}
 }

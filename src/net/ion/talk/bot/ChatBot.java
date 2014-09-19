@@ -15,13 +15,7 @@ import net.ion.emotion.Empathyscope;
 import net.ion.framework.util.RandomUtil;
 import net.ion.talk.bean.Const;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Ryun
- * Date: 2014. 3. 2.
- * Time: 오후 4:20
- * To change this template use File | Settings | File Templates.
- */
+
 public class ChatBot extends EmbedBot {
 
 

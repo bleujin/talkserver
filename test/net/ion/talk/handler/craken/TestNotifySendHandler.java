@@ -1,12 +1,8 @@
 package net.ion.talk.handler.craken;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Ryun
- * Date: 2014. 2. 21.
- * Time: 오후 4:34
- * To change this template use File | Settings | File Templates.
- */
+
+
+import java.io.IOException;
 
 import junit.framework.TestCase;
 import net.ion.craken.node.crud.TreeNodeKey;
@@ -15,15 +11,12 @@ import net.ion.craken.tree.PropertyId;
 import net.ion.craken.tree.PropertyValue;
 import net.ion.talk.account.Account;
 import net.ion.talk.account.AccountManager;
+import net.ion.talk.account.EventMap;
 import net.ion.talk.bean.Const;
 import net.ion.talk.fake.FakeEvent;
-import net.ion.talk.responsebuilder.TalkResponse;
 
 import org.infinispan.atomic.AtomicHashMap;
-import org.infinispan.atomic.AtomicMap;
 import org.infinispan.notifications.cachelistener.event.Event;
-
-import java.io.IOException;
 
 public class TestNotifySendHandler extends TestCase {
 
@@ -71,7 +64,7 @@ public class TestNotifySendHandler extends TestCase {
 
             return new Account(userId, null) {
                 @Override
-                public void onMessage(String notifyId, AtomicMap<PropertyId, PropertyValue> pmap) {
+                public void onMessage(String notifyId, EventMap pmap) {
                     FakeAccountManager.this.notifyId = notifyId;
                 }
             };

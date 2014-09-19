@@ -13,7 +13,7 @@ public class TestSimSimIBot extends TestBaseServer {
 		assertEquals(true, session.exists("/bots/simsimi"));
 		assertEquals(true, session.exists("/users/simsimi"));
 
-		assertEquals("SimSimI bot", session.pathBy("/users/simsimi").property("nickname").asString());
+		assertEquals("simsimi bot", session.pathBy("/users/simsimi").property("nickname").asString());
 	}
 
 	public void testOnEnter() throws Exception {
@@ -39,7 +39,7 @@ public class TestSimSimIBot extends TestBaseServer {
 		Thread.sleep(500); // wait workspace Listener(NotificationListener)
 
 		assertEquals(3, session.pathBy("/rooms/roomroom/messages").children().count());
-		assertEquals(1, session.pathBy("/notifies/bleujin").children().count());
+		assertEquals(2, session.pathBy("/notifies/bleujin").children().count());
 
 		session.pathBy("/rooms/roomroom/messages").children().debugPrint();
 //		new InfinityThread().startNJoin();

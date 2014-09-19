@@ -9,13 +9,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Ryun
- * Date: 2014. 2. 25.
- * Time: 오전 11:34
- * To change this template use File | Settings | File Templates.
- */
+
 public class TestOldBBot extends TestCrakenBase{
 
     private BBot bBot;

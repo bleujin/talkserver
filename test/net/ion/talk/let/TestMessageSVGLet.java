@@ -1,5 +1,12 @@
 package net.ion.talk.let;
 
+import java.net.URI;
+import java.net.URLEncoder;
+import java.util.Date;
+import java.util.Map;
+
+import javax.ws.rs.core.HttpHeaders;
+
 import junit.framework.TestCase;
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.node.ReadNode;
@@ -10,18 +17,10 @@ import net.ion.framework.mte.Engine;
 import net.ion.framework.util.Debug;
 import net.ion.framework.util.IOUtil;
 import net.ion.framework.util.MapUtil;
-import net.ion.radon.client.AradonClient;
-import net.ion.radon.client.AradonClientFactory;
-import net.ion.radon.core.Aradon;
-import net.ion.radon.util.AradonTester;
+import net.ion.nradon.stub.StubHttpResponse;
+import net.ion.radon.client.StubServer;
 import net.ion.talk.bean.Const;
 import net.ion.talk.handler.template.DummyPath;
-import org.restlet.Response;
-import org.restlet.data.Method;
-
-import java.io.IOException;
-import java.util.Date;
-import java.util.Map;
 
 public class TestMessageSVGLet extends TestCase {
 
@@ -41,14 +40,11 @@ public class TestMessageSVGLet extends TestCase {
 	
 	
 	public void testGet() throws Exception {
+		StubServer ss = StubServer.create(SVGLet.class) ;
+		ss.treeContext().putAttribute("repository", this.r) ;
 		
-		Aradon aradon = AradonTester.create().register("svg", "/message/{roomId}/{type}/{messageId}.svg", OldSVGLet.class).getAradon() ;
-		aradon.getServiceContext().putAttribute("repository", this.r) ;
-		
-		AradonClient ac = AradonClientFactory.create(aradon) ;
-		Response response = ac.createRequest("/svg/message/roomroom/sender/12345.svg?charId=bat").handle(Method.GET) ;
-	
-		Debug.line(response.getEntityAsText()) ;
+		StubHttpResponse response = ss.request("/svg/old/roomroom/sender/12345.svg?charId=bat").get() ;
+		Debug.line(response.contentsString()) ;
 	}
 
     public void testMapping() throws Exception {
@@ -77,4 +73,21 @@ public class TestMessageSVGLet extends TestCase {
         Debug.line(result);
 
     }
+    
+
+	public void testURI() throws Exception {
+		URI uri = URI.create("/svg/command/0?message=Welcome%20to%20ToonTalk%20Mobile&type=receiver");
+		URI encodedURI = URI.create("/svg/command/0?" + URLEncoder.encode("message=Welcome to ToonTalk Mobile&type=receiver"));
+		
+		Debug.line(encodedURI.getQuery()) ;
+	}
+	
+	
+	public void testGetWelcome() throws Exception {
+		StubServer ss = StubServer.create(SVGLet.class) ;
+		StubHttpResponse response = ss.request("/svg/command/0?message=Welcome%20to%20ToonTalk%20Mobile&type=receiver").get() ;
+		
+		assertEquals("image/svg+xml", response.header(HttpHeaders.CONTENT_TYPE)) ;
+		assertTrue(response.contentsString().startsWith("<svg")) ;
+	}
 }

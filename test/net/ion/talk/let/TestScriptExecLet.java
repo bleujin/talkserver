@@ -9,17 +9,16 @@ import net.ion.craken.node.crud.RepositoryImpl;
 import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.util.Debug;
 import net.ion.nradon.Radon;
+import net.ion.nradon.config.RadonConfiguration;
 import net.ion.radon.aclient.NewClient;
 import net.ion.radon.aclient.Request;
 import net.ion.radon.aclient.RequestBuilder;
 import net.ion.radon.aclient.Response;
-import net.ion.radon.core.Aradon;
-import net.ion.radon.core.EnumClass.IMatchMode;
-import net.ion.radon.util.AradonTester;
+import net.ion.radon.core.let.PathHandler;
 import net.ion.talk.script.TalkScript;
 import net.ion.talk.util.NetworkUtil;
 
-import org.restlet.data.Method;
+import org.jboss.netty.handler.codec.http.HttpMethod;
 
 public class TestScriptExecLet extends TestCase {
 	
@@ -30,18 +29,14 @@ public class TestScriptExecLet extends TestCase {
 	@Override
 	public void setUp() throws Exception {
 
-
-		Aradon aradon = AradonTester.create().register("execute", "/", "execute", IMatchMode.STARTWITH, ScriptExecLet.class).getAradon();
-
+		radon = RadonConfiguration.newBuilder(9000).add(new PathHandler(ScriptExecLet.class).prefixURI("/execute")).startRadon() ;
+		
 		this.repo = RepositoryImpl.inmemoryCreateWithTest() ;
 		ReadSession rsession = repo.login("test");
 		
 		TalkScript ts = TalkScript.create(rsession, Executors.newScheduledThreadPool(3));
 		ts.readDir(new File("./script"), true) ;
-		
-		aradon.getServiceContext().putAttribute(TalkScript.class.getCanonicalName(), ts) ;
-		this.radon = aradon.toRadon(9000) ;
-		radon.start().get() ;
+		radon.getConfig().getServiceContext().putAttribute(TalkScript.class.getCanonicalName(), ts) ;
 		this.client = NewClient.create() ;
 	}
 	
@@ -54,7 +49,7 @@ public class TestScriptExecLet extends TestCase {
 	}
 
 	public void testAjaxHello() throws Exception {
-		Response response = client.executeRequest(new RequestBuilder().setMethod(Method.POST).setUrl(NetworkUtil.httpAddress(9000, "/execute/test/hello.json")).build()).get();
+		Response response = client.executeRequest(new RequestBuilder().setMethod(HttpMethod.POST).setUrl(NetworkUtil.httpAddress(9000, "/execute/test/hello.json")).build()).get();
 		assertEquals(200, response.getStatusCode());
 		assertEquals("application/json; charset=UTF-8", response.getContentType());
 		JsonObject obj = JsonObject.fromString(response.getTextBody()).asJsonObject("result");
@@ -62,7 +57,7 @@ public class TestScriptExecLet extends TestCase {
 		Debug.line(obj);
 		
 
-		Response responseAsString = client.executeRequest(new RequestBuilder().setMethod(Method.POST).setUrl(NetworkUtil.httpAddress(9000, "/execute/test/hello.string")).build()).get();
+		Response responseAsString = client.executeRequest(new RequestBuilder().setMethod(HttpMethod.POST).setUrl(NetworkUtil.httpAddress(9000, "/execute/test/hello.string")).build()).get();
 		assertEquals("text/plain; charset=UTF-8", responseAsString.getContentType());
 		obj = JsonObject.fromString(responseAsString.getTextBody()).asJsonObject("result");
 		assertEquals("ryun", obj.asString("name"));
@@ -70,7 +65,7 @@ public class TestScriptExecLet extends TestCase {
 	}
 	
 	public void testOnException() throws Exception {
-		Response response = client.executeRequest(new RequestBuilder().setMethod(Method.POST).setUrl(NetworkUtil.httpAddress(9000, "/execute/test/onexception.json")).build()).get();
+		Response response = client.executeRequest(new RequestBuilder().setMethod(HttpMethod.POST).setUrl(NetworkUtil.httpAddress(9000, "/execute/test/onexception.json")).build()).get();
 		assertEquals(200, response.getStatusCode());
 		assertEquals("application/json; charset=UTF-8", response.getContentType());
 		Debug.line(response.getTextBody());
@@ -82,7 +77,7 @@ public class TestScriptExecLet extends TestCase {
 	public void testAjaxGreetingWithParams() throws Exception {
 		
 		
-		RequestBuilder requestBuilder = new RequestBuilder().setMethod(Method.POST)
+		RequestBuilder requestBuilder = new RequestBuilder().setMethod(HttpMethod.POST)
 					.addParameter("name", "alex").addParameter("location", "oregon").addParameter("money", "10000").addParameter("friends", "joshua");
 
 		Request request = requestBuilder.setUrl(NetworkUtil.httpAddress(9000, "/execute/test/greeting.json")).build();

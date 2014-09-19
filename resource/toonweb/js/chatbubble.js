@@ -125,7 +125,7 @@ var ChatBubble = function(config) {
     }
 
     var drawCharacter = function(svg) {
-        var url = '/image/bimage/toon/char/' + character + '/' + emotion + '.png'
+        var url = '/bot/bimage/toon/char/' + character + '/' + emotion + '.png'
         var width = 60
         var height = 60
         var x = matrix().charX

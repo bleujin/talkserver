@@ -8,10 +8,7 @@ import net.ion.framework.parse.gson.JsonArray;
 import net.ion.framework.parse.gson.JsonElement;
 import net.ion.framework.util.ListUtil;
 
-/**
- * Author: Ryunhee Han
- * Date: 2014. 1. 14.
- */
+
 public class ListBuilder extends AbstractBuilder {
 
     private List<BasicBuilder> list = ListUtil.newList();

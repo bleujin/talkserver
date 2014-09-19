@@ -15,13 +15,6 @@ import net.ion.talk.handler.craken.NotificationListener;
 import net.ion.talk.script.BotScript;
 import net.ion.talk.util.CalUtil;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Ryun
- * Date: 2014. 4. 15.
- * Time: 오후 1:24
- * To change this template use File | Settings | File Templates.
- */
 public class TestBrokenMessageHandler extends TestCase {
 
     private ReadSession rsession;

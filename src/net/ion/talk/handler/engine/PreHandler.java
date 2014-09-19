@@ -7,17 +7,12 @@ import javax.script.ScriptException;
 import net.ion.craken.node.IteratorList;
 import net.ion.craken.node.ReadNode;
 import net.ion.craken.node.ReadSession;
-import net.ion.craken.node.crud.ReadChildren;
 import net.ion.framework.logging.LogBroker;
-import net.ion.framework.parse.gson.JsonElement;
-import net.ion.framework.parse.gson.JsonObject;
-import net.ion.framework.util.ObjectUtil;
 import net.ion.framework.util.StringUtil;
 import net.ion.talk.TalkEngine;
 import net.ion.talk.TalkEngine.Reason;
-import net.ion.talk.TalkMessage.MType;
-import net.ion.talk.ParameterMap;
 import net.ion.talk.TalkMessage;
+import net.ion.talk.TalkMessage.MType;
 import net.ion.talk.UserConnection;
 import net.ion.talk.bean.Const;
 import net.ion.talk.bean.Const.Bot;
@@ -26,8 +21,6 @@ import net.ion.talk.handler.TalkHandler;
 import net.ion.talk.script.BotScript;
 import net.ion.talk.script.MessageCommand;
 import net.ion.talk.script.ScriptMessage;
-import net.ion.talk.script.ScriptResponseHandler;
-import net.ion.talk.script.TalkScript;
 
 public class PreHandler implements TalkHandler {
 
@@ -67,7 +60,7 @@ public class PreHandler implements TalkHandler {
 						return tmsg.userMessage();
 					}
 					
-					public ScriptMessage resetParam(String name, Object value){
+					public ScriptMessage resetParam(String name, String value){
 						tmsg.resetParam(name, value) ;
 						return this ;
 					}

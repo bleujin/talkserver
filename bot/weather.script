@@ -44,7 +44,7 @@ new function(){
 
 		session.tran(function(wsession) {
             var messageNode = wsession.pathBy("/rooms/" + roomId + "/messages/" + messageId)
-                .property("message", "/image/bimage/weather/" + wicon+ ".png")
+                .property("message", "/bot/bimage/weather/" + wicon+ ".png")
                 .refTo("sender", "/users/"+selfBotId)
                 .property("roomId", roomId)
                 .property("options", "{event:'onMessage'}")

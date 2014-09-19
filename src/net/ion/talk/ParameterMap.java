@@ -3,34 +3,48 @@ package net.ion.talk;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
+
+import javax.ws.rs.core.MultivaluedMap;
 
 import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.parse.gson.JsonParser;
+import net.ion.framework.util.Debug;
+import net.ion.framework.util.MapUtil;
 import net.ion.framework.util.NumberUtil;
 import net.ion.framework.util.ObjectUtil;
-import net.ion.radon.core.let.MultiValueMap;
 
 import org.apache.commons.fileupload.FileItem;
+import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
+import org.jboss.resteasy.spi.HttpRequest;
 
 public class ParameterMap {
 
-	public static final ParameterMap BLANK = ParameterMap.create(JsonObject.create());
-	private MultiValueMap inner;
-	private ParameterMap(MultiValueMap inner) {
+	public static final ParameterMap BLANK = ParameterMap.create(MapUtil.EMPTY);
+	private MultivaluedMap<String, String> inner;
+	private ParameterMap(MultivaluedMap<String, String> inner) {
 		this.inner = inner ;
 	}
 
-	public static ParameterMap create(MultiValueMap inner){
-		return new ParameterMap(inner) ;
+	public static ParameterMap create(){
+		return new ParameterMap(new MultivaluedMapImpl()) ;
 	}
-	
-	public static ParameterMap create(JsonObject json){
-		if (json == null) return BLANK ;
-		return new ParameterMap(MultiValueMap.create(json.toMap())) ;
+	public static ParameterMap create(Map<String, ? extends Object> map){
+		MultivaluedMapImpl<String, String> mmap = new MultivaluedMapImpl<String, String>() ; 
+		for (String key : map.keySet()) {
+			mmap.add(key, ObjectUtil.toString(map.get(key))) ;
+		}
+		
+		return new ParameterMap(mmap) ;
+	}
+
+	public static ParameterMap create(HttpRequest request) {
+		return new ParameterMap(request.getDecodedFormParameters());
 	}
 	
 	public String asString(String name){
-		return ObjectUtil.toString(inner.getFirstValue(name)) ;
+		return ObjectUtil.toString(inner.getFirst(name)) ;
 	}
 	
 	public int asInt(String name){
@@ -52,18 +66,15 @@ public class ParameterMap {
 		
 	}
 
-	public ParameterMap reset(String name, Object value){
+	public ParameterMap reset(String name, String... value){
 		inner.remove(name) ;
 		return set(name, value) ;
 	}
-	
-	public ParameterMap set(String name, Object value){
-		inner.putParameter(name, value) ;
-		
-		return this ;
-	}
-	public ParameterMap set(String name, String[] value){
-		inner.putParameter(name, value) ;
+
+	public ParameterMap set(String name, String... values){
+		for (String value : values) {
+			inner.add(name, value) ;
+		}
 		return this ;
 	}
 	
@@ -85,7 +96,7 @@ public class ParameterMap {
 	
 	public String asString(String name, int index){
 		
-		return ObjectUtil.toString(inner.getAsList(name).get(index)) ;
+		return ObjectUtil.toString(inner.get(name).get(index)) ;
 	}
 	
 	public int asInt(String name, int index){
@@ -98,8 +109,16 @@ public class ParameterMap {
 	
 
 	public String[] asStrings(String name){
-		return (String[]) inner.getAsList(name).toArray(new String[0]) ;
+		List<String> list = inner.get(name);
+		if (list == null) return new String[0] ;
+		return (String[]) list.toArray(new String[0]) ;
 	}
+
+	public ParameterMap addValue(String name, String value) {
+		inner.add(name, value);
+		return this ;
+	}
+
 
 	
 	

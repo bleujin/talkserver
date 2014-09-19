@@ -3,131 +3,116 @@ package net.ion.talk.let;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import net.ion.framework.parse.gson.JsonArray;
 import net.ion.framework.parse.gson.JsonObject;
-import net.ion.framework.util.ObjectUtil;
-import net.ion.framework.util.StringUtil;
-import net.ion.nradon.let.IServiceLet;
-import net.ion.nradon.let.ServiceLetUtil;
+import net.ion.radon.aclient.ResourceException;
 import net.ion.radon.core.TreeContext;
-import net.ion.radon.core.annotation.AnContext;
-import net.ion.radon.core.annotation.AnRequest;
-import net.ion.radon.core.let.InnerRequest;
-import net.ion.radon.core.representation.JsonObjectRepresentation;
+import net.ion.talk.misc.AmzS3Service;
+import net.ion.talk.misc.S3Helper;
+import net.ion.talk.misc.S3PropFile;
 
-import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
+import org.jboss.resteasy.plugins.providers.multipart.FormDataHandler;
+import org.jboss.resteasy.plugins.providers.multipart.InputBody;
+import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.ServiceException;
-import org.restlet.data.CharacterSet;
-import org.restlet.data.Disposition;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.data.Status;
-import org.restlet.representation.InputRepresentation;
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.resource.Delete;
-import org.restlet.resource.Get;
-import org.restlet.resource.Post;
-import org.restlet.resource.ResourceException;
 
-public class S3UploadLet implements IServiceLet  {
 
-	// Create.
-	@Post
-	public Representation createFile(@AnContext TreeContext context, @AnRequest InnerRequest request) throws IOException, FileUploadException, ResourceException {
-		if (MediaType.MULTIPART_FORM_DATA.equals(request.getEntity().getMediaType(), true)){ // put mutation
-			JsonObject jso = saveFile(context, request);
-			return new JsonObjectRepresentation(jso) ;
+@Path("")
+public class S3UploadLet  {
+
+	@GET
+	@Path("/{userId}/{resource}")
+	public Response viewFileList(@Context TreeContext context, @PathParam("userId") String userId, @PathParam("resource") String resource) throws IOException, ServiceException {
+		JsonArray json = new JsonArray() ;
+		List<S3PropFile> dirFiles = creates3Helper(context).listFile(resourcePath(userId, resource)) ;
+		for (S3PropFile pfile : dirFiles) {
+			JsonObject eleJson = JsonObject.fromString(pfile.propJson()) ;
+			json.add(eleJson) ;
 		}
-		throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Multipart/form-data required.[" + request.getEntity().getMediaType() + "]");
+		return Response.ok(json, javax.ws.rs.core.MediaType.APPLICATION_JSON).language("UTF-8").build() ;
 	}
-	
-	@Get
-	public Representation viewFile(@AnContext TreeContext context, @AnRequest InnerRequest request) throws IOException, ServiceException {
 
-		if (StringUtil.isBlank(request.getAttribute("fieldname"))){  // dir
-			JsonArray json = new JsonArray() ;
-			List<S3PropFile> dirFiles = creates3Helper(context).listFile(resourcePath(request)) ;
-			for (S3PropFile pfile : dirFiles) {
-				JsonObject eleJson = JsonObject.fromString(pfile.propJson()) ;
-				json.add(eleJson) ;
-			}
-			
-			return new StringRepresentation(json.toString(), MediaType.TEXT_ALL, Language.ALL, CharacterSet.UTF_8) ; 
-		}
-		
-		
-		S3PropFile propFile = creates3Helper(context).read(fieldResourcePath(request));
+	@GET
+	@Path("/{userId}/{resource}/{fieldname}")
+	public Response viewFile(@Context TreeContext context, @PathParam("userId") String userId, @PathParam("resource") String resource, @PathParam("fieldname") String fieldname, @HeaderParam("User-Agent") String userAgent) throws IOException, ServiceException {
+		S3PropFile propFile = creates3Helper(context).read(fieldResourcePath(userId, resource, fieldname));
 		if (! propFile.exist())
-			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "filePath:" + propFile.filePath()) ;
+			return Response.status(Status.NOT_FOUND).build() ;
 
 		JsonObject props = JsonObject.fromString(propFile.propJson()) ; 
-		InputRepresentation result = new InputRepresentation(propFile.inputStream()) ;
-		Disposition disposition = new Disposition(Disposition.TYPE_ATTACHMENT) ;
-		String localName = ServiceLetUtil.isExplorer(request) ? URLEncoder.encode(props.asString("filename"), "UTF-8") : new String(props.asString("filename").getBytes("utf-8"), "latin1") ;
-		disposition.setFilename(localName) ;
-		result.setDisposition(disposition) ;
-		result.setMediaType(MediaType.valueOf(props.asString("content-type"))) ;
+		boolean isExplorer = userAgent.indexOf("MSIE") > -1;
+		String localName = isExplorer ? URLEncoder.encode(props.asString("filename"), "UTF-8") : new String(props.asString("filename").getBytes("utf-8"), "latin1");
+		// disposition.setFilename(localName) ;
+		// result.setDisposition(disposition) ;
+		// result.setMediaType(MediaType.valueOf(props.asString("content-type"))) ;
+
+		return Response.ok(propFile.inputStream(), MediaType.valueOf(props.asString("content-type"))).header("Content-Disposition", "attachment; filename=\"" + localName + "\"").build();
+	}
+
+	// Create.
+	@POST
+	@Path("/{userId}/{resource}") 
+	@Consumes(MediaType.MULTIPART_FORM_DATA) 
+	public JsonObject createFile(@Context TreeContext context, MultipartFormDataInput minput, @PathParam("userId") String userId, @PathParam("resource") String resource) throws IOException, FileUploadException, ResourceException {
+		return saveFile(context, minput, resourcePath(userId, resource));
+	}
+	
+	@DELETE
+	@Path("/{userId}/{resource}/{fieldname}")
+	protected String deleteResource(@Context TreeContext context, @PathParam("userId") String userId, @PathParam("resource") String resource, @PathParam("fieldname") String fieldname) throws IOException, ResourceException, S3ServiceException  {
+		creates3Helper(context).remove(fieldResourcePath(userId, resource, fieldname));
+		return "{removed:true}" ;
+	}
+	
+
+	
+	private JsonObject saveFile(final TreeContext context, MultipartFormDataInput mdinput, final String resourcePath) throws IOException, FileNotFoundException {
+		final JsonObject result = new JsonObject() ;
+		mdinput.dataHandle(new FormDataHandler<Void>() {
+			@Override
+			public Void handle(InputBody ibody) throws IOException {
+				if (ibody.isFilePart()) {
+					String filePath = resourcePath + "/" + ibody.name();
+					JsonObject fileJsonItem = JsonObject.create();
+					fileJsonItem.put("content-type", ibody.mediaType().toString());
+					fileJsonItem.put("filename", ibody.filename());
+					fileJsonItem.put("fieldname", ibody.name());
+					fileJsonItem.put("filePath", filePath);
+					creates3Helper(context).save(filePath, fileJsonItem, ibody.asStream(), ibody.mediaType().toString()) ;
+					result.add(ibody.name(), fileJsonItem);
+				} else {
+					result.put(ibody.name(), ibody.asString());
+				}
+				return null ;
+			}
+		});
 		
 		return result ;
 	}
 
-	@Delete
-	protected Representation deleteResource(@AnContext TreeContext context, @AnRequest InnerRequest request) throws IOException, ResourceException, S3ServiceException  {
-		creates3Helper(context).remove(fieldResourcePath(request));
-		return new StringRepresentation("{removed:true}") ;
+	private String resourcePath(String userId, String resource) {
+		return userId + "/" + resource;
 	}
 	
-	
-	
-	private JsonObject saveFile(TreeContext context, InnerRequest request) throws IOException, FileNotFoundException {
-		JsonObject result = JsonObject.create() ;
-		JsonObject paramJson = JsonObject.create() ;
-		Set<Entry> entrySet = request.getFormParameter().entrySet();
-		for (Entry<String, Object> entry : entrySet) {
-			if (! (entry.getValue() instanceof FileItem)){
-				result.put(entry.getKey(), ObjectUtil.toString(entry.getValue())) ;
-				paramJson.put(entry.getKey(), ObjectUtil.toString(entry.getValue())) ;
-			}
-		}
-		
-		for (Entry<String, Object> entry : entrySet) {
-			if (entry.getValue() instanceof FileItem) { 
-				FileItem fitem = (FileItem) entry.getValue() ;
-				if (fitem.getSize() <= 0) continue ;  
-				
-				String filePath = resourcePath(request) + "/" + entry.getKey();
-				JsonObject fileJsonItem = JsonObject.create() ;
-				fileJsonItem.put("size", fitem.getSize());
-				fileJsonItem.put("content-type", fitem.getContentType());
-				fileJsonItem.put("filename", URLDecoder.decode(fitem.getName(), "UTF-8"));
-				fileJsonItem.put("fieldname", fitem.getFieldName());
-				fileJsonItem.put("param", paramJson) ;
-				fileJsonItem.put("filePath", filePath) ;
-				
-				result.add(entry.getKey(), fileJsonItem) ;
-				creates3Helper(context).save(filePath, fileJsonItem, fitem) ;
-			}
-				
-		}
-		
-		return result ;
-	}
-
-	private String resourcePath(InnerRequest request) {
-		return request.getAttribute("userId") + "/" + request.getAttribute("resource");
-	}
-	
-	private String fieldResourcePath(InnerRequest request){
-		return resourcePath(request) + "/" + request.getAttribute("fieldname") ; 
+	private String fieldResourcePath(String userId, String resource, String fieldname){
+		return resourcePath(userId, resource) + "/" + fieldname ; 
 	}
 
 	private S3Helper creates3Helper(TreeContext context) {

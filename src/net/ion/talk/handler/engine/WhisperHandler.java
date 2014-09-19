@@ -1,31 +1,21 @@
 package net.ion.talk.handler.engine;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.Date;
-
-import com.google.common.cache.Cache;
 
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
-import net.ion.framework.mte.Engine;
-import net.ion.framework.parse.gson.JsonObject;
-import net.ion.framework.parse.gson.JsonUtil;
-import net.ion.framework.util.Debug;
-import net.ion.framework.util.IOUtil;
-import net.ion.framework.util.ObjectId;
-import net.ion.nradon.WebSocketConnection;
 import net.ion.talk.TalkEngine;
 import net.ion.talk.TalkEngine.Reason;
 import net.ion.talk.TalkMessage;
 import net.ion.talk.TalkMessage.MType;
 import net.ion.talk.UserConnection;
 import net.ion.talk.bean.Const.Message;
-import net.ion.talk.bean.Const.Room;
 import net.ion.talk.handler.TalkHandler;
 import net.ion.talk.script.BotScript;
 import net.ion.talk.script.WhisperMessage;
+
+import com.google.common.cache.Cache;
 
 public class WhisperHandler implements TalkHandler {
 

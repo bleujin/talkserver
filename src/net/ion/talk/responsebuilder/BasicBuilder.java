@@ -9,9 +9,7 @@ import net.ion.framework.parse.gson.JsonElement;
 import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.util.ObjectUtil;
 
-/**
- * Author: Ryunhee Han Date: 2014. 1. 14.
- */
+
 public class BasicBuilder extends AbstractBuilder {
 
 	private AbstractBuilder parent;

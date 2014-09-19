@@ -11,13 +11,7 @@ import org.infinispan.atomic.AtomicMap;
 import org.infinispan.notifications.cachelistener.event.CacheEntryModifiedEvent;
 import org.infinispan.transaction.xa.GlobalTransaction;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Ryun
- * Date: 2014. 4. 17.
- * Time: 오전 10:25
- * To change this template use File | Settings | File Templates.
- */
+
 public class FakeEvent implements CacheEntryModifiedEvent<TreeNodeKey, AtomicMap<PropertyId, PropertyValue>> {
     private Type type;
     private boolean pre;

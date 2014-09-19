@@ -8,11 +8,9 @@ import net.ion.framework.util.StringUtil;
 import net.ion.talk.ParameterMap;
 import net.ion.talk.TalkEngine;
 import net.ion.talk.TalkEngine.Reason;
-import net.ion.talk.TalkMessage.MType;
 import net.ion.talk.TalkMessage;
+import net.ion.talk.TalkMessage.MType;
 import net.ion.talk.UserConnection;
-import net.ion.talk.bean.Const.Message;
-import net.ion.talk.bean.Const.Room;
 import net.ion.talk.handler.TalkHandler;
 import net.ion.talk.script.ScriptResponseHandler;
 import net.ion.talk.script.TalkScript;
@@ -33,7 +31,7 @@ public class TalkScriptHandler implements TalkHandler {
 	@Override
 	public void onMessage(TalkEngine tengine, final UserConnection uconn, ReadSession rsession, final TalkMessage tmsg) {
 		if (tmsg.messageType() == MType.ILLEGAL) {
-			uconn.sendMessage("illegal message : " + tmsg.toPlainMessage());
+			uconn.sendMessage("{'illegal message' : " + tmsg.toPlainMessage() + ", status:'failure'}");
 			return ;
 		}
 		

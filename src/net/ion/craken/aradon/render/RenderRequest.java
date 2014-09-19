@@ -33,17 +33,17 @@ public class RenderRequest {
 	public static RenderRequest create(String uri, Renderer.RenderType type) {
 		RenderRequest renderRequest = new RenderRequest();
         renderRequest.type = type;
-//		renderRequest.nodePath = StringUtil.removeEnd(StringUtil.substringBeforeLast(uri, "."), "/");
+		renderRequest.nodePath = StringUtil.removeEnd(StringUtil.substringBeforeLast(uri, "."), "/");
 		renderRequest.nodePath = StringUtil.removeEnd(uri, "/");
 		renderRequest.isChildrenRequest = uri.endsWith("/");
 		renderRequest.templateFile = renderRequest.isChildrenRequest ? "children.tpl" : "explorer.tpl";
 
-//		String[] props = StringUtil.split(uri, ",");
-//		renderRequest.propsToRender = Lists.newArrayList(props);
-//
-//		if (renderRequest.propsToRender.size() > 0) {
-//			renderRequest.templateFile = "edit_value.tpl";
-//		}
+		String[] props = StringUtil.split(uri, ",");
+		renderRequest.propsToRender = Lists.newArrayList(props);
+
+		if (renderRequest.propsToRender.size() > 0) {
+			renderRequest.templateFile = "edit_value.tpl";
+		}
 		
 		return renderRequest;
 	}

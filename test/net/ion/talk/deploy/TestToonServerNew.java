@@ -1,6 +1,7 @@
 package net.ion.talk.deploy;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -12,7 +13,9 @@ import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
 import net.ion.framework.util.Debug;
 import net.ion.framework.util.FileUtil;
+import net.ion.framework.util.IOUtil;
 import net.ion.framework.util.InfinityThread;
+import net.ion.nradon.restlet.FileMetaType;
 import net.ion.radon.aclient.NewClient;
 import net.ion.radon.aclient.websocket.WebSocket;
 import net.ion.radon.aclient.websocket.WebSocketTextListener;
@@ -22,9 +25,7 @@ import net.ion.talk.ToonServer;
 import net.ion.talk.bean.Const.User;
 import net.ion.talk.util.NetworkUtil;
 
-/**
- * Created with IntelliJ IDEA. User: Ryun Date: 2014. 2. 3. Time: 오후 3:21 To change this template use File | Settings | File Templates.
- */
+
 public class TestToonServerNew extends TestCase {
 
 	public void testRunInfinite() throws Exception {

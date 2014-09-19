@@ -4,27 +4,26 @@ import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import net.ion.nradon.let.IServiceLet;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+
+import net.ion.radon.core.ContextParam;
 import net.ion.radon.core.TreeContext;
-import net.ion.radon.core.annotation.AnContext;
-import net.ion.radon.core.annotation.ContextParam;
-import net.ion.radon.core.annotation.DefaultValue;
-import net.ion.radon.core.annotation.FormParam;
 import net.ion.talk.TalkEngine;
 import net.ion.talk.ToonServer;
 
-import org.restlet.resource.Delete;
-import org.restlet.resource.Get;
+public class SuicideLet {
 
-public class SuicideLet implements IServiceLet {
-
-	@Get
+	@GET
 	public String getMyName(@ContextParam("net.ion.talk.TalkEngine") TalkEngine engine) throws IOException {
 		return "Hello.. ServerID is " + engine.readSession().workspace().repository().memberId();
 	}
 
-	@Delete
-	public String suicide(@AnContext TreeContext context, @DefaultValue("1") @FormParam("timeout") int timeout) {
+	@DELETE
+	public String suicide(@Context TreeContext context, @DefaultValue("1") @QueryParam("timeout") int timeout) {
 
 		long timeoutMili = Math.max(timeout, 100);
 

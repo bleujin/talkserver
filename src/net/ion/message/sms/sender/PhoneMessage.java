@@ -12,7 +12,7 @@ import net.ion.radon.aclient.Response;
 
 import org.apache.commons.lang.CharUtils;
 import org.apache.lucene.analysis.kr.utils.StringUtil;
-import org.restlet.data.Method;
+import org.jboss.netty.handler.codec.http.HttpMethod;
 
 public class PhoneMessage {
 
@@ -76,7 +76,7 @@ public class PhoneMessage {
 			throw new IllegalArgumentException("message too short or too large : " + messageContent());			
 		} 
 
-		RequestBuilder builder = new RequestBuilder().setUrl(target.handlerURL()).setMethod(Method.POST);
+		RequestBuilder builder = new RequestBuilder().setUrl(target.handlerURL()).setMethod(HttpMethod.POST);
 		Set<String> keys = param.toMap().keySet();
 
 		for (String key : keys) {

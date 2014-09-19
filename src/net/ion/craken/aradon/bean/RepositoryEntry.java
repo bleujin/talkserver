@@ -2,14 +2,13 @@ package net.ion.craken.aradon.bean;
 
 import java.io.IOException;
 
-import org.infinispan.configuration.global.GlobalConfiguration;
-import org.infinispan.configuration.global.GlobalConfigurationBuilder;
-
-import net.ion.craken.loaders.lucene.ISearcherWorkspace;
 import net.ion.craken.loaders.lucene.ISearcherWorkspaceConfig;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.crud.RepositoryImpl;
 import net.ion.talk.util.NetworkUtil;
+
+import org.infinispan.configuration.global.GlobalConfiguration;
+import org.infinispan.configuration.global.GlobalConfigurationBuilder;
 
 public class RepositoryEntry  {
 

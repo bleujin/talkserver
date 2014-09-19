@@ -17,10 +17,9 @@ public class TestAllToonServer extends TestCase {
 	public static TestSuite suite(){
 		TestSuite result = new TestSuite("Test All") ;
         result.addTest(TestAllEngine.suite());
-        
 		result.addTest(TestAllResponseBuilder.suite());
-        result.addTest(TestAllLet.suite());
 
+		result.addTest(TestAllLet.suite());
         result.addTest(TestAllCDDHandler.suite());
         result.addTest(TestAllTalkHandler.suite());
         

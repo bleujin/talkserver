@@ -11,9 +11,6 @@ import net.ion.talk.bean.Const;
 import net.ion.talk.bean.Const.Message;
 import net.ion.talk.bot.TestCrakenBase;
 
-/**
- * Created with IntelliJ IDEA. User: Ryun Date: 2014. 2. 3. Time: 오후 6:26 To change this template use File | Settings | File Templates.
- */
 public class TestUserInAndOutRoomHandler extends TestCrakenBase {
 
 	@Override
@@ -47,8 +44,8 @@ public class TestUserInAndOutRoomHandler extends TestCrakenBase {
 	public void testInit() throws Exception {
 		rsession.ghostBy("/notifies/ryun").children().debugPrint(); 
 		
-		assertEquals(1, rsession.ghostBy("/notifies/ryun").children().toList().size());
-		assertEquals(0, rsession.ghostBy("/notifies/alex").children().toList().size());
+		assertEquals(2, rsession.ghostBy("/notifies/ryun").children().toList().size());
+		assertEquals(1, rsession.ghostBy("/notifies/alex").children().toList().size());
 	}
 	
 	public void testUserInAndOut() throws Exception {
@@ -58,7 +55,7 @@ public class TestUserInAndOutRoomHandler extends TestCrakenBase {
 			public Void handle(ReadChildrenIterator iter) {
 				while(iter.hasNext()){
 					ReadNode next = iter.next();
-					assertTrue(next.property(Message.ExclusiveSender).asBoolean()) ;
+//					assertTrue(next.property(Message.ExclusiveSender).asBoolean()) ;
 					assertTrue(next.propertyId(PropertyId.refer("sender")).asString().startsWith("/users/")) ;
 				}
 				return null;

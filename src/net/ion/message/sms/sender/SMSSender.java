@@ -31,7 +31,7 @@ public class SMSSender {
 	
 	public PhoneMessage toPhoneNo(String nationalCode, String exchangeNo, String prefixNo, String postfixNo) {
 		String receiverPhone = String.format("+%s-%s%s%s", nationalCode, exchangeNo, prefixNo, postfixNo);
-		return PhoneMessage.create(this, receiverPhone, false);
+		return PhoneMessage.create(this, receiverPhone, "82".equals(nationalCode));
 	}
 
 	public <T> Future<T> send(final PhoneMessage message, final ResponseHandler<T> handler) throws IOException {

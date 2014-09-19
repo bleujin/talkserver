@@ -1,9 +1,13 @@
 package net.ion.talk.let;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
 
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.node.ReadSession;
@@ -11,24 +15,20 @@ import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteNode;
 import net.ion.craken.node.WriteSession;
 import net.ion.framework.util.ObjectId;
-import net.ion.nradon.let.IServiceLet;
+import net.ion.framework.util.ObjectUtil;
+import net.ion.nradon.handler.authentication.BasicAuthenticationHandler;
 import net.ion.radon.core.TreeContext;
-import net.ion.radon.core.annotation.AnContext;
-import net.ion.radon.core.annotation.AnRequest;
-import net.ion.radon.core.let.InnerRequest;
 import net.ion.talk.util.NetworkUtil;
 
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.resource.Get;
-import org.restlet.resource.Post;
+import org.jboss.resteasy.spi.HttpRequest;
 
-public class LoginLet implements IServiceLet{
+@Path("/login")
+public class LoginLet {
 	
 	
-	@Get @Post
-	public String login(@AnContext TreeContext context, @AnRequest InnerRequest req) throws Exception{
-		final String userId = req.getChallengeResponse().getIdentifier();
+	@GET @POST
+	public String login(@Context TreeContext context, @Context HttpRequest req) throws Exception{
+		final String userId = ObjectUtil.toString(req.getAttribute(BasicAuthenticationHandler.USERNAME)) ;
 		RepositoryEntry rentry = context.getAttributeObject(RepositoryEntry.EntryName, RepositoryEntry.class);
 		ReadSession session = rentry.login();
 

@@ -9,13 +9,7 @@ import net.ion.craken.node.WriteSession;
 import net.ion.framework.util.StringUtil;
 import net.ion.talk.bean.Const;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Ryun
- * Date: 2014. 2. 25.
- * Time: 오전 11:34
- * To change this template use File | Settings | File Templates.
- */
+
 public class TestOldChatBot extends TestCrakenBase{
 
     private ChatBot chatBot;

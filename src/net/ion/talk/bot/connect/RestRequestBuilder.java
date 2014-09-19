@@ -4,18 +4,15 @@ import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 import net.ion.framework.parse.gson.JsonElement;
-import org.restlet.data.Method;
-
-import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.parse.gson.JsonParser;
-import net.ion.framework.util.Debug;
 import net.ion.radon.aclient.AsyncCompletionHandler;
 import net.ion.radon.aclient.Cookie;
-import net.ion.radon.aclient.ListenableFuture;
 import net.ion.radon.aclient.NewClient;
+import net.ion.radon.aclient.NewClient.BoundRequestBuilder;
 import net.ion.radon.aclient.Request;
 import net.ion.radon.aclient.Response;
-import net.ion.radon.aclient.NewClient.BoundRequestBuilder;
+
+import org.jboss.netty.handler.codec.http.HttpMethod;
 
 public class RestRequestBuilder {
 
@@ -52,19 +49,19 @@ public class RestRequestBuilder {
 
 
 	public <T> T get(final BotCompletionHandler<T> handler) throws IOException {
-		return execute(reqBuilder.setMethod(Method.GET).build(), handler);		
+		return execute(reqBuilder.setMethod(HttpMethod.GET).build(), handler);		
 	}
 
 	public <T> T post(final BotCompletionHandler<T> handler) throws IOException{
-		return execute(reqBuilder.setMethod(Method.POST).build(), handler) ;	
+		return execute(reqBuilder.setMethod(HttpMethod.POST).build(), handler) ;	
 	}
 
 	public <T> T delete(final BotCompletionHandler<T> handler) throws IOException {
-		return execute(reqBuilder.setMethod(Method.DELETE).build(), handler) ;		
+		return execute(reqBuilder.setMethod(HttpMethod.DELETE).build(), handler) ;		
 	}
 
 	public <T> T put(final BotCompletionHandler<T> handler) throws IOException {
-		return execute(reqBuilder.setMethod(Method.PUT).build(), handler);		
+		return execute(reqBuilder.setMethod(HttpMethod.PUT).build(), handler);		
 	}
 
 	

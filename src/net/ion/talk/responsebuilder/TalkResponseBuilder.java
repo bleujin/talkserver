@@ -3,7 +3,6 @@ package net.ion.talk.responsebuilder;
 import net.ion.craken.node.ReadNode;
 import net.ion.framework.parse.gson.JsonElement;
 import net.ion.framework.util.ObjectUtil;
-import net.ion.talk.ToonServer;
 import net.ion.talk.util.CalUtil;
 
 public class TalkResponseBuilder {

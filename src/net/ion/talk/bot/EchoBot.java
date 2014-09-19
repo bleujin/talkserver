@@ -7,13 +7,7 @@ import java.util.concurrent.TimeUnit;
 import net.ion.craken.node.ReadSession;
 import net.ion.framework.util.StringUtil;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Ryun
- * Date: 2014. 2. 19.
- * Time: 오후 2:26
- * To change this template use File | Settings | File Templates.
- */
+
 public class EchoBot extends EmbedBot {
 
     private ScheduledExecutorService ses;

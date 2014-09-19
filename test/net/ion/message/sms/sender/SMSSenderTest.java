@@ -48,7 +48,7 @@ public class SMSSenderTest extends TestCase {
 	
 	public void testKoreaCode() {
 		String nationalCode = "82" ;
-		PhoneMessage message = sender.toPhoneNo(nationalCode, "10", "9139", "9660").message("파이날 테스트! 이게 성공하면 더 이상은 안보냄!");
+		PhoneMessage message = sender.toPhoneNo(nationalCode, "10", "4221", "6492").message("파이날 테스트! 이게 성공하면 더 이상은 안보냄!");
 
 		assertTrue(message.isDomestic());
 	}

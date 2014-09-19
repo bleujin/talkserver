@@ -3,7 +3,7 @@
   <rect x="5" y="10" rx="20" ry="20" width="240" height="${rectHeight}" style="fill:#f4cecf;stroke:black;stroke-width:2;opacity:0.1" />
 
   <g id="character" style="fill-opacity:0.9; stroke-opacity:0.9">
-  <image xlink:href="/image/bimage/toon/char/${charId}/${emotion}.png" x="0" y="${characterY}" height="90px" width="90px"/>
+  <image xlink:href="/bot/bimage/toon/char/${charId}/${emotion}.png" x="0" y="${characterY}" height="90px" width="90px"/>
   </g>
 
    <foreignObject x="0" y="25" width="230" height="${foreignObjectHeight}" id="msgtext">

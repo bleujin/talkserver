@@ -14,21 +14,15 @@ import net.ion.craken.node.WriteSession;
 import net.ion.craken.tree.PropertyId;
 import net.ion.craken.tree.PropertyValue;
 import net.ion.framework.util.ObjectUtil;
-import net.ion.framework.util.SetUtil;
 import net.ion.framework.util.StringUtil;
 import net.ion.radon.aclient.NewClient;
+import net.ion.talk.account.EventMap;
 import net.ion.talk.bean.Const;
 import net.ion.talk.bean.Const.Bot;
 import net.ion.talk.bean.Const.Message;
 import net.ion.talk.util.CalUtil;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Ryun
- * Date: 2014. 2. 4.
- * Time: 오후 2:44
- * To change this template use File | Settings | File Templates.
- */
+
 public class TalkMessageHandler implements CDDHandler {
 
     private final NewClient nc;
@@ -55,20 +49,17 @@ public class TalkMessageHandler implements CDDHandler {
             @Override
             public Void handle(WriteSession wsession) throws Exception {
 
-                Map<PropertyId, PropertyValue> pmap = event.getValue() ;
+                EventMap emap = EventMap.create(event.getValue()) ;
 
                 //유저에게 전송
                 String roomId = resolveMap.get(Const.Room.RoomId) ;
                 String messageId = resolveMap.get(Const.Message.MessageId) ;
-                PropertyId exPropertyId = PropertyId.normal(Message.ExclusiveSender);
-				boolean exclusiveSender = pmap.containsKey(exPropertyId) ? pmap.get(exPropertyId).asBoolean() : false ;
-                String senderRef = pmap.get(PropertyId.refer(Message.Sender)).asString() ;
+				boolean exclusiveSender = emap.property(Message.ExclusiveSender).asBoolean();
+                String senderRef = emap.refer(Message.Sender).asString() ;
                 String senderId = StringUtil.substringAfterLast(senderRef, "/");
-                String options = pmap.get(PropertyId.normal(Const.Message.Options)).asString() ;
+                String options = emap.property(Const.Message.Options).asString() ;
                 
-                
-                ReadSession rsession = wsession.readSession() ;
-                PropertyValue rvalue = ObjectUtil.coalesce(pmap.get(PropertyId.fromIdString(Const.Message.Receivers)), PropertyValue.NotFound);
+                PropertyValue rvalue = emap.idString(Const.Message.Receivers) ;
                 Set<String> receivers = rvalue.asSet() ;
 
 				if (StringUtil.isBlank(rvalue.asString())){

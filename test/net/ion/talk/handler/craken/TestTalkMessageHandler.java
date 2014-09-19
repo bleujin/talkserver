@@ -2,6 +2,8 @@ package net.ion.talk.handler.craken;
 
 import java.util.Map;
 
+import javax.ws.rs.GET;
+
 import net.ion.craken.listener.CDDModifiedEvent;
 import net.ion.craken.listener.CDDRemovedEvent;
 import net.ion.craken.node.ISession;
@@ -10,17 +12,12 @@ import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteNode;
 import net.ion.craken.node.WriteSession;
 import net.ion.framework.util.Debug;
-import net.ion.nradon.let.IServiceLet;
 import net.ion.radon.aclient.ClientConfig;
 import net.ion.radon.aclient.NewClient;
 import net.ion.talk.bean.Const;
 import net.ion.talk.bot.TestCrakenBase;
 
-import org.restlet.resource.Get;
 
-/**
- * Created with IntelliJ IDEA. User: Ryun Date: 2014. 2. 4. Time: 오후 2:43 To change this template use File | Settings | File Templates.
- */
 public class TestTalkMessageHandler extends TestCrakenBase {
 	private String memberId;
     private TalkMessageHandler handler;
@@ -189,11 +186,11 @@ public class TestTalkMessageHandler extends TestCrakenBase {
         }
     }
 
-    private class SyncBotLet implements IServiceLet {
+    private class SyncBotLet  {
 
         public boolean isIncome = false;
 
-        @Get
+        @GET
         public void haha(){
             this.isIncome = true;
             Debug.line();

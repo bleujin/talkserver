@@ -1,15 +1,20 @@
 package net.ion.message.sms.callback;
 
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MultivaluedMap;
+
 import net.ion.framework.util.Debug;
-import net.ion.radon.core.let.AbstractServerResource;
-import net.ion.radon.core.let.MultiValueMap;
-import org.restlet.resource.Post;
 
-public class ConsoleCallbackLet extends AbstractServerResource {
+import org.jboss.resteasy.spi.HttpRequest;
 
-	@Post
-	public String printToConsole() {
-		MultiValueMap formParameter = getInnerRequest().getFormParameter();
+@Path("/receive")
+public class ConsoleCallbackLet {
+
+	@POST
+	public String printToConsole(@Context HttpRequest request) {
+		MultivaluedMap<String, String> formParameter = request.getFormParameters() ;
 		Debug.line(formParameter);
 		return formParameter.toString();
 	}

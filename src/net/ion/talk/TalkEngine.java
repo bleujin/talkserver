@@ -38,9 +38,6 @@ import net.ion.talk.handler.engine.WhisperHandler;
 import net.ion.talk.script.BotScript;
 import net.ion.talk.script.TalkScript;
 
-import org.restlet.Context;
-import org.restlet.routing.VirtualHost;
-
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
@@ -78,7 +75,7 @@ public class TalkEngine implements WebSocketHandler {
 	}
 
 	public static TalkEngine testCreate() throws Exception {
-		TreeContext context = TreeContext.createRootContext(new VirtualHost(new Context())) ;
+		TreeContext context = TreeContext.createRootContext() ;
 		context.putAttribute(RepositoryEntry.EntryName, RepositoryEntry.test()) ;
 		context.putAttribute(ScheduledExecutorService.class.getCanonicalName(), Executors.newScheduledThreadPool(5)) ;
 		return testCreate(context) ;
