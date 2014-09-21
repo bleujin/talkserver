@@ -8,6 +8,8 @@ import java.util.Map;
 
 import javax.ws.rs.core.MultivaluedMap;
 
+import net.ion.framework.parse.gson.JsonArray;
+import net.ion.framework.parse.gson.JsonElement;
 import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.parse.gson.JsonParser;
 import net.ion.framework.util.Debug;
@@ -30,6 +32,23 @@ public class ParameterMap {
 	public static ParameterMap create(){
 		return new ParameterMap(new MultivaluedMapImpl()) ;
 	}
+
+	public static ParameterMap create(JsonObject json) {
+		MultivaluedMapImpl<String, String> map = new MultivaluedMapImpl();
+		for(String key : json.keySet()){
+			JsonElement jvalue = json.get(key) ;
+			if (jvalue.isJsonArray()){
+				JsonArray jarray = jvalue.getAsJsonArray() ;
+				for(JsonElement je : jarray){
+					map.addValue(key, je.getAsString());
+				}
+			} else if (jvalue.isJsonPrimitive()){
+				map.addValue(key, jvalue.getAsString()) ;
+			}
+		}
+		return new ParameterMap(map);
+	}
+
 	public static ParameterMap create(Map<String, ? extends Object> map){
 		MultivaluedMapImpl<String, String> mmap = new MultivaluedMapImpl<String, String>() ; 
 		for (String key : map.keySet()) {
@@ -118,6 +137,7 @@ public class ParameterMap {
 		inner.add(name, value);
 		return this ;
 	}
+
 
 
 	

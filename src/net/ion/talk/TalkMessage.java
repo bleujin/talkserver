@@ -59,11 +59,7 @@ class TalkNormalMessage extends TalkMessage {
 		this.scriptPath = json.asString("script") ;
 
 		JsonObject paramJson = json.asJsonObject("params") ;
-		Map<String, String> map = MapUtil.newMap() ;
-		for(String key : paramJson.keySet()){
-			map.put(key, paramJson.asString(key)) ;// case sensitive
-		}
-		this.params = ParameterMap.create(map) ;
+		this.params = ParameterMap.create(paramJson) ;
 		this.plainMessage = json.toString() ;
 	}
 
