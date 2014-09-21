@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-	<script src="/resource/jquery-1.10.2.min.js" type="text/javascript"></script>
+	<script src="/toonweb/jquery-1.10.2.min.js" type="text/javascript"></script>
 	<script type="text/javascript">
 		$(function () {
 		    $('input').on('click', function () {
