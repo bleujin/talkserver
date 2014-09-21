@@ -2,6 +2,7 @@ package net.ion.talk;
 
 import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.util.Debug;
+import net.ion.framework.util.StringUtil;
 import junit.framework.TestCase;
 
 public class TestParamterMap extends TestCase{
@@ -25,4 +26,5 @@ public class TestParamterMap extends TestCase{
 		
 		Debug.line(pm.asString("name"), pm.asString("log"), pm.asStrings("log"), pm.asString("age")) ;
 	}
+	
 }

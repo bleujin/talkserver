@@ -1,0 +1,1016 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, target-densityDpi=device-dpi">
+
+    <link rel="stylesheet" href="/toonweb/jquery.mobile-1.4.2.min.css" />
+    <link rel="stylesheet" href="/toonweb/js/toast/resources/css/jquery.toastmessage.css"/>
+    <script type="text/javascript" src="/toonweb/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="/toonweb/jquery.mobile-1.4.2.min.js"></script>
+    <script type="text/javascript" src="/toonweb/common_lang.js"></script>
+    <script type="text/javascript" src="/toonweb/swfobject.js"></script>
+    <script type="text/javascript" src="/toonweb/web_socket.js"></script>
+    <script type="text/javascript" src="/toonweb/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="/toonweb/jquery.form.min.js"></script>
+    <script type="text/javascript" src="/toonweb/js/toast/javascript/jquery.toastmessage.js"></script>
+    <script type="text/javascript" src="/toonweb/js/upload/jquery.ui.widget.js"></script>
+    <script type="text/javascript" src="/toonweb/js/upload/jquery.iframe-transport.js"></script>
+    <script type="text/javascript" src="/toonweb/js/upload/jquery.fileupload.js"></script>
+    <script type="text/javascript" src="/toonweb/js/shake.js"></script>
+
+    <script src=http://maps.googleapis.com/maps/api/js?sensor=true></script>
+
+    <style type="text/css">
+        .bubble {
+            position: relative;
+            margin: 0;
+            padding:10px;
+            text-align:left;
+            width: 200px;
+            -moz-border-radius:10px;
+            -webkit-border-radius:10px;
+            -webkit-box-shadow: 0px 0 3px rgba(0,0,0,0.25);
+            -moz-box-shadow: 0px 0 3px rgba(0,0,0,0.25);
+            box-shadow: 0px 0 3px rgba(0,0,0,0.25);
+        }
+
+        .bubble.other {
+            background-color:#f4cecf;
+        }
+        .bubble.other.whisper {
+            border-style: dashed;
+            border-width: 1px;
+            border-color: #953b39;
+        }
+
+        .bubble.me {
+            background-color:aquamarine;
+        }
+
+        .bubble.bot {
+            background-color:#ffff99;
+        }
+
+        .bubble.bot.whisper {
+            border-style: dashed;
+            border-width: 1px;
+            border-color: #953b39;
+        }
+
+
+        .bubble.other:after {
+            position: absolute;
+            display: block;
+            content: "";
+            border-color: #f4cecf transparent transparent transparent;
+            border-style: solid;
+            border-width: 10px;
+            height:0;
+            width:0;
+            position:absolute;
+            bottom:-19px;
+            left:1em;
+        }
+
+        .bubble.bot:after {
+            position: absolute;
+            display: block;
+            content: "";
+            border-color: #ffff99 transparent transparent transparent;
+            border-style: solid;
+            border-width: 10px;
+            height:0;
+            width:0;
+            position:absolute;
+            bottom:-19px;
+            left:1em;
+        }
+
+        .bubble.other.whisper:after {
+            position: absolute;
+            display: block;
+            content: "";
+            border-color: #953b39 transparent transparent transparent;
+            border-style: dashed;
+            border-width: 1px;
+            height:0;
+            width:0;
+            position:absolute;
+            bottom:-19px;
+            left:1em;
+        }
+
+        .bubble.bot.whisper:after {
+            position: absolute;
+            display: block;
+            content: "";
+            border-color: #953b39 transparent transparent transparent;
+            border-style: dashed;
+            border-width: 1px;
+            height:0;
+            width:0;
+            position:absolute;
+            bottom:-19px;
+            left:1em;
+        }
+
+        .bubble.me:after {
+            position: absolute;
+            display: block;
+            content: "";
+            border-color: aquamarine transparent transparent transparent;
+            border-style: solid;
+            border-width: 10px;
+            height:0;
+            width:0;
+            position:absolute;
+            bottom:-19px;
+            right:1em;
+        }
+
+
+
+        label.error {
+            color: red;
+            font-size: 16px;
+            font-weight: normal;
+            line-height: 1.4;
+            margin-top: 0.5em;
+            width: 100%;
+            float: none;
+        }
+
+        @media screen and (orientation: portrait){
+            label.error { margin-left: 0; display: block; }
+        }
+
+        @media screen and (orientation: landscape){
+            label.error { display: inline-block; margin-left: 0; }
+        }
+
+    </style>
+    <script>
+        function blockMove() {
+            window.event.preventDefault();
+        }
+
+        function containerSize(msgId) {
+            var svgEl = document.embeds['wrapper_' + msgId].getSVGDocument();
+            var el = svgEl.getElementById('msg_' + msgId) ;
+            var matrix = {} ;
+
+            if(el !== null) {
+                // not firefox
+                matrix.width = el.offsetWidth ;
+                matrix.height = el.offsetHeight ;
+            } else {
+                // firefox
+                var el = document.getElementsByTagName('div')[0] ;
+                var boundary = el.getBoundingClientRect() ;
+                matrix.width = boundary.width  ;
+                matrix.height = boundary.height ;
+            }
+
+            return matrix ;
+        };
+
+
+        function windowSize() {
+            var w = window,
+                    d = document,
+                    e = d.documentElement,
+                    g = d.body || d.getElementsByTagName('body')[0],
+                    _width = w.innerWidth || e.clientWidth || g.clientWidth,
+                    _height = w.innerHeight|| e.clientHeight|| g.clientHeight
+
+            return {
+                width: _width,
+                height:_height
+            }
+        };
+
+        function arrange(msgId, align, isToon) {
+            var svgId = 'svg_' + msgId;
+            var rectId = 'rect_' + msgId;
+            var fobjId = 'body_' + msgId;
+            var senderTxtId = 'sender_' + msgId;
+            var bubbleId = 'bubble_' + msgId;
+            var charId = 'char_' + msgId;
+            var msgContainerId = 'msg_' + msgId;
+            var padding = 30;
+            var screenWidth = document.getElementById('chatRooms').offsetWidth;
+
+            var bubbleWidth = Math.min(parseInt(screenWidth * 0.8), 200) - (isToon ? 80 : 0);
+            var characterWidth = 60;
+
+            var coordinates = {};
+
+            if(align === 'left') {
+                coordinates.bubbleX = isToon ? 80 : 10;
+                coordinates.messageX = coordinates.bubbleX + 10;
+                coordinates.senderX = coordinates.bubbleX;
+                coordinates.charX = 5;
+            } else {
+                coordinates.charX = isToon ? screenWidth - characterWidth - 15 : screenWidth;            // right margin : 10
+                coordinates.bubbleX = coordinates.charX - bubbleWidth - 10;
+                coordinates.messageX = coordinates.bubbleX + 10;
+                coordinates.senderX = coordinates.bubbleX;
+            }
+
+            if(msgId !== 'undefined') {
+                var svgEl = document.embeds['wrapper_' + msgId].getSVGDocument();
+
+                svgEl.getElementById(msgContainerId).setAttribute('width', bubbleWidth - 20);
+                svgEl.getElementById(rectId).setAttribute('width', bubbleWidth);
+                svgEl.getElementById(fobjId).setAttribute('width', bubbleWidth - 20);
+
+                var offsetHeight = containerSize(msgId).height;
+                var computedHeight = Math.max(offsetHeight + padding, 70);
+
+                svgEl.getElementById(svgId).setAttribute('height', computedHeight);
+                svgEl.getElementById(bubbleId).setAttribute('height', computedHeight);
+                svgEl.getElementById(fobjId).setAttribute('height', computedHeight);
+
+                svgEl.getElementById(rectId).setAttribute('height', computedHeight - 15);
+
+                svgEl.getElementById(rectId).setAttribute('x', coordinates.bubbleX);
+                svgEl.getElementById(fobjId).setAttribute('x', coordinates.messageX);
+                svgEl.getElementById(senderTxtId).setAttribute('x', coordinates.senderX);
+                svgEl.getElementById(senderTxtId).setAttribute('y', computedHeight - 15);
+
+                var character = svgEl.getElementById(charId);
+
+                if(isToon && character !== null) {
+                    character.setAttribute('x', coordinates.charX);
+                    character.setAttribute('y', 10);
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+<div data-url="chatMain" data-role="page" class="jqm-demos" id="chatMain" data-title="ToonTalk Mobile">
+    <div data-role="header" data-id="header" data-position="fixed" data-tap-toggle="false">
+        <h1>ToonTalk Mobile</h1>
+        <a href="#nav-panel" data-icon="bars" data-iconpos="notext">Menu</a>
+        <a href="#help" data-icon="info" data-iconpos="notext" class="ui-btn-right">Help</a>
+    </div>
+
+    <div role="main" id="chatBody" class="ui-content jqm-content jqm-fullwidth">
+        <div data-role="tabs" id="chatScreens">
+            <div id="roomList" data-role="navbar" data-iconpos="right">
+                <ul>
+                    <li roomNumber='Home'><a href="#Home" id='tab-Home' data-ajax="false" data-transition="slide">Home</a></li>
+                </ul>
+            </div>
+            <div id="chatRooms" style="overflow: auto;">
+                <div id="Home" class="ui-body-d ui-content" style="height: 100%;">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div data-role="panel" data-poistion="left" data-display="push" data-theme="a" id="nav-panel">
+        <ul data-role="listview" id="menuTab">
+            <li data-icon="delete"><a href="#" data-rel="close">Close menu</a></li>
+            <li id="link-Home"><a href="#" onclick='javascript:client.getRoomManager().select("Home");'>Home</a></li>
+        </ul>
+    </div>
+
+    <div data-role="footer" data-position="fixed" style="vertical-align: middle;" data-tap-toggle="false">
+        <div style="margin-left: 15px; margin-right: 15px; float: left;">
+            <a href="#uploadPanel" data-rel="popup" data-transition="slideup" class="ui-btn ui-icon-plus ui-btn-icon-notext ui-corner-all">No text</a>
+        </div>
+        <div style="margin-left: 15px; margin-right: 15px; float: left; width: 50%; min-width:50%;">
+            <input data-clear-btn="true" name="message" id="message" value="" type="text">
+        </div>
+        <div style="float: left; width: 10%; min-width: 10%;">
+            <button onclick="javascript:client.chat();" class="ui-btn ui-btn-inline" onkeyup="blockMove;">Send</button>
+            <!--button onclick="javascript:client.getRoomManager().clear(client.getRoomManager().activeRoomId());" class="ui-btn ui-btn-inline">Clear</button-->
+        </div>
+    </div>
+
+
+    <style>
+        .table {
+            display:table;
+            width:100%;
+            height:100%;
+        }
+        .row {
+            display:table-row;
+            height:100%;
+        }
+        .cell {
+            display:table-cell;
+            width:33%;
+            height:100%;
+        }
+        .cell > img {
+            width:100%;
+            height:auto;
+        }
+    </style>
+    <div id="uploadPanel" data-role="popup" style="width: 250px; height: 250px; background: #c1e2b3;">
+        <div class="table">
+            <div class="row">
+                <div class="cell">
+                    <div style="text-align: center;">
+                        <label for="fileupload">
+                            <img src="/toonweb/img/icon/photo.png"/>
+                            <span style="font-size: 11;">Photo</span>
+                        </label>
+                        <input id="fileupload" style="display: none;" type="file" onchange="client.onStartUpload(this);"/>
+                    </div>
+                </div>
+                <div class="cell">
+
+                </div>
+                <div class="cell">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="help" data-role="page" data-position="right" data-position-fixed="true" data-display="reveal" data-theme="a">
+    <div data-role="header" data-add-back-btn="true">
+        <h1>Help</h1>
+    </div>
+    <ul data-role="listview">
+        <li><a href="#help_chat">Chatting</a></li>
+        <li><a href="#help_bot">Bot</a></li>
+    </ul>
+</div>
+
+<div id="help_chat" data-role="page">
+    <div data-role=header data-add-back-btn="true">
+        <h1>Chatting</h1>
+    </div>
+
+    Help chat
+</div>
+
+<div id="help_bot" data-role="page" data-add-back-btn="true">
+    <div data-role=header data-add-back-btn="true">
+        <h1>Bot</h1>
+    </div>
+    <div data-role="collapsibleset" data-theme="a" data-content-theme="a">
+        <div data-role="collapsible">
+            <h3>야구봇</h3>
+            <p>프로야구 2014년도 선수 기록을 표시해주는 봇입니다.</p>
+            <p>ID: baseball</p>
+            <h4>사용법</h4>
+            <p>타자 순위를 보려면 채팅창에 "야구봇 타자"라고 입력해 주세요</p>
+            <p>타자 뒤에 아무런 하위 옵션이 없으면 타율이 기본값입니다.</p>
+            <p>다음과 같은 하위 옵션을 사용할 수 있습니다.</p>
+            <p>
+                <ul>
+                    <li>타석</li>
+                    <li>타수</li>
+                    <li>안타</li>
+                    <li>홈런</li>
+                    <li>득점</li>
+                    <li>타점</li>
+                    <li>볼넷</li>
+                    <li>삼진</li>
+                    <li>도루</li>
+                    <li>BABIP</li>
+                    <li>타율</li>
+                    <li>출루율</li>
+                    <li>장타율</li>
+                    <li>OPS</li>
+                    <li>wOBA</li>
+                    <li>WAR</li>
+                </ul>
+            </p>
+            <p>예) 타자들의 홈런 순위를 보려면 "야구봇 타자 홈런" 이라고 입력하세요</p>
+            <p>투수 순위를 보려면 채팅창에 "야구봇 투수"라고 입력해 주세요</p>
+            <p>투수 뒤에 아무런 하위 옵션이 없으면 평균자책점이 기본값입니다.</p>
+            <p>다음과 같은 하위 옵션을 사용할 수 있습니다.</p>
+            <p>
+
+            <ul>
+                <li>승</li>
+                <li>패</li>
+                <li>세이브</li>
+                <li>홀드</li>
+                <li>선발</li>
+                <li>이닝</li>
+                <li>삼진</li>
+                <li>볼넷</li>
+                <li>홈런</li>
+                <li>ERA</li>
+                <li>WAR</li>
+            </ul>
+            </p>
+            <p>예) 투수들의 승리 순위를 보려면 "야구봇 타자 승" 이라고 입력하세요</p>
+        </div>
+        <div data-role="collapsible">
+            <h3>심심이</h3>
+            <p>심심이와 자유롭게 대화해보세요</p>
+        </div>
+        <div data-role="collapsible">
+            <h3>BBot</h3>
+            <p>대화로 B@를 이용하세요</p>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    WEB_SOCKET_SWF_LOCATION = "/toonweb/WebSocketMain.swf";  // Set URL of your WebSocketMain.swf here:
+    WEB_SOCKET_DEBUG = false;  // Set this to dump debug message from Flash to console.log:
+
+    function jsonToString(obj) {
+        var t = typeof (obj);
+        if (t != "object" || obj === null) {
+            if (t == "string") obj = '"' + obj + '"'; // simple data type
+            return String(obj);
+        } else { // recurse array or object
+            var n, v, json = [], arr = (obj && obj.constructor == Array);
+            for (n in obj) {
+                v = obj[n]; t = typeof(v);
+                if (t == "string") v = '"'+v+'"';
+                else if (t == "object" && v !== null) v = jsonToString(v);
+                json.push((arr ? "" : '"' + n + '":') + String(v));
+            }
+            return (arr ? "[" : "{") + String(json) + (arr ? "]" : "}");
+        }
+    };
+
+
+    var ChatClient = function(wsAddress, sender, senderNickName) {
+
+        this.sender = sender;
+        this.nickname = senderNickName;
+        var chatclient = this;
+
+        var bubblesOnUpload = {};
+
+        var connManager = new function() {
+            var ws;
+            this.status = '';
+            
+            var heartBeatJob ;
+
+            this.initConnection = function(address) {
+                ws = new WebSocket(address);
+
+				
+                ws.onopen = function() {
+                    roomManager.room().message({message: "Welcome to ToonTalk Mobile", svgUrl:"/svg/command/0?message=Welcome%20to%20ToonTalk%20Mobile"});
+                    connManager.status = 'connected';
+					
+                    if (!!navigator.geolocation){
+                        navigator.geolocation.getCurrentPosition(function(position){
+                            chatclient.log(position.coords.latitude + ',' + position.coords.longitude) ;
+                            chatclient.command('/user/addGPSWith', {latitude:position.coords.latitude, longitude:position.coords.longitude, userId:'$config.sender$'}) ;
+                        }, function(error){
+                            chatclient.log('error : ' +  error.message);
+                        });
+
+                    } else {
+                        chatclient.log('not supported navigator') ;
+                    }
+                    
+					heartBeatJob = setTimeout(connManager.reconnect , 30000) ;
+                };
+
+                ws.onmessage = function(e) {
+                 	clearTimeout(heartBeatJob) ;
+                 	heartBeatJob = setTimeout(connManager.reconnect, 30000) ;
+                    if('HEARTBEAT' == e.data) {
+                        ws.send('HEARTBEAT');
+                        return;
+                    }
+
+                    var msg = eval('(' + e.data + ')');
+                    chatclient.log(e.data);
+
+                    if(msg.result && msg.result.clientScript > ' ') {
+                        var args = msg.result || {} ;
+                        eval(msg.result.clientScript);
+                    } else {
+                    	chatclient.room().message(msg.result) ;
+                        return;
+                    }
+                    
+                };
+
+                ws.onclose = function() {
+                   	window.clearInterval(heartBeatJob) ;
+                    connManager.status = 'closed';
+                    roomManager.room().message({message: 'closed. retry connect', svgUrl:"/svg/command/0?message=closed.%20retry%20connect"});
+                    connManager.reconnect();
+                };
+
+                ws.onerror = function() {
+                    roomManager.room().message({message: 'Error', svgUrl:"/svg/command/0?message=Error"});
+                };
+            };
+
+            this.getConnection = function() {
+                return ws;
+            };
+
+            this.close = function() {
+                ws.close();
+            };
+
+            this.isConnected = function() {
+                return connManager.status == 'connected';
+            };
+
+            this.reconnect = function() {
+                \$.ajax({
+                    type:'post', async:true, url:'/session/reload',
+                    success : function(data){
+                        connManager.initConnection(data);
+
+                        setTimeout(function() {
+                            if(connManager.isConnected()) {
+                                roomManager.rejoinAllRooms();
+                                roomManager.scrollToBottom();
+                            }
+                        }, 1000);
+                    },
+                    error : function(request,status,error){
+                        chatclient.log('error' + status + error);
+                        alert('Not Connect Server');
+                    }
+                }) ;
+            };
+        };
+
+        var roomManager = new function() {
+            var manager = this;
+
+            \$('#chatScreens').tabs({
+                activate: function(event ,ui){
+                    manager.scrollToBottom();
+                }
+            });
+
+            var _room = new function() {
+                this.toast = function(option) {
+                    \$().toastmessage('showToast', {
+                        stayTime: 10000,
+                        text: '<span style="color:black;">' + option.title + ' : </span>' + option.msg,
+                        position: 'top-left',
+                        type: 'notice'
+                    });
+                };
+
+                this.error = function(message) {
+                    alert(message);
+                    console.log('error:' + message) ;
+                };
+                
+                this.clear = function(args) {
+	            	if (! args.roomId) return ;
+	                \$('#' + args.roomId).empty();
+    	        };
+	
+                this.join = function(args) {
+                    var roomId = args.roomId;
+
+                    if(manager.exists(roomId)) {
+                        manager.select(roomId);
+                    } else {
+                        manager.create(roomId, roomId);
+                    }
+                };
+
+                var appendMsg = function(roomId, args) {
+                	// if (true) return ;
+                    var message = args.html || args.message ;
+                    var senderId = (args.sender || 'system');
+                    var senderTxt = '<img src="/image/bot/icon/' + senderId + '.jpg" valign="middle">' + (args.time ? new Date(1 * args.time) : new Date()).toLocaleTimeString('en-US', {hour:'numeric', minute:'numeric', second:'numeric'})  ;
+
+                    var roomEl = \$('#' + roomId);
+                    var whisper = args.options ? (eval('('+args.options+')').event == 'onWhisper' ? ' whisper' : '') : '';
+                    var messageBlock = \$('<div></div>');
+                    var messageInner = \$('<div></div>');
+
+                    var style = '';
+                    var align = '';
+
+                    if (senderId == chatclient.sender) {
+                        messageBlock.css('padding-bottom','10').css('width','100%');
+                        messageInner.html(args.svg || "<embed id='wrapper_" + args.messageId + "' width='100%' src='"+ args.svgUrl + "&type=sender' type='image/svg+xml' pluginspage='http://www.adobe.com/svg/viewer/install/' />") ;
+                        align = 'right';
+
+                    } else {
+                        messageBlock.css('padding-bottom','10').css('width','100%');
+                        messageInner.html(args.svg || "<embed id='wrapper_" + args.messageId + "' width='100%' src='"+ args.svgUrl + "&type=receiver' type='image/svg+xml' pluginspage='http://www.adobe.com/svg/viewer/install/' />") ;
+                        align = 'left';
+                    }
+
+                    messageBlock.attr('id', args.messageId).attr('title', jsonToString(args)).css('padding-bottom','10px');
+                    messageBlock.append(messageInner);
+                    roomEl.append(messageBlock);
+
+                    // scroll to bottom
+                    manager.scrollToBottom();
+                };
+
+                this.message = function(args) {
+                    var roomId = args.roomId || manager.activeRoomId();
+
+                    if(\$('#' + args.messageId).length > 0) return;             // already received message... skip!
+
+
+                    if(roomId.startWith('@')) {              // this if should be fixed...
+                        this.toast({
+                            title: 'New Whisper',
+                            msg: args.message + ' from: ' + args.sender
+                        });
+                        return ;
+                    } else if(manager.activeRoomId() != roomId) {
+
+                        if(args.sender == 'echo') return;
+
+                        var onClickMsg = 'client.chat("/join ' + roomId + '")';
+
+                        this.toast({
+                            title : 'New Message',
+                            msg : "<a href='#' onclick='" + onClickMsg + "'>" + args.message + "</a><br/><span style='color:black;'>from:" + args.sender + " , room:" + roomId + "</span>"
+                        }) ;
+
+                        return;
+                    }
+
+                    if ((!roomId.startWith('@')) && !manager.exists(roomId)) return ;
+
+                    appendMsg(roomId, args);
+                };
+                
+                this.toon = function(args) {
+                	if (! args.toon) {
+                		this.message(args) ;
+                		return ;
+                	}
+                
+                	var senderId = (args.sender || 'system');
+                	var roomId = args.roomId || manager.activeRoomId();
+                	var mcontent = (args.toon || '').replace('{type}', (senderId == chatclient.sender) ? 'sender' : 'receiver') ;
+
+                	var roomEl = \$('#' + roomId);
+                	var messageBlock = \$('<div></div>');
+                	var messageInner = \$('<div></div>');
+                	
+					
+                	if (senderId == chatclient.sender) {
+                	 	messageBlock.attr('align', 'right');
+	                	messageInner.html("<embed src='"+ mcontent + "' type='image/svg+xml' pluginspage='http://www.adobe.com/svg/viewer/install/' />");
+                	} else {
+                	 messageBlock.attr('align', 'left');
+	                	messageInner.html("<embed src='"+ mcontent + "' type='image/svg+xml' pluginspage='http://www.adobe.com/svg/viewer/install/' />");
+                	}
+                	
+                	messageBlock.attr('id', args.messageId).attr('title', jsonToString(args));
+                	messageBlock.append(messageInner);
+                	
+                	
+                	roomEl.append(messageBlock);
+                	manager.scrollToBottom();
+                } ;
+
+                this.leave = function() {
+                    var roomId = manager.activeRoomId();
+                    manager.remove(roomId);
+                    manager.select('Home');
+                } ;
+                
+                this.background = function(args){
+                	var roomEl = \$('#' + args.roomId);
+                	console.log(args.message) ;
+                	roomEl.css("background", "url('" + args.message + "')");  
+                }
+            };
+
+            this.scrollToBottom = function() {
+                \$("html, body").animate({ scrollTop: \$(document).height()-\$(window).height()+1000 }, 10);
+            };
+
+            this.create = function(roomId, roomTitle) {
+                var navbar = \$("#roomList");
+
+                var li = \$("<li></li>");
+                var a  = \$("<a></a>");
+                var closeBtn = \$('<a></a>').attr('roomId', roomId).attr('role', 'delete').attr('class', 'ui-btn ui-icon-delete ui-btn-icon-notext').text('Delete');
+
+                a.attr("href", '#' + roomId).attr('id', 'tab-' + roomId).attr('data-transition','slide').text(roomTitle);
+                li.attr('roomNumber', roomId);
+                li.append(a);
+                li.append(closeBtn);
+
+                closeBtn.click(function(event) {
+                    event.preventDefault();
+                    \$(this).removeClass('ui-btn-active').removeClass('ui-btn-hover-b').addClass('ui-btn-up-b');
+                    var roomId = \$(this).attr('roomId');
+
+                    roomManager.remove(roomId);
+                });
+
+                navbar = this.clearNavBarStyle(navbar);
+
+                navbar.navbar("destroy");
+                li.appendTo(\$("#roomList ul"));
+                \$('#chatRooms').append('<div style="overflow-x: hidden; margin-bottom: 20px;" id="'+roomId+ '"></div>');
+                navbar.navbar();
+                \$('#chatScreens').tabs('refresh');
+                \$('#menuTab').append('<li id="link-' + roomId + '"><a href="#" onclick="javascript:client.getRoomManager().select(\'' + roomId + '\');">' + roomId + '</a></li>');
+                \$('#menuTab').listview('refresh');
+
+                this.select(roomId);
+            };
+
+            this.clear = function(args) {
+            	if (! args.roomId) return ;
+                \$('#' + args.roomId).empty();
+            };
+
+            this.rejoinAllRooms = function() {
+                manager.getAllRooms().forEach(function(roomId) {
+                    if(roomId != 'Home') {
+                        manager.clear(roomId);
+                        chatclient.chat('/join ' + roomId);
+                    }
+                });
+            };
+
+            this.getAllRooms = function() {
+                var rooms = [];
+                \$('#roomList ul li').each(function(index) {
+                    var roomId = \$(this).attr('roomNumber');
+                    rooms.push(roomId);
+                });
+                return rooms;
+            }
+
+            this.refreshRoomList = function() {
+                var navbar = \$("#roomList");
+                navbar = this.clearNavBarStyle(navbar);
+                navbar.navbar("destroy");
+                navbar.navbar();
+                \$('#chatScreens').tabs('refresh');
+            };
+
+            this.clearNavBarStyle = function(navbar){
+                navbar.find("*").andSelf().each(function(){
+                    if(\$(this).attr('role') == 'delete') {
+                        return ;
+                    }
+
+                    \$(this).removeClass(function(i, cn){
+                        var matches = cn.match (/ui-[\w\-]+/g) || [];
+                        return (matches.join (' '));
+                    });
+
+                    if (\$(this).attr("class") == "") {
+                        \$(this).removeAttr("class");
+                    }
+                });
+                return navbar;
+            };
+
+            this.select = function(roomId) {
+                \$('.ui-btn-active').removeClass('ui-btn-hover-b').addClass('ui-btn-up-b');
+                \$('#tab-' + roomId).addClass('ui-btn-active');
+                \$('#tab-' + roomId).trigger('click');
+
+                \$('html body').stop().animate({
+                    scrollTop: \$('#' + roomId)[0].scrollHeight
+                }, 20);
+            };
+
+            this.remove = function(roomId) {
+                \$('#roomList li[roomNumber=' + roomId + ']').remove();         // remove main tab
+                \$('#link-' + roomId).remove();                                 // remove left menu tab
+                \$('#' + roomId).remove();                                      // remove room (message container)
+
+                this.refreshRoomList();
+                \$('#menuTab').listview('refresh');
+            };
+
+            this.exists = function(roomId) {
+                return \$('#tab-' + roomId).length > 0;
+            };
+
+            this.room = function() {
+                return _room;
+            };
+
+            this.activeRoomId = function() {
+                var href = \$('.ui-tabs-active').children()[0].href;
+                var tabId = href.substr(href.lastIndexOf('/') + 2);
+
+                return tabId;
+            };
+
+            var activeRoomIndex = function() {
+                return \$( "#chatScreens" ).tabs( "option", "active" );
+            };
+
+            this.nextRoom = function(event) {
+                var rooms = roomManager.getAllRooms();
+                var nextRoomIndex = activeRoomIndex() + 1;
+
+                if(nextRoomIndex < rooms.length) {
+                    roomManager.select(rooms[nextRoomIndex]);
+                }
+            };
+
+            this.prevRoom = function(event) {
+                var rooms = roomManager.getAllRooms();
+                var prevRoomIndex = activeRoomIndex() - 1;
+
+                if(prevRoomIndex > -1) {
+                    roomManager.select(rooms[prevRoomIndex]);
+                }
+            };
+        };
+
+        // constructor part of ChatClient
+        connManager.initConnection(wsAddress);
+
+        this.getRoomManager = function() {
+            return roomManager;
+        };
+
+        var isNormalMessage = function(message) {
+            return !(message.startWith('/') || message.startWith('@'));
+        };
+
+        this.chat = function(argMessage) {
+            if(!connManager.isConnected()) {
+                connManager.reconnect();
+
+                setTimeout(function() {
+                    if (connManager.isConnected()) {
+                        chatclient.chat(argMessage);
+                    } else {
+                        roomManager.room().error('Not connect Server');
+                    }
+                }, 1000);
+
+                return ;
+            }
+
+            var currentRoomId = roomManager.activeRoomId();
+            var msgText = argMessage ? argMessage : \$('#message').val();
+
+            if(currentRoomId == 'Home' && isNormalMessage(msgText)) {
+                roomManager.room().error('대기방에서는 대화를 할 수 없습니다. "/join 방아이디"를 통해 방을 만들거나 참여할 수 잇습니다.');
+                return ;
+            }
+
+            var msgId = '' + new Date().getUTCMilliseconds();
+            var chatMsg = jsonToString({
+                id : msgId,
+                script: '/room/sendMessageWith',
+                params: {
+                    receivers: '',
+                    roomId: (currentRoomId == 'Home' ? '' : currentRoomId),
+                    message: msgText,
+                    sender: chatclient.sender,
+                    senderNickname: chatclient.nickname,
+                    clientScript: 'client.room().message(args);',
+                    requestId: msgId
+                }
+            });
+            this.log('send : ' + chatMsg);
+            connManager.getConnection().send(chatMsg);
+
+            \$('#message').val('');
+            \$('#message').focus();
+        };
+
+        this.command = function(script, params) {
+            var cmdMsg = jsonToString({
+                id: new Date().getUTCMilliseconds(),
+                script: script,
+                params: params
+            });
+            connManager.getConnection().send(cmdMsg);
+        };
+        
+        this.log = function(msg){
+        	console.log(msg) ;
+        } ;
+
+        this.close = function() {
+            connManager.getConnection().close();
+        };
+
+        this.room = function() {
+            return roomManager.room();
+        };
+        
+        this.undefined = function(){
+        	// no action
+        } ;
+
+        this.reload = function() {
+            connManager.reload();
+        };
+
+        this.connectionManager = function() {
+            return connManager;
+        };
+
+        this.onStartUpload = function(input) {
+            var messageId = '', message = '', receivedTime = '';
+            var chatBubble = MyMessage.create(messageId, message).drawUploadBubble();
+            bubblesOnUpload[messageId] = chatBubble;
+
+            \$('#fileupload').fileupload({
+                dataType: 'json',
+                done: function() {
+                    chatclient.onFinishUpload(messageId);
+                }
+            });
+        };
+
+        this.onFinishUpload = function(messageId) {
+            var onUploadBubble = bubblesOnUpload[messageId],
+                duration = 500;
+
+            if(onUploadBubble) {
+                onUploadBubble.fadeOut(duration);
+                onUploadBubble.clearChildren();
+                onUploadBubble.fadeIn(duration);
+            }
+        };
+    };
+
+    var wsAddress = '$config.address$';
+    var sender = '$config.sender$';
+    var senderNickname = '$config.nickName$';
+
+    var client = '';
+
+    \$(document).ready(function() {
+        client = new ChatClient(wsAddress, sender, senderNickname);
+
+        \$("#message").keydown(function(event) {
+            if (event.which == 13) {
+                client.chat();
+            }
+        }) ;
+
+
+        client.getRoomManager().select('Home');
+
+        \$(document).on('swipeleft', '#chatMain', function(event) {
+            client.getRoomManager().prevRoom(event);
+        });
+
+        \$(document).on('swiperight', '#chatMain', function(event) {
+            client.getRoomManager().nextRoom(event);
+        });
+
+        window.addEventListener('shake', shakeEventDidOccur, false);
+
+        //function to call when shake occurs
+        function shakeEventDidOccur (event) {
+            try {
+                var currentRoomId = client.getRoomManager().activeRoomId();
+                if(currentRoomId != 'Home') {
+                    var msgId = '' + new Date().getUTCMilliseconds();
+                    var chatMsg = jsonToString({
+                        id : msgId,
+                        script: '/room/sendMessageWith',
+                        params: {
+                            receivers: '',
+                            roomId: (currentRoomId == 'Home' ? '' : currentRoomId),
+                            message: '주사위',
+                            sender: sender,
+                            senderNickname: senderNickname,
+                            clientScript: 'client.undefined();',
+                            requestId: msgId
+                        }
+                    });
+                    client.connectionManager().getConnection().send(chatMsg);
+                }
+
+                event.preventDefault();
+                return false;
+
+            } catch(ex) {
+                alert(ex);
+            }
+
+        }
+    });
+
+//    window.onload = initChat ;
+
+</script>
+</body>
+</html>

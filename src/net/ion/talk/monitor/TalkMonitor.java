@@ -101,7 +101,7 @@ class Element {
 		result.add("key", new JsonObject().put("fqn", event.getKey().fqnString()).put("action", event.getKey().action().toString()));
 		JsonObject values = new JsonObject() ;
 		for (Entry<PropertyId, PropertyValue> entry : event.getValue().entrySet()) {
-			values.addProperty(entry.getKey().idString(), entry.getValue().asObject().toString());
+			values.addProperty(entry.getKey().idString(), entry.getValue().asString());
 		}
 		result.add("values", values);
 		

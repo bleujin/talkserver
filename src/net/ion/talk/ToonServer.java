@@ -8,6 +8,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 
+import net.ion.craken.aradon.CrakenLet;
 import net.ion.craken.aradon.MonitorLet;
 import net.ion.craken.aradon.NodeLet;
 import net.ion.craken.aradon.UploadLet;
@@ -71,7 +72,7 @@ public class ToonServer {
 			.add("/auth/*", new BasicAuthenticationHandler(CrakenVerifier.test(repoEntry.login())))
 			.add("/auth/*", new PathHandler(LoginLet.class).prefixURI("/auth"))
 			
-			.add("/admin/*", new PathHandler(NodeLet.class, MonitorLet.class, ResourceLet.class, ScriptDoLet.class, UploadLet.class).prefixURI("admin"))
+			.add("/admin/*", new PathHandler(NodeLet.class, CrakenLet.class, MonitorLet.class, ResourceLet.class, ScriptDoLet.class, UploadLet.class).prefixURI("admin"))
 			
 			.add("/bot/*", new PathHandler(BotImageLet.class))
 			

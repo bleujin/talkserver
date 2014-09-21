@@ -236,13 +236,13 @@ new function(){
 			text = 'no opened rooms' ; 
 		} else {
 			var rooms = children.iterator() ;
-			text = '<ul>' ;
+			text = '<div>' ;
 			while(rooms.hasNext()){
 				var room = rooms.next().ref('room') ;
-				var onClickMsg = "client.chat(\"/join " + room.property('roomId').asString() + "\")" ;
+				var onClickMsg = "window.parent.client.chat(\"/join " + room.property('roomId').asString() + "\")" ;
 				text += "<li><a href='#' onclick='" + onClickMsg + "'>" + room.property('roomId').asString() + "</a> : " + room.property('title').asString() + "</li>" ;
 			}
-			text += '</ul>' ;
+			text += '</div>' ;
 		}
 		
 		return {message:text} ;
