@@ -16,7 +16,6 @@ import junit.framework.TestCase;
 
 public class TestBaseServer extends TestCase {
 
-	protected RepositoryEntry rentry;
 	protected TalkEngine talkEngine;
 	protected ToonServer tserver;
 
@@ -27,10 +26,7 @@ public class TestBaseServer extends TestCase {
 		FileUtil.deleteDirectory(new File(filePath));
 		
 //		RepositoryEntry rentry = RepositoryEntry.testSoloFile(filePath) ;
-		this.rentry = RepositoryEntry.test() ;
-		ScheduledExecutorService worker = Executors.newScheduledThreadPool(10) ;
-
-		this.tserver = ToonServer.testCreate(rentry, worker);
+		this.tserver = ToonServer.testCreate();
 		tserver.ready().startRadon();
 		
 		

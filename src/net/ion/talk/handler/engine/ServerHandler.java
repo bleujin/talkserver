@@ -7,6 +7,8 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
 
+import org.apache.lucene.store.AlreadyClosedException;
+
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
@@ -69,13 +71,15 @@ public class ServerHandler implements TalkHandler {
 	@Override
 	public void onEngineStop(TalkEngine tengine) {
 		try {
-			this.session.tran(new TransactionJob<Void>() {
+			this.session.tranSync(new TransactionJob<Void>() {
 				@Override
 				public Void handle(WriteSession wsession) throws Exception {
 					wsession.pathBy("/servers/" + hostName).removeSelf();
 					return null;
 				}
 			});
+		} catch (AlreadyClosedException e) {
+			tengine.getLogger().warning(e.getMessage());
 		} catch (Exception e) {
 			tengine.getLogger().warning(e.getMessage());
 		}

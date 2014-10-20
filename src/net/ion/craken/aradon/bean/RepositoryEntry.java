@@ -6,6 +6,7 @@ import net.ion.craken.loaders.lucene.ISearcherWorkspaceConfig;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.crud.RepositoryImpl;
 import net.ion.talk.util.NetworkUtil;
+import net.ion.talkserver.config.TalkConfig;
 
 import org.infinispan.configuration.global.GlobalConfiguration;
 import org.infinispan.configuration.global.GlobalConfigurationBuilder;
@@ -19,6 +20,11 @@ public class RepositoryEntry  {
 	private RepositoryEntry(RepositoryImpl r, String wsName) {
 		this.r = r ;
 		this.wsName = wsName ; 
+	}
+
+	public RepositoryEntry(RepositoryImpl r, String wsName, TalkConfig nsConfig) {
+		this.r = r ;
+		this.wsName = wsName ;
 	}
 
 	public static RepositoryEntry test() throws IOException {

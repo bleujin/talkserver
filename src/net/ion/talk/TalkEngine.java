@@ -89,8 +89,8 @@ public class TalkEngine implements WebSocketHandler {
 		if (context == null)
 			throw new IllegalStateException("context is null");
 		
-		Assert.assertNotNull(context.getAttributeObject(ScheduledExecutorService.class.getCanonicalName(), ScheduledExecutorService.class)) ;
-		Assert.assertNotNull(context.getAttributeObject(RepositoryEntry.EntryName, RepositoryEntry.class)) ;
+		if (context.getAttributeObject(ScheduledExecutorService.class.getCanonicalName(), ScheduledExecutorService.class) == null) throw new IllegalStateException("not found worker") ;
+		if (context.getAttributeObject(RepositoryEntry.EntryName, RepositoryEntry.class) == null) throw new IllegalStateException("not found repository entry") ;
 		return new TalkEngine(context) ;
 	}
 
@@ -368,7 +368,7 @@ class ConnManager {
 	}
 
 	void remove(WebSocketConnection uconn, TalkEngine.Reason reason) {
-		logger.log(Level.INFO, "" + uconn.data("id") + " closed for" + reason);
+		logger.log(Level.FINE, "" + uconn.data("id") + " closed for" + reason);
 		conns.remove(uconn);
 	}
 

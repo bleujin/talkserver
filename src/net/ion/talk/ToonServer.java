@@ -6,17 +6,24 @@ import java.net.UnknownHostException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import net.ion.craken.aradon.CrakenLet;
+import net.ion.craken.aradon.MiscLet;
 import net.ion.craken.aradon.MonitorLet;
 import net.ion.craken.aradon.NodeLet;
 import net.ion.craken.aradon.UploadLet;
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.node.ReadSession;
+import net.ion.nradon.HttpControl;
+import net.ion.nradon.HttpHandler;
+import net.ion.nradon.HttpRequest;
+import net.ion.nradon.HttpResponse;
 import net.ion.nradon.Radon;
 import net.ion.nradon.config.RadonConfiguration;
 import net.ion.nradon.handler.authentication.BasicAuthenticationHandler;
+import net.ion.nradon.handler.event.ServerEvent.EventType;
 import net.ion.nradon.handler.logging.LoggingHandler;
 import net.ion.nradon.netty.NettyWebServer;
 import net.ion.nradon.restlet.FileMetaType;
@@ -35,44 +42,49 @@ import net.ion.talk.toonweb.ClientLet;
 import net.ion.talk.toonweb.MobileClientLet;
 import net.ion.talk.toonweb.ToonLogSink;
 import net.ion.talk.toonweb.ToonWebResourceLet;
+import net.ion.talkserver.config.TalkConfig;
+import net.ion.talkserver.config.builder.ConfigBuilder;
 
 public class ToonServer {
 
 	private enum Status {
-		INITED, READY, STARTED, STOPED ;
+		STOPED, INITED, READY, STARTED ;
 	}
 	
 	private Radon radon;
 	private AtomicReference<Status> status = new AtomicReference<ToonServer.Status>(Status.STOPED) ;
 	
-	private RepositoryEntry repoEntry;
-	private ScheduledExecutorService worker;
+	private final RepositoryEntry repoEntry;
+	private final ScheduledExecutorService worker;
+	private final TalkConfig tconfig;
+	
 	private TalkEngine talkEngine;
 
-	private ToonServer(RepositoryEntry rentry, ScheduledExecutorService worker){
+	private ToonServer(RepositoryEntry rentry, TalkConfig tconfig){
 		this.repoEntry = rentry ;
-		this.worker = worker ;
+		this.worker = tconfig.executorService() ;
+		this.tconfig = tconfig ;
 	}
 
+	public static ToonServer create(TalkConfig tconfig) throws Exception{
+		return new ToonServer(tconfig.createREntry(), tconfig).init() ;
+	}
+	
 	public static ToonServer testCreate() throws Exception {
-		return testCreate(RepositoryEntry.test(), Executors.newScheduledThreadPool(10)) ;
+		TalkConfig tconfig = new ConfigBuilder().build();
+		return new ToonServer(tconfig.testREntry(), tconfig).init() ;
 	}
 
-	public static ToonServer testCreate(RepositoryEntry rentry, ScheduledExecutorService worker) throws Exception {
-		return new ToonServer(rentry, worker).init();
-	}
 
-	
-	
 	private ToonServer init() throws Exception {
-		FileMetaType.init(); 
-
-		RadonConfiguration config = RadonConfiguration.newBuilder(9000)
+		if (status.get().ordinal() >= Status.INITED.ordinal()) return this ;
+		
+		RadonConfiguration config = RadonConfiguration.newBuilder(tconfig.serverConfig().port())
 			.add(new LoggingHandler(new ToonLogSink()))
 			.add("/auth/*", new BasicAuthenticationHandler(CrakenVerifier.test(repoEntry.login())))
 			.add("/auth/*", new PathHandler(LoginLet.class).prefixURI("/auth"))
 			
-			.add("/admin/*", new PathHandler(NodeLet.class, CrakenLet.class, MonitorLet.class, ResourceLet.class, ScriptDoLet.class, UploadLet.class).prefixURI("admin"))
+			.add("/admin/*", new PathHandler(NodeLet.class, CrakenLet.class, MonitorLet.class, ResourceLet.class, ScriptDoLet.class, UploadLet.class, MiscLet.class).prefixURI("admin"))
 			
 			.add("/bot/*", new PathHandler(BotImageLet.class))
 			
@@ -88,11 +100,25 @@ public class ToonServer {
 			
 			.add("/toonweb/*", new PathHandler(ToonWebResourceLet.class))
 			.add("/upload/*", new PathHandler(net.ion.talk.let.UploadLet.class))
-			.build() ;
+			.add(new HttpHandler(){
+				@Override
+				public void onEvent(EventType eventtype, Radon radon) {
+				}
+	
+				@Override
+				public int order() {
+					return 1000;
+				}
+	
+				@Override
+				public void handleHttpRequest(HttpRequest request, HttpResponse response, HttpControl control) throws Exception {
+					response.status(404).content("not found path : " + request.uri()).end() ;
+				}
+			}).build() ;
 		
 		config.getServiceContext().putAttribute(RadonConfiguration.class.getCanonicalName(), config);
-		config.getServiceContext().putAttribute("resourceDir", "./resource/toonweb") ;
-		config.getServiceContext().putAttribute("templateDir", "./resource/template") ;
+		config.getServiceContext().putAttribute("resourceDir", tconfig.repoConfig().webHomeDir()) ;
+		config.getServiceContext().putAttribute("templateDir", tconfig.repoConfig().templateHomeDir()) ;
 		config.getServiceContext().putAttribute(RepositoryEntry.EntryName, repoEntry);
 		config.getServiceContext().putAttribute(ScheduledExecutorService.class.getCanonicalName(), worker);
 		
@@ -102,59 +128,7 @@ public class ToonServer {
 		this.talkEngine = TalkEngine.create(radon.getConfig().getServiceContext()) ;
 		radon.add("/websocket/{id}/{accessToken}", talkEngine) ;
 		radon.add("/event/*", TalkMonitor.create(repoEntry.login())) ;
-		
-//		ConfigurationBuilder cbuilder = ConfigurationBuilder.newBuilder()	
-//				.aradon()
-//					.addAttribute(RepositoryEntry.EntryName, repoEntry)
-//					.addAttribute(ScheduledExecutorService.class.getCanonicalName(), worker)
-//				.sections()
-//					.restSection("auth").addPreFilter(new ChallengeAuthenticator("users", verifier))
-//						.path("login").addUrlPattern("/login").matchMode(IMatchMode.STARTWITH).handler(LoginLet.class)
-				
-//					.restSection("register")
-//						.path("smsAuth").addUrlPattern("/SMSAuth").matchMode(EnumClass.IMatchMode.STARTWITH).handler(PhoneAuthLet.class)
-						
-//					.restSection("script")
-//						.path("script").addUrlPattern("/").matchMode(EnumClass.IMatchMode.EQUALS).handler(ScriptConfirmLet.class)
-//						
-//					.restSection("execute")
-//						.path("execute").addUrlPattern("/").matchMode(IMatchMode.STARTWITH).handler(ScriptExecLet.class)
-						
-//					.restSection("resource")
-//						.path("resource").addUrlPattern("/{path}").matchMode(EnumClass.IMatchMode.STARTWITH).handler(ResourceLet.class)
-						
-//					.restSection("image")
-//						.path("bot").addUrlPattern("/bot/icon/{botId}.jpg").handler(BotImageLet.class)
-//						.path("bimage").addUrlPattern("/bimage/{botId}/").matchMode(IMatchMode.STARTWITH).handler(BotImageLet.class)
-						
-//					.restSection("svg")
-//						.path("message").addUrlPattern("/message/{roomId}/{messageId}").handler(SVGLet.class)
-//						.path("command").addUrlPattern("/command/{messageId}").handler(CommandSVGLet.class)
-						
-//					.restSection("session")
-//						.addPreFilter(new ToonAuthenticator("user"))
-//						.path("client").addUrlPattern("/").handler(ClientLet.class)
-//						.path("reload").addUrlPattern("/reload").handler(ReloadLet.class)
 
-//                    .restSection("mobile")
-//                        .addPreFilter(new ToonAuthenticator("user"))
-//                        .path("client").addUrlPattern("/").handler(MobileClientLet.class)
-
-//					.restSection("toonweb")
-//						.path("toonweb").addUrlPattern("/").matchMode(IMatchMode.STARTWITH).handler(ToonWebResourceLet.class)
-						
-//					.restSection("upload")
-//						.path("upload").addUrlPattern("/{userId}/{resource}").addUrlPattern("/{userId}/{resource}/{fieldname}").handler(net.ion.talk.let.UploadLet.class)
-//						
-//					.restSection("admin").addAttribute("baseDir", "./resource/template")
-//						.path("node").addUrlPattern("/repository/{renderType}").matchMode(IMatchMode.STARTWITH).handler(NodeLet.class)
-//						.path("event").addUrlPattern("/event/").matchMode(IMatchMode.STARTWITH).handler(MonitorLet.class)
-//						.path("template").addUrlPattern("/template").matchMode(EnumClass.IMatchMode.STARTWITH).handler(ResourceLet.class)
-//						.path("doscript").addUrlPattern("/script").matchMode(EnumClass.IMatchMode.EQUALS).handler(ScriptDoLet.class)
-//						.path("upload").addUrlPattern("/upload").matchMode(IMatchMode.STARTWITH).handler(net.ion.craken.aradon.UploadLet.class).toBuilder() 
-//					;
-
-		
 		status.set(Status.INITED);
 		return this;
 	}
@@ -168,19 +142,24 @@ public class ToonServer {
 
 
 	public ToonServer startRadon() throws Exception {
-		if (status.get() != Status.READY) throw new IllegalStateException("current status is " + status.get()) ;
+		if (status.get().ordinal() < Status.READY.ordinal()) {
+			ready();
+		}
 		
 		radon.start().get();
 		status.set(Status.STARTED);
 		return this;
 	}
+	
+	
 
 	public ToonServer stop() throws InterruptedException, ExecutionException {
+		if (status.get() == Status.STOPED) return this ;
+		
 		talkEngine.stopEngine(); 
-//		repoEntry.shutdown();
-//		worker.shutdown(); 
-//		worker.awaitTermination(2, TimeUnit.SECONDS) ;
 		if (radon != null) radon.stop().get();
+		worker.shutdown(); 
+		worker.awaitTermination(1, TimeUnit.SECONDS) ;
 		
 		status.set(Status.STOPED);
 		return this ;
@@ -213,10 +192,10 @@ public class ToonServer {
 	}
 
 	public String getHostAddress() {
-		try {
-			return InetAddress.getLocalHost().getHostAddress();
-		} catch (UnknownHostException e) {
-			return "127.0.0.1";
-		}
+		return tconfig.serverConfig().hostName() ;
+	}
+
+	public TalkConfig config() {
+		return tconfig;
 	}
 }

@@ -22,7 +22,7 @@ import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
  
 
-@Path("")
+@Path("/upload")
 public class UploadLet {
 
 	@POST

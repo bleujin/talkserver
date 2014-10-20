@@ -9,9 +9,10 @@ new function(){
 
         this.onMessage = function(bm){
 			importPackage(net.ion.framework.parse.gson) ;
+			java.lang.System.out.println(bm.message()) ;
             // if((!bm.message().equalsIgnoreCase('') && !bm.message().equalsIgnoreCase('불켜')) || session.exists("/bots/"+ bm.fromUserId())) return ;
 
-            if ( bm.message().startsWith('{') && bm.message().endsWith('}') ) {   // {'on':true, 'sat':80, 'bri':255,'hue':10000}
+            if ( bm.message().trim().startsWith('{') && bm.message().trim().endsWith('}') ) {   // {'on':true, 'sat':80, 'bri':255,'hue':10000}
 
 	            var roomId = bm.fromRoomId() ;
 	            var selfBotId = bm.toUserId() ;

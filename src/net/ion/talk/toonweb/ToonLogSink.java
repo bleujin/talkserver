@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.net.SocketAddress;
 import java.util.Date;
 
+import org.apache.log4j.Logger;
+
+import net.ion.framework.util.ObjectUtil;
 import net.ion.framework.util.StringUtil;
 import net.ion.nradon.EventSourceConnection;
 import net.ion.nradon.HttpRequest;
@@ -22,7 +25,8 @@ public class ToonLogSink implements LogSink {
 	protected final String[] dataValuesToLog;
 
 	protected final String lineSeparator = System.getProperty("line.separator", "\n");
-
+	private Logger logger = Logger.getLogger(ToonLogSink.class) ;
+	
 	protected boolean trouble = false;
 
 	public ToonLogSink(Appendable out, String... dataValuesToLog) {
@@ -46,7 +50,18 @@ public class ToonLogSink implements LogSink {
 	}
 
 	public void httpEnd(HttpRequest request, HttpResponse response) {
+		long etime = (Long)ObjectUtil.coalesce(request.data("_etime"), 0L) ;
+		String uri = request.uri() ;
+		if (isIgnoreURI(uri)) return ;
+		
 		custom(request, "HTTP-END[" + response.status() + "]", null); // TODO: Time request
+	}
+
+	private boolean isIgnoreURI(String uri) {
+		if (uri == null) return true ;
+		if (uri.startsWith("/toonweb/")) return true ;
+		
+		return false;
 	}
 
 	public void webSocketConnectionOpen(WebSocketConnection connection) {
@@ -135,18 +150,23 @@ public class ToonLogSink implements LogSink {
 	protected Appendable formatLogEntry(Appendable out, HttpRequest request, String action, String data) throws IOException {
 		long cumulativeTimeOfRequest = cumulativeTimeOfRequest(request);
 		Date now = new Date();
-		formatValue(out, now);
-		formatValue(out, now.getTime());
-		formatValue(out, cumulativeTimeOfRequest);
-		formatValue(out, request.id());
-		formatValue(out, address(request.remoteAddress()));
-		formatValue(out, action);
-		formatValue(out, request.uri());
-		formatValue(out, data);
+		StringBuilder sb = new StringBuilder() ;
+		formatValue(sb, now);
+		formatValue(sb, now.getTime());
+		formatValue(sb, cumulativeTimeOfRequest);
+		formatValue(sb, request.id());
+		formatValue(sb, address(request.remoteAddress()));
+		formatValue(sb, action);
+		formatValue(sb, request.uri());
+		formatValue(sb, data);
 		for (String key : dataValuesToLog) {
-			formatValue(out, request.data(key));
+			formatValue(sb, request.data(key));
 		}
-		return out.append(lineSeparator);
+		sb.append(lineSeparator);
+		
+		logger.info(sb);
+		
+		return out.append(sb) ;
 	}
 
 	protected Appendable formatHeader(Appendable out) throws IOException {

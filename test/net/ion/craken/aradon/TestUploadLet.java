@@ -22,7 +22,7 @@ public class TestUploadLet extends TestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        this.radon = RadonConfiguration.newBuilder(9999).add(new PathHandler(UploadLet.class).prefixURI("/upload")).startRadon() ;
+        this.radon = RadonConfiguration.newBuilder(9999).add(new PathHandler(UploadLet.class)).startRadon() ;
         this.rentry = radon.getConfig().getServiceContext().putAttribute("repository", RepositoryEntry.test()) ;
     	this.nc = NewClient.create() ;
     }

@@ -8,9 +8,12 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
+import net.ion.framework.util.Debug;
 import net.ion.framework.util.ObjectUtil;
+import net.ion.nradon.restlet.FileMetaType;
 import net.ion.radon.core.ContextParam;
 import net.ion.radon.core.let.FileResponseBuilder;
 
@@ -23,9 +26,18 @@ public class ToonWebResourceLet {
 		final String dirHome = ObjectUtil.coalesce(baseDir, "./resource/toonweb/");
         File file = new File(dirHome, "index.html");
 		if (file.exists()) {
-			return new FileResponseBuilder(file).build() ;
+			String mtype = FileMetaType.mediaType(file.getName()) ;
+			ResponseBuilder rbuilder = Response.status(Status.OK).type(mtype).entity(file);
+			
+			if (file.getName().endsWith(".html") || file.getName().endsWith(".js") || file.getName().endsWith(".css")){
+				rbuilder.language("UTF-8") ;
+			}
+			
+			Debug.debug(file, file.getName().endsWith(".html"));
+			
+			return rbuilder.build();
 		} else {
-			return Response.status(Status.NOT_FOUND).build() ;
+			return Response.status(Status.NOT_FOUND).entity("not found web file : " + file.getCanonicalPath()).build() ;
 		}
 	}
 	

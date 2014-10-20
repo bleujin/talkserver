@@ -24,6 +24,7 @@ import net.ion.framework.db.Rows;
 import net.ion.framework.logging.LogBroker;
 import net.ion.framework.parse.gson.JsonObject;
 import net.ion.framework.util.ArrayUtil;
+import net.ion.framework.util.Debug;
 import net.ion.framework.util.FileUtil;
 import net.ion.framework.util.ListUtil;
 import net.ion.framework.util.MapUtil;
@@ -162,7 +163,7 @@ public class BotScript {
 	private String loadPackageScript(File file) {
 		final String packName = FilenameUtils.getBaseName(file.getName());
 		try {
-			String script = FileUtil.readFileToString(file);
+			String script = FileUtil.readFileToString(file, "UTF-8");
 			packages.put(packName, sengine.eval(script));
 			rsession.tran(new TransactionJob<Void>() {
 				@Override
@@ -177,8 +178,10 @@ public class BotScript {
 			this.callFrom(packName, "onLoad") ;
 
 		} catch (IOException e) {
+			Debug.line(packName);
 			e.printStackTrace();
 		} catch (ScriptException e) {
+			Debug.line(packName);
 			e.printStackTrace();
 		}
 		return packName;

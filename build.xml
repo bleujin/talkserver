@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="builder_for_aradon" default="publish">
+
+	<property name="baseDir" value="." />
+	<property name="binDir" value="./bin" />
+	<property name="sbinDir" value="./sbin" />
+	<property name="publishDir" value="./publish" />
+	
+	<tstamp>
+	  <format property="TODAY_MY" pattern="MM/dd/yyyy hh:mm"/>
+	</tstamp>
+	
+	<property name="manifest.main.class" value="net.ion.talkserver.Main" />
+	<property name="manifest.classpath" value="lib/ref/* lib/reflib/*" />
+	<property name="version.number" value="0" />
+	<property name="build.number" value="5" />
+	
+	<manifestclasspath property="dynamic.manifest.classpath" jarfile="talkserver_${version.number}.${build.number}.jar">
+		<classpath>
+	      <fileset dir="lib/ref/" includes="*.jar" />
+	      <fileset dir="lib/reflib/" includes="*.jar" />
+	    </classpath>
+	</manifestclasspath>
+	
+	<target name="publish" >
+		<delete file="publish/talkserver_${version.number}.${build.number}.jar"></delete>
+		<jar destfile="publish/talkserver_${version.number}.${build.number}.jar">
+			<manifest>
+			  <attribute name="Built-By" value="${user.name}"/>
+			  <attribute name="Created-By" value="${user.name}"/>
+			  <attribute name="Main-Class" value="${manifest.main.class}" />
+			  <attribute name="Built-Date" value="${TODAY_MY}" />
+			  <attribute name="Class-Path" value="${dynamic.manifest.classpath}" />
+			  <section name="common">
+			    <attribute name="Specification-Title" value="i-on talk server"/>
+			    <attribute name="Specification-Version" value="${version.number}.${build.number}"/>
+			    <attribute name="Specification-Vendor" value="i-on"/>
+			  </section>
+			</manifest>
+			<fileset dir="${binDir}/" includes="net/**" />
+			<fileset dir="${binDir}/" includes="org/**" />
+		</jar>
+	</target>
+
+	<target name="deploy_self" depends="publish">
+		<echo>Copy main lib</echo>
+		<copy todir="fordeploy" overwrite="true">
+			<fileset file="publish/talkserver_${version.number}.${build.number}.jar" />
+		</copy>
+	</target>
+	
+	<target name="copy_for_deploy" depends="publish">
+	    <echo>Copy lib</echo>
+		<copy todir="fordeploy/lib/" overwrite="true">
+			<fileset dir="lib/" includes="**"></fileset>
+		</copy>
+		
+		<echo>Copy main lib</echo>
+		<copy todir="fordeploy" overwrite="true">
+			<fileset file="publish/talkserver_${version.number}.${build.number}.jar" />
+		</copy>
+
+		<echo>Copy resource file(config, loader)</echo>
+		<copy todir="fordeploy/resource/config" overwrite="true">
+			<fileset dir="resource/config/" includes="**"/>
+		</copy>
+		<copy todir="fordeploy/resource/bot" overwrite="true">
+			<fileset dir="resource/bot/" includes="**"/>
+		</copy>
+		<copy todir="fordeploy/resource/doc" overwrite="true">
+			<fileset dir="resource/doc/" includes="**"/>
+		</copy>
+		<copy todir="fordeploy/resource/template" overwrite="true">
+			<fileset dir="resource/template/" includes="**"/>
+		</copy>
+		<copy todir="fordeploy/resource/toonweb" overwrite="true">
+			<fileset dir="resource/toonweb/" includes="**"/>
+		</copy>
+		<copy todir="fordeploy/resource/" overwrite="true">
+			<fileset file="resource/log4j.properties" />
+		</copy>
+		
+		<echo>Copy script file</echo>
+		<copy todir="fordeploy/bot" overwrite="true">
+			<fileset dir="bot/" includes="**"/>
+		</copy>
+		<copy todir="fordeploy/script" overwrite="true">
+			<fileset dir="script/" includes="**"/>
+		</copy>
+	</target>
+
+	
+	<target name="make_zip" depends="copy_for_deploy">
+	    <zip destfile="deploy/talkserver_${version.number}.${build.number}.zip" basedir="fordeploy/">
+	   </zip> 
+	    
+	    
+	</target>
+	
+	
+</project>

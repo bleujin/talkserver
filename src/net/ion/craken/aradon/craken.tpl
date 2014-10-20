@@ -16,6 +16,7 @@
 	<ul>
 	${foreach self.toMap() entry }
 		<li>${entry.getKey().idString()} : ${entry.getValue().asString()}</li>
+		
 	${end}
 	</ul>
 

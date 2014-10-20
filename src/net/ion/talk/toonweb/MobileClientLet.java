@@ -1,6 +1,7 @@
 package net.ion.talk.toonweb;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -50,8 +51,7 @@ public class MobileClientLet {
         if (!tplFile.exists())
         	return Response.status(Status.NOT_FOUND).build();
 
-        final StringWriter template = new StringWriter();
-        IOUtil.copyNClose(new FileReader(tplFile), template) ;
+        String template = IOUtil.toStringWithClose(new FileInputStream(tplFile)) ;
 
 
         String nickName = session.pathBy("/users/" + userId).property(Const.User.NickName).asString() ;
@@ -68,6 +68,7 @@ public class MobileClientLet {
             }
         });
 
-        return Response.ok().entity(st.toString()).build() ;
+        // return st.toString() ;
+        return Response.ok().entity(st.toString()).type("Content-Type: text/html; charset=utf-8").build() ;
     }
 }

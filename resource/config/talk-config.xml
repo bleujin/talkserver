@@ -1,0 +1,16 @@
+<?xml version="1.0"  encoding="UTF-8"?>
+
+<root version="0.1">
+    
+    <server-config id="talk" port="9000" nodeid="mercury" worker="10">
+		<host>61.250.201.157</host>
+	</server-config>
+
+	<log-config-file>./resource/log4j.properties</log-config-file>
+    
+	
+	<repository-config wsname="talk">
+	    <talk-home>./resource/talk/</talk-home>
+	</repository-config>
+	
+</root>
