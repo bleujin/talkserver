@@ -6,6 +6,7 @@ import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteNode;
 import net.ion.craken.node.WriteSession;
+import net.ion.framework.util.Debug;
 import net.ion.framework.util.StringUtil;
 import net.ion.talk.TalkEngine;
 import net.ion.talk.TalkEngine.Reason;
@@ -51,6 +52,10 @@ public class UserConnectionHandler implements TalkHandler {
 	@Override
 	public void onClose(TalkEngine tengine, final UserConnection uconn) {
 		try {
+			if (! rsession.workspace().cache().getStatus().allowInvocations()) {
+				Debug.line("ALREADY STOPPING STATE");
+				return ;
+			}
 			
 			rsession.tranSync(new TransactionJob<Void>() {
 				@Override
