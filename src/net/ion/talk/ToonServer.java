@@ -1,8 +1,10 @@
 package net.ion.talk;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Date;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -16,6 +18,7 @@ import net.ion.craken.aradon.NodeLet;
 import net.ion.craken.aradon.UploadLet;
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.node.ReadSession;
+import net.ion.framework.util.Debug;
 import net.ion.nradon.HttpControl;
 import net.ion.nradon.HttpHandler;
 import net.ion.nradon.HttpRequest;
@@ -28,6 +31,7 @@ import net.ion.nradon.handler.logging.LoggingHandler;
 import net.ion.nradon.netty.NettyWebServer;
 import net.ion.nradon.restlet.FileMetaType;
 import net.ion.radon.core.let.PathHandler;
+import net.ion.radon.handler.AppCacheHandler;
 import net.ion.talk.filter.CrakenVerifier;
 import net.ion.talk.filter.ToonVerifier;
 import net.ion.talk.let.BotImageLet;
@@ -78,8 +82,27 @@ public class ToonServer {
 
 	private ToonServer init() throws Exception {
 		if (status.get().ordinal() >= Status.INITED.ordinal()) return this ;
-		
+		final ReadSession session = repoEntry.login() ;
 		RadonConfiguration config = RadonConfiguration.newBuilder(tconfig.serverConfig().port())
+			.add(new HttpHandler(){
+				@Override
+				public void onEvent(EventType eventtype, Radon radon) {
+				}
+
+				@Override
+				public int order() {
+					return -11;
+				}
+
+				@Override
+				public void handleHttpRequest(HttpRequest httprequest, HttpResponse httpresponse, HttpControl httpcontrol) throws Exception {
+					if (! session.workspace().cache().getStatus().allowInvocations()) {
+						httpresponse.status(200).content("ALREADY STOPPING STATE").end() ;
+					} else {
+						httpcontrol.nextHandler(); 
+					}
+				}
+			})
 			.add(new LoggingHandler(new ToonLogSink()))
 			.add("/auth/*", new BasicAuthenticationHandler(CrakenVerifier.test(repoEntry.login())))
 			.add("/auth/*", new PathHandler(LoginLet.class).prefixURI("/auth"))
@@ -156,12 +179,15 @@ public class ToonServer {
 	public ToonServer stop() throws InterruptedException, ExecutionException {
 		if (status.get() == Status.STOPED) return this ;
 		
+		status.set(Status.STOPED);
+
+		
 		talkEngine.stopEngine(); 
 		if (radon != null) radon.stop().get();
 		worker.shutdown(); 
 		worker.awaitTermination(1, TimeUnit.SECONDS) ;
-		
-		status.set(Status.STOPED);
+
+		System.err.println("ToonServer Stopped : " + new Date());
 		return this ;
 	}
 

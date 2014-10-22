@@ -91,10 +91,8 @@
 
 	
 	<target name="make_zip" depends="copy_for_deploy">
-	    <zip destfile="deploy/talkserver_${version.number}.${build.number}.zip" basedir="fordeploy/">
-	   </zip> 
-	    
-	    
+	    <delete file="deploy/talkserver_${version.number}.${build.number}.zip"></delete>
+	    <zip destfile="deploy/talkserver_${version.number}.${build.number}.zip" basedir="fordeploy/" excludes="resource/talk/**" ></zip> 
 	</target>
 	
 	

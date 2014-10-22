@@ -12,6 +12,7 @@ import org.apache.lucene.store.AlreadyClosedException;
 import net.ion.craken.node.ReadSession;
 import net.ion.craken.node.TransactionJob;
 import net.ion.craken.node.WriteSession;
+import net.ion.framework.util.Debug;
 import net.ion.talk.TalkEngine;
 import net.ion.talk.TalkEngine.Reason;
 import net.ion.talk.TalkMessage;
@@ -52,10 +53,10 @@ public class ServerHandler implements TalkHandler {
 	}
 
 	@Override
-	public void onEngineStart(TalkEngine tengine) throws IOException {
+	public void onEngineStart(TalkEngine tengine) throws Exception {
 		this.session = tengine.readSession();
 
-		session.tran(new TransactionJob<Void>() {
+		session.tranSync(new TransactionJob<Void>() {
 			@Override
 			public Void handle(WriteSession wsession) throws Exception {
 				wsession.pathBy("/servers/" + hostName).property("host", serverHost).property("port", port);
@@ -70,7 +71,12 @@ public class ServerHandler implements TalkHandler {
 
 	@Override
 	public void onEngineStop(TalkEngine tengine) {
+		if (! this.session.workspace().cache().getStatus().allowInvocations()) {
+			Debug.line("ALREADY STOPPING STATE");
+			return ;
+		}
 		try {
+			
 			this.session.tranSync(new TransactionJob<Void>() {
 				@Override
 				public Void handle(WriteSession wsession) throws Exception {
@@ -78,9 +84,8 @@ public class ServerHandler implements TalkHandler {
 					return null;
 				}
 			});
-		} catch (AlreadyClosedException e) {
-			tengine.getLogger().warning(e.getMessage());
-		} catch (Exception e) {
+		} catch (Throwable e) {
+			System.err.println(e.getMessage());
 			tengine.getLogger().warning(e.getMessage());
 		}
 	}

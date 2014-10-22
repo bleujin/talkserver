@@ -51,6 +51,7 @@ public class UserConnectionHandler implements TalkHandler {
 	@Override
 	public void onClose(TalkEngine tengine, final UserConnection uconn) {
 		try {
+			
 			rsession.tranSync(new TransactionJob<Void>() {
 				@Override
 				public Void handle(WriteSession wsession) throws Exception {

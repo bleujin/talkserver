@@ -2,7 +2,7 @@
 
 <root version="0.1">
     
-    <server-config id="talk" port="9000" nodeid="mercury" worker="10">
+    <server-config id="talk" port="9000" nodeid="mercury" worker="0">
 		<host>61.250.201.157</host>
 	</server-config>
 

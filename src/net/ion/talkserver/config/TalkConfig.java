@@ -3,6 +3,8 @@ package net.ion.talkserver.config;
 import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import net.ion.craken.aradon.bean.RepositoryEntry;
 import net.ion.craken.loaders.lucene.ISearcherWorkspaceConfig;
@@ -12,6 +14,8 @@ import net.ion.craken.node.crud.RepositoryImpl;
 import net.ion.talk.bean.Const.User;
 
 import org.infinispan.manager.DefaultCacheManager;
+
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 
 public class TalkConfig {
@@ -26,7 +30,16 @@ public class TalkConfig {
 		this.serverConfig = serverConfig ;
 		this.repoConfig = repoConfig ;
 		this.logConfig = logConfig;
-		this.ses = Executors.newScheduledThreadPool(serverConfig.workerCount()) ;
+
+		if (serverConfig.workerCount() == 0) {
+			ScheduledThreadPoolExecutor newses = new ScheduledThreadPoolExecutor(30, new ThreadFactoryBuilder().setNameFormat("talk-worker-%d").build()) ;
+			newses.setKeepAliveTime(30, TimeUnit.SECONDS);
+			newses.allowCoreThreadTimeOut(true);
+			this.ses = newses ;
+		} else {
+			this.ses = Executors.newScheduledThreadPool(serverConfig.workerCount(), new ThreadFactoryBuilder().setNameFormat("talk-worker-%d").build()) ;
+		}
+		
 	}
 
 	

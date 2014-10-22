@@ -51,8 +51,10 @@ public class Main {
         	public void run(){
         		try {
 					tserver.stop();
+				} catch (IllegalStateException e) {
+					System.err.println(e.getMessage());
 				} catch (Exception e) {
-					e.printStackTrace();
+					System.err.println(e.getMessage());
 				} 
         	}
         });
