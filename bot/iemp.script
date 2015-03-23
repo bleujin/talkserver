@@ -3,7 +3,7 @@ new function(){
 	var emps = '성   함	직 급	부   서	내선	핸드폰번호	E-mail \n\
 박정진	수석연구원	플랫폼서비스개발팀	748	010-4221-1234	bleujin' ;
 
-	var _myBotId = 'ionemp' ;
+	var _myBotId = 'iemp' ;
 	var empMap = {} ;
 	var toString = function(obj) {
 	    var str = '';
@@ -95,9 +95,9 @@ new function(){
 			var rtn = this[cmd.fnName()](whisperMsg, cmd, source) ;
 			if (rtn && rtn.message){
 				source.sendMessage(
-				rb.makeCommandBuilder("/whisper/ionemp/" + cmd.fnName())
+				rb.makeCommandBuilder("/whisper/iemp/" + cmd.fnName())
 				  .inner("result")
-				  	.property("sender", "ionemp")
+				  	.property("sender", "iemp")
 					.property("clientScript", rtn.clientScript || "client.room().message(args);")
 					.property("message", rtn.message)
 					.property("options", "{event:'onWhisper'}")
@@ -108,9 +108,9 @@ new function(){
 			empMap[source.id()].action = whisperMsg.message() ;
 			
 			source.sendMessage(
-				rb.makeCommandBuilder("/whisper/ionemp/" + cmd.fnName())
+				rb.makeCommandBuilder("/whisper/iemp/" + cmd.fnName())
 				  .inner("result")
-				  	.property("sender", "ionemp")
+				  	.property("sender", "iemp")
 					.property("clientScript","client.room().message(args);")
 					.property("message", 'setted status : ' + whisperMsg.message())
 					.property("options", "{event:'onWhisper'}")

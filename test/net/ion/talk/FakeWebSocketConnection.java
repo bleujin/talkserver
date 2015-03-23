@@ -1,5 +1,6 @@
 package net.ion.talk;
 
+import java.net.HttpCookie;
 import java.net.SocketAddress;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +13,6 @@ import net.ion.framework.util.MapUtil;
 import net.ion.framework.util.ObjectUtil;
 import net.ion.nradon.HttpRequest;
 import net.ion.nradon.WebSocketConnection;
-import net.ion.nradon.helpers.HttpCookie;
 
 import org.jboss.netty.channel.ChannelFuture;
 
